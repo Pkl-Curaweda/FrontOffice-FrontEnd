@@ -21,15 +21,15 @@ export class Api {
     return this
   }
 
-  get(path, callback) {
-    return this.request('GET', path, null, callback)
+  async get(path, callback) {
+    return await this.request('GET', path, null, callback)
   }
 
-  post(path, data, callback) {
-    return this.request('POST', path, data, callback)
+  async post(path, data, callback) {
+    return await this.request('POST', path, data, callback)
   }
 
-  request(method = 'GET', path = '', data = null, callback) {
+  async request(method = 'GET', path = '', data = null, callback) {
     const config = {
       method: method,
       url: path,
@@ -46,26 +46,23 @@ export class Api {
 
     if (data) config['data'] = data
 
-    myAxios
-      .request(config)
-      .then((res) => {
-        callback({
-          status: res.status,
-          message: res.data?.message || '',
-          data: res.data?.data || {}
-        })
+    try {
+      const res = await myAxios.request(config)
+      return callback({
+        status: res.status,
+        message: res.data?.message || '',
+        data: res.data?.data || {}
       })
-      .catch((err) => {
-        const { response } = err
+    } catch (err) {
+      const { response } = err
 
-        this.notif(err)
-
-        callback({
-          status: response?.status || 599,
-          message: response?.data?.message || 'Something wrong',
-          data: response?.data?.data || {}
-        })
+      this.notif(err)
+      return callback({
+        status: response?.status || 599,
+        message: response?.data?.message || 'Something wrong',
+        data: response?.data?.data || {}
       })
+    }
   }
 
   notif(err) {

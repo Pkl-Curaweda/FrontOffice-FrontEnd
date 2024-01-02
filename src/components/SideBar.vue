@@ -15,7 +15,7 @@
 
     <q-expansion-item class="rounded" label="Front Office" icon="o_contact_page">
       <template v-for="(r, index) in frontoffice_routes" :key="index">
-        <q-item class="q-mx-md" :to="r.path" clickable>
+        <q-item v-if="r.meta.main_route" class="q-mx-md" :to="r.path" clickable>
           <q-item-section>
             {{ r.meta.title }}
           </q-item-section>

@@ -1,12 +1,12 @@
 <template>
-  <q-toolbar class="fo-menubar border bg-white">
+  <q-toolbar class="fo-menubar border bg-white items-stretch">
     <slot name="left"></slot>
 
     <q-separator vertical />
     <template v-for="(r, index) in frontoffice_routes" :key="index">
       <q-item
         clickable
-        v-if="r.path != '/'"
+        v-if="r.path != '/' && r.meta.main_route"
         :active="$route.meta.title === r.meta.title"
         v-ripple
         :to="r.path"

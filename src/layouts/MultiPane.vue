@@ -16,7 +16,9 @@
         maxHeight: lowerMaxHeight + 'px'
       }"
     >
-      <slot name="lower"></slot>
+      <div class="wrap">
+        <slot name="lower"></slot>
+      </div>
     </div>
   </div>
 </template>

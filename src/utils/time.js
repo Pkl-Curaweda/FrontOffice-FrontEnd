@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 export const getCurrentTime = () => {
   const currentDate = new Date()
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -26,4 +28,8 @@ export const getCurrentTime = () => {
   return `${dayOfWeek}, ${dayOfMonth} ${month} ${year} ${hours
     .toString()
     .padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+}
+
+export const formatDate = (date, format = 'DD MMMM YYYY') => {
+  return moment.utc(date).format(format)
 }

@@ -19,7 +19,7 @@ import { authStore } from 'src/stores/auth'
 
 const isAuthenticated = () => {
   const token = authStore().getAccessToken()
-  return !!token
+  return token != ''
 }
 
 export default route(function (/* { store, ssrContext } */) {

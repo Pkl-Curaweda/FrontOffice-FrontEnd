@@ -20,7 +20,7 @@
       <SideBar />
     </q-drawer>
 
-    <q-page-container>
+    <q-page-container style="height: 100vh; overflow-y: hidden; overflow-x: auto">
       <Transition name="slide-fade" appear mode="out-in">
         <router-view :key="$route.fullPath" />
       </Transition>

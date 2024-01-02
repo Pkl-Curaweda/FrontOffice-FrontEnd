@@ -9,6 +9,95 @@
 * {
   font-family: 'Lato';
 }
+.width-image {
+  width: 250px;
+  height: 100%;
+}
+
+.padding-expansion .q-item {
+  padding: 0;
+}
+
+.rows-table thead tr th {
+  position: sticky;
+  background-color: white;
+  z-index: 1;
+  top: 0;
+}
+
+textarea {
+  height: 205px;
+}
+
+div.q-item__label,
+div.q-item__section {
+  width: fit-content;
+}
+
+.q-field__native span {
+  white-space: nowrap;
+}
+
+.dropdown-date span.q-btn__content {
+  justify-content: left;
+  text-align: left;
+}
+
+div.q-menu.q-position-engine {
+  min-width: 0px !important;
+}
+
+span.q-btn__content span.block {
+  flex: 1 1 0%;
+}
+
+i.q-icon.on-left {
+  color: #16a75c;
+}
+
+// i.q-icon.notranslate {
+//   color: #16a75c;
+// }
+
+.border-button {
+  border: 1.5px $border solid;
+  padding-right: 7px;
+  padding-left: 7px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.bg-primary-tint {
+  background-color: rgba($primary-rgb, 0.15);
+}
+
+.bg-border {
+  background-color: $border;
+}
+
+.my-table {
+  .q-table {
+    border: none;
+    border-spacing: 3px;
+
+    tbody {
+      tr {
+        &.active {
+          background-color: #0677cd !important;
+          color: #fff !important;
+        }
+
+        &:nth-child(even) {
+          background-color: #f8f8f8;
+        }
+      }
+    }
+  }
+  th {
+    background-color: #069550;
+    color: #ffffff;
+  }
+}
 
 .comp-sidebar {
   .q-item {
@@ -29,6 +118,10 @@
       font-weight: bold;
     }
   }
+}
+
+.bg-primary-tint {
+  background-color: rgba($primary-rgb, 0.15);
 }
 
 .rounded {
@@ -76,8 +169,18 @@
 .multi-panel {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  max-height: 100%;
+  margin: 0 auto;
+  height: calc(100vh - 100px);
+  overflow-x: hidden;
+  max-width: 768px;
+
+  @media (min-width: 768px) {
+    max-width: 1280px;
+  }
+
+  @media (min-width: 1400px) {
+    max-width: none;
+  }
 
   .upper-panel {
     flex: 1;
@@ -97,17 +200,19 @@
     background-color: $border;
 
     .bar {
-      width: 48px;
-      height: 10px;
+      width: 64px;
+      height: 16px;
+      position: relative;
+      z-index: 2;
       background-color: $border;
       border-radius: 100px;
       cursor: row-resize;
       display: flex;
 
       div {
-        width: 80%;
+        width: 70%;
         border-radius: 100px;
-        height: 3px;
+        height: 4px;
         background-color: rgba($dark-rgb, 0.4);
         margin: auto;
       }
@@ -145,4 +250,8 @@
 .slide-fade-leave-to {
   transform: translateX(-3%);
   opacity: 0;
+}
+
+.q-menu .q-option-group .q-radio__label {
+  padding-right: 2rem;
 }

@@ -10,8 +10,8 @@
   >
     <FOMenubar>
       <template #left>
-        <div class="px-2">
-          <q-input v-model="searchInput" borderless dense label="Name" type="search">
+        <div style="height: 100%; justify-content: center;">
+          <q-input v-model="searchInput" borderless label="Name" type="search" style="display: flex; justify-content: center;">
             <template v-slot:prepend>
               <q-icon name="search" color="primary" />
             </template>

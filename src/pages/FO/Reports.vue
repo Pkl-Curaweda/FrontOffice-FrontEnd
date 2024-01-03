@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column" style="overflow-y: hidden; min-width: max-content">
+  <q-page class="column" style="overflow-y: hidden; min-width: max-content;">
     <FOMenubar>
       <template #left>
         <q-chip>Left side</q-chip>
@@ -11,7 +11,7 @@
 
     <MultiPane>
       <template #upper>
-        <h5>Table: Reports goes here...</h5>
+        <h5 style="background: sage; width: 95vw;">Table: Reports goes here...</h5>
       </template>
       <template #lower>
         <ReportInsight />

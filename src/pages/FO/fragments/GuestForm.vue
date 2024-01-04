@@ -475,21 +475,9 @@
       </q-expansion-item>
 
       <div style="gap: 8px" class="q-mt-sm row no-wrap items-center">
-        <q-btn
-          label="Reservation"
-          outline
-          color="primary"
-          dense
-          class="text-capitalize full-width"
-        />
-        <q-btn
-          label="Check-In"
-          unelevated
-          color="primary"
-          dense
-          class="text-capitalize full-width"
-        />
-        <q-btn label="Check-Out" outline color="grey" dense class="text-capitalize full-width" />
+        <q-btn label="Reservation" outline color="primary" dense class="text-capitalize col-grow" />
+        <q-btn label="Check-In" unelevated color="primary" dense class="text-capitalize col-grow" />
+        <q-btn label="Check-Out" outline color="grey" dense class="text-capitalize col-grow" />
       </div>
     </div>
   </div>

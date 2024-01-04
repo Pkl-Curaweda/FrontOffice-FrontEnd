@@ -17,7 +17,7 @@
         </q-btn-dropdown>
       </template>
     </FOMenubar>
-    <div class="flex q-mx-xl page-padding">
+    <div class="flex q-mx-xl q-mt-lg page-padding">
       <div class="flex" style="gap: 16px; margin-bottom: 24px">
         <q-select
           outlined

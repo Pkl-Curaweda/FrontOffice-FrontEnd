@@ -43,7 +43,7 @@
         <q-separator vertical />
 
         <!--Search Button-->
-        <q-input v-model="searchInput" borderless dense label="Name" type="search">
+        <q-input v-model="searchInput" borderless label="Name" type="search">
           <template v-slot:prepend>
             <q-icon name="search" class="q-ml-sm" color="primary" />
           </template>

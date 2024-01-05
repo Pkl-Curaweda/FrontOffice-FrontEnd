@@ -1,16 +1,16 @@
 <template>
-  <div class="column q-pa-md" style="background: #FAFAFA">
+  <div class="column q-pa-md" style="background: #fafafa">
     <div class="row" style="gap: 10px">
       <!--Display Option-->
       <q-select
-          outlined
-          dense
-          v-model="displayOpt"
-          :options="displayOption"
-          label="Display Option"
-          dropdown-icon="expand_more"
-          style="width: 150px;"
-        />
+        outlined
+        dense
+        v-model="displayOpt"
+        :options="displayOption"
+        label="Display Option"
+        dropdown-icon="expand_more"
+        style="width: 150px"
+      />
 
       <!-- date picker  -->
       <q-btn-dropdown
@@ -24,10 +24,9 @@
           <q-date v-model="datePicker" range />
         </div>
       </q-btn-dropdown>
-
     </div>
 
-    <div class="row no-wrap q-my-lg" style="gap: 16px;">
+    <div class="row no-wrap q-my-lg" style="gap: 16px">
       <div id="chart" class="dashboard-box"></div>
       <div class="dashboard-box column">
         <div class="row q-py-sm q-mt-lg" style="gap: 10px">
@@ -78,10 +77,7 @@
         </div>
       </div>
     </div>
-
   </div>
-  
-
 </template>
 
 <script>
@@ -93,15 +89,46 @@ var options = {
     type: 'donut'
   },
   series: [33, 27, 20, 10, 6, 4, 3, 2, 1, 0],
-  labels: ['101 - DLX - K', '109 - FML - S', '107 - STD - T', '110 - FML - S',
-          '102 - DLX - T', ' 106 - STD - K', '108 - FML - S', '103 - DLX - K',
-          '104 - DLX - T', '105 - STD - T'],
+  labels: [
+    '101 - DLX - K',
+    '109 - FML - S',
+    '107 - STD - T',
+    '110 - FML - S',
+    '102 - DLX - T',
+    ' 106 - STD - K',
+    '108 - FML - S',
+    '103 - DLX - K',
+    '104 - DLX - T',
+    '105 - STD - T'
+  ],
   fill: {
-    colors: ['#77CE7F', '#00FFE0', '#2B8DFF', '#688CD3', '#A468D3', '#FFE500', '#FFA800', '#FE0001', '#B9B9B9', '#000000']
+    colors: [
+      '#77CE7F',
+      '#00FFE0',
+      '#2B8DFF',
+      '#688CD3',
+      '#A468D3',
+      '#FFE500',
+      '#FFA800',
+      '#FE0001',
+      '#B9B9B9',
+      '#000000'
+    ]
   },
   legend: {
     markers: {
-      fillColors: ['#77CE7F', '#00FFE0', '#2B8DFF', '#688CD3', '#A468D3', '#FFE500', '#FFA800', '#FE0001', '#B9B9B9', '#000000']
+      fillColors: [
+        '#77CE7F',
+        '#00FFE0',
+        '#2B8DFF',
+        '#688CD3',
+        '#A468D3',
+        '#FFE500',
+        '#FFA800',
+        '#FE0001',
+        '#B9B9B9',
+        '#000000'
+      ]
     }
   },
   plotOptions: {
@@ -115,19 +142,16 @@ var options = {
       }
     }
   }
-    
 }
-
-var chart = new ApexCharts(document.querySelector("#chart"), options);
-
-chart.render();
+var chart = new ApexCharts(document.querySelector('#chart'), options)
+chart.render()
 
 export default defineComponent({
   name: 'ReportInsight',
-  setup () {
+  setup() {
     return {
       displayOption: ['Per-Day', 'Per-Week', 'Per-Month', 'Per-Years']
     }
-  },
+  }
 })
 </script>

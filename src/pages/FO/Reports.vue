@@ -23,7 +23,7 @@
         <q-separator vertical />
 
         <!--Search Button-->
-        <q-input v-model="searchInput" borderless dense label="Name" type="search">
+        <q-input v-model="searchInput" borderless label="Name" type="search">
           <template v-slot:prepend>
             <q-icon name="search" class="q-ml-sm" color="primary" />
           </template>
@@ -58,6 +58,7 @@
           <q-option-group :options="DisplayOptions" type="radio" v-model="DisplayOpt" />
         </q-btn-dropdown>
       </template>
+      <template #right></template>
     </FOMenubar>
 
     <MultiPane>
@@ -74,9 +75,7 @@
           >
             <template>
               <q-tr class="table-head">
-                <q-th
-                  style="padding-top: 0px; padding-bottom: 0px"
-                >
+                <q-th style="padding-top: 0px; padding-bottom: 0px">
                   <template v-slot:header="props">
                     <q-tr class="table-head" :props="props">
                       <q-th
@@ -88,14 +87,11 @@
                     </q-tr>
                   </template>
                   <template v-slot:body="props">
-                    <q-tr :props="props">
-                    </q-tr>
+                    <q-tr :props="props"> </q-tr>
                   </template>
-
                 </q-th>
               </q-tr>
             </template>
-
           </q-table>
         </div>
       </template>
@@ -107,6 +103,9 @@
 </template>
 
 <script>
+import { formatDate } from 'src/utils/time'
+import { defineComponent, ref, watch } from 'vue'
+import { allObjectsInArray } from 'src/utils/datatype'
 import FOMenubar from 'src/components/FOMenubar.vue'
 import MultiPane from 'src/layouts/MultiPane.vue'
 import ReportInsight from 'src/pages/FO/fragments/ReportInsight.vue'
@@ -117,7 +116,7 @@ import { allObjectsInArray } from 'src/utils/datatype'
 export default defineComponent({
   name: 'ReportsPage',
   components: { FOMenubar, ReportInsight, MultiPane },
-  setup () {
+  setup() {
     return {
       allObjectsInArray,
       loading: ref(false),
@@ -141,10 +140,10 @@ export default defineComponent({
         { name: 'MTDRNo', label: 'MTD RNo', align: 'left', field: 'MTDRNo' },
         { name: 'MTDOcc', label: 'MTD Occ%', align: 'left', field: 'MTDOcc%' },
         { name: 'MTDRmRevenue', label: 'MTD Rm. Revenue', align: 'left', field: 'MTDRmRevenue' },
-        { name: 'MTDARR', label: 'MTD ARR', align: 'left', field: 'MTDARR' },
+        { name: 'MTDARR', label: 'MTD ARR', align: 'left', field: 'MTDARR' }
       ]
     }
-  },
+  }
   // data() {
   //   return {
   //     api: new this.$Api('frontoffice'),
@@ -177,14 +176,10 @@ export default defineComponent({
   //   },
   //   fetchData() {
   //     this.loading = true
-
   //     let url = `/page/arrival?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
-
   //     if (this.DisplayOpt !== null) url += `&disOpt=${this.DisplayOpt}`
-
   //     this.api.get(url, ({ status, data }) => {
   //       this.loading = false
-
   //       if (status == 200) {
   //         this.formatData(data.reservations)
   //         this.pagination = {
@@ -197,7 +192,6 @@ export default defineComponent({
   //   },
   //   formatData(raw = []) {
   //     const list = []
-
   //     raw.forEach((rsrv) => {
   //       rsrv.reservation.forEach((rr) => {
   //         list.push({

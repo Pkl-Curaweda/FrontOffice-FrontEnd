@@ -10,8 +10,8 @@
   >
     <FOMenubar>
       <template #left>
-        <div class="px-2">
-          <q-input v-model="searchInput" borderless dense label="Name" type="search">
+        <div>
+          <q-input v-model="searchInput" borderless label="Name" type="search">
             <template v-slot:prepend>
               <q-icon name="search" color="primary" />
             </template>
@@ -277,7 +277,7 @@ export default defineComponent({
         },
         RoomBoy: {
           data: '',
-          options: ['ILYAS', 'RONI', 'YUTA', 'HERTIAMAN']
+          options: []
         },
         RoomRate: {
           data: '',
@@ -333,6 +333,8 @@ export default defineComponent({
         this.loading = false
 
         if (status == 200) {
+          const roomBoys = this.getUniqueRoomBoys(data.reservations)
+          this.filterColumns.RoomBoy.options = roomBoys
           this.formatData(data.reservations)
           this.pagination = {
             page: data.meta?.currPage,
@@ -341,6 +343,19 @@ export default defineComponent({
           }
         }
       })
+    },
+    getUniqueRoomBoys(reservations) {
+      const roomBoys = new Set()
+
+      reservations.forEach((rsrv) => {
+        rsrv.reservation.forEach((rr) => {
+          rr.roomMaids.forEach((roomBoy) => {
+            roomBoys.add(roomBoy.user.name)
+          })
+        })
+      })
+
+      return Array.from(roomBoys)
     },
     formatData(raw = []) {
       const list = []

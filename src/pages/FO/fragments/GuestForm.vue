@@ -463,14 +463,7 @@
         class="padding-expansion"
       >
         <q-card>
-          <q-input
-            v-model="resvRemark"
-            label="Note..."
-            dense
-            outlined
-            style="max-height: 200px"
-            type="textarea"
-          />
+          <q-input v-model="resvRemark" label="Note..." dense outlined type="textarea" />
         </q-card>
       </q-expansion-item>
 

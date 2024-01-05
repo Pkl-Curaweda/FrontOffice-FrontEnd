@@ -43,7 +43,16 @@ const frontoffice_routes = [
       main_route: true,
       protected: true
     }
-  }
+  },
+  {
+    path: '/fo/payment',
+    component: () => import('pages/FO/payment.vue'),
+    meta: {
+      title: 'Payment',
+      main_route: false,
+      protected: true
+    }
+  },
 ]
 
 export default frontoffice_routes

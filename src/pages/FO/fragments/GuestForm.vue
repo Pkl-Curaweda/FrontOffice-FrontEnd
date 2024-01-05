@@ -1,5 +1,5 @@
 <template>
-  <div class="q-mt-sm row no-wrap q-gutter-md">
+  <div class="q-my-lg row no-wrap q-gutter-md">
     <div class="">
       <q-img
         :src="roomImage || '/src/assets/img/thumbnaul-form.png'"
@@ -373,7 +373,7 @@
           :options="resvStatusOpts"
           label="Status"
           dropdown-icon="expand_more"
-          style="width: 150px"
+          style="width: 100px"
         />
 
         <q-space />

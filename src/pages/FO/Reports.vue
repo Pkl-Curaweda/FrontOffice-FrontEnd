@@ -2,17 +2,79 @@
   <q-page class="column" style="overflow-y: hidden; min-width: max-content">
     <FOMenubar>
       <template #left>
-        <q-chip>Left side</q-chip>
+        <q-btn-dropdown
+          flat
+          square
+          class="text-capitalize"
+          label="Sorting"
+          dropdown-icon="o_expand_more"
+        >
+          <q-list>
+            <q-item clickable v-close-popup>
+              <q-item-section>Most Revenue</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>Less Revenue</q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
+        <q-separator vertical />
+
+        <q-input v-model="searchInput" borderless dense label="Name" type="search">
+          <template v-slot:prepend>
+            <q-icon name="search" class="q-ml-sm" color="primary" />
+          </template>
+        </q-input>
+        <q-separator vertical />
+
+        <q-btn-dropdown
+          flat
+          square
+          range
+          class="text-capitalize"
+          label="TDate - FDate"
+          icon="o_event"
+          dropdown-icon="o_expand_more"
+        >
+          <div>
+            <q-date v-model="datePicker" range />
+          </div>
+        </q-btn-dropdown>
+
+        <q-btn-dropdown
+          flat
+          square
+          range
+          class="text-capitalize text-black"
+          label="Display Option"
+          color="primary"
+          dropdown-icon="o_expand_more"
+        >
+          <q-list>
+            <q-item clickable v-close-popup>
+              <q-item-section>Per-Day</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>Per-Week</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>Per-Month</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>Per-Year</q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
       </template>
+
       <template #right>
         <q-chip>right side</q-chip>
       </template>
     </FOMenubar>
 
     <MultiPane>
-      <template #upper>
-        <h5>Table: Reports goes here...</h5>
-      </template>
+      <template #upper> </template>
+
       <template #lower>
         <ReportInsight />
       </template>

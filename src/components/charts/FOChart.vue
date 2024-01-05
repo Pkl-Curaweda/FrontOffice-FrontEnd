@@ -1,5 +1,5 @@
 <template>
-    <apexchart type="donut" :options="chartOptions" :series="series"></apexchart>
+    <apexchart type="donut" width="400" :options="chartOptions" :series="series"></apexchart>
 </template>
 
 <script>
@@ -11,26 +11,11 @@ export default {
             chartOptions: {
                 chart: {
                 type: 'donut',
-                },
-                pie: {
-                    size: 400,
-                    donut: {
-                        labels: {
-                        show: true,
-                        name: 'person'
-                        }
-                    }
+                height: 400, 
+                width: 400
                 },
                 responsive: [{
                 breakpoint: 480,
-                options: {
-                    chart: {
-                    width: 200
-                    },
-                    legend: {
-                    position: 'bottom'
-                    }
-                }
                 }],
                 labels: [
                     '101 - DLX - K',
@@ -59,6 +44,7 @@ export default {
                     ]
                 },
                 legend: {
+                    position: 'left',
                     markers: {
                     fillColors: [
                         '#77CE7F',

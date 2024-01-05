@@ -2,7 +2,6 @@
   <q-page class="column" style="overflow-y: hidden; min-width: max-content;">
     <FOMenubar>
       <template #left>
-        <!--Sorting Dropdown-->
         <q-btn-dropdown
           flat
           square
@@ -10,7 +9,6 @@
           label="Sorting"
           dropdown-icon="o_expand_more"
         >
-          <!--Konten Dropdown-->
           <q-list>
             <q-item clickable v-close-popup>
               <q-item-section>Most Revenue</q-item-section>
@@ -22,15 +20,13 @@
         </q-btn-dropdown>
         <q-separator vertical />
 
-        <!--Search Button-->
-        <q-input v-model="searchInput" borderless label="Name" type="search">
+        <q-input v-model="searchInput" borderless dense label="Name" type="search">
           <template v-slot:prepend>
             <q-icon name="search" class="q-ml-sm" color="primary" />
           </template>
         </q-input>
         <q-separator vertical />
 
-        <!-- date picker  -->
         <q-btn-dropdown
           flat
           square
@@ -44,21 +40,36 @@
             <q-date v-model="datePicker" range />
           </div>
         </q-btn-dropdown>
-        <!---->
-        <q-separator vertical />
 
-        <!--Display Option-->
         <q-btn-dropdown
           flat
           square
-          class="text-capitalize"
+          range
+          class="text-capitalize text-black"
           label="Display Option"
+          color="primary"
           dropdown-icon="o_expand_more"
         >
-          <q-option-group :options="DisplayOptions" type="radio" v-model="DisplayOpt" />
+          <q-list>
+            <q-item clickable v-close-popup>
+              <q-item-section>Per-Day</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>Per-Week</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>Per-Month</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>Per-Year</q-item-section>
+            </q-item>
+          </q-list>
         </q-btn-dropdown>
       </template>
-      <template #right></template>
+
+      <template #right>
+        <q-chip>right side</q-chip>
+      </template>
     </FOMenubar>
 
     <MultiPane>

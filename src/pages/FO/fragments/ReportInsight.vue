@@ -1,11 +1,105 @@
 <template>
-  <h5>Fragment: Report Insight goes here...</h5>
+  <div class="column q-pa-md" style="background: #fafafa">
+    <div class="row" style="gap: 10px">
+      <!--Display Option-->
+      <q-select
+        outlined
+        dense
+        v-model="displayOpt"
+        :options="displayOption"
+        label="Display Option"
+        dropdown-icon="expand_more"
+        style="width: 150px"
+      />
+
+      <!-- date picker  -->
+      <q-btn-dropdown
+        outline
+        class="text-capitalize"
+        label="TDate - FDate"
+        icon="o_event"
+        dropdown-icon="o_expand_more"
+      >
+        <div>
+          <q-date v-model="datePicker" range />
+        </div>
+      </q-btn-dropdown>
+    </div>
+
+    <div class="row no-wrap q-my-lg" style="gap: 16px">
+      <FOChart/>
+      <div class="dashboard-box column">
+        <div class="row q-py-sm q-mt-lg" style="gap: 10px">
+          <div class="icon">
+            <q-icon name="o_diamond" />
+          </div>
+          <p class="text-h6 text-bold">OCCUPIED</p>
+        </div>
+        <div class="">
+          <p class="text-h2 data text-center">10</p>
+          <p class="text-h6 text-bold">DELUXE ROOM</p>
+        </div>
+      </div>
+      <div class="dashboard-box column">
+        <div class="row q-py-sm q-mt-lg" style="gap: 10px">
+          <div class="icon">
+            <q-icon name="o_bed" />
+          </div>
+          <p class="text-h6 text-bold">OCCUPIED</p>
+        </div>
+        <div class="">
+          <p class="text-h2 data text-center">10</p>
+          <p class="text-h6 text-bold">STANDARD ROOM</p>
+        </div>
+      </div>
+      <div class="dashboard-box column">
+        <div class="row q-py-sm q-mt-lg" style="gap: 10px">
+          <div class="icon">
+            <q-icon name="o_groups" />
+          </div>
+          <p class="text-h6 text-bold">OCCUPIED</p>
+        </div>
+        <div class="">
+          <p class="text-h2 data text-center">10</p>
+          <p class="text-h6 text-bold">FAMILY ROOM</p>
+        </div>
+      </div>
+      <div class="dashboard-box column">
+        <div class="row q-py-sm q-mt-lg" style="gap: 10px">
+          <div class="icon">
+            <q-icon name="o_trending_up" />
+          </div>
+          <p class="text-h6 text-bold">OCCUPIED</p>
+        </div>
+        <div class="">
+          <p class="text-h2 data text-center">10</p>
+          <p class="text-h6 text-bold">ROOM RES</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, defineAsyncComponent } from 'vue'
+
+const FOChart = defineAsyncComponent(() =>
+  import('components/charts/FOChart.vue')
+)
+
 
 export default defineComponent({
-  name: 'ReportInsight'
+  name: 'ReportInsight',
+  components: {
+    FOChart,
+  },
+  setup() {
+    
+
+    return {
+      displayOption: ['Per-Day', 'Per-Week', 'Per-Month', 'Per-Years'],
+
+    }
+  }
 })
 </script>

@@ -10,10 +10,61 @@
   >
     <FOMenubar>
       <template #left>
-        <q-chip>Left side</q-chip>
+        <div>
+          <q-input v-model="searchInput" borderless label="Name" type="search">
+            <template v-slot:prepend>
+              <q-icon name="search" color="primary" />
+            </template>
+          </q-input>
+        </div>
+
+        <q-separator vertical />
+
+        <q-btn-dropdown
+          flat
+          square
+          class="text-capitalize date-btn text-black"
+          label="TDate - FDate"
+          icon="o_event"
+          color="primary"
+          dropdown-icon="o_expand_more"
+        >
+          <div>
+            <q-date v-model="datePicker" range />
+          </div>
+        </q-btn-dropdown>
+
+        <q-separator vertical />
+
+        <q-btn-dropdown
+          flat
+          square
+          class="text-capitalize text-black"
+          label="Display Option"
+          color="primary"
+          dropdown-icon="o_expand_more"
+        >
+          <q-option-group :options="filterDisplayOptions" type="radio" v-model="filterDisplay" />
+        </q-btn-dropdown>
       </template>
       <template #right>
-        <q-chip>right side</q-chip>
+        <q-separator vertical />
+        <q-btn flat square color="primary">
+          <q-icon>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="19"
+              height="20"
+              viewBox="0 0 19 20"
+              fill="none"
+            >
+              <path
+                d="M16 10.09V4C16 1.79 12.42 0 8 0C3.58 0 0 1.79 0 4V14C0 16.21 3.59 18 8 18C8.46 18 8.9 18 9.33 17.94C9.1129 17.3162 9.00137 16.6605 9 16V15.95C8.68 16 8.35 16 8 16C4.13 16 2 14.5 2 14V11.77C3.61 12.55 5.72 13 8 13C8.65 13 9.27 12.96 9.88 12.89C10.4127 12.0085 11.1638 11.2794 12.0607 10.7731C12.9577 10.2668 13.9701 10.0005 15 10C15.34 10 15.67 10.04 16 10.09ZM14 9.45C12.7 10.4 10.42 11 8 11C5.58 11 3.3 10.4 2 9.45V6.64C3.47 7.47 5.61 8 8 8C10.39 8 12.53 7.47 14 6.64V9.45ZM8 6C4.13 6 2 4.5 2 4C2 3.5 4.13 2 8 2C11.87 2 14 3.5 14 4C14 4.5 11.87 6 8 6ZM19 15V17H16V20H14V17H11V15H14V12H16V15H19Z"
+                fill="#008444"
+              />
+            </svg>
+          </q-icon>
+        </q-btn>
       </template>
     </FOMenubar>
 

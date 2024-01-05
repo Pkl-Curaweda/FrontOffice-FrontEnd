@@ -463,33 +463,14 @@
         class="padding-expansion"
       >
         <q-card>
-          <q-input
-            v-model="resvRemark"
-            label="Note..."
-            dense
-            outlined
-            style="max-height: 200px"
-            type="textarea"
-          />
+          <q-input v-model="resvRemark" label="Note..." dense outlined type="textarea" />
         </q-card>
       </q-expansion-item>
 
       <div style="gap: 8px" class="q-mt-sm row no-wrap items-center">
-        <q-btn
-          label="Reservation"
-          outline
-          color="primary"
-          dense
-          class="text-capitalize full-width"
-        />
-        <q-btn
-          label="Check-In"
-          unelevated
-          color="primary"
-          dense
-          class="text-capitalize full-width"
-        />
-        <q-btn label="Check-Out" outline color="grey" dense class="text-capitalize full-width" />
+        <q-btn label="Reservation" outline color="primary" dense class="text-capitalize col-grow" />
+        <q-btn label="Check-In" unelevated color="primary" dense class="text-capitalize col-grow" />
+        <q-btn label="Check-Out" outline color="grey" dense class="text-capitalize col-grow" />
       </div>
     </div>
   </div>

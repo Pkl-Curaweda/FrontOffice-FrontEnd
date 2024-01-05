@@ -109,9 +109,6 @@ import { allObjectsInArray } from 'src/utils/datatype'
 import FOMenubar from 'src/components/FOMenubar.vue'
 import MultiPane from 'src/layouts/MultiPane.vue'
 import ReportInsight from 'src/pages/FO/fragments/ReportInsight.vue'
-import { formatDate } from 'src/utils/time'
-import { defineComponent, ref, watch } from 'vue'
-import { allObjectsInArray } from 'src/utils/datatype'
 
 export default defineComponent({
   name: 'ReportsPage',

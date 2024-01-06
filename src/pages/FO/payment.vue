@@ -3,9 +3,20 @@
     <template #left></template>
   </FOMenubar>
   <!-- payment slot -->
-  <div style="width: fit-content; margin: auto; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);" class="shadowBox">
+  <div
+    style="
+      width: fit-content;
+      margin: auto;
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    "
+    class="shadowBox"
+  >
     <div style="display: flex">
-      <div style="display: block; margin-top: auto; margin-bottom: auto; " class="q-ma-md">
+      <div
+        style="display: block; margin-top: auto; margin-bottom: auto"
+        class="q-ma-md"
+        v-if="paymentDetail"
+      >
         <!-- Kartu Kredit -->
         <div style="width: 100%" class="shadowBox">
           <div
@@ -122,7 +133,7 @@
                     <input
                       type="radio"
                       :id="'option_' + index"
-                      :value="' Transfer ' + option.value"
+                      :value="option.value"
                       v-model="selectedOption"
                     />
                     <label
@@ -272,89 +283,158 @@
         </div>
       </div>
       <!-- row 1 col 2 -->
-      <div style="width: 100%" class="shadowBox no-padding q-ma-md">
+      <div
+        v-if="paymentDetail == false || true"
+        :class="{ 'shadowBox q-pa-lg': paymentDetail == false }"
+      >
         <div
-          style="display: block; justify-content: space-between; cursor: pointer; font-size: 16px"
+          style="display: flex; justify-content: space-between; width: 100%"
+          v-if="paymentDetail == false"
         >
-        <div class="centerComponent" style="width: 350px; font-weight: 600">
-          <div class="col q-px-md">
-            <label for="noPesanan" style="color: grey; font-size: small">NO. PESANAN</label>
-            <div style="padding: 5px">{{ noPesanan }}</div>
+          <div style="color: black; font-size: x-large; font-weight: 600" class="q-pa-sm">
+            Total Pembayaran
           </div>
-          <q-separator horizontal class="q-ma-md" />
-            <div style="background-color: #f1f5f9">
-              <div style="text-transform: uppercase; padding: 10px; margin: 10px">
-                {{ namaUser + ', ' + namauserBank + ' - ' + telp }}
+          <div style="width: fit-content; margin: 10px">
+            <label
+              :for="'option_' + index"
+              style="font-weight: 600; font-size: large"
+              class="centerComponent"
+            >
+              {{ total }}</label
+            >
+          </div>
+        </div>
+        <div
+          v-if="paymentDetail == false || true"
+          :class="!paymentDetail ? 'detailPayment' : 'shadowBox no-padding'"
+        >
+          <div
+            style="display: block; justify-content: space-between; cursor: pointer; font-size: 16px"
+          >
+            <div
+              class="centerComponent"
+              style="font-weight: 600"
+              :style="paymentDetail2 ? { 'width :': '1000px;' } : { 'width :': '350px;' }"
+            >
+              <div class="row q-px-md">
+                <div class="col-9">
+                  <label for="noPesanan" style="color: grey; font-size: small">NO. PESANAN</label>
+                  <div style="padding: 5px">{{ noPesanan }}</div>
+                </div>
+                <div class="col" v-if="!paymentDetail">{{ selectedBank + '/ '+selectedMethod }}</div>
+              </div>
+              <q-separator horizontal class="q-ma-md" />
+              <div style="background-color: #f1f5f9">
+                <div style="text-transform: uppercase; padding: 10px; margin: 10px">
+                  {{ namaUser + ', ' + namauserBank + ' - ' + telp }}
+                </div>
               </div>
             </div>
-          </div>
 
-          <q-separator horizontal class="q-ma-md" />
-          <div class="centerComponent" style="width: 350px; font-weight: 600">
-            <label class="q-mx-md" style="color: grey; font-size: small">RINCIAN PESANAN</label>
-            <div class="col q-px-md" style="background-color: #f1f5f9; margin-top: 10px">
-              <div style="color: black; font-size: larger" class="q-pa-sm">Rincian Harga</div>
-              <div v-for="(option, index) in priceBook" :key="index">
-                <div style="display: flex" class="q-py-md">
-                  <div style="display: flex; justify-content: space-between; width: 100%">
-                    <div>
-                      <label
-                        :for="'option_' + index"
-                        style="font-weight: 600"
-                        class="centerComponent"
-                        >{{ ' Transfer ' + option.label }}</label
-                      >
-                    </div>
-                    <div style="width: 60px">
-                      <label
-                        :for="'option_' + index"
-                        style="font-weight: 600"
-                        class="centerComponent"
-                        >{{ option.price }}</label
-                      >
+            <q-separator horizontal class="q-ma-md" />
+            <div
+              class="centerComponent"
+              style="font-weight: 600"
+              :style="paymentDetail2 ? { 'width :': '1000px;' } : { 'width :': '350px;' }"
+            >
+              <label class="q-mx-md" style="color: grey; font-size: small">RINCIAN PESANAN</label>
+              <div class="col q-px-md" style="background-color: #f1f5f9; margin-top: 10px">
+                <div style="color: black; font-size: larger" class="q-pa-sm">Rincian Harga</div>
+                <div v-for="(option, index) in priceBook" :key="index">
+                  <div style="display: flex" class="q-py-md">
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: space-between;
+                        width: 100%;
+                        margin-right: 10px;
+                      "
+                    >
+                      <div>
+                        <label
+                          :for="'option_' + index"
+                          style="font-weight: 600"
+                          class="centerComponent textwrap"
+                          >{{ ' Transfer ' + option.label }}</label
+                        >
+                      </div>
+                      <div style="width: 60px">
+                        <label
+                          :for="'option_' + index"
+                          style="font-weight: 600"
+                          class="centerComponent"
+                          >{{ option.price }}</label
+                        >
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div style="display: flex; justify-content: space-between; width: 100%">
-                <div>
-                  <input
-                    type="checkbox"
-                    :id="'option_' + index"
-                    :value="DPP"
-                    v-model="includeTax"
-                  />
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    width: 100%;
+                    margin-right: 10px;
+                  "
+                >
+                  <div>
+                    <input
+                      type="checkbox"
+                      :id="'option_' + index"
+                      :value="DPP"
+                      v-model="includeTax"
+                    />
+                    <label
+                      :for="'option_' + index"
+                      style="font-weight: 600"
+                      class="centerComponent q-px-sm"
+                      >DPP</label
+                    >
+                  </div>
                   <label
                     :for="'option_' + index"
                     style="font-weight: 600"
-                    class="centerComponent q-px-sm"
-                    >DPP</label
+                    class="centerComponent"
+                    >{{ DPP }}</label
                   >
                 </div>
-                <label :for="'option_' + index" style="font-weight: 600" class="centerComponent">{{
-                  DPP
-                }}</label>
-              </div>
-              <q-separator horizontal />
-              <div style="display: flex; justify-content: space-between; width: 100%">
-                <div style="color: black; font-size: large" class="q-pa-sm">Harga Total</div>
-                <div style="width: 60px; margin: 10px">
-                  <label :for="'option_' + index" style="font-weight: 600" class="centerComponent">
-                    {{ total }}</label
-                  >
+                <q-separator horizontal />
+                <div style="display: flex; justify-content: space-between; width: 100%">
+                  <div style="color: black; font-size: large" class="q-pa-sm">Harga Total</div>
+                  <div style="width: fit-content; margin: 10px">
+                    <label
+                      :for="'option_' + index"
+                      style="font-weight: 600"
+                      class="centerComponent"
+                    >
+                      {{ total }}</label
+                    >
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="q-pa-lg">
-          <q-btn
-            align="left"
-            class="btn-fixed-width q-ma-auto"
-            style="width: 100%"
-            color="primary"
-            :label="selectedBank || 'Select Method Payment '"
-          />
+          <div :class="paymentDetail ? 'q-pa-lg' : 'q-pa-lg buttonPayment'">
+            <div style="display: flex; gap: 10px">
+              <q-btn
+                v-if="paymentDetail == false"
+                align="left"
+                class="btn-fixed-width q-ma-auto"
+                style="width: 100%"
+                color="primary"
+                label="OK"
+              />
+              <q-btn
+                align="left"
+                class="btn-fixed-width q-ma-auto"
+                style="width: 100%"
+                @click="moveDetail()"
+                color="primary"
+                :outline="!paymentDetail"
+                :label="paymentDetail ? selectedMethod || 'Select Method Payment' : 'Cancel'"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -373,6 +453,9 @@ export default defineComponent({
       showEwallet: false,
       showDropdown: false,
       showDebit: false,
+      paymentDetail: true,
+      paymentDetail2: false,
+      bankOption: true,
       showVirtual: false,
       iconName1: 'expand_more',
       iconName2: 'expand_more',
@@ -402,7 +485,10 @@ export default defineComponent({
         { value: 'BNI', imageUrl: '1200px-BNI_logo.svg.png' }
       ],
       dropdownOptions2: [
-        { value: 'Qris', imageUrl: 'quick-response-code-indonesia-standard-qris-logo-F300D5EB32-seeklogo.com.png' },
+        {
+          value: 'Qris',
+          imageUrl: 'quick-response-code-indonesia-standard-qris-logo-F300D5EB32-seeklogo.com.png'
+        },
         { value: 'Gopay', imageUrl: 'Gopay_logo.svg.png' },
         { value: 'ShopeePay', imageUrl: 'logo-shopeepay.png' }
       ],
@@ -416,13 +502,15 @@ export default defineComponent({
         { value: 'JCB', imageUrl: 'JCB_logo.svg.png' }
       ],
       selectedBank: '',
-      selectedOption: null
+      selectedOption: null,
+      selectedMethod: ''
     }
   },
   watch: {
     selectedOption(newVal) {
       this.selectedBank = newVal
       console.log('method payment' + this.selectedBank)
+      console.log('method payment ' + this.selectedMethod)
     },
     includeTax() {
       this.calculateTotal() // Panggil method calculateTotal() saat status checkbox berubah
@@ -437,25 +525,6 @@ export default defineComponent({
   methods: {
     toggleDropdown() {
       this.showDropdown = !this.showDropdown
-      // if (this.showDropdown != false) {
-      //   this.iconName1 = 'expand_less'
-      //   this.iconName2 = 'expand_more'
-      //   this.iconName3 = 'expand_more'
-      // } else {
-      //   this.iconName1 = 'expand_more'
-      //   this.iconName2 = 'expand_more'
-      //   this.iconName3 = 'expand_more'
-      // }
-
-      // if(this.showDropdown){
-      //   this.iconName1 = this.arrowBottom
-      // } else {
-      //   this.iconName1 = this.arrowUp;
-      //   this.showDebit = false
-      //   if(this.showDebit = false){
-      //     this.iconName2 = this.arrowBottom
-      //   }
-      // }
       this.iconName1 = this.showDropdown ? this.arrowBottom : this.arrowUp
       this.iconName2 = this.showDropdown ? this.arrowUp : this.arrowUp
       this.iconName3 = this.showDropdown ? this.arrowUp : this.arrowUp
@@ -463,7 +532,7 @@ export default defineComponent({
       this.showDebit = false
       this.showEwallet = false
       this.showVirtual = false
-      // this.iconName = (this.iconName === 'expand_more') ? 'expand_less' : 'expand_more';
+      this.selectedMethod = this.showDropdown ? find(1) ? 'Bank Transfer' : '' : ''
     },
     toggleBank() {
       this.showDebit = !this.showDebit
@@ -475,9 +544,11 @@ export default defineComponent({
       this.showEwallet = false
       this.showVirtual = false
       if (this.showDebit) {
-        this.selectedBank = 'Kartu Kredit/ Debit'
+        this.selectedBank = 'Kartu Kredit'
+        this.selectedMethod = 'Debit'
       } else {
         this.selectedBank = ''
+        this.selectedMethod = ''
       }
     },
     toggleEwallet() {
@@ -489,6 +560,11 @@ export default defineComponent({
       this.showDropdown = false
       this.showDebit = false
       this.showVirtual = false
+      if (this.showEwallet) {
+        this.selectedMethod = 'E-Wallet'
+      } else {
+        this.selectedMethod = ''
+      }
     },
     toggleVirtual() {
       this.showVirtual = !this.showVirtual
@@ -499,6 +575,7 @@ export default defineComponent({
       this.showDropdown = false
       this.showDebit = false
       this.showEwallet = false
+      this.selectedMethod = this.showVirtual ? find(3) ? 'Virtual Account' : '' : ''
     },
     calculateTotal() {
       // Menggunakan metode reduce() untuk menjumlahkan nilai properti 'price'
@@ -514,6 +591,29 @@ export default defineComponent({
       // this.subtotal = this.DPP + this.total
       // console.log(this.subtotal)
       return subtotal * 0.1
+    },
+    moveDetail() {
+      // this.$router.push('/fo/payment/detail')
+      try {
+        if (this.selectedBank == null || this.selectedBank == '') {
+          console.log('required bank method')
+        } else {
+          this.paymentDetail = !this.paymentDetail
+          this.bankOption = false
+          paymentDetail2 = true
+        }
+      } catch (error) {
+        console.error('Error: ' + error.massage)
+      }
+    },
+    find(value) {
+      if (value == 1) {
+        return this.dropdownOptions.find((option) => option.value === this.selectedBank)
+      } else if (value == 2){
+        return this.dropdownOptions2.find((option) => option.value === this.selectedBank)
+      } else if (value == 3){
+        return this.dropdownOptions3.find((option) => option.value === this.selectedBank)
+      }
     }
   }
 })
@@ -546,5 +646,21 @@ export default defineComponent({
   border-radius: 10px;
   height: fit-content;
   padding: 20px;
+}
+.detailPayment {
+  width: 1130px;
+  height: fit-content;
+}
+.buttonPayment {
+  width: 40%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.textwrap {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 5px;
+  padding-left: 5px;
 }
 </style>

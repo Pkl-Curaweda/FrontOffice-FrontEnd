@@ -53,6 +53,15 @@ const frontoffice_routes = [
       protected: true
     }
   },
+  {
+    path: '/fo/print',
+    component: () => import('pages/FO/print.vue'),
+    meta: {
+      title: 'Print',
+      main_route: false,
+      protected: true
+    }
+  }
 ]
 
 export default frontoffice_routes

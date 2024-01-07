@@ -13,7 +13,7 @@
           <!--Konten Dropdown-->
           <q-list>
             <q-item clickable v-close-popup>
-              <q-item-section>Most Revenue</q-item-section>
+              <q-item-section>MostRevenue</q-item-section>
             </q-item>
             <q-item clickable v-close-popup>
               <q-item-section>Less Revenue</q-item-section>
@@ -58,7 +58,14 @@
           <q-option-group :options="DisplayOptions" type="radio" v-model="DisplayOpt" />
         </q-btn-dropdown>
       </template>
-      <template #right></template>
+      <template #right>
+        <q-btn
+          flat
+          square
+          color="primary"
+          icon="o_print"
+        />
+      </template>
     </FOMenubar>
 
     <MultiPane>

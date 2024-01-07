@@ -80,6 +80,7 @@
           flat
           square
           color="primary"
+          to="/fo/print"
           icon="o_print"
           class="border-button rounded-borders"
           style="padding: 6px 3px"

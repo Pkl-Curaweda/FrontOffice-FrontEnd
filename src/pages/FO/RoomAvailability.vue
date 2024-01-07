@@ -75,6 +75,12 @@
           label="Display Option"
           dropdown-icon="o_expand_more"
         >
+          <select id="bahasaDropdown">
+            <option value="id">Bahasa Indonesia</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+          </select>
+
           <q-option-group :options="radioOptions" type="radio" v-model="radioInput" />
         </q-btn-dropdown>
       </template>

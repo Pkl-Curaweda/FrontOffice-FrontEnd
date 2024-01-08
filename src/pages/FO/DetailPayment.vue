@@ -5,7 +5,7 @@
 </template>
 
 <script>
-const { defineComponent } = require('vue')
+import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'DetailPayment',

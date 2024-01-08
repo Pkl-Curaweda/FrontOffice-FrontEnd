@@ -53,6 +53,15 @@ const frontoffice_routes = [
       protected: true
     }
   },
+  {
+    path: '/fo/payment/detail',
+    component: () => import('pages/FO/detailpayment.vue'),
+    meta: {
+      title: 'detail',
+      main_route: false,
+      protected: true
+    }
+  },
 ]
 
 export default frontoffice_routes

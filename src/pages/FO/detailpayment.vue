@@ -1,289 +1,10 @@
 <template>
-  <FOMenubar>
+    <FOMenubar>
     <template #left></template>
   </FOMenubar>
-  <!-- payment slot -->
-  <div
-    style="
-      width: fit-content;
-      margin: auto;
-      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-    "
-    class="shadowBox"
-  >
-    <div style="display: flex">
-      <div
-        style="display: block; margin-top: auto; margin-bottom: auto"
-        class="q-ma-md"
-        v-if="paymentDetail"
-      >
-        <!-- Kartu Kredit -->
-        <div style="width: 100%" class="shadowBox">
-          <div
-            style="display: flex; justify-content: space-between; cursor: pointer; font-size: 18px"
-          >
-            <span class="centerComponent" style="width: 350px; font-weight: 600"
-              >Kartu Kredit/ Debit</span
-            >
-
-            <div
-              style="display: flex; cursor: pointer; width: 100%; justify-content: end; gap: 2px"
-            >
-              <div style="width: 80px" class="q-px-sm">
-                <q-img
-                  src="../../assets/img/payment/pngfind.com-secure-checkout-png-1524515.png"
-                  loading="lazy"
-                  spinner-color="black"
-                  style="max-width: 80px; margin: auto"
-                />
-              </div>
-              <div v-for="(option, index) in dropdownOptions4" :key="index">
-                <div style="width: 80px" class="q-px-sm">
-                  <q-img
-                    :src="'../../../public/images/' + option.imageUrl"
-                    loading="lazy"
-                    spinner-color="black"
-                    style="max-width: 80px; margin: auto"
-                  />
-                </div>
-              </div>
-              <q-icon
-                :name="iconName2"
-                size="2rem"
-                color="green"
-                class="centerComponent"
-                @click="toggleBank"
-              />
-            </div>
-          </div>
-          <div v-if="showDebit" style="width: fit-content">
-            <div class="row" style="width: 700px">
-              <div class="col q-mx-sm">
-                <label for="nameCard">Name on card</label>
-                <q-input standout v-model="NameCard" dense outlined />
-              </div>
-
-              <div class="col q-mx-sm">
-                <label for="dateCard">Date on card</label>
-                <q-input standout v-model="dateCard" dense outlined />
-              </div>
-
-              <div class="col q-mx-sm">
-                <label for="securityCode">Security code</label>
-                <q-input standout v-model="securityCode" dense outlined />
-              </div>
-            </div>
-            <div class="row" style="width: 700px">
-              <div class="col q-mx-sm">
-                <label for="numberCard">Card number</label>
-                <q-input
-                  standout
-                  v-model="numberCard"
-                  dense
-                  outlined
-                  mask="#### #### #### ####"
-                  fill-mask="#"
-                />
-              </div>
-
-              <div class="col q-mx-sm">
-                <label for="postalCode">ZIP/Postal Code</label>
-                <q-input standout v-model="postalCode" dense outlined />
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Bank Transfer -->
-        <div style="width: 100%" class="shadowBox">
-          <div
-            style="display: flex; justify-content: space-between; cursor: pointer; font-size: 18px"
-          >
-            <span class="centerComponent" style="width: 350px; font-weight: 600"
-              >Bank Transfer</span
-            >
-
-            <div
-              style="display: flex; cursor: pointer; width: 100%; justify-content: end; gap: 2px"
-            >
-              <div v-for="(option, index) in dropdownOptions" :key="index">
-                <div style="width: 80px" class="q-px-sm">
-                  <q-img
-                    :src="'../../../public/images/' + option.imageUrl"
-                    loading="lazy"
-                    spinner-color="black"
-                    style="max-width: 80px; margin: auto"
-                  />
-                </div>
-              </div>
-              <q-icon
-                :name="iconName1"
-                size="2rem"
-                color="green"
-                class="centerComponent"
-                @click="toggleDropdown"
-              />
-            </div>
-          </div>
-
-          <div v-if="showDropdown">
-            <div v-for="(option, index) in dropdownOptions" :key="index">
-              <div style="display: flex" class="q-py-md">
-                <div style="display: flex; justify-content: space-between; width: 100%">
-                  <div>
-                    <input
-                      type="radio"
-                      :id="'option_' + index"
-                      :value="option.value"
-                      v-model="selectedOption"
-                    />
-                    <label
-                      :for="'option_' + index"
-                      style="font-weight: 600"
-                      class="centerComponent"
-                      >{{ ' Transfer ' + option.value }}</label
-                    >
-                  </div>
-                  <div style="width: 60px">
-                    <q-img
-                      :src="'../../../public/images/' + option.imageUrl"
-                      loading="lazy"
-                      spinner-color="black"
-                      style="max-width: 60px; margin: auto; justify-content: flex-end"
-                      :alt="'Image ' + index"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- E-Wallet -->
-        <div style="width: 100%" class="shadowBox">
-          <div
-            style="display: flex; justify-content: space-between; cursor: pointer; font-size: 18px"
-          >
-            <span class="centerComponent" style="width: 350px; font-weight: 600">E-Wallet</span>
-
-            <div
-              style="display: flex; cursor: pointer; width: 100%; justify-content: end; gap: 2px"
-            >
-              <div v-for="(option, index) in dropdownOptions2" :key="index">
-                <div style="width: 80px" class="q-px-sm">
-                  <q-img
-                    :src="'../../../public/images/' + option.imageUrl"
-                    loading="lazy"
-                    spinner-color="black"
-                    style="max-width: 80px; margin: auto"
-                  />
-                </div>
-              </div>
-              <q-icon
-                :name="iconName3"
-                size="2rem"
-                color="green"
-                class="centerComponent"
-                @click="toggleEwallet"
-              />
-            </div>
-          </div>
-          <div v-if="showEwallet">
-            <div v-for="(option, index) in dropdownOptions2" :key="index">
-              <div style="display: flex" class="q-py-md">
-                <div style="display: flex; justify-content: space-between; width: 100%">
-                  <div>
-                    <input
-                      type="radio"
-                      :id="'option_' + index"
-                      :value="' Transfer ' + option.value"
-                      v-model="selectedOption"
-                    />
-                    <label
-                      :for="'option_' + index"
-                      style="font-weight: 600"
-                      class="centerComponent"
-                      >{{ ' Transfer ' + option.value }}</label
-                    >
-                  </div>
-                  <div style="width: 60px">
-                    <q-img
-                      :src="'../../../public/images/' + option.imageUrl"
-                      loading="lazy"
-                      spinner-color="black"
-                      style="max-width: 60px; margin: auto; justify-content: flex-end"
-                      :alt="'Image ' + index"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Virtual Account -->
-        <div style="width: 100%" class="shadowBox">
-          <div
-            style="display: flex; justify-content: space-between; cursor: pointer; font-size: 18px"
-          >
-            <span class="centerComponent" style="width: 350px; font-weight: 600"
-              >Virtual Account</span
-            >
-
-            <div
-              style="display: flex; cursor: pointer; width: 100%; justify-content: end; gap: 2px"
-            >
-              <div v-for="(option, index) in dropdownOptions3" :key="index">
-                <div style="width: 80px" class="q-px-sm">
-                  <q-img
-                    :src="'../../../public/images/' + option.imageUrl"
-                    loading="lazy"
-                    spinner-color="black"
-                    style="max-width: 80px; margin: auto"
-                  />
-                </div>
-              </div>
-              <q-icon
-                :name="iconName4"
-                size="2rem"
-                color="green"
-                class="centerComponent"
-                @click="toggleVirtual"
-              />
-            </div>
-          </div>
-          <div v-if="showVirtual">
-            <div v-for="(option, index) in dropdownOptions3" :key="index">
-              <div style="display: flex" class="q-py-md">
-                <div style="display: flex; justify-content: space-between; width: 100%">
-                  <div>
-                    <input
-                      type="radio"
-                      :id="'option_' + index"
-                      :value="' Transfer ' + option.value"
-                      v-model="selectedOption"
-                    />
-                    <label
-                      :for="'option_' + index"
-                      style="font-weight: 600"
-                      class="centerComponent"
-                      >{{ ' Transfer ' + option.value }}</label
-                    >
-                  </div>
-                  <div style="width: 60px">
-                    <q-img
-                      :src="'../../../public/images/' + option.imageUrl"
-                      loading="lazy"
-                      spinner-color="black"
-                      style="max-width: 60px; margin: auto; justify-content: flex-end"
-                      :alt="'Image ' + index"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- row 1 col 2 -->
-      <div
+  <!-- <div style="width:100%; height: 100%; background-color:black;"></div>
+   -->
+   <div
         v-if="paymentDetail == false || true"
         :class="{ 'shadowBox q-pa-lg': paymentDetail == false }"
       >
@@ -439,8 +160,6 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -448,14 +167,13 @@ import FOMenubar from 'src/components/FOMenubar.vue'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'payment',
-  components: { FOMenubar },
+  name: 'detail',
   data() {
     return {
       showEwallet: false,
       showDropdown: false,
       showDebit: false,
-      paymentDetail: true,
+      paymentDetail: false,
       paymentDetail2: false,
       bankOption: true,
       showVirtual: false,
@@ -595,7 +313,7 @@ export default defineComponent({
       return subtotal * 0.1
     },
     moveDetail() {
-      // this.$router.push('/fo/payment/detail')
+      this.$router.push('/fo/payment/detail')
       // this.$router.push({
       //   path: '/fo/payment/detailpayment',
       //   meta: {
@@ -604,17 +322,17 @@ export default defineComponent({
       //     protected: true
       //   }
       // })
-      try {
-        if (this.selectedBank == null || this.selectedBank == '') {
-          console.log('required bank method')
-        } else {
-          this.paymentDetail = !this.paymentDetail
-          this.bankOption = false
-          paymentDetail2 = true
-        }
-      } catch (error) {
-        console.error('Error: ' + error.massage)
-      }
+      // try {
+      //   if (this.selectedBank == null || this.selectedBank == '') {
+      //     console.log('required bank method')
+      //   } else {
+      //     this.paymentDetail = !this.paymentDetail
+      //     this.bankOption = false
+      //     paymentDetail2 = true
+      //   }
+      // } catch (error) {
+      //   console.error('Error: ' + error.massage)
+      // }
     },
     find(value) {
       if (value == 1) {
@@ -642,9 +360,7 @@ export default defineComponent({
   }
 })
 </script>
-
-<style>
-.wrapchoose {
+<style>.wrapchoose {
   width: fit-content;
   padding-left: 20px;
   padding-right: 20px;
@@ -686,5 +402,4 @@ export default defineComponent({
   white-space: nowrap;
   padding-right: 5px;
   padding-left: 5px;
-}
-</style>
+}</style>

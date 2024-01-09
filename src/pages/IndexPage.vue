@@ -98,6 +98,7 @@
           <div class="col-grow">
             <div class="q-pa-md q-mb-md bg-white rounded shadow-3">
               <h5 class="text-bold q-ma-none">Reservation Statistics</h5>
+              <ReservationChart/>
             </div>
             <div class="q-pa-md bg-white rounded shadow-3">
               <h5 class="text-bold q-ma-none">Housekeeping</h5>
@@ -112,9 +113,13 @@
 <script>
 import SideBar from 'src/components/SideBar.vue'
 import ProfileFloat from 'src/components/ProfileFloat.vue'
-import { ref } from 'vue'
+import { ref, defineAsyncComponent } from 'vue'
 import MessengerFloat from 'src/components/MessengerFloat.vue'
 import { getCurrentTime } from 'src/utils/time'
+
+const ReservationChart = defineAsyncComponent(() =>
+  import('components/charts/ReservationChart.vue')
+)
 
 export default {
   setup() {
@@ -172,7 +177,7 @@ export default {
       recentReservationData
     }
   },
-  components: { SideBar, ProfileFloat, MessengerFloat },
+  components: { SideBar, ProfileFloat, MessengerFloat, ReservationChart },
   created() {
     this.updateTime()
 

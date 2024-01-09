@@ -21,7 +21,7 @@
           style="border: 1.5px #00000080 solid"
           class="text-bold q-py-xs q-px-sm rounded-borders"
         >
-          Blanket
+          {{ description || 'Blanket' }}
         </div>
       </div>
       <div class="row items-center">
@@ -30,7 +30,7 @@
           style="border: 1.5px #00000080 solid"
           class="text-bold q-py-xs q-px-sm rounded-borders"
         >
-          1
+          {{ qty || '-' }}
         </div>
       </div>
       <div class="row items-center">
@@ -39,7 +39,7 @@
           style="border: 1.5px #00000080 solid"
           class="text-bold q-py-xs q-px-sm rounded-borders"
         >
-          30,000
+          {{ rate || '-' }}
         </div>
       </div>
       <div class="row items-center">
@@ -48,7 +48,7 @@
           style="border: 1.5px #00000080 solid"
           class="text-bold q-py-xs q-px-sm rounded-borders"
         >
-          30,000
+          {{ amount || '-' }}
         </div>
       </div>
       <div class="items-center col-grow">
@@ -75,7 +75,24 @@
           icon="o_find_in_page"
           class="border-button rounded-borders"
           style="padding: 6px 3px"
+          @click="viewBill = true"
         />
+
+        <!-- dialog view bill on form invoice -->
+        <q-dialog v-model="viewBill">
+          <q-card>
+            <q-card-section class="items-center q-pb-none">
+              <div class="row items-center">
+                <q-space />
+                <q-btn icon="close" flat round dense v-close-popup />
+              </div>
+            </q-card-section>
+
+            <q-card-section>
+              <div>make table in here</div>
+            </q-card-section>
+          </q-card>
+        </q-dialog>
         <q-btn
           flat
           square
@@ -128,9 +145,45 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
-  name: 'InvoiceForm'
+  name: 'InvoiceForm',
+  setup() {
+    return {
+      description: ref(''),
+      viewBill: ref(false)
+    }
+  },
+  data() {
+    return {
+      api: new this.$Api('frontoffice'),
+      data: []
+    }
+  },
+  mounted() {
+    this.getDetailForm()
+  },
+  methods: {
+    formatCurrency(num = 0) {
+      return num.toLocaleString()
+    },
+    getDetailForm() {
+      this.loading = true
+      this.api.get(`detail/invoice/1/1/2023-12-19?ids=998-1`, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+          const { detail } = data
+
+          this.description = detail.desc
+          this.qty = detail.qty
+          this.rate = this.formatCurrency(detail.rate)
+          this.amount = this.formatCurrency(detail.amount)
+          this.console.log('hallo')
+        }
+      })
+    }
+  }
 })
 </script>

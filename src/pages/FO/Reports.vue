@@ -20,7 +20,7 @@
         </q-btn-dropdown>
         <q-separator vertical />
 
-        <q-input v-model="searchInput" borderless dense label="Name" type="search">
+        <q-input v-model="searchInput" borderless label="Name" type="search">
           <template v-slot:prepend>
             <q-icon name="search" class="q-ml-sm" color="primary" />
           </template>
@@ -96,10 +96,16 @@
                       </q-th>
                     </q-tr>
                   </template>
-                  <template v-slot:body="props">
-                    <q-tr :props="props"> </q-tr>
-                  </template>
                 </q-th>
+              </q-tr>
+            </template>
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <template v-for="(cell, key, i) in props.row" :key="i">
+                  <q-td :style="cell.style">
+                    {{ cell.data }}
+                  </q-td>
+                </template>
               </q-tr>
             </template>
           </q-table>
@@ -140,93 +146,71 @@ export default defineComponent({
         { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
         { name: 'RmAvailable', label: 'Room Available', align: 'left', field: 'RmAvailable' },
         { name: 'Occupied', label: 'Occupied', align: 'left', field: 'Occupied' },
-        { name: 'Occ', label: 'Occ%', align: 'left', field: 'Occ%' },
+        { name: 'Occ', label: 'Occ%', align: 'left', field: 'Occ' },
         { name: 'RmRevenue', label: 'Room Revenue', align: 'left', field: 'RmRevenue' },
-        { name: 'Arr', label: 'Arr', align: 'left', field: 'Arr' },
-        { name: 'MTDRmAvail', label: 'MTD Rm. Avail', field: 'MTDRmAvail', align: 'left' },
-        { name: 'MTDRNo', label: 'MTD RNo', align: 'left', field: 'MTDRNo' },
-        { name: 'MTDOcc', label: 'MTD Occ%', align: 'left', field: 'MTDOcc%' },
-        { name: 'MTDRmRevenue', label: 'MTD Rm. Revenue', align: 'left', field: 'MTDRmRevenue' },
-        { name: 'MTDARR', label: 'MTD ARR', align: 'left', field: 'MTDARR' }
+        { name: 'Arr', label: 'Arr', align: 'left', field: 'Arr' }
       ]
     }
+  },
+  data() {
+    return {
+      api: new this.$Api('frontoffice'),
+      pagination: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 20
+      },
+      data: []
+    }
+  },
+  mounted() {
+    this.fetchData()
+  },
+  watch: {
+    filterDisplay: {
+      handler(option) {
+        this.fetchData()
+      }
+    }
+  },
+  methods: {
+    onPaginationChange(props) {
+      this.pagination = props.pagination
+      this.fetchData()
+    },
+    fetchData() {
+      this.loading = true
+      let url = `report?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+          this.formatData(data.reports)
+          this.pagination = {
+            page: data.meta?.currPage,
+            rowsNumber: data.meta?.total,
+            rowsPerPage: data.meta?.perPage
+          }
+        }
+      })
+    },
+    formatData(raw = []) {
+      const list = []
+
+      raw.forEach((rp) => {
+        list.push({
+          Date: { data: rp.date, style: {} },
+          RmAvailable: { data: rp.roomAvailable, style: {} },
+          Occupied: { data: rp.occupied, style: {} },
+          Occ: { data: rp.occ, style: {} },
+          RmRevenue: { data: rp.roomRevenue, style: {} },
+          Arr: { data: rp.arr, style: {} }
+        })
+      })
+      console.log(this.data, list)
+      this.data = list
+      console.log(this.data)
+    }
   }
-  // data() {
-  //   return {
-  //     api: new this.$Api('frontoffice'),
-  //     pagination: {
-  //       page: 1,
-  //       rowsNumber: 0,
-  //       rowsPerPage: 20
-  //     },
-  //     data: []
-  //   }
-  // },
-  // mounted() {
-  //   this.fetchData()
-  // },
-  // watch: {
-  //   DisplayOpt: {
-  //     handler(option) {
-  //       this.fetchData()
-  //     }
-  //   }
-  // },
-  // methods: {
-  //   setRoomResv(data) {
-  //     this.$ResvStore.currentResvId = data['ResNo'].data
-  //     this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
-  //   },
-  //   onPaginationChange(props) {
-  //     this.pagination = props.pagination
-  //     this.fetchData()
-  //   },
-  //   fetchData() {
-  //     this.loading = true
-  //     let url = `/page/arrival?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
-  //     if (this.DisplayOpt !== null) url += `&disOpt=${this.DisplayOpt}`
-  //     this.api.get(url, ({ status, data }) => {
-  //       this.loading = false
-  //       if (status == 200) {
-  //         this.formatData(data.reservations)
-  //         this.pagination = {
-  //           page: data.meta?.currPage,
-  //           rowsNumber: data.meta?.total,
-  //           rowsPerPage: data.meta?.perPage
-  //         }
-  //       }
-  //     })
-  //   },
-  //   formatData(raw = []) {
-  //     const list = []
-  //     raw.forEach((rsrv) => {
-  //       rsrv.reservation.forEach((rr) => {
-  //         list.push({
-  //           ResNo: { data: rsrv.reservationId, style: {} },
-  //           ResRoomNo: { data: rr.id, style: {} },
-  //           ResResource: { data: rr.reservation.reserver.resourceName, style: {} },
-  //           RmNo: {
-  //             data: rr.room.id,
-  //             style: {
-  //               backgroundColor: rr.reservation.resvStatus.rowColor,
-  //               textColor: rr.reservation.resvStatus.textColor
-  //             }
-  //           },
-  //           RType: { data: rr.room.roomType, style: {} },
-  //           BType: { data: rr.room.bedSetup, style: {} },
-  //           GuestName: { data: rr.reservation.reserver.guest.name, style: {} },
-  //           Arr: { data: rr.arrangment.id, style: {} },
-  //           Arrival: { data: formatDate(rr.reservation.arrivalDate), style: {} },
-  //           Depart: { data: formatDate(rr.reservation.departureDate), style: {} },
-  //           Night: { data: rr.reservation.manyNight, style: {} },
-  //           RoomBoy: { data: rr.roomMaids, style: {} },
-  //           RoomRate: { data: rr.arrangment.rate, style: {} },
-  //           CreatedDate: { data: formatDate(rr.reservation.created_at), style: {} }
-  //         })
-  //       })
-  //     })
-  //     this.data = list
-  //   }
-  // }
 })
 </script>

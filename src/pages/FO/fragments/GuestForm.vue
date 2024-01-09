@@ -709,7 +709,7 @@ export default defineComponent({
       this.roomBed = null
     },
     getResvProps() {
-      this.api.get('/page/detail/reservation/0/0/create', ({ status, data }) => {
+      this.api.get('detail/reservation/0/0/create', ({ status, data }) => {
         if (status == 200) {
           const { reservationStatus, availableRooms } = data
 
@@ -732,7 +732,7 @@ export default defineComponent({
       this.resvNo = currentResvId
 
       this.api.get(
-        `/page/detail/reservation/${currentResvId}/${currentRoomResvId}`,
+        `detail/reservation/${currentResvId}/${currentRoomResvId}`,
         ({ status, data }) => {
           this.loading = false
 

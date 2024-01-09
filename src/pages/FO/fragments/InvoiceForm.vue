@@ -89,7 +89,58 @@
             </q-card-section>
 
             <q-card-section>
-              <div>make table in here</div>
+              <div class="my-table">
+                <q-table
+                  class="no-shadow"
+                  v-model:pagination="pagination"
+                  @request="onPaginationChange"
+                  :rows="data"
+                  :loading="loading"
+                  :columns="columns"
+                  row-key="name"
+                >
+                  <template v-slot:header="props">
+                    <q-tr class="table-head" :props="props">
+                      <q-th
+                        v-for="(col, i) in props.cols"
+                        :key="i"
+                        style="padding-top: 0px; padding-bottom: 0px"
+                      >
+                        <q-select
+                          v-if="filterColumns.hasOwnProperty(col.name)"
+                          clearable
+                          borderless
+                          dark
+                          label-color="white"
+                          style="min-width: 90px"
+                          v-model="filterColumns[col.name].data"
+                          :options="filterColumns[col.name].options"
+                          :label="col.label"
+                        >
+                          <template
+                            v-if="allObjectsInArray(filterColumns[col.name].options)"
+                            v-slot:option="scope"
+                          >
+                            <q-item v-bind="scope.itemProps">
+                              <q-item-section>
+                                <div class="flex">
+                                  <q-icon
+                                    size="20px"
+                                    v-for="(ic, k) in scope.opt.icons"
+                                    :key="k"
+                                    :name="ic"
+                                  />
+                                  <q-item-label class="q-ml-sm">{{ scope.opt.label }}</q-item-label>
+                                </div>
+                              </q-item-section>
+                            </q-item>
+                          </template>
+                        </q-select>
+                      </q-th>
+                    </q-tr>
+                  </template>
+                </q-table>
+              </div>
             </q-card-section>
           </q-card>
         </q-dialog>

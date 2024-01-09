@@ -97,8 +97,41 @@
           </div>
           <div class="col-grow">
             <div class="q-pa-md q-mb-md bg-white rounded shadow-3">
-              <h5 class="text-bold q-ma-none">Reservation Statistics</h5>
-              <ReservationChart/>
+              <q-carousel
+                v-model="slide"
+                swipeable
+                animated
+                control-color="grey"
+                arrows
+                style="height: 100%"
+              >
+                <q-carousel-slide name="style" class="column no-wrap">
+                  <h5 class="text-bold q-ma-none">Reservation Statistics</h5>
+                  <div class="q-mt-md">
+                    <ReservationChart/>
+                  </div>
+                </q-carousel-slide>
+                <q-carousel-slide name="tv" class="column no-wrap">
+                  <h5 class="text-bold q-ma-none">Daily Room Usage</h5>
+                  <div class="q-mt-md">
+                    <UsageChart/>
+                    <div class="row justify-center" style="gap: 8px;">
+                      <q-list class="row" style="gap: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#feeb74" viewBox="0 0 256 256"><path d="M232,128A104,104,0,1,1,128,24,104.13,104.13,0,0,1,232,128Z"></path></svg>
+                        <p class="text-xs q-my-auto">Low</p>
+                      </q-list>
+                      <q-list class="row" style="gap: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#77ce7f" viewBox="0 0 256 256"><path d="M232,128A104,104,0,1,1,128,24,104.13,104.13,0,0,1,232,128Z"></path></svg>
+                        <p class="text-xs q-my-auto">Medium</p>
+                      </q-list>
+                      <q-list class="row" style="gap: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#0194f3" viewBox="0 0 256 256"><path d="M232,128A104,104,0,1,1,128,24,104.13,104.13,0,0,1,232,128Z"></path></svg>
+                        <p class="text-xs q-my-auto">High</p>
+                      </q-list>
+                    </div>
+                  </div>
+                </q-carousel-slide>
+              </q-carousel>
             </div>
             <div class="q-pa-md bg-white rounded shadow-3">
               <h5 class="text-bold q-ma-none">Housekeeping</h5>
@@ -121,8 +154,13 @@ const ReservationChart = defineAsyncComponent(() =>
   import('components/charts/ReservationChart.vue')
 )
 
+const UsageChart = defineAsyncComponent(() =>
+  import('components/charts/UsageChart.vue')
+)
+
 export default {
   setup() {
+    const slide = ref('style')
     const leftDrawerOpen = ref(false),
       currentClock = '-',
       currentDate = '-'
@@ -174,10 +212,11 @@ export default {
       currentDate,
       recentReservationDate,
       recentReservationColumns,
-      recentReservationData
+      recentReservationData,
+      slide,
     }
   },
-  components: { SideBar, ProfileFloat, MessengerFloat, ReservationChart },
+  components: { SideBar, ProfileFloat, MessengerFloat, ReservationChart, UsageChart  },
   created() {
     this.updateTime()
 

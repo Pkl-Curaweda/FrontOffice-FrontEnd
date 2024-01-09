@@ -1,5 +1,5 @@
 <template>
-    <apexchart type="bar" :options="chartOptions" :series="series"></apexchart>
+    <apexchart style="padding: 0 20px;" type="bar" :options="chartOptions" :series="series"></apexchart>
 </template>
 
 <script>
@@ -19,9 +19,7 @@ export default {
             }],
             chartOptions: {
                 chart: {
-                    type: 'bar',
-                    height: 100, 
-                    width: 100
+                    type: 'bar'
                 },
                 responsive: [{
                     breakpoint: 80,

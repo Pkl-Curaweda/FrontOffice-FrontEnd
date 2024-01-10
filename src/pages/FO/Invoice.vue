@@ -71,7 +71,15 @@
     <MultiPane>
       <template #upper>
         <div class="my-table">
-          <q-table class="no-shadow" :rows="rows" :columns="columns" row-key="name">
+          <q-table
+            class="no-shadow"
+            v-model:pagination="pagination"
+            @request="onPaginationChange"
+            :rows="data"
+            :loading="loading"
+            :columns="columns"
+            row-key="name"
+          >
             <template v-slot:header="props">
               <q-tr class="table-head" :props="props">
                 <q-th
@@ -80,18 +88,18 @@
                   style="padding-top: 0px; padding-bottom: 0px"
                 >
                   <q-select
-                    v-if="filterCols.hasOwnProperty(col.name)"
+                    v-if="filterColumns.hasOwnProperty(col.name)"
                     clearable
                     borderless
                     dark
                     label-color="white"
                     style="min-width: 90px"
-                    v-model="filterCols[col.name].data"
-                    :options="filterCols[col.name].options"
+                    v-model="filterColumns[col.name].data"
+                    :options="filterColumns[col.name].options"
                     :label="col.label"
                   >
                     <template
-                      v-if="allObjectsInArray(filterCols[col.name].options)"
+                      v-if="allObjectsInArray(filterColumns[col.name].options)"
                       v-slot:option="scope"
                     >
                       <q-item v-bind="scope.itemProps">
@@ -115,11 +123,18 @@
             </template>
             <template v-slot:body="props">
               <q-tr :props="props">
-                <q-td v-for="(cell, i) in props.row" :key="i" :style="cell.style">
-                  {{ cell.data }}
-                </q-td>
+                <template v-for="(cell, key, i) in props.row" :key="i">
+                  <q-td :style="cell.style">
+                    {{ cell.data }}
+                  </q-td>
+                </template>
                 <q-td key="" :props="props" style="width: 10px">
-                  <q-btn flat rounded size="13px" style="color: #008444"
+                  <q-btn
+                    flat
+                    rounded
+                    size="13px"
+                    @click="setRoomResv(props.row)"
+                    style="color: #008444"
                     ><svg
                       width="19"
                       height="19"
@@ -167,177 +182,130 @@ import MultiPane from 'src/layouts/MultiPane.vue'
 import InvoiceForm from './fragments/InvoiceForm.vue'
 import { allObjectsInArray } from 'src/utils/datatype'
 
-const columns = [
-  { name: 'Art', label: 'Art', align: 'left', field: 'Art' },
-  { name: 'Qty', label: 'Qty', align: 'left', field: 'Qty' },
-  { name: 'Description', label: 'Description', align: 'left', field: 'Description' },
-  { name: 'Rate', label: 'Rate', align: 'left', field: 'Rate' },
-  { name: 'Amount', label: 'Amount', align: 'left', field: 'Amount' },
-  { name: 'RmNo', label: 'RmNo', align: 'left', field: 'RmNo' },
-  { name: 'RoomBoy', label: 'Room Boy', field: 'RoomBoy', align: 'left' },
-  { name: 'VoucherNumber', label: 'Voucher Number', align: 'left', field: 'VoucherNumber' },
-  { name: 'BillDate', label: 'BillDate', align: 'left', field: 'BillDate' },
-  { name: '', label: '', align: 'center', field: '' }
-]
-
-const filterCols = {
-  Art: {
-    data: '',
-    options: ['1-999', '999-1']
-  },
-  Qty: {
-    data: '',
-    options: ['1', '>1']
-  },
-  Description: {
-    data: '',
-    options: ['1-999', '999-1', 'A-Z', 'Z-A']
-  },
-  Rate: {
-    data: '',
-    options: ['High Price', 'Low Price']
-  },
-  Amount: {
-    data: '',
-    options: ['High Price', 'Low Price']
-  },
-  RmNo: {
-    data: '',
-    options: ['', '']
-  },
-  RoomBoy: {
-    data: '',
-    options: ['ILYAS', 'RONI', 'YUTA', 'HERTIAMAN']
-  },
-  VoucherNumber: {
-    data: '',
-    options: ['', '']
-  },
-  BillDate: {
-    data: '',
-    options: ['Newest', 'Oldest']
-  }
-}
-
-const rows = [
-  {
-    Art: { data: '115', style: {} },
-    Qty: { data: '1', style: {} },
-    Description: { data: 'Blanket', style: { backgroundColor: '' } },
-    Rate: { data: 'Rp 30,000.00', style: {} },
-    Amount: { data: 'Rp 30,000.00', style: {} },
-    RmNo: { data: '101', style: {} },
-    RoomBoy: { data: 'Yanto', style: {} },
-    VoucherNumber: { data: '19', style: {} },
-    BillDate: { data: '12/02/23', style: {} }
-  },
-  {
-    Art: { data: '114', style: {} },
-    Qty: { data: '2', style: {} },
-    Description: { data: 'Pillow', style: { backgroundColor: '' } },
-    Rate: { data: 'Rp 10,000.00', style: {} },
-    Amount: { data: 'Rp 20,000.00', style: {} },
-    RmNo: { data: '101', style: {} },
-    RoomBoy: { data: 'Luthfi', style: {} },
-    VoucherNumber: { data: '20', style: {} },
-    BillDate: { data: '12/02/23', style: {} }
-  },
-  {
-    Art: { data: 'In Room', style: {} },
-    Qty: { data: '', style: {} },
-    Description: { data: 'Nasi Goreng', style: { backgroundColor: '' } },
-    Rate: { data: 'Rp 541,027.00', style: {} },
-    Amount: { data: 'Rp 541,027.00', style: {} },
-    RmNo: { data: '101', style: {} },
-    RoomBoy: { data: '103', style: {} },
-    VoucherNumber: { data: '103', style: {} },
-    BillDate: { data: '12/02/23', style: {} }
-  },
-  {
-    Art: { data: '1', style: {} },
-    Qty: { data: '1', style: {} },
-    Description: { data: 'Breakfast', style: { backgroundColor: '' } },
-    Rate: { data: 'Rp 541,027.00', style: {} },
-    Amount: { data: 'Rp 541,027.00', style: {} },
-    RmNo: { data: '101', style: {} },
-    RoomBoy: { data: '102', style: {} },
-    VoucherNumber: { data: '103', style: {} },
-    BillDate: { data: '13/02/23', style: {} }
-  },
-  {
-    Art: { data: '', style: {} },
-    Qty: { data: '', style: {} },
-    Description: { data: '', style: { backgroundColor: '' } },
-    Rate: { data: '', style: {} },
-    Amount: { data: '', style: {} },
-    RmNo: { data: '', style: {} },
-    RoomBoy: { data: '', style: {} },
-    VoucherNumber: { data: '', style: {} },
-    BillDate: { data: '', style: {} }
-  },
-  {
-    Art: { data: '', style: {} },
-    Qty: { data: '', style: {} },
-    Description: { data: '', style: { backgroundColor: '' } },
-    Rate: { data: '', style: {} },
-    Amount: { data: '', style: {} },
-    RmNo: { data: '', style: {} },
-    RoomBoy: { data: '', style: {} },
-    VoucherNumber: { data: '', style: {} },
-    BillDate: { data: '', style: {} }
-  },
-  {
-    Art: { data: '', style: {} },
-    Qty: { data: '', style: {} },
-    Description: { data: '', style: { backgroundColor: '' } },
-    Rate: { data: '', style: {} },
-    Amount: { data: '', style: {} },
-    RmNo: { data: '', style: {} },
-    RoomBoy: { data: '', style: {} },
-    VoucherNumber: { data: '', style: {} },
-    BillDate: { data: '', style: {} }
-  },
-  {
-    Art: { data: '', style: {} },
-    Qty: { data: '', style: {} },
-    Description: { data: '', style: { backgroundColor: '' } },
-    Rate: { data: '', style: {} },
-    Amount: { data: '', style: {} },
-    RmNo: { data: '', style: {} },
-    RoomBoy: { data: '', style: {} },
-    VoucherNumber: { data: '', style: {} },
-    BillDate: { data: '', style: {} }
-  },
-  {
-    Art: { data: '', style: {} },
-    Qty: { data: '', style: {} },
-    Description: { data: '', style: { backgroundColor: '' } },
-    Rate: { data: '', style: {} },
-    Amount: { data: '', style: {} },
-    RmNo: { data: '', style: {} },
-    RoomBoy: { data: '', style: {} },
-    VoucherNumber: { data: '', style: {} },
-    BillDate: { data: '', style: {} }
-  }
-]
-
 export default defineComponent({
   name: 'InvoicePage',
   components: { FOMenubar, MultiPane, InvoiceForm },
-  data() {
+  setup() {
     return {
-      filterCols,
-      rows,
-      columns,
-      allObjectsInArray
+      allObjectsInArray,
+      columns: [
+        { name: 'Art', label: 'Art', align: 'left', field: 'Art' },
+        { name: 'Qty', label: 'Qty', align: 'left', field: 'Qty' },
+        { name: 'Description', label: 'Description', align: 'left', field: 'Description' },
+        { name: 'Rate', label: 'Rate', align: 'left', field: 'Rate' },
+        { name: 'Amount', label: 'Amount', align: 'left', field: 'Amount' },
+        { name: 'RmNo', label: 'RmNo', align: 'left', field: 'RmNo' },
+        { name: 'RoomBoy', label: 'Room Boy', field: 'RoomBoy', align: 'left' },
+        { name: 'VoucherNumber', label: 'Voucher Number', align: 'left', field: 'VoucherNumber' },
+        { name: 'BillDate', label: 'BillDate', align: 'left', field: 'BillDate' },
+        { name: '', label: '', align: 'center', field: '' }
+      ]
     }
   },
+  data() {
+    return {
+      filterColumns: {
+        Art: {
+          data: '',
+          options: ['1-999', '999-1']
+        },
+        Qty: {
+          data: '',
+          options: ['1', '>1']
+        },
+        Description: {
+          data: '',
+          options: ['1-999', '999-1', 'A-Z', 'Z-A']
+        },
+        Rate: {
+          data: '',
+          options: ['High Price', 'Low Price']
+        },
+        Amount: {
+          data: '',
+          options: ['High Price', 'Low Price']
+        },
+        RmNo: {
+          data: '',
+          options: ['', '']
+        },
+        RoomBoy: {
+          data: '',
+          options: ['ILYAS', 'RONI', 'YUTA', 'HERTIAMAN']
+        },
+        VoucherNumber: {
+          data: '',
+          options: ['', '']
+        },
+        BillDate: {
+          data: '',
+          options: ['Newest', 'Oldest']
+        }
+      },
+      api: new this.$Api('frontoffice'),
+      pagination: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 20
+      },
+      data: []
+    }
+  },
+  mounted() {
+    this.fetchData()
+  },
   watch: {
-    filterCols: {
+    filterColumns: {
       handler(filters) {
         console.log(filters)
+        // Add logic to update the table data based on filters if needed
       },
       deep: true
+    }
+    // Watch for changes in the 'pagination' property and fetch data accordingly
+  },
+  methods: {
+    onPaginationChange(props) {
+      this.pagination = props.pagination
+      this.fetchData()
+    },
+    fetchData() {
+      this.loading = true
+
+      let url = `invoice/1/1?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+          this.formatData(data.invoices)
+          this.pagination = {
+            page: data.meta?.currPage,
+            rowsNumber: data.meta?.total,
+            rowsPerPage: data.meta?.perPage
+          }
+        }
+      })
+    },
+    formatCurrency(num = 0) {
+      return num.toLocaleString()
+    },
+    formatData(raw = []) {
+      const list = []
+
+      raw.forEach((inv) => {
+        list.push({
+          Art: { data: inv.art, style: {} },
+          Qty: { data: inv.qty, style: {} },
+          Description: { data: inv.desc, style: {} },
+          Rate: { data: this.formatCurrency(inv.rate), style: {} },
+          Amount: { data: this.formatCurrency(inv.amount), style: {} },
+          RmNo: { data: 101, style: {} },
+          RoomBoy: { data: 'Asep', style: {} },
+          VoucherNumber: { data: 101111, style: {} },
+          BillDate: { data: inv.billDate, style: {} }
+        })
+      })
+      this.data = list
     }
   }
 })

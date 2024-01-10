@@ -10,8 +10,14 @@
   >
     <FOMenubar>
       <template #left>
-        <div style="height: 100%; justify-content: center;">
-          <q-input v-model="searchInput" borderless label="Name" type="search" style="display: flex; justify-content: center;">
+        <div style="height: 100%; justify-content: center">
+          <q-input
+            v-model="searchInput"
+            borderless
+            label="Name"
+            type="search"
+            style="display: flex; justify-content: center"
+          >
             <template v-slot:prepend>
               <q-icon name="search" color="primary" />
             </template>
@@ -325,7 +331,7 @@ export default defineComponent({
     fetchData() {
       this.loading = true
 
-      let url = `/page/arrival?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      let url = `arrival?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
 
       if (this.filterDisplay !== null) url += `&disOpt=${this.filterDisplay}`
 

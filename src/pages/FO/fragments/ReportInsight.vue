@@ -26,7 +26,7 @@
     </div>
 
     <div class="row no-wrap q-my-lg" style="gap: 16px">
-      <FOChart />
+      <apexchart type="donut" width="400" :options="chartOptions" :series="series"></apexchart>
       <div class="dashboard-box column">
         <div class="row q-py-sm q-mt-lg" style="gap: 10px">
           <div class="icon">
@@ -80,26 +80,78 @@
 </template>
 
 <script>
-import { defineComponent, defineAsyncComponent, ref } from 'vue'
-
-const FOChart = defineAsyncComponent(() => import('components/charts/FOChart.vue'))
+import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'ReportInsight',
-  components: {
-    FOChart
-  },
+  components: {},
   setup() {
     return {
       displayOption: ['Per-Day', 'Per-Week', 'Per-Month', 'Per-Years'],
       deluxeRoom: ref(),
       standardRoom: ref(),
       familyRoom: ref(),
-      roomRes: ref()
+      roomRes: ref(),
+      chartOptions: {
+        chart: {
+          type: 'donut',
+          height: 400,
+          width: 400
+        },
+        responsive: [
+          {
+            breakpoint: 480
+          }
+        ],
+        labels: [
+          '101 - DLX - K',
+          '109 - FML - S',
+          '107 - STD - T',
+          '110 - FML - S',
+          '102 - DLX - T',
+          ' 106 - STD - K',
+          '108 - FML - S',
+          '103 - DLX - K',
+          '104 - DLX - T',
+          '105 - STD - T'
+        ],
+        fill: {
+          colors: [
+            '#77CE7F',
+            '#00FFE0',
+            '#2B8DFF',
+            '#688CD3',
+            '#A468D3',
+            '#FFE500',
+            '#FFA800',
+            '#FE0001',
+            '#B9B9B9',
+            '#000000'
+          ]
+        },
+        legend: {
+          position: 'left',
+          markers: {
+            fillColors: [
+              '#77CE7F',
+              '#00FFE0',
+              '#2B8DFF',
+              '#688CD3',
+              '#A468D3',
+              '#FFE500',
+              '#FFA800',
+              '#FE0001',
+              '#B9B9B9',
+              '#000000'
+            ]
+          }
+        }
+      }
     }
   },
   data() {
     return {
+      series: ref(),
       api: new this.$Api('frontoffice'),
       data: []
     }
@@ -114,6 +166,7 @@ export default defineComponent({
         this.loading = false
 
         if (status == 200) {
+          this.formatData(data.detail)
           const { total } = data
           console.log(total)
           this.deluxeRoom = total.DELUXE
@@ -122,6 +175,16 @@ export default defineComponent({
           this.roomRes = total.RESERVATION
         }
       })
+    },
+    formatData(raw = []) {
+      const list = []
+
+      raw = Object.values(raw)
+      raw.forEach((chrt) => {
+        console.log(chrt.percent)
+        list.push(chrt.percent) + '%'
+      })
+      this.series = list
     }
   }
 })

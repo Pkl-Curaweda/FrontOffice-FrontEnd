@@ -118,7 +118,7 @@
                       height: fit-content;
                       border-radius: 10px 0px 0px 10px;
                     "
-                    @click="toggleKtpSelected"
+                    @click="toggleKtpSelected && KtpSelected()"
                   >
                     KTP
                   </q-btn>
@@ -155,13 +155,14 @@
                   dense
                   class="rounded-borders text-capitalize text-black"
                   style="width: 60px"
-                >
+                  >
                   Cancel
                 </q-btn>
                 <q-btn
                   flat
                   square
                   dense
+                  @click="CardId()"
                   class="rounded-borders text-capitalize"
                   style="background-color: #069550; color: white; width: 50px"
                 >
@@ -578,11 +579,13 @@ export default defineComponent({
     function toggleKtpSelected() {
       isKtpSelected.value = !isKtpSelected.value
       isSimSelected.value = false // Reset the state of SIM button
+      KtpSelected()
     }
 
     function toggleSimSelected() {
       isSimSelected.value = !isSimSelected.value
       isKtpSelected.value = false // Reset the state of KTP button
+      this.CardIdselect = 'SIM'
     }
 
     return {
@@ -613,6 +616,7 @@ export default defineComponent({
       toggleRoSelected,
       isKtpSelected,
       isSimSelected,
+      CardIdselect: ref(''),
       toggleKtpSelected,
       toggleSimSelected,
       dialogpayment: ref(false),
@@ -1037,6 +1041,34 @@ export default defineComponent({
     },
     refresh() {
       window.location.reload()
+    },
+    CardId(){
+      const { currentResvId, currentRoomResvId } = this.$ResvStore
+      const cardData = {
+        name: this.nameidcard,
+        cardIdentifier: this.CardIdselect,
+        cardId: this.idcardnumber,
+        address: this.address
+      }
+      try{
+        this.api.post(`/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/add-idcard`,
+        cardData,
+        ({ status, data }) => {
+            this.loading = false
+            if (status === 200) {
+              console.log('Data berhasil diperbarui:', data)
+            } else {
+              console.error('Gagal memperbarui data')
+            }
+          })
+      }
+      catch(error){
+        console.error('error:'+ error)
+      }
+    },
+    KtpSelected() {
+      this.CardIdselect = 'KTP'
+      console.log(this.CardIdselect)
     }
   }
 })

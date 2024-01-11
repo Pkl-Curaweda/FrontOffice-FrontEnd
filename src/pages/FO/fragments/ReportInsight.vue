@@ -11,7 +11,6 @@
         dropdown-icon="expand_more"
         style="width: 150px"
       />
-
       <!-- date picker  -->
       <q-btn-dropdown
         outline
@@ -27,7 +26,7 @@
     </div>
 
     <div class="row no-wrap q-my-lg" style="gap: 16px">
-      <FOChart/>
+      <FOChart />
       <div class="dashboard-box column">
         <div class="row q-py-sm q-mt-lg" style="gap: 10px">
           <div class="icon">
@@ -36,7 +35,7 @@
           <p class="text-h6 text-bold">OCCUPIED</p>
         </div>
         <div class="">
-          <p class="text-h2 data text-center">10</p>
+          <p class="text-h2 data text-center">{{ deluxeRoom || 0 }}</p>
           <p class="text-h6 text-bold">DELUXE ROOM</p>
         </div>
       </div>
@@ -48,7 +47,7 @@
           <p class="text-h6 text-bold">OCCUPIED</p>
         </div>
         <div class="">
-          <p class="text-h2 data text-center">10</p>
+          <p class="text-h2 data text-center">{{ standardRoom || 0 }}</p>
           <p class="text-h6 text-bold">STANDARD ROOM</p>
         </div>
       </div>
@@ -60,7 +59,7 @@
           <p class="text-h6 text-bold">OCCUPIED</p>
         </div>
         <div class="">
-          <p class="text-h2 data text-center">10</p>
+          <p class="text-h2 data text-center">{{ familyRoom || 0 }}</p>
           <p class="text-h6 text-bold">FAMILY ROOM</p>
         </div>
       </div>
@@ -72,7 +71,7 @@
           <p class="text-h6 text-bold">OCCUPIED</p>
         </div>
         <div class="">
-          <p class="text-h2 data text-center">10</p>
+          <p class="text-h2 data text-center">{{ roomRes || 0 }}</p>
           <p class="text-h6 text-bold">ROOM RES</p>
         </div>
       </div>
@@ -81,24 +80,48 @@
 </template>
 
 <script>
-import { defineComponent, defineAsyncComponent } from 'vue'
+import { defineComponent, defineAsyncComponent, ref } from 'vue'
 
-const FOChart = defineAsyncComponent(() =>
-  import('components/charts/FOChart.vue')
-)
-
+const FOChart = defineAsyncComponent(() => import('components/charts/FOChart.vue'))
 
 export default defineComponent({
   name: 'ReportInsight',
   components: {
-    FOChart,
+    FOChart
   },
   setup() {
-    
-
     return {
       displayOption: ['Per-Day', 'Per-Week', 'Per-Month', 'Per-Years'],
+      deluxeRoom: ref(),
+      standardRoom: ref(),
+      familyRoom: ref(),
+      roomRes: ref()
+    }
+  },
+  data() {
+    return {
+      api: new this.$Api('frontoffice'),
+      data: []
+    }
+  },
+  mounted() {
+    this.getDetailReport()
+  },
+  methods: {
+    getDetailReport() {
+      this.loading = true
+      this.api.get(`detail/report`, ({ status, data }) => {
+        this.loading = false
 
+        if (status == 200) {
+          const { total } = data
+          console.log(total)
+          this.deluxeRoom = total.DELUXE
+          this.standardRoom = total.STANDARD
+          this.familyRoom = total.FAMILY
+          this.roomRes = total.RESERVATION
+        }
+      })
     }
   }
 })

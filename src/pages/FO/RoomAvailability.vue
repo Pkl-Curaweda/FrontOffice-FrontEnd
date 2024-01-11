@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column" style="overflow-y: hidden; min-width: max-content">
+  <q-page style="overflow-y: hidden; min-width: max-content">
     <FOMenubar>
       <template #left>
         <!--Sorting Dropdown-->
@@ -151,109 +151,90 @@ import { allObjectsInArray } from 'src/utils/datatype'
 export default defineComponent({
   name: 'RoomAvailabilityPage',
   components: { FOMenubar, MultiPane, GuestForm },
-  data() {
+  setup() {
     return {
       datePicker: { from: null, to: null },
       columns: [
-        { name: 'room', label: '', field: 'room' },
+        { name: 'room', label: '', field: 'room', align: 'left' },
         { name: 'averageroom', label: 'Average Room Occ (%)', align: 'left', field: 'averageroom' }
       ],
-      rows: [],
+      rows: [
+        { room: { data: '101 - DLX - K', style: {} } },
+        { room: { data: '102 - DLX - K', style: {} } },
+        { room: { data: '103 - DLX - K', style: {} } },
+        { room: { data: '104 - DLX - K', style: {} } },
+        { room: { data: '105 - DLX - K', style: {} } },
+        { room: { data: '106 - DLX - K', style: {} } },
+        { room: { data: '107 - DLX - K', style: {} } },
+        { room: { data: '108 - DLX - K', style: {} } },
+        { room: { data: '109 - DLX - K', style: {} } },
+        { room: { data: '110 - DLX - K', style: {} } }
+      ],
+
       allObjectsInArray
     }
   },
-  watch: {
-    datePicker(newDate) {
-      // Pastikan bahwa newDate diinisiasi dengan benar
-      // Call the method to update columns and rows based on the selected date
-      this.updateTable(newDate)
+  data() {
+    return {
+      api: new this.$Api('frontoffice'),
+      pagination: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 20
+      },
+      data: []
     }
   },
 
+  mounted() {
+    this.fetchData()
+  },
+  watch: {
+    filterColumns: {
+      handler(filters) {
+        console.log(filters)
+        // Add logic to update the table data based on filters if needed
+      },
+      deep: true
+    }
+    // Watch for changes in the 'pagination' property and fetch data accordingly
+  },
   methods: {
-    updateTable(newDate) {
-      // Check if both 'from' and 'to' dates are selected
-      if (newDate.from && newDate.to) {
-        // Parse 'from' and 'to' dates
-        const startDate = new Date(newDate.from)
-        const endDate = new Date(newDate.to)
+    onPaginationChange(props) {
+      this.pagination = props.pagination
+      this.fetchData()
+    },
+    fetchData() {
+      this.loading = true
 
-        // Calculate the number of days between 'from' and 'to' (inclusive)
-        const timeDifference = endDate.getTime() - startDate.getTime()
-        const numberOfDays = Math.ceil(timeDifference / (1000 * 3600 * 24)) + 1 // Add 1 to include the last day
+      let url = `roomavail?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
 
-        // Update column values with dynamic date labels
-        const newColumns = [
-          { name: 'room', label: '', field: 'room' },
-          ...Array.from({ length: numberOfDays }, (_, index) => {
-            const currentDate = new Date(startDate.getTime() + index * (24 * 60 * 60 * 1000))
-            const label = currentDate.toLocaleDateString('en-GB', {
-              day: '2-digit',
-              month: '2-digit',
-              year: '2-digit'
-            }) // This will result in a format like '23/12/23'
-
-            return {
-              name: `date${index + 1}`,
-              label: `${label}`,
-              align: 'left',
-              field: `date${index + 1}`
-            }
-          }),
-          {
-            name: 'averageroom',
-            label: 'Average Room Occ (%)',
-            align: 'left',
-            field: 'averageroom'
+        if (status == 200) {
+          this.formatData(data.logData)
+          this.pagination = {
+            page: data.meta?.currPage,
+            rowsNumber: data.meta?.total,
+            rowsPerPage: data.meta?.perPage
           }
-        ]
+        }
+      })
+    },
+    formatData(raw = []) {
+      const list = []
 
-        this.columns = newColumns
+      raw.forEach((ra) => {
+        list.push({
+          name: 'date',
+          label: ra.date,
+          field: 'date',
+          align: 'left',
 
-        // Example: Update rows based on the newDate (customize this logic as needed)
-        this.rows = this.rows.map((row) => {
-          const updatedRow = {
-            room: row.room, // Make sure to include the room data
-            averageroom: row.averageroom // Make sure to include the averageroom data
-          }
-
-          // Add/update date fields in the row
-          Array.from({ length: numberOfDays }, (_, index) => {
-            const currentDate = new Date(startDate.getTime() + index * (24 * 60 * 60 * 1000))
-            const fieldName = `date${index + 1}`
-            const formattedDate = currentDate.toLocaleDateString('en-GB', {
-              day: '2-digit',
-              month: '2-digit',
-              year: '2-digit'
-            })
-
-            if (row.room === 1) {
-              // Customize cell content and style for room 1
-              if (formattedDate === 'your target date') {
-                // Customize content and style for the specific date
-                updatedRow[fieldName] = {
-                  data: 'DENI KUSNANDAR',
-                  style: { backgroundColor: 'red', color: 'white' }
-                }
-              } else {
-                // Set default content and style for other dates
-                updatedRow[fieldName] = {
-                  data: 'Other Data',
-                  style: { backgroundColor: 'default-color', color: 'default-color' }
-                }
-              }
-            } else {
-              // Set default content and style for other rooms
-              updatedRow[fieldName] = {
-                data: 'Other Data',
-                style: { backgroundColor: 'default-color', color: 'default-color' }
-              }
-            }
-          })
-
-          return updatedRow
+          date: { data: ra.roomHistory.room_1.guestName }
         })
-      }
+      })
+      this.data = list
     }
   }
 })

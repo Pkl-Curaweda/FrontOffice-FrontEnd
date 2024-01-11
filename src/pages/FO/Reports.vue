@@ -40,7 +40,7 @@
             <q-date v-model="datePicker" range />
           </div>
         </q-btn-dropdown>
-
+        <q-separator vertical />
         <q-btn-dropdown
           flat
           square
@@ -141,14 +141,6 @@ export default defineComponent({
         { label: 'Per-Week', value: 'perweek' },
         { label: 'Per-Month', value: 'permonth' },
         { label: 'Per-Years', value: 'peryears' }
-      ],
-      columns: [
-        { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
-        { name: 'RmAvailable', label: 'Room Available', align: 'left', field: 'RmAvailable' },
-        { name: 'Occupied', label: 'Occupied', align: 'left', field: 'Occupied' },
-        { name: 'Occ', label: 'Occ%', align: 'left', field: 'Occ' },
-        { name: 'RmRevenue', label: 'Room Revenue', align: 'left', field: 'RmRevenue' },
-        { name: 'Arr', label: 'Arr', align: 'left', field: 'Arr' }
       ]
     }
   },
@@ -180,12 +172,13 @@ export default defineComponent({
     },
     fetchData() {
       this.loading = true
-      let url = `report?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      let url = `report`
       this.api.get(url, ({ status, data }) => {
         this.loading = false
 
         if (status == 200) {
           this.formatData(data.reports)
+          this.labelData(data.reports.added)
           this.pagination = {
             page: data.meta?.currPage,
             rowsNumber: data.meta?.total,
@@ -204,12 +197,39 @@ export default defineComponent({
           Occupied: { data: rp.occupied, style: {} },
           Occ: { data: rp.occ, style: {} },
           RmRevenue: { data: rp.roomRevenue, style: {} },
-          Arr: { data: rp.arr, style: {} }
+          Arr: { data: rp.arr, style: {} },
+          RmAvail: { data: rp.added.rm_avail, style: {} },
+          Rno: { data: rp.added.rno, style: {} },
+          tdOcc: { data: rp.added.occ, style: {} },
+          tdRmRevenue: { data: rp.added.rev, style: {} },
+          tdArr: { data: rp.added.arr, style: {} }
         })
       })
       console.log(this.data, list)
       this.data = list
       console.log(this.data)
+    },
+    labelData(raw = []) {
+      const list = []
+
+      raw((label) => {
+        list.push({
+          columns: [
+            { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
+            { name: 'RmAvailable', label: 'Room Available', align: 'left', field: 'RmAvailable' },
+            { name: 'Occupied', label: 'Occupied', align: 'left', field: 'Occupied' },
+            { name: 'Occ', label: 'Occ%', align: 'left', field: 'Occ' },
+            { name: 'RmRevenue', label: 'Room Revenue', align: 'left', field: 'RmRevenue' },
+            { name: 'Arr', label: 'Arr', align: 'left', field: 'Arr' },
+            { name: 'RmAvail', label: '', align: 'left', field: 'RmAvail' },
+            { name: 'Rno', label: '', align: 'left', field: 'Rno' },
+            { name: 'tdOcc', label: '', align: 'left', field: 'tdOcc' },
+            { name: 'tdRmRevenue', label: '', align: 'left', field: 'tdRmRevenue' },
+            { name: 'tdArr', label: '', align: 'left', field: 'tdArr' }
+          ]
+        })
+      })
+      this.columns = list
     }
   }
 })

@@ -10,7 +10,7 @@
     <div class="col-grow">
       <div class="row q-gutter-xs">
         <!-- create new reservation  -->
-        <q-btn flat square color="primary" class="border-button rounded-borders">
+        <q-btn flat square color="primary" class="border-button rounded-borders" @click="refresh()">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="19"
@@ -26,7 +26,13 @@
         </q-btn>
 
         <!-- edit reservation  -->
-        <q-btn flat square color="primary" class="border-button rounded-borders">
+        <q-btn
+          flat
+          square
+          color="primary"
+          class="border-button rounded-borders"
+          @click="updateData()"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="19"
@@ -43,7 +49,7 @@
 
         <!-- remove reservation  -->
         <q-btn
-          @click="removeRoomResv"
+          @click="removeRoomResv()"
           flat
           square
           color="primary"
@@ -183,8 +189,8 @@
         <q-select
           outlined
           dense
-          v-model="resvResource"
-          :options="resvResourceOpts"
+          v-model="resvRecource"
+          :options="resvRecourceOpts"
           label="Reservation Resource"
           dropdown-icon="expand_more"
           class="col-grow"
@@ -221,8 +227,8 @@
           dropdown-icon="expand_more"
           class="full-width"
         >
-          <template v-slot:option="roomBedOpts">
-            <q-item v-bind="roomBedOpts.itemProps">
+          <!-- <template v-slot:option="roomBedOpts">
+            <q-item v-bind="roomBedOpts">
               <q-item-section avatar>
                 <div class="flex justify-center">
                   <q-icon size="24px" :name="roomBedOpts.opt.icon" />
@@ -237,7 +243,7 @@
                 <q-item-label>{{ roomBedOpts.opt.label }}</q-item-label>
               </q-item-section>
             </q-item>
-          </template>
+          </template> -->
         </q-select>
       </div>
 
@@ -364,17 +370,29 @@
     </div>
 
     <div class="col-grow">
-      <div class="row no-wrap items-center" style="gap: 8px">
+      <div class="row no-wrap items-center" style="gap: 2px">
         <div class="text-bold">Res Status:</div>
-        <q-select
-          outlined
-          dense
-          v-model="resvStatus"
-          :options="resvStatusOpts"
-          label="Status"
-          dropdown-icon="expand_more"
-          style="width: 100px"
-        />
+        <div class="q-pa-md">
+          <q-btn-dropdown
+            color="primary"
+            :label="resvStatus.label || resvStatus.description || 'Status'"
+            outline
+          >
+            <q-list>
+              <q-item
+                v-for="(option, index) in dropdownOptions"
+                :key="index"
+                clickable
+                v-close-popup
+                @click="onItemClick(option.value, option.description)"
+              >
+                <q-item-section>
+                  <q-item-label>{{ option.description }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
+        </div>
 
         <q-space />
 
@@ -417,30 +435,30 @@
       <q-separator class="q-my-sm bg-grey" size="1px" />
 
       <q-expansion-item
-        label="Room Rate: Rp 0.00"
+        :label="selected.id ? 'Room Rate: ' + selected.id : 'Room Rate: '"
         class="padding-expansion q-pa-none"
         dense
         style="font-weight: bold"
       >
-        <q-card>
-          <q-table
-            style="height: 140px"
-            dense
-            :rows-per-page-options="[0]"
-            virtual-scroll
-            :rows="rows"
-            hide-pagination
-            selection="multiple"
-            class="rows-table q-px-none"
-            :columns="columns"
-            row-key="date"
-            v-model:selected.sync="selected"
-          />
-        </q-card>
+        <div
+          style="display: flex; width: 80%"
+          v-for="row in arrangmentList"
+          :key="row.id"
+          clickable
+          @click="selectRow(row)"
+        >
+          <q-radio selection="single" v-model="selected" :val="row" />
+
+          <div style="display: flex; justify-content: space-around; margin: auto; width: 100%">
+            <div>{{ row.id.split('-')[0] }}</div>
+            <div>{{ row.rate }}</div>
+            <div>{{ row.id.split('-')[1] }}</div>
+          </div>
+        </div>
         <q-btn
           unelevated
           dense
-          to="/fo/guest-invoice"
+          to="/guest-invoice"
           class="q-mt-sm text-capitalize q-px-sm"
           color="primary"
           label="Invoice"
@@ -449,7 +467,7 @@
 
       <div style="display: flex; justify-content: space-between" class="q-mt-sm">
         <p class="text-bold q-ma-none">Balance:</p>
-        <p class="text-bold q-ma-none">Rp {{ balance }}</p>
+        <p class="text-bold q-ma-none">{{ selected.rate ? 'Rp ' + selected.rate : 'Rp 0' }}</p>
       </div>
 
       <q-separator class="q-mt-sm bg-grey" size="1px" />
@@ -468,9 +486,30 @@
       </q-expansion-item>
 
       <div style="gap: 8px" class="q-mt-sm row no-wrap items-center">
-        <q-btn label="Reservation" outline color="primary" dense class="text-capitalize col-grow" />
-        <q-btn label="Check-In" unelevated color="primary" dense class="text-capitalize col-grow" />
-        <q-btn label="Check-Out" outline color="grey" dense class="text-capitalize col-grow" />
+        <q-btn
+          label="Reservation"
+          outline
+          color="primary"
+          dense
+          class="text-capitalize col-grow"
+          @click="createData()"
+        />
+        <q-btn
+          label="Check-In"
+          unelevated
+          color="primary"
+          dense
+          class="text-capitalize col-grow"
+          @click="postcheckin()"
+        />
+        <q-btn
+          label="Check-Out"
+          outline
+          color="grey"
+          dense
+          class="text-capitalize col-grow"
+          @click="postcheckout()"
+        />
       </div>
     </div>
   </div>
@@ -499,29 +538,35 @@ export default defineComponent({
       { required: true, name: 'arrangement', label: 'Arrangement', field: 'arrangement' }
     ]
 
-    const rows = [
+    const rows = []
+    const status = []
+
+    const arrangmentList = [
       {
-        date: '12/02/2023',
-        rate: '530,00.00',
-        arrangement: 'RB'
+        id: 'DLX-RB',
+        rate: 530000
       },
       {
-        date: '12/02/2024',
-        rate: '540,00.00',
-        arrangement: 'RO'
+        id: 'DLX-RO',
+        rate: 500000
       },
       {
-        date: '12/02/2025',
-        rate: '530,00.00',
-        arrangement: 'RB'
+        id: 'FML-RB',
+        rate: 530000
       },
       {
-        date: '13/02/2023',
-        rate: '550,00.00',
-        arrangement: 'RB'
+        id: 'FML-RO',
+        rate: 530000
+      },
+      {
+        id: 'STD-RB',
+        rate: 330000
+      },
+      {
+        id: 'STD-RO',
+        rate: 300000
       }
     ]
-
     function toggleRbSelected() {
       isRbSelected.value = !isRbSelected.value
       isRoSelected.value = false // Reset the state of RO button
@@ -543,27 +588,31 @@ export default defineComponent({
     }
 
     return {
+      includeTax: false,
       roomImage: ref(''),
       guestName: ref(''),
       resvNo: ref(''),
-      resvResource: ref(null),
-      resvResourceOpts: ['Individual reservation', 'Walk In'],
       arrivalDepart: ref({ from: null, to: null }),
       arrivalDepartLabel: ref('Arrival - Depature, 1 Nights'),
       guests: ref({ adult: 1, child: 0, baby: 0 }),
       guestsLabel: ref('1 Adult, 0 Child, 0 Baby'),
-      resvStatus: ref(null),
-      resvStatusOpts: ref([]),
+      resvStatusOpts: ref([['DLX', 'FML', 'STD']]),
       balance: ref(0),
       resvRemark: ref(''),
+      //
       roomNo: ref(null),
       roomType: ref(null),
       roomBed: ref(null),
-      roomNoOpts: ref([]),
-      roomTypeOpts: ref([]),
-      roomBedOpts: ref([]),
+      roomNoOpts: [],
+      //
+      roomTypeOpts: ref(['DLX', 'FML', 'STD']),
+      roomBedOpts: [
+        { label: 'K', value: 'KING' },
+        { label: 'T', value: 'TWIN' },
+        { label: 'S', value: 'SINGLE' }
+      ],
+      // roomBedOpts: [],
       loading: ref(false),
-
       isRbSelected,
       isRoSelected,
       toggleRbSelected,
@@ -573,12 +622,31 @@ export default defineComponent({
       toggleKtpSelected,
       toggleSimSelected,
       dialogpayment: ref(false),
+      setRow: ref(),
       columns,
+      optionValue: ref(''),
+      status,
       rows,
+      newSetRow: ref(),
       nameidcard: ref(''),
       idcardnumber: ref(''),
       address: ref(''),
-      selected: ref([])
+      resultStatus: ref(''),
+      showDropdown: false,
+      dropdownOptions: [
+        { value: '1', description: 'Guaranted' },
+        { value: '2', description: '6 PM' },
+        { value: '3', description: 'Tentative' }
+      ],
+      arrangmentList,
+      selectedOption: null,
+      resvRecource: ref(null),
+      resvRecourceOpts: ['Individual reservation', 'Walk In'],
+      arrangmentCode: ref(''),
+      selected: ref([]),
+      selectedstatus: ref(),
+      resvStatus: [],
+      descSelect: ref('')
     }
   },
   data() {
@@ -608,11 +676,14 @@ export default defineComponent({
       }
     )
   },
+  created() {
+    for (let i = 1; i <= 10; i++) {
+      this.roomNoOpts.push(i)
+    }
+  },
   watch: {
-    availRooms: {
-      handler() {
-        this.formatAvailableRoom()
-      }
+    includeTax() {
+      this.calculateTotal() // Panggil method calculateTotal() saat status checkbox berubah
     },
     'arrivalDepart.from': {
       immediate: true,
@@ -634,6 +705,14 @@ export default defineComponent({
     }
   },
   methods: {
+    setRoww() {
+      return {
+        roomId: this.roomNo ? this.roomNo : 1,
+        roomType: this.roomType,
+        roomBed: this.roomBed.label,
+        arrangmentCode: this.selected && this.selected.id ? this.selected.id : ''
+      }
+    },
     isRoomExist() {
       if (this.roomType == null || this.roomNo == null || this.roomBed == null) return
 
@@ -656,22 +735,22 @@ export default defineComponent({
 
       return obj
     },
-    formatAvailableRoom() {
-      function getUniqueValues(data, key) {
-        const uniqueValues = [...new Set(data.map((item) => item[key]))]
-        return uniqueValues
-      }
+    // formatAvailableRoom() {
+    //   function getUniqueValues(data, key) {
+    //     const uniqueValues = [...new Set(data.map((item) => item[key]))]
+    //     return uniqueValues
+    //   }
 
-      const room = this.availRooms
-      this.roomNoOpts = getUniqueValues(room, 'id')
-      this.roomTypeOpts = getUniqueValues(room, 'roomType')
-      this.roomBedOpts = getUniqueValues(room, 'bedSetup').map(this.roomBedMapper)
-    },
+    //   const room = this.availRooms
+    //   this.roomNoOpts = getUniqueValues(room, 'id')
+    //   this.roomTypeOpts = getUniqueValues(room, 'roomType')
+    //   this.roomBedOpts = getUniqueValues(room, 'bedSetup').map(this.roomBedMapper)
+    // },
     formatArrivalDepart() {
       if (this.arrivalDepart.from && this.arrivalDepart.to) {
         const fromDate = new Date(this.arrivalDepart.from)
         const toDate = new Date(this.arrivalDepart.to)
-
+        console.log(this.arrivalDepart.to)
         const options = {
           month: 'numeric',
           day: 'numeric'
@@ -693,14 +772,13 @@ export default defineComponent({
       this.guestsLabel = `${this.guests['adult']} Adult, ${this.guests['child']} Child, ${this.guests['baby']} Baby`
     },
     removeRoomResv() {
-      this.$ResvStore.clearData()
-
       this.resvNo = ''
       this.guestName = ''
       this.resvResource = null
+      this.selectedOption.value = null
       this.arrivalDepart = { from: null, to: null }
       this.arrivalDepartLabel = 'Arrival - Depature, 1 Nights'
-      this.guests = { adult: 1, baby: 0, child: 0 }
+      this.guests = { adult: 0, baby: 0, child: 0 }
       this.resvStatus = null
       this.resvRemark = ''
       this.roomImage = ''
@@ -708,21 +786,82 @@ export default defineComponent({
       this.roomType = null
       this.roomBed = null
     },
-    getResvProps() {
-      this.api.get('detail/reservation/0/0/create', ({ status, data }) => {
-        if (status == 200) {
-          const { reservationStatus, availableRooms } = data
-
-          this.resvStatusOpts = reservationStatus.map((st) => {
-            return {
-              label: st.description,
-              value: st.id
-            }
-          })
-          this.availRooms = [...this.availRooms, ...availableRooms]
-        }
-      })
+    getResvProps() {},
+    selectRow(row) {
+      this.selected = row
+      this.calculateTotal() // Memanggil calculateTotal() setelah pemilihan opsi
     },
+    calculateTotal() {
+      if (this.selected) {
+        this.balance = this.selected.value
+
+        if (this.includeTax) {
+          this.balance += this.calculateTax(this.balance)
+        }
+
+        console.log(this.balance)
+      }
+    },
+    calculateTax(subtotal) {
+      // this.subtotal = this.DPP + this.total
+      // console.log(this.subtotal)
+      return subtotal * 0.1
+    },
+    async postcheckin() {
+      try {
+        const { currentResvId, currentRoomResvId } = this.$ResvStore
+        if (currentResvId == 0 || currentRoomResvId == 0) return
+
+        this.loading = true
+        const response = this.api.post(
+          `detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkin`
+        )
+        this.loading = false
+        if (response.status === 200) {
+          console.log(response.data)
+        }
+      } catch (error) {
+        console.error('error : ' + error)
+      }
+    },
+    async postcheckout() {
+      try {
+        const { currentResvId, currentRoomResvId } = this.$ResvStore
+        if (currentResvId == 0 || currentRoomResvId == 0) return
+
+        this.loading = true
+        this.api.post(
+          `detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkout`,
+          ({ status, data }) => {
+            this.loading = false
+            if (status === 200) {
+              console.log(data)
+            }
+          }
+        )
+      } catch (error) {
+        console.error('error : ' + error)
+      }
+    },
+    // async postcheckin() {
+    //   try {
+    //     const { currentResvId, currentRoomResvId } = this.$ResvStore
+    //     if (currentResvId == 0 || currentRoomResvId == 0) return
+
+    //     this.loading = true
+    //     this.api.post(
+    //       `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkin`,
+    //       ({ status, data }) => {
+    //         this.loading = false
+    //         if (status == 200) {
+    //           console.log(data)
+    //         }
+    //       }
+    //     )
+    //   } catch (error) {
+    //     console.error('error : ' + error)
+    //   }
+    // },
     getDetailResvRoom() {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
 
@@ -732,15 +871,16 @@ export default defineComponent({
       this.resvNo = currentResvId
 
       this.api.get(
-        `detail/reservation/${currentResvId}/${currentRoomResvId}`,
+        `detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
         ({ status, data }) => {
           this.loading = false
-
+          console.log('test')
           if (status == 200) {
-            const { reservation, room, arrangment, balance } = data
+            const { reservation, room, arrangment, balance } = data.reservation
+            const { reservationStatus, arrangmentCode, availableRooms } = data.data
 
-            this.guestName = reservation.reserver.guest.name
-            this.resvResource = reservation.reserver.resourceName
+            this.guestName = `${reservation.reserver.guest.name}/${reservation.reserver.guest.contact}`
+            this.resvRecource = reservation.reserver.resourceName
             this.arrivalDepart = { from: reservation.arrivalDate, to: reservation.departureDate }
             this.guests = {
               adult: reservation.manyAdult,
@@ -760,9 +900,149 @@ export default defineComponent({
               ...this.availRooms,
               { id: room.id, roomType: room.roomType, bedSetup: room.bedSetup }
             ]
+            const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
+            this.rows = formattedRoomRates
+
+            const formattedStatus = this.formatedStatus(reservationStatus)
+            this.status = formattedStatus
+            // this.resultStatus = this.checkData(reservation.description)
+            // this.arrangmentCode = { id: arrangment.id, rate: arrangment.rate }
           }
+          // connsole.log(this.rows)
+          console.log(this.resvStatus.label)
         }
       )
+    },
+    formatRoomrate(map = []) {
+      const rmt = []
+      map.forEach((dt) => {
+        const { id, rate } = dt
+        console.log(dt)
+        rmt.push({
+          id,
+          date: id.split('-')[0],
+          rate: rate,
+          arrangement: id.split('-')[1]
+        })
+      })
+      console.log(rmt)
+      return rmt
+    },
+    formattedStatus(map = []) {
+      const rms = []
+      map.forEach((dt) => {
+        const { id, rate } = dt
+        console.log(dt)
+        rms.push({
+          id,
+          date: id.split('-')[0],
+          rate: rate,
+          arrangement: id.split('-')[1]
+        })
+      })
+      console.log(rms)
+      return rms
+    },
+    async createData() {
+      const { currentResvId, currentRoomResvId } = this.$ResvStore
+      this.resvNo = currentResvId
+      console.log(this.setRoww(this.selected.id))
+      const dataToUpdate = {
+        nameContact: this.guestName,
+        resourceName: this.resvRecource,
+        room: this.setRoww(this.roomNo, this.selected.id), //row
+        manyAdult: this.guests.adult,
+        manyChild: this.guests.child,
+        manyBaby: this.guests.baby,
+        inHouseIndicator: true,
+        arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
+        departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
+        reservationRemarks: this.resvRemark,
+        resvStatusId: this.resvStatus.id
+      }
+      try {
+        this.api.post(
+          `detail/reservation/${currentResvId}/${currentRoomResvId}/create`,
+          dataToUpdate,
+          ({ status, data }) => {
+            this.loading = false
+            if (status === 200) {
+              console.log('Data berhasil diperbarui:', data)
+            } else {
+              console.error('Gagal memperbarui data')
+            }
+          }
+        )
+        this.refresh()
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async updateData() {
+      const { currentResvId, currentRoomResvId } = this.$ResvStore
+      this.resvNo = currentResvId
+      const dataToUpdate = {
+        nameContact: this.guestName,
+        resourceName: this.resvRecource,
+        arrangmentCode: this.selected.id, //row
+        manyAdult: this.guests.adult,
+        manyChild: this.guests.child,
+        manyBaby: this.guests.baby,
+        inHouseIndicator: true,
+        arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
+        departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
+        reservationRemarks: this.resvRemark,
+        resvStatusId: parseInt(this.resvStatus.id)
+      }
+
+      try {
+        this.api.put(
+          `detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
+          dataToUpdate,
+          ({ status, data }) => {
+            this.loading = false
+            console.log(this.resvStatus)
+
+            if (status === 200) {
+              console.log('Data berhasil diperbarui:', data)
+            } else {
+              console.error('Gagal memperbarui data')
+            }
+          }
+        )
+        // this.refresh()
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    formatDate(date) {
+      return new Date(date)
+    },
+    formatDateWithoutTimezone(date) {
+      const dateObject = new Date(date)
+      const result = dateObject.toISOString().split('T')[0]
+      console.log(result)
+
+      return result
+    },
+    onItemClick(optionValue, desc) {
+      this.optionValue = optionValue
+      this.resvStatus = { id: optionValue, description: desc }
+      console.log(this.resvStatus.description)
+    },
+    getDropdownLabel() {
+      if (this.resvStatus.label) {
+        console.log('berhasil')
+        // if (!this.dropdownSelected && this.descSelect != null) {
+        //   console.log('berhasil')
+        //   return this.descSelect
+        // }
+        return this.resvStatus.label
+      }
+      return this.descSelect
+    },
+    refresh() {
+      window.location.reload()
     }
   }
 })

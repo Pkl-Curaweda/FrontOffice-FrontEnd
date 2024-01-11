@@ -244,226 +244,220 @@
                 >Virtual Account</span
               >
 
-              <div
-                style="display: flex; cursor: pointer; width: 100%; justify-content: end; gap: 2px"
-              >
-                <div v-for="(option, index) in dropdownOptions3" :key="index">
-                  <div style="width: 80px" class="q-px-sm">
-                    <q-img
-                      :src="'../../../public/images/' + option.imageUrl"
-                      loading="lazy"
-                      spinner-color="black"
-                      style="max-width: 80px; margin: auto"
-                    />
-                  </div>
-                </div>
-                <q-icon
-                  :name="iconName4"
-                  size="2rem"
-                  color="green"
-                  class="centerComponent"
-                  @click="toggleVirtual"
-                />
-              </div>
-            </div>
-            <div v-if="showVirtual">
-              <div v-for="(option, index) in dropdownOptions3" :key="index">
-                <div style="display: flex" class="q-py-md">
-                  <div style="display: flex; justify-content: space-between; width: 100%">
-                    <div>
-                      <input
-                        type="radio"
-                        :id="'option_' + index"
-                        :value="' Transfer ' + option.value"
-                        v-model="selectedOption"
-                      />
-                      <label
-                        :for="'option_' + index"
-                        style="font-weight: 600"
-                        class="centerComponent"
-                        >{{ ' Transfer ' + option.value }}</label
-                      >
-                    </div>
-                    <div style="width: 60px">
-                      <q-img
-                        :src="'../../../public/images/' + option.imageUrl"
-                        loading="lazy"
-                        spinner-color="black"
-                        style="max-width: 60px; margin: auto; justify-content: flex-end"
-                        :alt="'Image ' + index"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- row 1 col 2 -->
-        <div
-          v-if="paymentDetail == false || true"
-          :class="{ 'shadowBox q-pa-lg': paymentDetail == false }"
-        >
-          <div
-            style="display: flex; justify-content: space-between; width: 100%"
-            v-if="paymentDetail == false"
-          >
-            <div style="color: black; font-size: x-large; font-weight: 600" class="q-pa-sm">
-              Total Pembayaran
-            </div>
-            <div style="width: fit-content; margin: 10px">
-              <label
-                :for="'option_' + index"
-                style="font-weight: 600; font-size: large"
-                class="centerComponent"
-              >
-                {{ total }}</label
-              >
-            </div>
-          </div>
-          <div
-            v-if="paymentDetail == false || true"
-            :class="!paymentDetail ? 'detailPayment' : 'shadowBox no-padding'"
-          >
             <div
-              style="
-                display: block;
-                justify-content: space-between;
-                cursor: pointer;
-                font-size: 16px;
-              "
+              style="display: flex; cursor: pointer; width: 100%; justify-content: end; gap: 2px"
             >
-              <div
-                class="centerComponent"
-                style="font-weight: 600"
-                :style="paymentDetail2 ? { 'width :': '1000px;' } : { 'width :': '350px;' }"
-              >
-                <div class="row q-px-md">
-                  <div class="col-9">
-                    <label for="noPesanan" style="color: grey; font-size: small">NO. PESANAN</label>
-                    <div style="padding: 5px">{{ noPesanan }}</div>
-                  </div>
-                  <div class="col" v-if="!paymentDetail">
-                    {{ selectedBank + '/ ' + selectedMethod }}
-                  </div>
-                </div>
-                <q-separator horizontal class="q-ma-md" />
-                <div style="background-color: #f1f5f9">
-                  <div style="text-transform: uppercase; padding: 10px; margin: 10px">
-                    {{ namaUser + ', ' + namauserBank + ' - ' + telp }}
-                  </div>
+              <div v-for="(option, index) in dropdownOptions3" :key="index">
+                <div style="width: 80px" class="q-px-sm">
+                  <q-img
+                    :src="'../../../public/images/' + option.imageUrl"
+                    loading="lazy"
+                    spinner-color="black"
+                    style="max-width: 80px; margin: auto"
+                  />
                 </div>
               </div>
-
-              <q-separator horizontal class="q-ma-md" />
-              <div
+              <q-icon
+                :name="iconName4"
+                size="2rem"
+                color="green"
                 class="centerComponent"
-                style="font-weight: 600"
-                :style="paymentDetail2 ? { 'width :': '1000px;' } : { 'width :': '350px;' }"
-              >
-                <label class="q-mx-md" style="color: grey; font-size: small">RINCIAN PESANAN</label>
-                <div class="col q-px-md" style="background-color: #f1f5f9; margin-top: 10px">
-                  <div style="color: black; font-size: larger" class="q-pa-sm">Rincian Harga</div>
-                  <div v-for="(option, index) in priceBook" :key="index">
-                    <div style="display: flex" class="q-py-md">
-                      <div
-                        style="
-                          display: flex;
-                          justify-content: space-between;
-                          width: 100%;
-                          margin-right: 10px;
-                        "
-                      >
-                        <div>
-                          <label
-                            :for="'option_' + index"
-                            style="font-weight: 600"
-                            class="centerComponent textwrap"
-                            >{{ ' Transfer ' + option.label }}</label
-                          >
-                        </div>
-                        <div style="width: 60px">
-                          <label
-                            :for="'option_' + index"
-                            style="font-weight: 600"
-                            class="centerComponent"
-                            >{{ option.price }}</label
-                          >
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      justify-content: space-between;
-                      width: 100%;
-                      margin-right: 10px;
-                    "
-                  >
-                    <div>
-                      <input
-                        type="checkbox"
-                        :id="'option_' + index"
-                        :value="DPP"
-                        v-model="includeTax"
-                      />
-                      <label
-                        :for="'option_' + index"
-                        style="font-weight: 600"
-                        class="centerComponent q-px-sm"
-                        >DPP</label
-                      >
-                    </div>
+                @click="toggleVirtual"
+              />
+            </div>
+          </div>
+          <div v-if="showVirtual">
+            <div v-for="(option, index) in dropdownOptions3" :key="index">
+              <div style="display: flex" class="q-py-md">
+                <div style="display: flex; justify-content: space-between; width: 100%">
+                  <div>
+                    <input
+                      type="radio"
+                      :id="'option_' + index"
+                      :value="' Transfer ' + option.value"
+                      v-model="selectedOption"
+                    />
                     <label
                       :for="'option_' + index"
                       style="font-weight: 600"
                       class="centerComponent"
-                      >{{ DPP }}</label
+                      >{{ ' Transfer ' + option.value }}</label
                     >
                   </div>
-                  <q-separator horizontal />
-                  <div style="display: flex; justify-content: space-between; width: 100%">
-                    <div style="color: black; font-size: large" class="q-pa-sm">Harga Total</div>
-                    <div style="width: fit-content; margin: 10px">
-                      <label
-                        :for="'option_' + index"
-                        style="font-weight: 600"
-                        class="centerComponent"
-                      >
-                        {{ total }}</label
-                      >
-                    </div>
+                  <div style="width: 60px">
+                    <q-img
+                      :src="'../../../public/images/' + option.imageUrl"
+                      loading="lazy"
+                      spinner-color="black"
+                      style="max-width: 60px; margin: auto; justify-content: flex-end"
+                      :alt="'Image ' + index"
+                    />
                   </div>
                 </div>
-              </div>
-            </div>
-            <div :class="paymentDetail ? 'q-pa-lg' : 'q-pa-lg buttonPayment'">
-              <div style="display: flex; gap: 10px">
-                <q-btn
-                  v-if="paymentDetail == false"
-                  align="left"
-                  class="btn-fixed-width q-ma-auto"
-                  style="width: 100%"
-                  color="primary"
-                  label="OK"
-                />
-                <q-btn
-                  align="left"
-                  class="btn-fixed-width q-ma-auto"
-                  style="width: 100%"
-                  @click="moveDetail()"
-                  color="primary"
-                  :outline="!paymentDetail"
-                  :label="paymentDetail ? selectedMethod || 'Select Method Payment' : 'Cancel'"
-                />
               </div>
             </div>
           </div>
         </div>
       </div>
+      <!-- row 1 col 2 -->
+      <div
+        v-if="paymentDetail == false || true"
+        :class="{ 'shadowBox q-pa-lg': paymentDetail == false }"
+      >
+        <div
+          style="display: flex; justify-content: space-between; width: 100%"
+          v-if="paymentDetail == false"
+        >
+          <div style="color: black; font-size: x-large; font-weight: 600" class="q-pa-sm">
+            Total Pembayaran
+          </div>
+          <div style="width: fit-content; margin: 10px">
+            <label
+              :for="'option_' + index"
+              style="font-weight: 600; font-size: large"
+              class="centerComponent"
+            >
+              {{ total }}</label
+            >
+          </div>
+        </div>
+        <div
+          v-if="paymentDetail == false || true"
+          :class="!paymentDetail ? 'detailPayment' : 'shadowBox no-padding'"
+        >
+          <div
+            style="display: block; justify-content: space-between; cursor: pointer; font-size: 16px"
+          >
+            <div
+              class="centerComponent"
+              style="font-weight: 600"
+              :style="paymentDetail2 ? { 'width :': '1000px;' } : { 'width :': '350px;' }"
+            >
+              <div class="row q-px-md">
+                <div class="col-9">
+                  <label for="noPesanan" style="color: grey; font-size: small">NO. PESANAN</label>
+                  <div style="padding: 5px">{{ noPesanan }}</div>
+                </div>
+                <div class="col" v-if="!paymentDetail">
+                  {{ selectedBank + '/ ' + selectedMethod }}
+                </div>
+              </div>
+              <q-separator horizontal class="q-ma-md" />
+              <div style="background-color: #f1f5f9">
+                <div style="text-transform: uppercase; padding: 10px; margin: 10px">
+                  {{ namaUser + ', ' + namauserBank + ' - ' + telp }}
+                </div>
+              </div>
+            </div>
+
+            <q-separator horizontal class="q-ma-md" />
+            <div
+              class="centerComponent"
+              style="font-weight: 600"
+              :style="paymentDetail2 ? { 'width :': '1000px;' } : { 'width :': '350px;' }"
+            >
+              <label class="q-mx-md" style="color: grey; font-size: small">RINCIAN PESANAN</label>
+              <div class="col q-px-md" style="background-color: #f1f5f9; margin-top: 10px">
+                <div style="color: black; font-size: larger" class="q-pa-sm">Rincian Harga</div>
+                <div v-for="(option, index) in priceBook" :key="index">
+                  <div style="display: flex" class="q-py-md">
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: space-between;
+                        width: 100%;
+                        margin-right: 10px;
+                      "
+                    >
+                      <div>
+                        <label
+                          :for="'option_' + index"
+                          style="font-weight: 600"
+                          class="centerComponent textwrap"
+                          >{{ ' Transfer ' + option.label }}</label
+                        >
+                      </div>
+                      <div>
+                        <label
+                          :for="'option_' + index"
+                          style="font-weight: 600"
+                          class="centerComponent"
+                          >{{ formating(option.price) }}</label
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    width: 100%;
+                    margin-right: 10px;
+                  "
+                >
+                  <div>
+                    <input
+                      type="checkbox"
+                      :id="'option_' + index"
+                      :value="DPP"
+                      v-model="includeTax"
+                    />
+                    <label
+                      :for="'option_' + index"
+                      style="font-weight: 600"
+                      class="centerComponent q-px-sm"
+                      >DPP</label
+                    >
+                  </div>
+                  <label
+                    :for="'option_' + index"
+                    style="font-weight: 600"
+                    class="centerComponent"
+                    >{{ DPP }}</label
+                  >
+                </div>
+                <q-separator horizontal />
+                <div style="display: flex; justify-content: space-between; width: 100%">
+                  <div style="color: black; font-size: large" class="q-pa-sm">Harga Total</div>
+                  <div style="width: fit-content; margin: 10px">
+                    <label
+                      :for="'option_' + index"
+                      style="font-weight: 600"
+                      class="centerComponent"
+                    >
+                      {{ formating(total) }}</label
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div :class="paymentDetail ? 'q-pa-lg' : 'q-pa-lg buttonPayment'">
+            <div style="display: flex; gap: 10px">
+              <q-btn
+                v-if="paymentDetail == false"
+                align="left"
+                class="btn-fixed-width q-ma-auto"
+                style="width: 100%"
+                color="primary"
+                label="OK"
+              />
+              <q-btn
+                align="left"
+                class="btn-fixed-width q-ma-auto"
+                style="width: 100%"
+                @click="moveDetail()"
+                color="primary"
+                :outline="!paymentDetail"
+                :label="paymentDetail ? selectedMethod || 'Select Method Payment' : 'Cancel'"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </q-page>
+  </div>
 </template>
 
 <script>
@@ -534,7 +528,7 @@ export default defineComponent({
   watch: {
     selectedOption(newVal) {
       this.selectedBank = newVal
-      console.log('method payment' + this.selectedBank)
+      console.log('method payment ' + this.selectedBank)
       console.log('method payment ' + this.selectedMethod)
     },
     includeTax() {
@@ -618,14 +612,26 @@ export default defineComponent({
       return subtotal * 0.1
     },
     moveDetail() {
-      // this.$router.push('/fo/payment/detail')
       try {
         if (this.selectedBank == null || this.selectedBank == '') {
           console.log('required bank method')
         } else {
-          this.paymentDetail = !this.paymentDetail
-          this.bankOption = false
-          paymentDetail2 = true
+          this.$router.push({
+            path: '/fo/payment/detail',
+            props: {
+              selectedBank: this.selectedBank,
+              selectedMethod: this.selectedMethod
+            },
+            // Opsional: Anda juga bisa menyertakan meta jika diperlukan
+            meta: {
+              title: 'detailPayment',
+              main_route: false,
+              protected: true
+            }
+          })
+          // this.paymentDetail = !this.paymentDetail
+          // this.bankOption = false
+          // paymentDetail2 = true
         }
       } catch (error) {
         console.error('Error: ' + error.massage)
@@ -639,6 +645,20 @@ export default defineComponent({
       } else if (value == 3) {
         return this.dropdownOptions3.find((option) => option.value === this.selectedBank)
       }
+    },
+    // formatingPrice(){
+    //   this.priceBook.slice().sort((a, b) => a.price -b.price ).map(value => {
+    //     return  value.toLocaleString('id-ID',{
+    //       style: 'currency',
+    //       currency: 'IDR'
+    //     })
+    //   })
+    // },
+    formating(value) {
+      return parseFloat(value).toLocaleString('id-ID', {
+        style: 'currency',
+        currency: 'IDR'
+      })
     }
   }
 })

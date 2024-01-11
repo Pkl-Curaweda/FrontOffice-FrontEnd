@@ -54,21 +54,13 @@ const frontoffice_routes = [
     }
   },
   {
-    path: '/fo/detail-payment',
-    component: () => import('pages/FO/DetailPayment.vue'),
+    path: '/fo/payment/detail',
+    component: () => import('pages/FO/detailpayment.vue'),
     meta: {
-      title: 'Detail Payment',
+      title: 'detail',
       main_route: false,
-      protected: true
-    }
-  },
-  {
-    path: '/fo/print',
-    component: () => import('pages/FO/print.vue'),
-    meta: {
-      title: 'Print',
-      main_route: false,
-      protected: true
+      protected: true,
+      props: true
     }
   }
 ]

@@ -59,7 +59,8 @@ const frontoffice_routes = [
     meta: {
       title: 'detail',
       main_route: false,
-      protected: true
+      protected: true,
+      props: true
     }
   },
 ]

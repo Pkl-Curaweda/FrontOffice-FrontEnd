@@ -5,12 +5,11 @@
   <!-- <div style="width:100%; height: 100%; background-color:black;"></div>
    -->
    <div
-        v-if="paymentDetail == false || true"
+        style="width:fit-content; margin:auto;"
         :class="{ 'shadowBox q-pa-lg': paymentDetail == false }"
       >
         <div
           style="display: flex; justify-content: space-between; width: 100%"
-          v-if="paymentDetail == false"
         >
           <div style="color: black; font-size: x-large; font-weight: 600" class="q-pa-sm">
             Total Pembayaran
@@ -26,7 +25,6 @@
           </div>
         </div>
         <div
-          v-if="paymentDetail == false || true"
           :class="!paymentDetail ? 'detailPayment' : 'shadowBox no-padding'"
         >
           <div
@@ -42,7 +40,7 @@
                   <label for="noPesanan" style="color: grey; font-size: small">NO. PESANAN</label>
                   <div style="padding: 5px">{{ noPesanan }}</div>
                 </div>
-                <div class="col" v-if="!paymentDetail">
+                <div class="col">
                   {{ selectedBank + '/ ' + selectedMethod }}
                 </div>
               </div>
@@ -140,7 +138,6 @@
           <div :class="paymentDetail ? 'q-pa-lg' : 'q-pa-lg buttonPayment'">
             <div style="display: flex; gap: 10px">
               <q-btn
-                v-if="paymentDetail == false"
                 align="left"
                 class="btn-fixed-width q-ma-auto"
                 style="width: 100%"
@@ -168,24 +165,17 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'detail',
+  props: ['selectedBank', 'selectedMethod'],
   data() {
     return {
-      showEwallet: false,
-      showDropdown: false,
-      showDebit: false,
       paymentDetail: false,
       paymentDetail2: false,
-      bankOption: true,
-      showVirtual: false,
-      iconName1: 'expand_more',
-      iconName2: 'expand_more',
-      iconName3: 'expand_more',
-      iconName4: 'expand_more',
-      arrowBottom: 'expand_less',
       arrowUp: 'expand_more',
       NameCard: '',
       DPP: '10%',
       includeTax: false,
+      bank: this.selectedBank,
+      metode: this.selectedMethod,
       // from user
       noPesanan: '25513515',
       namaUser: 'Rono Rustan',
@@ -197,41 +187,10 @@ export default defineComponent({
         { label: 'Breakfast', qty: '1', price: '5000000' }
       ],
       total: 0,
-
-      dropdownOptions: [
-        { value: 'BCA', imageUrl: 'Bank_Central_Asia.svg.webp' },
-        { value: 'Mandiri', imageUrl: '2560px-Bank_Mandiri_logo.svg.png' },
-        { value: 'BRI', imageUrl: '1280px-BANK_BRI_logo.svg.webp' },
-        { value: 'BNI', imageUrl: '1200px-BNI_logo.svg.png' }
-      ],
-      dropdownOptions2: [
-        {
-          value: 'Qris',
-          imageUrl: 'quick-response-code-indonesia-standard-qris-logo-F300D5EB32-seeklogo.com.png'
-        },
-        { value: 'Gopay', imageUrl: 'Gopay_logo.svg.png' },
-        { value: 'ShopeePay', imageUrl: 'logo-shopeepay.png' }
-      ],
-      dropdownOptions3: [
-        { value: 'BCA', imageUrl: 'Bank_Central_Asia.svg.webp' },
-        { value: 'BNI', imageUrl: '1200px-BNI_logo.svg.png' }
-      ],
-      dropdownOptions4: [
-        { value: 'Visa', imageUrl: 'Visa_Inc._logo.svg.png' },
-        { value: 'Master', imageUrl: 'mastercard-og-image.png' },
-        { value: 'JCB', imageUrl: 'JCB_logo.svg.png' }
-      ],
-      selectedBank: '',
       selectedOption: null,
-      selectedMethod: ''
     }
   },
   watch: {
-    selectedOption(newVal) {
-      this.selectedBank = newVal
-      console.log('method payment ' + this.selectedBank)
-      console.log('method payment ' + this.selectedMethod)
-    },
     includeTax() {
       this.calculateTotal() // Panggil method calculateTotal() saat status checkbox berubah
     }
@@ -240,63 +199,10 @@ export default defineComponent({
     this.calculateTotal() // Panggil method calculateTotal() saat komponen dibuat
   },
   mounted() {
-    console.log(this.NameCard)
+    console.log('Selected Bank:', this.selectedBank);
+    console.log('Selected Method:', this.selectedMethod);
   },
   methods: {
-    toggleDropdown() {
-      this.showDropdown = !this.showDropdown
-      this.iconName1 = this.showDropdown ? this.arrowBottom : this.arrowUp
-      this.iconName2 = this.showDropdown ? this.arrowUp : this.arrowUp
-      this.iconName3 = this.showDropdown ? this.arrowUp : this.arrowUp
-      this.iconName4 = this.showDropdown ? this.arrowUp : this.arrowUp
-      this.showDebit = false
-      this.showEwallet = false
-      this.showVirtual = false
-      this.selectedMethod = this.showDropdown ? (find(1) ? 'Bank Transfer' : '') : ''
-    },
-    toggleBank() {
-      this.showDebit = !this.showDebit
-      this.iconName2 = this.showDebit ? this.arrowBottom : this.arrowUp
-      this.iconName1 = this.showDebit ? this.arrowUp : this.arrowUp
-      this.iconName3 = this.showDebit ? this.arrowUp : this.arrowUp
-      this.iconName4 = this.showDebit ? this.arrowUp : this.arrowUp
-      this.showDropdown = false
-      this.showEwallet = false
-      this.showVirtual = false
-      if (this.showDebit) {
-        this.selectedBank = 'Kartu Kredit'
-        this.selectedMethod = 'Debit'
-      } else {
-        this.selectedBank = ''
-        this.selectedMethod = ''
-      }
-    },
-    toggleEwallet() {
-      this.showEwallet = !this.showEwallet
-      this.iconName3 = this.showEwallet ? this.arrowBottom : this.arrowUp
-      this.iconName1 = this.showEwallet ? this.arrowUp : this.arrowUp
-      this.iconName2 = this.showEwallet ? this.arrowUp : this.arrowUp
-      this.iconName4 = this.showEwallet ? this.arrowUp : this.arrowUp
-      this.showDropdown = false
-      this.showDebit = false
-      this.showVirtual = false
-      if (this.showEwallet) {
-        this.selectedMethod = 'E-Wallet'
-      } else {
-        this.selectedMethod = ''
-      }
-    },
-    toggleVirtual() {
-      this.showVirtual = !this.showVirtual
-      this.iconName4 = this.showVirtual ? this.arrowBottom : this.arrowUp
-      this.iconName1 = this.showVirtual ? this.arrowUp : this.arrowUp
-      this.iconName2 = this.showVirtual ? this.arrowUp : this.arrowUp
-      this.iconName3 = this.showVirtual ? this.arrowUp : this.arrowUp
-      this.showDropdown = false
-      this.showDebit = false
-      this.showEwallet = false
-      this.selectedMethod = this.showVirtual ? (find(3) ? 'Virtual Account' : '') : ''
-    },
     calculateTotal() {
       // Menggunakan metode reduce() untuk menjumlahkan nilai properti 'price'
       this.total = this.priceBook.reduce((accumulator, currentValue) => {
@@ -312,45 +218,6 @@ export default defineComponent({
       // console.log(this.subtotal)
       return subtotal * 0.1
     },
-    moveDetail() {
-      this.$router.push('/fo/payment/detail')
-      // this.$router.push({
-      //   path: '/fo/payment/detailpayment',
-      //   meta: {
-      //     title: 'detailPayment',
-      //     main_route: false,
-      //     protected: true
-      //   }
-      // })
-      // try {
-      //   if (this.selectedBank == null || this.selectedBank == '') {
-      //     console.log('required bank method')
-      //   } else {
-      //     this.paymentDetail = !this.paymentDetail
-      //     this.bankOption = false
-      //     paymentDetail2 = true
-      //   }
-      // } catch (error) {
-      //   console.error('Error: ' + error.massage)
-      // }
-    },
-    find(value) {
-      if (value == 1) {
-        return this.dropdownOptions.find((option) => option.value === this.selectedBank)
-      } else if (value == 2) {
-        return this.dropdownOptions2.find((option) => option.value === this.selectedBank)
-      } else if (value == 3) {
-        return this.dropdownOptions3.find((option) => option.value === this.selectedBank)
-      }
-    },
-    // formatingPrice(){
-    //   this.priceBook.slice().sort((a, b) => a.price -b.price ).map(value => {
-    //     return  value.toLocaleString('id-ID',{
-    //       style: 'currency',
-    //       currency: 'IDR'
-    //     })
-    //   })
-    // },
     formating(value) {
       return parseFloat(value).toLocaleString('id-ID', {
         style: 'currency',

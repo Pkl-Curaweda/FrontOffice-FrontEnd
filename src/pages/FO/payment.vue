@@ -595,22 +595,26 @@ export default defineComponent({
       return subtotal * 0.1
     },
     moveDetail() {
-      // this.$router.push('/fo/payment/detail')
-      // this.$router.push({
-      //   path: '/fo/payment/detailpayment',
-      //   meta: {
-      //     title: 'detailPayment',
-      //     main_route: false,
-      //     protected: true
-      //   }
-      // })
       try {
         if (this.selectedBank == null || this.selectedBank == '') {
           console.log('required bank method')
         } else {
-          this.paymentDetail = !this.paymentDetail
-          this.bankOption = false
-          paymentDetail2 = true
+          this.$router.push({
+            path: '/fo/payment/detail',
+            props: {
+              selectedBank: this.selectedBank,
+              selectedMethod: this.selectedMethod
+            },
+            // Opsional: Anda juga bisa menyertakan meta jika diperlukan
+            meta: {
+              title: 'detailPayment',
+              main_route: false,
+              protected: true
+            }
+          })
+          // this.paymentDetail = !this.paymentDetail
+          // this.bankOption = false
+          // paymentDetail2 = true
         }
       } catch (error) {
         console.error('Error: ' + error.massage)
@@ -638,7 +642,7 @@ export default defineComponent({
         style: 'currency',
         currency: 'IDR'
       })
-    },
+    }
   }
 })
 </script>

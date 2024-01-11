@@ -118,7 +118,7 @@
                       height: fit-content;
                       border-radius: 10px 0px 0px 10px;
                     "
-                    @click="toggleKtpSelected && KtpSelected()"
+                    @click="toggleKtpSelected && KTPSelected()"
                   >
                     KTP
                   </q-btn>
@@ -134,7 +134,7 @@
                       height: fit-content;
                       border-radius: 0px 10px 10px 0px;
                     "
-                    @click="toggleSimSelected"
+                    @click="toggleSimSelected && SIMSelected()"
                   >
                     SIM
                   </q-btn>
@@ -585,7 +585,7 @@ export default defineComponent({
     function toggleSimSelected() {
       isSimSelected.value = !isSimSelected.value
       isKtpSelected.value = false // Reset the state of KTP button
-      this.CardIdselect = 'SIM'
+
     }
 
     return {
@@ -1008,7 +1008,7 @@ export default defineComponent({
             }
           }
         )
-        // this.refresh()
+        this.refresh()
       } catch (error) {
         console.error(error)
       }
@@ -1066,9 +1066,17 @@ export default defineComponent({
         console.error('error:'+ error)
       }
     },
-    KtpSelected() {
+    KTPSelected() {
       this.CardIdselect = 'KTP'
       console.log(this.CardIdselect)
+      this.isKtpSelected = !this.isKtpSelected
+      this.isSimSelected = false
+    },
+    SIMSelected() {
+      this.CardIdselect = 'SIM'
+      console.log(this.CardIdselect)
+      this.isSimSelected = !this.isSimSelected
+      this.isKtpSelected = false
     }
   }
 })

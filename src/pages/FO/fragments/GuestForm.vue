@@ -645,7 +645,7 @@ export default defineComponent({
       arrangmentCode: ref(''),
       selected: ref([]),
       selectedstatus: ref(),
-      resvStatus: [],
+      resvStatus: ref([]),
       descSelect: ref('')
     }
   },

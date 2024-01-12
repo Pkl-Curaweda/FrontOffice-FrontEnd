@@ -1,9 +1,14 @@
 <template>
   <q-page class="flex flex-center">
-    <div class="dashboard-box column q-ma-md" style="padding: 0">
-      <p class="text-center breadcrumb-bg q-pa-sm relative" style="width: 100%; border-radius: 10px 10px 0 0">Extra Bed Availability</p>
-      <q-btn flat square color="primary" icon="o_print" class="self-end q-ma-none" />
-      <div class="justify-between row q-px-sm" style="width: 100%">
+    <HKCard
+      title="Extrabed Availibility"
+      radius="25px"
+      card_class="full-width q-px-lg flex"
+      style="max-height: 719px"
+      class="self-end"
+    >
+      <q-btn flat square color="primary" icon="o_print" style="justify-content: flex-end" />
+      <div class="justify-between row q-mb-sm " style="width: 100%">
         <!-- ==========Date=============== -->
         <div class="row" style="gap: 16px">
           <div class="flex items-center" style="gap: 8px">
@@ -31,13 +36,14 @@
         </div>
       </div>
       <HKTable :columns="tableColumns" :rows="tableRows" style="width: 100%" />
-    </div>
+    </HKCard>
   </q-page>
 </template>
 <script>
 import { defineComponent, ref } from 'vue'
-import HKDateInput from 'src/components/HK/Form/HKDateInput.vue'
+import HKCard from 'src/components/HK/Card/HKCard.vue'
 import HKTable from 'src/components/HK/Table/HKTable.vue'
+import HKDateInput from 'src/components/HK/Form/HKDateInput.vue'
 
 const tableColumns = [
   {
@@ -106,7 +112,7 @@ const tableRows = [
 
 export default defineComponent({
   name: 'ExtrabedPage',
-  components: { HKDateInput, HKTable },
+  components: { HKCard, HKDateInput, HKTable },
   setup() {
     return {
       sortingModel: ref('Extra Bed'),

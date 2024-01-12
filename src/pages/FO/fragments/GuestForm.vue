@@ -155,7 +155,8 @@
                   dense
                   class="rounded-borders text-capitalize text-black"
                   style="width: 60px"
-                  >
+                  @click="dialogpayment = false"
+                >
                   Cancel
                 </q-btn>
                 <q-btn
@@ -218,33 +219,16 @@
           dropdown-icon="expand_more"
           class="full-width"
         />
-
         <q-select
           outlined
           dense
           v-model="roomBed"
           :options="roomBedOpts"
-          label="Type Bed"
           dropdown-icon="expand_more"
           class="full-width"
+          option-label="value"
+          label="Type Bed"
         >
-          <!-- <template v-slot:option="roomBedOpts">
-            <q-item v-bind="roomBedOpts">
-              <q-item-section avatar>
-                <div class="flex justify-center">
-                  <q-icon size="24px" :name="roomBedOpts.opt.icon" />
-                  <q-icon
-                    size="24px"
-                    :name="roomBedOpts.opt.icon"
-                    v-if="roomBedOpts.opt.label === 'TWIN'"
-                  />
-                </div>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>{{ roomBedOpts.opt.label }}</q-item-label>
-              </q-item-section>
-            </q-item>
-          </template> -->
         </q-select>
       </div>
 
@@ -374,8 +358,11 @@
       <div class="row no-wrap items-center" style="gap: 2px">
         <div class="text-bold">Res Status:</div>
         <div class="q-pa-md">
-          <q-btn-dropdown color="primary" :label="resvStatus.label || resvStatus.description || 'Status'"
-          outline>
+          <q-btn-dropdown
+            color="primary"
+            :label="resvStatus.label || resvStatus.description || 'Status'"
+            outline
+          >
             <q-list>
               <q-item
                 v-for="(option, index) in dropdownOptions"
@@ -407,7 +394,7 @@
               height: fit-content;
               border-radius: 10px 0px 0px 10px;
             "
-            @click="toggleRbSelected"
+            @click="checkedCode('RB')"
           >
             RB
           </q-btn>
@@ -423,7 +410,7 @@
               height: fit-content;
               border-radius: 0px 10px 10px 0px;
             "
-            @click="toggleRoSelected"
+            @click="checkedCode('RO')"
           >
             RO
           </q-btn>
@@ -438,20 +425,17 @@
         dense
         style="font-weight: bold"
       >
-        <div
-          style="display: flex; width: 80%"
-          v-for="row in arrangmentList"
-          :key="row.id"
-          clickable
-          @click="selectRow(row)"
-        >
-          <q-radio selection="single" v-model="selected" :val="row" />
+        <div v-for="row in arrangmentList" :key="row.id" clickable @click="selectRow(row)">
+          <div style="display: flex; width: 100%">
+            <q-radio selection="single" v-model="selected" :val="row" />
 
-          <div style="display: flex; justify-content: space-around; margin: auto; width: 100%">
-            <div>{{ row.id.split('-')[0] }}</div>
-            <div>{{ row.rate }}</div>
-            <div>{{ row.id.split('-')[1] }}</div>
+            <div style="display: flex; justify-content: space-around; margin: auto; width: 100%">
+              <div>{{ row.id.split('-')[0] }}</div>
+              <div>{{ row.rate }}</div>
+              <div>{{ row.id.split('-')[1] }}</div>
+            </div>
           </div>
+          <q-separator horizontal class="q-ma-xs" />
         </div>
         <q-btn
           unelevated
@@ -539,7 +523,6 @@ export default defineComponent({
     const rows = []
     const status = []
 
-
     const arrangmentList = [
       {
         id: 'DLX-RB',
@@ -579,13 +562,11 @@ export default defineComponent({
     function toggleKtpSelected() {
       isKtpSelected.value = !isKtpSelected.value
       isSimSelected.value = false // Reset the state of SIM button
-      KtpSelected()
     }
 
     function toggleSimSelected() {
       isSimSelected.value = !isSimSelected.value
       isKtpSelected.value = false // Reset the state of KTP button
-
     }
 
     return {
@@ -607,7 +588,11 @@ export default defineComponent({
       roomNoOpts: [],
       //
       roomTypeOpts: ref(['DLX', 'FML', 'STD']),
-      roomBedOpts: [{label: 'K' ,value:'KING'}, {label: 'T', value: 'TWIN'}, {label: 'S', value: 'SINGLE'}],
+      roomBedOpts: [
+        { label: 'K', value: 'KING' },
+        { label: 'T', value: 'TWIN' },
+        { label: 'S', value: 'SINGLE' }
+      ],
       // roomBedOpts: [],
       loading: ref(false),
       isRbSelected,
@@ -631,11 +616,11 @@ export default defineComponent({
       address: ref(''),
       resultStatus: ref(''),
       showDropdown: false,
-      dropdownOptions:  [
-      { value: '1', description: 'Guaranted' },
-      { value: '2', description: '6 PM' },
-      { value: '3', description: 'Tentative' }
-    ],
+      dropdownOptions: [
+        { value: '1', description: 'Guaranted' },
+        { value: '2', description: '6 PM' },
+        { value: '3', description: 'Tentative' }
+      ],
       arrangmentList,
       selectedOption: null,
       resvRecource: ref(null),
@@ -644,7 +629,8 @@ export default defineComponent({
       selected: ref([]),
       selectedstatus: ref(),
       resvStatus: ref([]),
-      descSelect: ref('')
+      descSelect: ref(''),
+      arrangmentValue: ref([])
     }
   },
   data() {
@@ -667,12 +653,12 @@ export default defineComponent({
         this.getResvProps()
       }
     )
-    watch(
-      () => [this.roomNo, this.roomBed, this.roomType],
-      () => {
-        this.isRoomExist()
-      }
-    )
+    // watch(
+    //   () => [this.roomNo, this.roomBed, this.roomType],
+    //   () => {
+    //     this.isRoomExist()
+    //   }
+    // )
   },
   created() {
     for (let i = 1; i <= 10; i++) {
@@ -711,16 +697,16 @@ export default defineComponent({
         arrangmentCode: this.selected && this.selected.id ? this.selected.id : ''
       }
     },
-    isRoomExist() {
-      if (this.roomType == null || this.roomNo == null || this.roomBed == null) return
+    // isRoomExist() {
+    //   if (this.roomType == null || this.roomNo == null || this.roomBed == null) return
 
-      this.availRooms.filter(
-        (r) =>
-          r.roomType == this.roomType && r.id == this.roomNo && r.bedSetup == this.roomBed.value
-      ).length < 1
-        ? this.$Helper.showNotif('Room Unavailable', '', 'warning')
-        : this.$Helper.showNotif('Room Available', '', 'positive')
-    },
+    //   this.availRooms.filter(
+    //     (r) =>
+    //       r.roomType == this.roomType && r.id == this.roomNo && r.bedSetup == this.roomBed.value
+    //   ).length < 1
+    //     ? this.$Helper.showNotif('Room Unavailable', '', 'warning')
+    //     : this.$Helper.showNotif('Room Available', '', 'positive')
+    // },
     roomBedMapper(bed) {
       let obj = {
         label: bed,
@@ -787,7 +773,8 @@ export default defineComponent({
     getResvProps() {},
     selectRow(row) {
       this.selected = row
-      this.calculateTotal() // Memanggil calculateTotal() setelah pemilihan opsi
+      console.log(this.selected)
+      this.calculateTotal()
     },
     calculateTotal() {
       if (this.selected) {
@@ -867,7 +854,6 @@ export default defineComponent({
 
       this.loading = true
       this.resvNo = currentResvId
-
       this.api.get(
         `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
         ({ status, data }) => {
@@ -889,6 +875,7 @@ export default defineComponent({
               value: reservation.resvStatus.id,
               label: reservation.resvStatus.description
             }
+            this.arrangmentValue = { id: arrangment.id, rate: arrangment.rate }
             this.resvRemark = reservation.reservationRemarks
             this.roomImage = room.roomImage
             this.roomNo = room.id
@@ -903,9 +890,13 @@ export default defineComponent({
 
             const formattedStatus = this.formatedStatus(reservationStatus)
             this.status = formattedStatus
+
             // this.resultStatus = this.checkData(reservation.description)
             // this.arrangmentCode = { id: arrangment.id, rate: arrangment.rate }
           }
+          console.log(this.arrangmentValue.id.split('-')[1])
+          this.selectRow(this.arrangmentValue)
+          this.checkedCode(this.arrangmentValue.id.split('-')[1])
           // connsole.log(this.rows)
           console.log(this.resvStatus.label)
         }
@@ -956,7 +947,7 @@ export default defineComponent({
         arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
         departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
         reservationRemarks: this.resvRemark,
-        resvStatusId: this.resvStatus.id
+        resvStatusId: parseInt(this.resvStatus.id)
       }
       try {
         this.api.post(
@@ -971,7 +962,7 @@ export default defineComponent({
             }
           }
         )
-        this.refresh()
+        // this.refresh()
       } catch (error) {
         console.error(error)
       }
@@ -1025,8 +1016,8 @@ export default defineComponent({
     },
     onItemClick(optionValue, desc) {
       this.optionValue = optionValue
-      this.resvStatus = {id: optionValue, description: desc}
-      console.log(this.resvStatus.description)
+      this.resvStatus = { id: optionValue, description: desc }
+      console.log(this.resvStatus.id)
     },
     getDropdownLabel() {
       if (this.resvStatus.label) {
@@ -1042,7 +1033,7 @@ export default defineComponent({
     refresh() {
       window.location.reload()
     },
-    CardId(){
+    CardId() {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
       const cardData = {
         name: this.nameidcard,
@@ -1050,20 +1041,21 @@ export default defineComponent({
         cardId: this.idcardnumber,
         address: this.address
       }
-      try{
-        this.api.post(`/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/add-idcard`,
-        cardData,
-        ({ status, data }) => {
+      try {
+        this.api.post(
+          `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/add-idcard`,
+          cardData,
+          ({ status, data }) => {
             this.loading = false
             if (status === 200) {
               console.log('Data berhasil diperbarui:', data)
             } else {
               console.error('Gagal memperbarui data')
             }
-          })
-      }
-      catch(error){
-        console.error('error:'+ error)
+          }
+        )
+      } catch (error) {
+        console.error('error:' + error)
       }
     },
     KTPSelected() {
@@ -1077,7 +1069,33 @@ export default defineComponent({
       console.log(this.CardIdselect)
       this.isSimSelected = !this.isSimSelected
       this.isKtpSelected = false
+    },
+    checkedCode(type) {
+      // console.log((this.isRoSelected = !this.isRoSelected))
+      // if (this.selected.id.split('-')[1] === 'RB') {
+      //   this.isRoSelected = !this.isRoSelected
+      //   this.isRbSelected = false
+      // } else if (this.selected.id.split('-')[1] === 'RO') {
+      //   this.isRbSelected = !this.isRbSelected
+      //   this.isRoSelected = false
+      // } else {
+      //   console.log('data tidak ada')
+      // }
+      if (type === 'RO') {
+        this.isRoSelected = true
+        this.isRbSelected = false
+        console.log(type)
+      } else if (type === 'RB') {
+        this.isRbSelected = true
+        this.isRoSelected = false
+      } else {
+        console.log('data tidak sesuai')
+      }
     }
+    // RBSelected() {
+    //   this.isRbSelected = !this.isRbSelected
+    //   this.isRoSelected = false
+    // }
   }
 })
 </script>

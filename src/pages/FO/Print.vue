@@ -2,27 +2,32 @@
   <q-page style="overflow-y: scroll; height: 100%">
     <FOMenubar>
       <template #right>
-        <q-btn
-          flat
-          square
-          color="primary"
-          icon="o_print"
-        />
+        <q-btn flat square color="primary" icon="o_print" />
       </template>
     </FOMenubar>
 
-    <div class="row q-ma-md no-wrap" style="gap: 15px" >
-      <div style="width: 50%;">
+    <div class="row q-ma-md no-wrap" style="gap: 15px">
+      <div style="width: 50%">
         <q-img
           src="../../assets/img/lingian-logo-colored.png"
-          style="width: 10rem; height: 10rem; display: flex; justify-content: center; align-items: center;"
+          style="
+            width: 10rem;
+            height: 10rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
           class="q-mx-auto"
         />
         <div class="my-table">
           <q-table
-            class="no-shadow scrollable-table q-mt-md"
+            class="no-shadow"
+            v-model:pagination="pagination"
+            @request="onPaginationChange"
             :rows="data"
+            :loading="loading"
             :columns="columns"
+            row-key="name"
           >
             <template>
               <q-tr class="table-head">
@@ -37,24 +42,30 @@
                       </q-th>
                     </q-tr>
                   </template>
-                  <template v-slot:body="props">
-                    <q-tr :props="props"> </q-tr>
-                  </template>
                 </q-th>
+              </q-tr>
+            </template>
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <template v-for="(cell, key, i) in props.row" :key="i">
+                  <q-td :style="cell.style">
+                    {{ cell.data }}
+                  </q-td>
+                </template>
               </q-tr>
             </template>
           </q-table>
         </div>
       </div>
       <!-- <iframe src="src/assets/pdf/invoicePdf.pdf" frameborder="0"></iframe> -->
-      <div class="column justify-between" style="width: 50%; gap: 15px;">
-        <div class="column" style="gap: 10px;">
-          <div class="row justify-between" style="overflow: auto; min-width: 100%; max-width: 100%;">
-            <p class="q-my-auto" style="min-width: 60%; max-width: 60%;">Page</p>
+      <div class="column justify-between" style="width: 50%; gap: 15px">
+        <div class="column" style="gap: 10px">
+          <div class="row justify-between" style="overflow: auto; min-width: 100%; max-width: 100%">
+            <p class="q-my-auto" style="min-width: 60%; max-width: 60%">Page</p>
             <p class="q-my-auto">2 Pages</p>
           </div>
-          <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%;">
-            <p class="q-my-auto" style="min-width: 60%; max-width: 60%;">Forecast</p>
+          <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%">
+            <p class="q-my-auto" style="min-width: 60%; max-width: 60%">Forecast</p>
             <q-select
               outlined
               dense
@@ -70,8 +81,8 @@
               </template>
             </q-select>
           </div>
-          <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%;">
-            <p class="q-my-auto" style="min-width: 60%; max-width: 60%;">Destination</p>
+          <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%">
+            <p class="q-my-auto" style="min-width: 60%; max-width: 60%">Destination</p>
             <q-select
               outlined
               dense
@@ -87,8 +98,8 @@
               </template>
             </q-select>
           </div>
-          <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%;">
-            <p class="q-my-auto" style="min-width: 60%; max-width: 60%;">Pages</p>
+          <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%">
+            <p class="q-my-auto" style="min-width: 60%; max-width: 60%">Pages</p>
             <q-select
               outlined
               dense
@@ -100,8 +111,8 @@
               color="primary"
             />
           </div>
-          <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%;">
-            <p class="q-my-auto" style="min-width: 60%; max-width: 60%;">Pages per sheet</p>
+          <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%">
+            <p class="q-my-auto" style="min-width: 60%; max-width: 60%">Pages per sheet</p>
             <q-select
               outlined
               dense
@@ -113,8 +124,8 @@
               color="primary"
             />
           </div>
-          <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%;">
-            <p class="q-my-auto" style="min-width: 60%; max-width: 60%;">Margin</p>
+          <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%">
+            <p class="q-my-auto" style="min-width: 60%; max-width: 60%">Margin</p>
             <q-select
               outlined
               dense
@@ -128,13 +139,30 @@
           </div>
         </div>
         <div style="gap: 8px" class="q-mt-lg row no-wrap items-center justify-end">
-          <q-btn label="Print" unelevated color="primary" dense class="text-capitalize q-px-md q-py-sm" />
-          <q-btn label="Save" unelevated color="primary" dense class="text-capitalize q-px-md q-py-sm" />
-          <q-btn label="Cancel" outline color="primary" dense class="text-capitalize q-px-md q-py-sm" />
+          <q-btn
+            label="Print"
+            unelevated
+            color="primary"
+            dense
+            class="text-capitalize q-px-md q-py-sm"
+          />
+          <q-btn
+            label="Save"
+            unelevated
+            color="primary"
+            dense
+            class="text-capitalize q-px-md q-py-sm"
+          />
+          <q-btn
+            label="Cancel"
+            outline
+            color="primary"
+            dense
+            class="text-capitalize q-px-md q-py-sm"
+          />
         </div>
       </div>
     </div>
-
   </q-page>
 </template>
 
@@ -143,16 +171,9 @@ import { defineComponent, ref } from 'vue'
 import FOMenubar from 'src/components/FOMenubar.vue'
 
 const columns = [
-  { name: 'Art', label: 'Art', align: 'left', field: 'Art' },
-  { name: 'Qty', label: 'Qty', align: 'left', field: 'Qty' },
+  { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
   { name: 'Description', label: 'Description', align: 'left', field: 'Description' },
-  { name: 'Rate', label: 'Rate', align: 'left', field: 'Rate' },
-  { name: 'Amount', label: 'Amount', align: 'left', field: 'Amount' },
-  { name: 'RmNo', label: 'RmNo', align: 'left', field: 'RmNo' },
-  { name: 'RoomBoy', label: 'Room Boy', field: 'RoomBoy', align: 'left' },
-  { name: 'VoucherNumber', label: 'Voucher Number', align: 'left', field: 'VoucherNumber' },
-  { name: 'BillDate', label: 'BillDate', align: 'left', field: 'BillDate' },
-  { name: '', label: '', align: 'center', field: '' }
+  { name: 'Amount', label: 'Amount', align: 'left', field: 'Amount' }
 ]
 
 export default defineComponent({
@@ -169,10 +190,47 @@ export default defineComponent({
       pagesperOpt: ['1', 'Custom'],
       margin: ref(null),
       marginOpt: ['Default', 'Custom'],
-      columns,
+      columns
     }
   },
-  components: { FOMenubar }
+  components: { FOMenubar },
+  data() {
+    return {
+      api: new this.$Api('frontoffice'),
+      data: []
+    }
+  },
+  mounted() {
+    this.getDataTable()
+  },
+  methods: {
+    getDataTable() {
+      this.loading = true
+
+      let url = `invoice/payment/1/1`
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+          this.formatData(data.invoices)
+        }
+      })
+    },
+    formatData(raw = []) {
+      const list = []
+
+      raw.forEach((ip) => {
+        list.push({
+          Date: { data: ip.billDate, style: {} },
+          Description: { data: ip.desc, style: {} },
+          Amount: { data: ip.amount, style: {} }
+        })
+      })
+      console.log(this.data, list)
+      this.data = list
+      console.log(this.data)
+    }
+  }
 })
 </script>
 

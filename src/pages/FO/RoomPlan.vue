@@ -367,6 +367,7 @@ export default defineComponent({
   components: { FOMenubar, RoomPlanDropdown },
   data() {
     return {
+      api: new this.$Api('frontoffice'),
       datePicker,
       floor,
       statuses,
@@ -387,7 +388,30 @@ export default defineComponent({
       ]
     }
   },
+  mounted() {
+    this.backgroundRoom()
+  },
   methods: {
+    backgroundRoom() {
+      this.loading = true
+      this.api.get(`floorplan`, ({ status, data }) => {
+        this.loading = false
+        if (status == 200) {
+          this.formatData(data)
+        }
+      })
+    },
+    formatData(raw = []) {
+      const list = []
+      raw.forEach((fp) => {
+        console.log(fp)
+        list.push({
+          bg_color: fp.roomStatus.rowColor,
+          text_color: fp.roomStatus.textColor
+        })
+      })
+      this.roomData = list
+    },
     handleStatus(data) {
       const index = this.roomData.findIndex((room) => room.room === data.room)
 

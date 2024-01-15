@@ -2,7 +2,7 @@
   <div class="full-width">
     <div class="row q-pt-sm" style="gap: 5px">
       <div style="background-color: #008001; color: white; width: 700px" class="q-py-sm q-pl-sm">
-        0.00
+        {{ backgroundedTotal || 0.0 }}
       </div>
       <div style="background-color: #008001; width: 20px"></div>
       <div style="background-color: #e4e4e4; color: #008444" class="q-pa-sm">
@@ -11,7 +11,9 @@
       <div style="background-color: #fdfd06" class="q-pa-sm">
         <q-icon name="north_east" size="20px" />
       </div>
-      <div style="background-color: #fdfd06" class="q-py-sm col-grow q-pl-sm">00.0</div>
+      <div style="background-color: #fdfd06" class="q-py-sm col-grow q-pl-sm">
+        {{ backgroundedBalance || 0.0 }}
+      </div>
     </div>
 
     <div class="row items-center q-mt-md full-width" style="gap: 7px">
@@ -21,7 +23,7 @@
           style="border: 1.5px #00000080 solid"
           class="text-bold q-py-xs q-px-sm rounded-borders"
         >
-          {{ description || 'Blanket' }}
+          {{ description || '-' }}
         </div>
       </div>
       <div class="row items-center">
@@ -53,7 +55,7 @@
       </div>
       <div class="items-center col-grow">
         <div class="text-bold row" style="justify-content: space-between">
-          <div></div>
+          <div>Payment</div>
           <div>Rp 0.00</div>
         </div>
         <q-separator class="" style="background: rgba(0, 0, 0, 0.5)" size="1.5px" />
@@ -61,7 +63,7 @@
       <div class="items-center col-grow">
         <div class="text-bold row" style="justify-content: space-between">
           <div>Balance</div>
-          <div>Rp 0.00</div>
+          <div>{{ balance || 'Rp 0.00' }}</div>
         </div>
         <q-separator class="" style="background: rgba(0, 0, 0, 0.5)" size="1.5px" />
       </div>
@@ -114,7 +116,7 @@
       >
         <q-card>
           <q-input
-            v-model="textarea"
+            v-model="billAddress"
             label="Note..."
             dense
             outlined
@@ -131,7 +133,7 @@
       >
         <q-card>
           <q-input
-            v-model="textarea"
+            v-model="comments"
             label="Note..."
             dense
             outlined
@@ -152,6 +154,8 @@ export default defineComponent({
   setup() {
     return {
       description: ref(''),
+      billAdress: ref(''),
+      comments: ref(''),
       viewBill: ref(false)
     }
   },
@@ -176,10 +180,15 @@ export default defineComponent({
         if (status == 200) {
           const { detail } = data
 
+          this.backgroundedTotal = this.formatCurrency(data.total)
+          this.backgroundedBalance = this.formatCurrency(data.balance)
           this.description = detail.desc
           this.qty = detail.qty
           this.rate = this.formatCurrency(detail.rate)
           this.amount = this.formatCurrency(detail.amount)
+          this.balance = `Rp ${this.formatCurrency(data.balance)}`
+          this.billAddress = data.address
+          this.comments = data.comment
           this.console.log('hallo')
         }
       })

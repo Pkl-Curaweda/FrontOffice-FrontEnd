@@ -382,12 +382,12 @@
                             >{{ ' Transfer ' + option.label }}</label
                           >
                         </div>
-                        <div style="width: 60px">
+                        <div>
                           <label
                             :for="'option_' + index"
                             style="font-weight: 600"
                             class="centerComponent"
-                            >{{ option.price }}</label
+                            >{{ formating(option.price) }}</label
                           >
                         </div>
                       </div>
@@ -431,7 +431,7 @@
                         style="font-weight: 600"
                         class="centerComponent"
                       >
-                        {{ total }}</label
+                        {{ formating(total) }}</label
                       >
                     </div>
                   </div>
@@ -534,7 +534,7 @@ export default defineComponent({
   watch: {
     selectedOption(newVal) {
       this.selectedBank = newVal
-      console.log('method payment' + this.selectedBank)
+      console.log('method payment ' + this.selectedBank)
       console.log('method payment ' + this.selectedMethod)
     },
     includeTax() {
@@ -618,14 +618,26 @@ export default defineComponent({
       return subtotal * 0.1
     },
     moveDetail() {
-      // this.$router.push('/fo/payment/detail')
       try {
         if (this.selectedBank == null || this.selectedBank == '') {
           console.log('required bank method')
         } else {
-          this.paymentDetail = !this.paymentDetail
-          this.bankOption = false
-          paymentDetail2 = true
+          this.$router.push({
+            path: '/fo/payment/detail',
+            props: {
+              selectedBank: this.selectedBank,
+              selectedMethod: this.selectedMethod
+            },
+            // Opsional: Anda juga bisa menyertakan meta jika diperlukan
+            meta: {
+              title: 'detailPayment',
+              main_route: false,
+              protected: true
+            }
+          })
+          // this.paymentDetail = !this.paymentDetail
+          // this.bankOption = false
+          // paymentDetail2 = true
         }
       } catch (error) {
         console.error('Error: ' + error.massage)
@@ -639,6 +651,20 @@ export default defineComponent({
       } else if (value == 3) {
         return this.dropdownOptions3.find((option) => option.value === this.selectedBank)
       }
+    },
+    // formatingPrice(){
+    //   this.priceBook.slice().sort((a, b) => a.price -b.price ).map(value => {
+    //     return  value.toLocaleString('id-ID',{
+    //       style: 'currency',
+    //       currency: 'IDR'
+    //     })
+    //   })
+    // },
+    formating(value) {
+      return parseFloat(value).toLocaleString('id-ID', {
+        style: 'currency',
+        currency: 'IDR'
+      })
     }
   }
 })

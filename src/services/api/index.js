@@ -29,6 +29,13 @@ export class Api {
     return await this.request('POST', path, data, callback)
   }
 
+  async put(path, data, callback) {
+    return await this.request('PUT', path, data, callback)
+  }
+  async delete(path) {
+    return await this.request('DELETE', path);
+  }
+
   async request(method = 'GET', path = '', data = null, callback) {
     const config = {
       method: method,

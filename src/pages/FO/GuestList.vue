@@ -152,7 +152,12 @@
                       />
                     </svg>
                   </q-btn>
-                  <q-btn flat rounded size="13px" style="color: #269861"
+                  <q-btn
+                    flat
+                    rounded
+                    size="13px"
+                    style="color: #269861"
+                    @click="deleteResv(props.row)"
                     ><svg
                       width="19"
                       height="19"
@@ -306,6 +311,9 @@ export default defineComponent({
   mounted() {
     this.fetchData()
   },
+  watch() {
+    searchitem(this.searchInput)
+  },
   watch: {
     filterColumns: {
       handler(filters) {
@@ -320,10 +328,66 @@ export default defineComponent({
     }
   },
   methods: {
+    searchitem(searchResNo) {
+      let searchInput = this.data.filte((item) => {
+        return item.RessNo.data === searchResNo
+      })
+      console.log(searchInput)
+    },
     setRoomResv(data) {
       this.$ResvStore.currentResvId = data['ResNo'].data
       this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
     },
+    async deleteResv(data) {
+      try {
+        const resvId = data['ResNo'].data
+        const resRoomNo = data['ResRoomNo'].data
+
+        const response = await this.api.delete(
+          `/fo/detail/reservation/${resvId}/${resRoomNo}/delete`
+        )
+
+        if (response.status === 200) {
+          console.log(response.data)
+          // const index = this.data.findIndex(
+          //   (item) => item.ResNo.data === resvId && item.ResRoomNo.data === resRoomNo
+          // )
+
+          // if (index !== -1) {
+          //   this.data.splice(index, 1)
+          //   console.log('Data berhasil dihapus')
+          // }
+        } else {
+          console.error('Gagal menghapus data')
+        }
+      } catch (error) {
+        console.error('Terjadi kesalahan:', error)
+      }
+    },
+
+    // async deleteResv(data) {
+    //   try {
+    //     const resvId = data['ResNo'].data
+    //     const resRoomNo = data['ResRoomNo'].data
+    //     console.log(resvId, resRoomNo)
+    //     const response = await this.api.delete(
+    //       `/fo/detail/reservation/${resvId}/${resRoomNo}/delete`
+    //     )
+    //     if (response.status === 200) {
+    //       const index = this.data.findIndex(
+    //         (item) => item.ResNo.data === resvId && item.ResRoomNo.data === resRoomNo
+    //       )
+    //       if (index !== -1) {
+    //         this.data.splice(index, 1)
+    //         console.log('Data berhasil dihapus')
+    //       }
+    //     } else {
+    //       console.error('Gagal menghapus data')
+    //     }
+    //   } catch (error) {
+    //     console.error('Terjadi kesalahan:', error)
+    //   }
+    // },
     onPaginationChange(props) {
       this.pagination = props.pagination
       this.fetchData()

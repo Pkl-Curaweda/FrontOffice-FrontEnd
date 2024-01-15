@@ -75,13 +75,6 @@
           label="Display Option"
           dropdown-icon="o_expand_more"
         >
-          <select id="bahasaDropdown">
-            <option value="id">Bahasa Indonesia</option>
-            <option value="en">English</option>
-            <option value="es">Español</option>
-          </select>
-
-          <q-option-group :options="radioOptions" type="radio" v-model="radioInput" />
         </q-btn-dropdown>
       </template>
     </FOMenubar>
@@ -91,44 +84,38 @@
         <!--Table-->
         <!--Table-->
         <div class="my-table">
-          <q-table class="no-shadow" :rows="rows" :columns="columns" row-key="name">
-            <template v-slot:thead="props">
-              <q-tr :props="props">
-                <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                  {{ col.label }}
+          <q-table
+            class="no-shadow"
+            v-model:pagination="pagination"
+            @request="onPaginationChange"
+            :rows="data"
+            :loading="loading"
+            :columns="columns"
+            row-key="name"
+          >
+            <template>
+              <q-tr class="table-head">
+                <q-th style="padding-top: 0px; padding-bottom: 0px">
+                  <template v-slot:header="props">
+                    <q-tr class="table-head" :props="props">
+                      <q-th
+                        v-for="(col, i) in props.cols"
+                        :key="i"
+                        style="padding-top: 0px; padding-bottom: 0px"
+                      >
+                      </q-th>
+                    </q-tr>
+                  </template>
                 </q-th>
-                <q-th style="width: 10px" :props="props"></q-th>
               </q-tr>
             </template>
             <template v-slot:body="props">
               <q-tr :props="props">
-                <q-td v-for="(cell, i) in props.row" :key="i" :style="cell.style">
-                  {{ cell.data }}
-                </q-td>
-                <q-td key="" :props="props" style="width: 10px">
-                  <q-btn flat rounded size="13px" style="color: #008444"
-                    ><svg
-                      width="19"
-                      height="19"
-                      viewBox="0 0 19 19"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <!-- SVG path for the first button -->
-                    </svg>
-                  </q-btn>
-                  <q-btn flat rounded size="13px" style="color: #269861"
-                    ><svg
-                      width="19"
-                      height="19"
-                      viewBox="0 0 19 19"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <!-- SVG path for the second button -->
-                    </svg>
-                  </q-btn>
-                </q-td>
+                <template v-for="(cell, key, i) in props.row" :key="i">
+                  <q-td :style="cell.style">
+                    {{ cell.data }}
+                  </q-td>
+                </template>
               </q-tr>
             </template>
           </q-table>
@@ -147,6 +134,7 @@ import FOMenubar from 'src/components/FOMenubar.vue'
 import MultiPane from 'src/layouts/MultiPane.vue'
 import GuestForm from './fragments/GuestForm.vue'
 import { allObjectsInArray } from 'src/utils/datatype'
+import { list } from 'postcss'
 
 export default defineComponent({
   name: 'RoomAvailabilityPage',
@@ -155,22 +143,18 @@ export default defineComponent({
     return {
       datePicker: { from: null, to: null },
       columns: [
-        { name: 'room', label: '', field: 'room', align: 'left' },
-        { name: 'averageroom', label: 'Average Room Occ (%)', align: 'left', field: 'averageroom' }
+        { name: 'Date', label: '', field: 'Date', align: 'left' },
+        { name: '101-DLX-K', label: '101-DLX-K', field: 'satu', align: 'left' },
+        { name: '102-DLX-K', label: '102-DLX-K', field: 'dua', align: 'left' },
+        { name: '103-DLX-K', label: '103-DLX-K', field: 'tiga', align: 'left' },
+        { name: '104-DLX-K', label: '104-DLX-K', field: 'empat', align: 'left' },
+        { name: '105-STD-S', label: '105-STD-S', field: 'lima', align: 'left' },
+        { name: '106-STD-S', label: '106-STD-S', field: 'enam', align: 'left' },
+        { name: '107-STD-S', label: '107-STD-S', field: 'tujuh', align: 'left' },
+        { name: '108-FML-T', label: '108-FML-T', field: 'delapan', align: 'left' },
+        { name: '109-FML-T', label: '109-FML-T', field: 'sembilan', align: 'left' },
+        { name: '110-FML-T', label: '110-FML-T', field: 'sepuluh', align: 'left' }
       ],
-      rows: [
-        { room: { data: '101 - DLX - K', style: {} } },
-        { room: { data: '102 - DLX - K', style: {} } },
-        { room: { data: '103 - DLX - K', style: {} } },
-        { room: { data: '104 - DLX - K', style: {} } },
-        { room: { data: '105 - DLX - K', style: {} } },
-        { room: { data: '106 - DLX - K', style: {} } },
-        { room: { data: '107 - DLX - K', style: {} } },
-        { room: { data: '108 - DLX - K', style: {} } },
-        { room: { data: '109 - DLX - K', style: {} } },
-        { room: { data: '110 - DLX - K', style: {} } }
-      ],
-
       allObjectsInArray
     }
   },
@@ -204,6 +188,9 @@ export default defineComponent({
       this.pagination = props.pagination
       this.fetchData()
     },
+    formatAverage(num) {
+      return num.toFixed(1)
+    },
     fetchData() {
       this.loading = true
 
@@ -212,7 +199,7 @@ export default defineComponent({
         this.loading = false
 
         if (status == 200) {
-          this.formatData(data.logData)
+          this.formatData(data.logData, data.roomAverage)
           this.pagination = {
             page: data.meta?.currPage,
             rowsNumber: data.meta?.total,
@@ -221,19 +208,49 @@ export default defineComponent({
         }
       })
     },
-    formatData(raw = []) {
+    formatData(raw = [], avg = []) {
       const list = []
+      raw.forEach((rh) => {
+        const date = rh.date
+        const rlist = Object.values(rh.roomHistory)
 
-      raw.forEach((ra) => {
-        list.push({
-          name: 'date',
-          label: ra.date,
-          field: 'date',
-          align: 'left',
+        rlist.forEach((r) => {
+          const textColor = r.resvStatus ? r.resvStatus.textColor : ''
+          const rowColor = r.resvStatus ? r.resvStatus.rowColor : ''
 
-          date: { data: ra.roomHistory.room_1.guestName }
+          list.push({
+            Date: { data: date, style: {} },
+            satu: {
+              data: r.guestName,
+              style: { backgroundColor: rowColor, color: textColor }
+            },
+            dua: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } },
+            tiga: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } },
+            empat: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } },
+            lima: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } },
+            enam: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } },
+            tujuh: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } },
+            delapan: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } },
+            sembilan: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } },
+            sepuluh: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } }
+          })
         })
       })
+
+      list.push({
+        Date: { data: 'Room Average', style: {} },
+        satu: { data: this.formatAverage(avg.total_1), style: {} },
+        dua: { data: this.formatAverage(avg.total_2), style: {} },
+        tiga: { data: this.formatAverage(avg.total_3), style: {} },
+        empat: { data: this.formatAverage(avg.total_4), style: {} },
+        lima: { data: this.formatAverage(avg.total_5), style: {} },
+        enam: { data: this.formatAverage(avg.total_6), style: {} },
+        tujuh: { data: this.formatAverage(avg.total_7), style: {} },
+        delapan: { data: this.formatAverage(avg.total_8), style: {} },
+        sembilan: { data: this.formatAverage(avg.total_9), style: {} },
+        sepuluh: { data: this.formatAverage(avg.total_10), style: {} }
+      })
+
       this.data = list
     }
   }

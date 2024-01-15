@@ -38,7 +38,7 @@ export default defineComponent({
 
   data() {
     return {
-      api: new this.$Api('frontoffice'),
+      api: new this.$Api('root'),
       user: this.$AuthStore.getUser(),
       logout_loading: false
     }

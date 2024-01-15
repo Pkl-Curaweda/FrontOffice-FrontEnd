@@ -49,21 +49,12 @@
       </template>
       <template #right>
         <q-separator vertical />
-        <q-btn flat square color="primary">
-          <q-icon>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="19"
-              height="20"
-              viewBox="0 0 19 20"
-              fill="none"
-            >
-              <path
-                d="M16 10.09V4C16 1.79 12.42 0 8 0C3.58 0 0 1.79 0 4V14C0 16.21 3.59 18 8 18C8.46 18 8.9 18 9.33 17.94C9.1129 17.3162 9.00137 16.6605 9 16V15.95C8.68 16 8.35 16 8 16C4.13 16 2 14.5 2 14V11.77C3.61 12.55 5.72 13 8 13C8.65 13 9.27 12.96 9.88 12.89C10.4127 12.0085 11.1638 11.2794 12.0607 10.7731C12.9577 10.2668 13.9701 10.0005 15 10C15.34 10 15.67 10.04 16 10.09ZM14 9.45C12.7 10.4 10.42 11 8 11C5.58 11 3.3 10.4 2 9.45V6.64C3.47 7.47 5.61 8 8 8C10.39 8 12.53 7.47 14 6.64V9.45ZM8 6C4.13 6 2 4.5 2 4C2 3.5 4.13 2 8 2C11.87 2 14 3.5 14 4C14 4.5 11.87 6 8 6ZM19 15V17H16V20H14V17H11V15H14V12H16V15H19Z"
-                fill="#008444"
-              />
-            </svg>
-          </q-icon>
+        <q-btn flat square color="primary" icon="o_add_home">
+          <q-popup-proxy>
+            <q-banner>
+              <TableAddInvoice />
+            </q-banner>
+          </q-popup-proxy>
         </q-btn>
       </template>
     </FOMenubar>
@@ -96,6 +87,7 @@
                     style="min-width: 90px"
                     v-model="filterColumns[col.name].data"
                     :options="filterColumns[col.name].options"
+                    @update:model-value="(val) => filterColumns[col.name].onOptionChange(val)"
                     :label="col.label"
                   >
                     <template
@@ -123,7 +115,7 @@
             </template>
             <template v-slot:body="props">
               <q-tr :props="props">
-                <template v-for="(cell, key, i) in props.row" :key="i">
+                <template v-for="(cell, i) in props.row" :key="i">
                   <q-td :style="cell.style">
                     {{ cell.data }}
                   </q-td>
@@ -148,7 +140,12 @@
                       />
                     </svg>
                   </q-btn>
-                  <q-btn flat rounded size="13px" style="color: #269861"
+                  <q-btn
+                    flat
+                    rounded
+                    size="13px"
+                    style="color: #269861"
+                    @click="deleteResv(props.row)"
                     ><svg
                       width="19"
                       height="19"
@@ -176,18 +173,22 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref, defineAsyncComponent } from 'vue'
 import FOMenubar from 'src/components/FOMenubar.vue'
 import MultiPane from 'src/layouts/MultiPane.vue'
 import InvoiceForm from './fragments/InvoiceForm.vue'
 import { allObjectsInArray } from 'src/utils/datatype'
 
+const TableAddInvoice = defineAsyncComponent(() => import('components/charts/TableAddInvoice.vue'))
+
 export default defineComponent({
   name: 'InvoicePage',
-  components: { FOMenubar, MultiPane, InvoiceForm },
+  components: { FOMenubar, MultiPane, InvoiceForm, TableAddInvoice },
   setup() {
     return {
       allObjectsInArray,
+      selected: ref([]),
+      loading: ref(false),
       columns: [
         { name: 'Art', label: 'Art', align: 'left', field: 'Art' },
         { name: 'Qty', label: 'Qty', align: 'left', field: 'Qty' },
@@ -204,42 +205,75 @@ export default defineComponent({
   },
   data() {
     return {
+      filterSortOrder: ref({ col: '', val: '' }),
       filterColumns: {
         Art: {
           data: '',
-          options: ['1-999', '999-1']
+          options: ['1-999', '999-1'],
+          // kontol
+          onOptionChange: (val) => {
+            if (val == '1-999') this.filterSortOrder = { col: 'Art', val: 'art-asc' }
+            else if (val == '999-1') this.filterSortOrder = { col: 'Art', val: 'art-desc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
+          // akhir kontol
         },
         Qty: {
           data: '',
-          options: ['1', '>1']
+          options: ['1>', '1'],
+          onOptionChange: (val) => {
+            if (val == '1>') this.filterSortOrder = { col: 'Qty', val: 'qty-asc' }
+            else if (val == '1') this.filterSortOrder = { col: 'Qty', val: 'qty-desc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
         },
         Description: {
           data: '',
-          options: ['1-999', '999-1', 'A-Z', 'Z-A']
+          options: ['A-Z', 'Z-A'],
+          onOptionChange: (val) => {
+            if (val == 'A-Z') this.filterSortOrder = { col: 'Description', val: 'desc-asc' }
+            else if (val == 'Z-A') this.filterSortOrder = { col: 'Description', val: 'desc-desc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
         },
         Rate: {
           data: '',
-          options: ['High Price', 'Low Price']
+          options: ['High Price', 'Low Price'],
+          onOptionChange: (val) => {
+            if (val == 'High Price') this.filterSortOrder = { col: 'Rate', val: 'rate-desc' }
+            else if (val == 'Low Price') this.filterSortOrder = { col: 'Rate', val: 'rate-asc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
         },
         Amount: {
           data: '',
-          options: ['High Price', 'Low Price']
+          options: ['High Price', 'Low Price'],
+          onOptionChange: (val) => {
+            if (val == 'High Price') this.filterSortOrder = { col: 'Amount', val: 'amount-desc' }
+            else if (val == 'Low Price') this.filterSortOrder = { col: 'Amount', val: 'amount-asc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
         },
-        RmNo: {
-          data: '',
-          options: ['', '']
-        },
-        RoomBoy: {
-          data: '',
-          options: ['ILYAS', 'RONI', 'YUTA', 'HERTIAMAN']
-        },
-        VoucherNumber: {
-          data: '',
-          options: ['', '']
-        },
+        // RmNo: {
+        //   data: '',
+        //   options: ['', '']
+        // },
+        // RoomBoy: {
+        //   data: '',
+        //   options: ['ILYAS', 'RONI', 'YUTA', 'HERTIAMAN']
+        // },
+        // VoucherNumber: {
+        //   data: '',
+        //   options: ['', '']
+        // },
         BillDate: {
           data: '',
-          options: ['Newest', 'Oldest']
+          options: ['Newest', 'Oldest'],
+          onOptionChange: (val) => {
+            if (val == 'Newest') this.filterSortOrder = { col: 'BillDate', val: 'date-desc' }
+            else if (val == 'Oldest') this.filterSortOrder = { col: 'BillDate', val: 'date-asc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
         }
       },
       api: new this.$Api('frontoffice'),
@@ -255,16 +289,21 @@ export default defineComponent({
     this.fetchData()
   },
   watch: {
-    filterColumns: {
-      handler(filters) {
-        console.log(filters)
-        // Add logic to update the table data based on filters if needed
-      },
-      deep: true
+    filterSortOrder: {
+      // kontol
+      handler(oldFilter, newFilter) {
+        Object.keys(this.filterColumns).forEach((key) => {
+          if (oldFilter['col'] != key) this.filterColumns[key].data = null
+        })
+        this.fetchData()
+      }
+      // kontol
     }
-    // Watch for changes in the 'pagination' property and fetch data accordingly
   },
   methods: {
+    setSortOrder(val = '') {
+      this.filterSortOrder = null
+    },
     onPaginationChange(props) {
       this.pagination = props.pagination
       this.fetchData()
@@ -273,6 +312,10 @@ export default defineComponent({
       this.loading = true
 
       let url = `invoice/1/1?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+
+      if (this.filterSortOrder['col'] != '' && this.filterSortOrder['val'] != '')
+        url += `&sort=${this.filterSortOrder['val']}`
+
       this.api.get(url, ({ status, data }) => {
         this.loading = false
 
@@ -294,7 +337,7 @@ export default defineComponent({
 
       raw.forEach((inv) => {
         list.push({
-          Art: { data: inv.art, style: {} },
+          Art: { data: inv.art.label ? inv.art.label : inv.art, style: {} },
           Qty: { data: inv.qty, style: {} },
           Description: { data: inv.desc, style: {} },
           Rate: { data: this.formatCurrency(inv.rate), style: {} },

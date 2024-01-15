@@ -458,7 +458,7 @@
         <q-btn
           unelevated
           dense
-          to="/guest-invoice"
+          to="/fo/guest-invoice"
           class="q-mt-sm text-capitalize q-px-sm"
           color="primary"
           label="Invoice"

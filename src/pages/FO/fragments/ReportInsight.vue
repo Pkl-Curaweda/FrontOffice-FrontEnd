@@ -105,15 +105,15 @@ export default defineComponent({
         ],
         labels: [
           '101 - DLX - K',
-          '109 - FML - S',
-          '107 - STD - T',
-          '110 - FML - S',
-          '102 - DLX - T',
-          ' 106 - STD - K',
-          '108 - FML - S',
+          '102 - DLX - K',
           '103 - DLX - K',
-          '104 - DLX - T',
-          '105 - STD - T'
+          '104 - DLX - K',
+          '105 - FML - T',
+          '106 - FML - T',
+          '107 - FML - T',
+          '108 - STD - S',
+          '109 - STD - S',
+          '110 - STD - S'
         ],
         fill: {
           colors: [
@@ -167,6 +167,7 @@ export default defineComponent({
 
         if (status == 200) {
           this.formatData(data.detail)
+          this.formatLabel(data)
           const { total } = data
           console.log(total)
           this.deluxeRoom = total.DELUXE
@@ -185,6 +186,16 @@ export default defineComponent({
         list.push(chrt.percent) + '%'
       })
       this.series = list
+    },
+    formatLabel(raw = []) {
+      const list = []
+
+      raw = Object.values(raw)
+      raw.forEach((lbl) => {
+        console.log(lbl.detail)
+        list.push(lbl.detail)
+      })
+      this.label = list
     }
   }
 })

@@ -141,6 +141,19 @@ export default defineComponent({
         { label: 'Per-Week', value: 'perweek' },
         { label: 'Per-Month', value: 'permonth' },
         { label: 'Per-Years', value: 'peryears' }
+      ],
+      columns: [
+        { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
+        { name: 'RmAvailable', label: 'Room Available', align: 'left', field: 'RmAvailable' },
+        { name: 'Occupied', label: 'Occupied', align: 'left', field: 'Occupied' },
+        { name: 'Occ', label: 'Occ%', align: 'left', field: 'Occ' },
+        { name: 'RmRevenue', label: 'Room Revenue', align: 'left', field: 'RmRevenue' },
+        { name: 'Arr', label: 'Arr', align: 'left', field: 'Arr' },
+        { name: 'RmAvail', label: 'Dtd', align: 'left', field: 'RmAvail' },
+        { name: 'Rno', label: 'Dtd', align: 'left', field: 'Rno' },
+        { name: 'tdOcc', label: 'Dtd', align: 'left', field: 'tdOcc' },
+        { name: 'tdRmRevenue', label: 'Dtd', align: 'left', field: 'tdRmRevenue' },
+        { name: 'tdArr', label: 'Dtd', align: 'left', field: 'tdArr' }
       ]
     }
   },
@@ -178,7 +191,6 @@ export default defineComponent({
 
         if (status == 200) {
           this.formatData(data.reports)
-          this.labelData(data.reports.added)
           this.pagination = {
             page: data.meta?.currPage,
             rowsNumber: data.meta?.total,
@@ -208,28 +220,6 @@ export default defineComponent({
       console.log(this.data, list)
       this.data = list
       console.log(this.data)
-    },
-    labelData(raw = []) {
-      const list = []
-
-      raw((label) => {
-        list.push({
-          columns: [
-            { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
-            { name: 'RmAvailable', label: 'Room Available', align: 'left', field: 'RmAvailable' },
-            { name: 'Occupied', label: 'Occupied', align: 'left', field: 'Occupied' },
-            { name: 'Occ', label: 'Occ%', align: 'left', field: 'Occ' },
-            { name: 'RmRevenue', label: 'Room Revenue', align: 'left', field: 'RmRevenue' },
-            { name: 'Arr', label: 'Arr', align: 'left', field: 'Arr' },
-            { name: 'RmAvail', label: '', align: 'left', field: 'RmAvail' },
-            { name: 'Rno', label: '', align: 'left', field: 'Rno' },
-            { name: 'tdOcc', label: '', align: 'left', field: 'tdOcc' },
-            { name: 'tdRmRevenue', label: '', align: 'left', field: 'tdRmRevenue' },
-            { name: 'tdArr', label: '', align: 'left', field: 'tdArr' }
-          ]
-        })
-      })
-      this.columns = list
     }
   }
 })

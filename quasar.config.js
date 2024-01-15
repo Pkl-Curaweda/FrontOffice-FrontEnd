@@ -12,6 +12,11 @@ const { configure } = require('quasar/wrappers')
 
 module.exports = configure(function (/* ctx */) {
   return {
+    framework: {
+      plugins: [
+        'Dialog'
+      ]
+    },
     eslint: {
       // fix: true,
       // include: [],

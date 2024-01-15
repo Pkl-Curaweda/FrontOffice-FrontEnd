@@ -339,27 +339,16 @@ export default defineComponent({
       this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
     },
     async deleteResv(data) {
+      // const resvId = data['ResNo']?.data
+      // const resRoomNo = data['ResRoomNo']?.data?.rr?.id
       try {
         const resvId = data['ResNo'].data
-        const resRoomNo = data['ResRoomNo'].data
-
-        const response = await this.api.delete(
-          `/fo/detail/reservation/${resvId}/${resRoomNo}/delete`
+        const roomNo = data['RmNo'].data
+        console.log(roomNo)
+        this.api.delete(
+          `/fo/detail/reservation/${resvId}/${roomNo}/delete`
         )
-
-        if (response.status === 200) {
-          console.log(response.data)
-          // const index = this.data.findIndex(
-          //   (item) => item.ResNo.data === resvId && item.ResRoomNo.data === resRoomNo
-          // )
-
-          // if (index !== -1) {
-          //   this.data.splice(index, 1)
-          //   console.log('Data berhasil dihapus')
-          // }
-        } else {
-          console.error('Gagal menghapus data')
-        }
+        window.location.reload()
       } catch (error) {
         console.error('Terjadi kesalahan:', error)
       }

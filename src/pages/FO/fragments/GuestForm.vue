@@ -78,6 +78,8 @@
           icon="o_add_home"
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
+          @click="newResvroom()"
+          :disabled="!this.$ResvStore.currentRoomResvId"
         />
 
         <!-- show modal to create card's credential: KTP, SIM, address  -->
@@ -89,6 +91,7 @@
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
           @click="dialogpayment = true"
+          :disabled="!this.$ResvStore.currentRoomResvId"
         />
 
         <q-dialog v-model="dialogpayment">
@@ -359,6 +362,7 @@
         <div class="text-bold">Res Status:</div>
         <div class="q-pa-md">
           <q-btn-dropdown
+            :disabled="this.$ResvStore.currentRoomResvId"
             color="primary"
             :label="resvStatus.label || resvStatus.description || 'Status'"
             outline
@@ -392,8 +396,10 @@
             style="
               border: 1.5px #eeeeee solid;
               height: fit-content;
+              pointer-events: none;
               border-radius: 10px 0px 0px 10px;
             "
+            :disabled="this.$ResvStore.currentRoomResvId"
             @click="checkedCode('RB')"
           >
             RB
@@ -405,9 +411,11 @@
             dense
             class="q-px-sm"
             :class="{ 'background-primary': isRoSelected }"
+            :disabled="this.$ResvStore.currentRoomResvId"
             style="
               border: 1.5px #eeeeee solid;
               height: fit-content;
+              pointer-events: none;
               border-radius: 0px 10px 10px 0px;
             "
             @click="checkedCode('RO')"
@@ -425,9 +433,9 @@
         dense
         style="font-weight: bold"
       >
-        <div v-for="row in arrangmentList" :key="row.id" clickable @click="selectRow(row)">
+        <div v-for="row in resultRows" :key="row.id" clickable @click="selectRow(row)">
           <div style="display: flex; width: 100%">
-            <q-radio selection="single" v-model="selected" :val="row" />
+            <q-radio selection="single" v-model="selected" :val="row" @click="checked(row.id)" />
 
             <div style="display: flex; justify-content: space-around; margin: auto; width: 100%">
               <div>{{ row.id.split('-')[0] }}</div>
@@ -481,6 +489,7 @@
           unelevated
           color="primary"
           dense
+          :disabled="!this.$ResvStore.currentRoomResvId"
           class="text-capitalize col-grow"
           @click="postcheckin()"
         />
@@ -489,6 +498,7 @@
           outline
           color="grey"
           dense
+          :disabled="!this.$ResvStore.currentRoomResvId"
           class="text-capitalize col-grow"
           @click="postcheckout()"
         />
@@ -499,7 +509,7 @@
 
 <script>
 import { defineComponent, ref, watch } from 'vue'
-
+import { useQuasar } from 'quasar'
 export default defineComponent({
   name: 'GuestForm',
   setup() {
@@ -507,7 +517,7 @@ export default defineComponent({
     const isRoSelected = ref(false)
     const isKtpSelected = ref(false)
     const isSimSelected = ref(false)
-
+    const $q = useQuasar()
     const columns = [
       {
         required: true,
@@ -521,6 +531,7 @@ export default defineComponent({
     ]
 
     const rows = []
+    const resultRows = ref([])
     const status = []
 
     const arrangmentList = [
@@ -610,6 +621,7 @@ export default defineComponent({
       optionValue: ref(''),
       status,
       rows,
+      resultRows,
       newSetRow: ref(),
       nameidcard: ref(''),
       idcardnumber: ref(''),
@@ -668,6 +680,16 @@ export default defineComponent({
   watch: {
     includeTax() {
       this.calculateTotal() // Panggil method calculateTotal() saat status checkbox berubah
+    },
+    roomType: {
+      handler(oldval, newval) {
+        this.resultRows = this.rows.filter((r) => {
+          console.log(r)
+          console.log(newval)
+          console.log(oldval)
+          return r.date == oldval
+        })
+      }
     },
     'arrivalDepart.from': {
       immediate: true,
@@ -756,21 +778,26 @@ export default defineComponent({
       this.guestsLabel = `${this.guests['adult']} Adult, ${this.guests['child']} Child, ${this.guests['baby']} Baby`
     },
     removeRoomResv() {
-      this.resvNo = ''
-      this.guestName = ''
-      this.resvResource = null
-      this.selectedOption.value = null
-      this.arrivalDepart = { from: null, to: null }
-      this.arrivalDepartLabel = 'Arrival - Depature, 1 Nights'
-      this.guests = { adult: 0, baby: 0, child: 0 }
-      this.resvStatus = null
-      this.resvRemark = ''
-      this.roomImage = ''
-      this.roomNo = null
-      this.roomType = null
-      this.roomBed = null
+      try {
+        const { currentResvId, currentRoomResvId } = this.$ResvStore
+        this.api.delete(`/fo/detail/reservation/${currentResvId}/${this.roomNo}/delete`)
+        window.location.reload()
+      } catch (error) {
+        console.error(error)
+      }
     },
-    getResvProps() {},
+    getResvProps() {
+      this.api.get(`/fo/detail/reservation/1/1/create`, ({ status, data }) => {
+        this.loading = false
+        if (status === 200) {
+          const { arrangmentCode } = data
+          const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
+          this.rows = formattedRoomRates
+          this.resultRows = formattedRoomRates
+          console.log(data)
+        }
+      })
+    },
     selectRow(row) {
       this.selected = row
       console.log(this.selected)
@@ -787,24 +814,74 @@ export default defineComponent({
         console.log(this.balance)
       }
     },
+    triggerPositive(message) {
+      this.$q.notify(
+        {
+          type: 'positive',
+          message: message || 'This is a "positive" type notification.',
+          timeout: 1000
+        },
+        4000
+      )
+    },
     calculateTax(subtotal) {
       // this.subtotal = this.DPP + this.total
       // console.log(this.subtotal)
       return subtotal * 0.1
     },
+    async newResvroom() {
+      // create get date time for new reservation room
+      try {
+        const { currentResvId, currentRoomResvId } = this.$ResvStore
+        // console.log(this.roomNo)
+        // console.log(currentRoomResvId)
+        const data = {
+          arrangmentCode: this.selected.id,
+          roomId: this.roomNo
+        }
+        if (currentResvId == 0 || currentRoomResvId == 0) return
+        this.loading = true
+        await this.api.post(
+          `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/add-room`,
+          data,
+          ({ status, data }) => {
+            if (status == 200) {
+              console.log(data)
+              this.loading = false
+              this.triggerPositive('Create new room successfully')
+              this.refresh()
+            } else {
+              console.error('Gagal mengirim data')
+            }
+          }
+        )
+      } catch (error) {
+        console.error('error : ' + error)
+      }
+    },
     async postcheckin() {
+      // create get date time for checkin reservation
       try {
         const { currentResvId, currentRoomResvId } = this.$ResvStore
         if (currentResvId == 0 || currentRoomResvId == 0) return
-
         this.loading = true
-        const response = this.api.post(
-          `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkin`
+        const response = await this.api.post(
+          `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkin`,
+          null,
+          ({ status, data }) => {
+            this.loading = false
+            if (status == 200) {
+              this.triggerPositive('Check-in Successfully')
+              console.log(response.data)
+            }
+          }
         )
-        this.loading = false
-        if (response.status === 200) {
-          console.log(response.data)
-        }
+        //   Dialog.create({
+        //   title: 'Success Checkin',
+        //   message: 'Success Checkin Reservation',
+        //   color: 'white',
+        //   ok: 'OK'
+        // })
       } catch (error) {
         console.error('error : ' + error)
       }
@@ -815,12 +892,13 @@ export default defineComponent({
         if (currentResvId == 0 || currentRoomResvId == 0) return
 
         this.loading = true
-        this.api.post(
+        await this.api.post(
           `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkout`,
+          null,
           ({ status, data }) => {
             this.loading = false
-            if (status === 200) {
-              console.log(data)
+            if (status == 200) {
+              this.triggerPositive('Check-out successfully')
             }
           }
         )
@@ -828,25 +906,6 @@ export default defineComponent({
         console.error('error : ' + error)
       }
     },
-    // async postcheckin() {
-    //   try {
-    //     const { currentResvId, currentRoomResvId } = this.$ResvStore
-    //     if (currentResvId == 0 || currentRoomResvId == 0) return
-
-    //     this.loading = true
-    //     this.api.post(
-    //       `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkin`,
-    //       ({ status, data }) => {
-    //         this.loading = false
-    //         if (status == 200) {
-    //           console.log(data)
-    //         }
-    //       }
-    //     )
-    //   } catch (error) {
-    //     console.error('error : ' + error)
-    //   }
-    // },
     getDetailResvRoom() {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
 
@@ -860,6 +919,7 @@ export default defineComponent({
           this.loading = false
           console.log('test')
           if (status == 200) {
+            this.triggerPositive('Data has been GET successfully')
             const { reservation, room, arrangment, balance } = data.reservation
             const { reservationStatus, arrangmentCode, availableRooms } = data.data
 
@@ -887,7 +947,7 @@ export default defineComponent({
             ]
             const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
             this.rows = formattedRoomRates
-
+            this.resultRows = formattedRoomRates
             const formattedStatus = this.formatedStatus(reservationStatus)
             this.status = formattedStatus
 
@@ -950,13 +1010,15 @@ export default defineComponent({
         resvStatusId: parseInt(this.resvStatus.id)
       }
       try {
-        this.api.post(
+        await this.api.post(
           `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/create`,
           dataToUpdate,
           ({ status, data }) => {
             this.loading = false
             if (status === 200) {
+              this.triggerPositive('Create new reservation successfully')
               console.log('Data berhasil diperbarui:', data)
+              this.refresh()
             } else {
               console.error('Gagal memperbarui data')
             }
@@ -985,7 +1047,7 @@ export default defineComponent({
       }
 
       try {
-        this.api.put(
+        await this.api.put(
           `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
           dataToUpdate,
           ({ status, data }) => {
@@ -993,6 +1055,7 @@ export default defineComponent({
             console.log(this.resvStatus)
 
             if (status === 200) {
+              this.triggerPositive('Update Successfully')
               console.log('Data berhasil diperbarui:', data)
             } else {
               console.error('Gagal memperbarui data')
@@ -1047,6 +1110,7 @@ export default defineComponent({
           cardData,
           ({ status, data }) => {
             this.loading = false
+            this.triggerPositive('Data has been successfully')
             if (status === 200) {
               console.log('Data berhasil diperbarui:', data)
             } else {
@@ -1070,32 +1134,30 @@ export default defineComponent({
       this.isSimSelected = !this.isSimSelected
       this.isKtpSelected = false
     },
-    checkedCode(type) {
-      // console.log((this.isRoSelected = !this.isRoSelected))
-      // if (this.selected.id.split('-')[1] === 'RB') {
-      //   this.isRoSelected = !this.isRoSelected
-      //   this.isRbSelected = false
-      // } else if (this.selected.id.split('-')[1] === 'RO') {
-      //   this.isRbSelected = !this.isRbSelected
-      //   this.isRoSelected = false
-      // } else {
-      //   console.log('data tidak ada')
-      // }
-      if (type === 'RO') {
+    checked(row) {
+      if (row.split('-')[1] == 'RO') {
         this.isRoSelected = true
         this.isRbSelected = false
-        console.log(type)
-      } else if (type === 'RB') {
+        console.log(row)
+      } else if (row.split('-')[1] == 'RB') {
         this.isRbSelected = true
         this.isRoSelected = false
       } else {
         console.log('data tidak sesuai')
       }
+    },
+    checkedCode(type) {
+      if (type === 'RO') {
+        this.isRoSelected = true
+        this.isRbSelected = false
+      } else if (type === 'RB') {
+        this.isRbSelected = true
+        this.isRoSelected = false
+        this.selected.id.split('-')[1] = '-' + type
+      } else {
+        console.log('data tidak sesuai')
+      }
     }
-    // RBSelected() {
-    //   this.isRbSelected = !this.isRbSelected
-    //   this.isRoSelected = false
-    // }
   }
 })
 </script>

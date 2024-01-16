@@ -64,6 +64,37 @@
               />
             </svg>
           </q-icon>
+          <q-popup-proxy :offset="[10, 10]">
+            <q-card>
+              <div class="my-table" style="max-height: 400px; overflow: auto">
+                <q-table
+                  flat bordered
+                  :rows="data2"
+                  :columns="columns2"
+                  row-key="id"
+                  :selected-rows-label="getSelectedString"
+                  selection="multiple"
+                  model-value="selectedRows.value"
+                  @update:model-value="(val) => selectedRows.value = val"
+                >
+
+                  <template #body-cell-qty="props">
+                    <q-td :props="props" >
+                      <q-btn class="q-pa-xs bg-primary" style="height: 100%" text-color="white" size="sm" @click="decrementQty(props.row)" icon="remove" flat></q-btn>
+                      <span class="q-ma-xs q-pa-sm" style="border: 1px solid gray; border-radius: 3px">{{ props.value }}</span>
+                      <q-btn class="q-pa-xs bg-primary" style="height: 100%" text-color="white" size="sm" @click="incrementQty(props.row)" icon="add" flat></q-btn>
+                    </q-td>
+                  </template>
+                
+                </q-table>
+              </div>
+              <div class="q-pa-sm flex justify-end" style="gap: 5px; border-top: 1px solid green">
+                <q-btn size="sm" no-caps outline>Cancel</q-btn>
+                <q-btn size="sm" no-caps color="primary" text-color="white">Add</q-btn>
+              </div>
+            </q-card>
+          </q-popup-proxy>
+          
         </q-btn>
       </template>
     </FOMenubar>
@@ -177,16 +208,76 @@
 
 <script>
 import { defineComponent } from 'vue'
+import { ref } from 'vue'
 import FOMenubar from 'src/components/FOMenubar.vue'
 import MultiPane from 'src/layouts/MultiPane.vue'
 import InvoiceForm from './fragments/InvoiceForm.vue'
 import { allObjectsInArray } from 'src/utils/datatype'
+
+const columns2 = [
+  {
+    name: 'art',
+    required: true,
+    label: 'Art',
+    align: 'left',
+    field: row => row.name,
+    format: val => `${val}`,
+    sortable: true
+  },
+  { name: 'description', align: 'center', label: 'Description', field: 'description', sortable: true },
+  { name: 'qty', align: 'center', label: 'Qty', field: 'qty', sortable: true }
+]
+
+const data2 = [
+  {
+    name: 101,
+    description: "Extra Bed",
+    qty: 0,
+  },
+  {
+    name: 102,
+    description: "Extra Pillow",
+    qty: 0,
+  },
+  {
+    name: 103,
+    description: "Extra Bed Cover",
+    qty: 0,
+  },
+  {
+    name: 113,
+    description: " Bed Cover",
+    qty: 0,
+  },
+  {
+    name: 100,
+    description: " Bed ooCover",
+    qty: 0,
+  },
+  {
+    name: 900,
+    description: " Bed ooover",
+    qty: 0,
+  },
+  {
+    name: 100,
+    description: " Bed ooCover",
+    qty: 0,
+  },
+  {
+    name: 900,
+    description: " Bed ooover",
+    qty: 0,
+  },
+]
 
 export default defineComponent({
   name: 'InvoicePage',
   components: { FOMenubar, MultiPane, InvoiceForm },
   setup() {
     return {
+      columns2,
+      selectedRows: ref([]),
       allObjectsInArray,
       columns: [
         { name: 'Art', label: 'Art', align: 'left', field: 'Art' },
@@ -204,6 +295,10 @@ export default defineComponent({
   },
   data() {
     return {
+      getSelectedString () {
+        return selected.value.length === 0 ? '' : `${selected.value.length} record${selected.value.length > 1 ? 's' : ''} selected of ${rows.length}`
+      },
+      data2,
       filterColumns: {
         Art: {
           data: '',
@@ -265,6 +360,14 @@ export default defineComponent({
     // Watch for changes in the 'pagination' property and fetch data accordingly
   },
   methods: {
+    incrementQty(row) {
+      row.qty++;
+    },
+    decrementQty(row) {
+      if (row.qty > 0) {
+        row.qty--;
+      }
+    },
     onPaginationChange(props) {
       this.pagination = props.pagination
       this.fetchData()

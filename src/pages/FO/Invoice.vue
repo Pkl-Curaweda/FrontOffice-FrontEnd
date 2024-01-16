@@ -71,11 +71,9 @@
                   flat bordered
                   :rows="data2"
                   :columns="columns2"
-                  row-key="id"
-                  :selected-rows-label="getSelectedString"
+                  row-key="name"
                   selection="multiple"
-                  model-value="selectedRows.value"
-                  @update:model-value="(val) => selectedRows.value = val"
+                  v-model:selected="selected"
                 >
 
                   <template #body-cell-qty="props">
@@ -207,8 +205,7 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
-import { ref } from 'vue'
+import { defineComponent, ref } from 'vue'
 import FOMenubar from 'src/components/FOMenubar.vue'
 import MultiPane from 'src/layouts/MultiPane.vue'
 import InvoiceForm from './fragments/InvoiceForm.vue'
@@ -275,9 +272,10 @@ export default defineComponent({
   name: 'InvoicePage',
   components: { FOMenubar, MultiPane, InvoiceForm },
   setup() {
+    const selected = ref([])
     return {
       columns2,
-      selectedRows: ref([]),
+      selected,
       allObjectsInArray,
       columns: [
         { name: 'Art', label: 'Art', align: 'left', field: 'Art' },
@@ -295,9 +293,6 @@ export default defineComponent({
   },
   data() {
     return {
-      getSelectedString () {
-        return selected.value.length === 0 ? '' : `${selected.value.length} record${selected.value.length > 1 ? 's' : ''} selected of ${rows.length}`
-      },
       data2,
       filterColumns: {
         Art: {

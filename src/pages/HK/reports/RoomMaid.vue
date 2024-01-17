@@ -3,13 +3,7 @@
     <HKCard title="Room Maid Housekeeping List" radius="25px" card_class="full-width q-px-lg">
       <!-- BTNs -->
       <div class="full-width justify-end flex q-gutter-sm">
-        <q-btn padding="4px" flat>
-          <q-icon size="36px" color="green" name="o_check_box" />
-        </q-btn>
-
-        <q-btn padding="4px" flat>
-          <q-icon size="36px" color="green" name="o_print" />
-        </q-btn>
+        <HKPrintModal :columns="columns" :rows="rows" />
       </div>
 
       <!-- INPUTs -->
@@ -54,9 +48,9 @@
 
         <!-- 4th Column -->
         <div class="column">
-          <q-checkbox v-model="oddRoomsCheck" label="Go to next page when floor changed" />
-          <q-checkbox v-model="oddRoomsCheck" label="Print with 2 line space" />
-          <q-checkbox v-model="oddRoomsCheck" label="Auto Rooms Assignment" />
+          <q-checkbox v-model="goToNextCheck" label="Go to next page when floor changed" />
+          <q-checkbox v-model="printWithCheck" label="Print with 2 line space" />
+          <q-checkbox v-model="autoRoomsCheck" label="Auto Rooms Assignment" />
         </div>
       </div>
 
@@ -67,8 +61,9 @@
 </template>
 
 <script>
-import HKCard from 'src/components/HK/HKCard.vue'
-import HKTable from 'src/components/HK/HKTable.vue'
+import HKCard from 'src/components/HK/Card/HKCard.vue'
+import HKPrintModal from 'src/components/HK/Modal/HKPrintModal.vue'
+import HKTable from 'src/components/HK/Table/HKTable.vue'
 import { defineComponent, ref } from 'vue'
 
 const columns = [
@@ -266,7 +261,7 @@ const rows = [
 
 export default defineComponent({
   name: 'RoomMaidPage',
-  components: { HKCard, HKTable },
+  components: { HKCard, HKTable, HKPrintModal },
   data() {
     return {
       columns,
@@ -281,7 +276,10 @@ export default defineComponent({
 
       allRoomsCheck: ref(false),
       oddRoomsCheck: ref(false),
-      evenRoomsCheck: ref(false)
+      evenRoomsCheck: ref(false),
+      goToNextCheck: ref(false),
+      printWithCheck: ref(false),
+      autoRoomsCheck: ref(false)
     }
   }
 })

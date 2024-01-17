@@ -10,32 +10,29 @@
           label="Sorting"
           dropdown-icon="o_expand_more"
         >
-          <!--Konten Dropdown-->
           <q-list>
-            <q-item clickable v-close-popup>
-              <q-item-section>Deluxe</q-item-section>
+            <q-item clickable v-close-popup @click="setSortingDisplay('T_DELUXE')">
+              <q-item-section>DELUXE</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
-              <q-item-section>Standard</q-item-section>
+            <q-item clickable v-close-popup @click="setSortingDisplay('T_STANDARD')">
+              <q-item-section>STANDARD</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
-              <q-item-section> Family </q-item-section>
+            <q-item clickable v-close-popup @click="setSortingDisplay('T_FAMILY')">
+              <q-item-section>FAMILY</q-item-section>
             </q-item>
-            <q-separator />
             <q-item clickable v-close-popup>
               <q-item-section>101-110</q-item-section>
             </q-item>
             <q-item clickable v-close-popup>
               <q-item-section>110-101</q-item-section>
             </q-item>
-            <q-separator />
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup @click="setSortingDisplay('B_TWIN')">
               <q-item-section>Twin Bed</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup @click="setSortingDisplay('B_KING')">
               <q-item-section>King Bed</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup @click="setSortingDisplay('B_SINGLE')">
               <q-item-section>Single Bed</q-item-section>
             </q-item>
           </q-list>
@@ -89,6 +86,7 @@
             v-model:pagination="pagination"
             @request="onPaginationChange"
             :rows="data"
+            hide-bottom
             :loading="loading"
             :columns="columns"
             row-key="name"
@@ -129,7 +127,7 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import FOMenubar from 'src/components/FOMenubar.vue'
 import MultiPane from 'src/layouts/MultiPane.vue'
 import GuestForm from './fragments/GuestForm.vue'
@@ -141,19 +139,21 @@ export default defineComponent({
   components: { FOMenubar, MultiPane, GuestForm },
   setup() {
     return {
-      datePicker: { from: null, to: null },
+      selectedSorting: ref(''),
+      datePicker: ref({ from: '', to: '' }),
+      sortingDisplay: ref(null),
       columns: [
         { name: 'Date', label: '', field: 'Date', align: 'left' },
-        { name: '101-DLX-K', label: '101-DLX-K', field: 'satu', align: 'left' },
-        { name: '102-DLX-K', label: '102-DLX-K', field: 'dua', align: 'left' },
-        { name: '103-DLX-K', label: '103-DLX-K', field: 'tiga', align: 'left' },
-        { name: '104-DLX-K', label: '104-DLX-K', field: 'empat', align: 'left' },
-        { name: '105-STD-S', label: '105-STD-S', field: 'lima', align: 'left' },
-        { name: '106-STD-S', label: '106-STD-S', field: 'enam', align: 'left' },
-        { name: '107-STD-S', label: '107-STD-S', field: 'tujuh', align: 'left' },
-        { name: '108-FML-T', label: '108-FML-T', field: 'delapan', align: 'left' },
-        { name: '109-FML-T', label: '109-FML-T', field: 'sembilan', align: 'left' },
-        { name: '110-FML-T', label: '110-FML-T', field: 'sepuluh', align: 'left' }
+        { name: '101-DLX-K', label: '101-DLX-K', field: 'room_1', align: 'left' },
+        { name: '102-DLX-K', label: '102-DLX-K', field: 'room_2', align: 'left' },
+        { name: '103-DLX-K', label: '103-DLX-K', field: 'room_3', align: 'left' },
+        { name: '104-DLX-K', label: '104-DLX-K', field: 'room_4', align: 'left' },
+        { name: '105-STD-S', label: '105-STD-S', field: 'room_5', align: 'left' },
+        { name: '106-STD-S', label: '106-STD-S', field: 'room_6', align: 'left' },
+        { name: '107-STD-S', label: '107-STD-S', field: 'room_7', align: 'left' },
+        { name: '108-FML-T', label: '108-FML-T', field: 'room_8', align: 'left' },
+        { name: '109-FML-T', label: '109-FML-T', field: 'room_9', align: 'left' },
+        { name: '110-FML-T', label: '110-FML-T', field: 'room_10', align: 'left' }
       ],
       allObjectsInArray
     }
@@ -177,13 +177,26 @@ export default defineComponent({
     filterColumns: {
       handler(filters) {
         console.log(filters)
-        // Add logic to update the table data based on filters if needed
       },
       deep: true
+    },
+    filterDisplay: {
+      handler(option) {
+        this.fetchData()
+      }
+    },
+    datePicker: {
+      deep: true,
+      handler(newDateRange) {
+        this.fetchData()
+      }
     }
-    // Watch for changes in the 'pagination' property and fetch data accordingly
   },
   methods: {
+    setSortingDisplay(option) {
+      this.sortingDisplay = option
+      this.fetchData()
+    },
     onPaginationChange(props) {
       this.pagination = props.pagination
       this.fetchData()
@@ -194,12 +207,26 @@ export default defineComponent({
     fetchData() {
       this.loading = true
 
-      let url = `roomavail?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      let url = `roomavail?`
+
+      // const fromDate = this.datePicker.from.replace(/\//g, '-')
+      // const toDate = this.datePicker.to.replace(/\//g, '-')
+
+      // if (fromDate !== '' && toDate !== '') {
+      //   url += `&date=${fromDate}+${toDate}`
+      // }
+
+      // Adjust the condition here
+      if (this.sortingDisplay !== null) {
+        url += `filter=${this.sortingDisplay}`
+      }
+
       this.api.get(url, ({ status, data }) => {
         this.loading = false
 
         if (status == 200) {
           this.formatData(data.logData, data.roomAverage)
+          console.log(data)
           this.pagination = {
             page: data.meta?.currPage,
             rowsNumber: data.meta?.total,
@@ -209,50 +236,39 @@ export default defineComponent({
       })
     },
     formatData(raw = [], avg = []) {
+      console.log(raw, avg)
       const list = []
       raw.forEach((rh) => {
         const date = rh.date
-        const rlist = Object.values(rh.roomHistory)
-
-        rlist.forEach((r) => {
-          const textColor = r.resvStatus ? r.resvStatus.textColor : ''
-          const rowColor = r.resvStatus ? r.resvStatus.rowColor : ''
-
-          list.push({
-            Date: { data: date, style: {} },
-            satu: {
-              data: r.guestName,
-              style: { backgroundColor: rowColor, color: textColor }
-            },
-            dua: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } },
-            tiga: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } },
-            empat: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } },
-            lima: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } },
-            enam: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } },
-            tujuh: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } },
-            delapan: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } },
-            sembilan: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } },
-            sepuluh: { data: r.guestName, style: { backgroundColor: rowColor, color: textColor } }
-          })
+        list.push({
+          Date: { data: date, style: {} },
+          ...rh.rmHist
         })
       })
 
-      list.push({
-        Date: { data: 'Room Average', style: {} },
-        satu: { data: this.formatAverage(avg.total_1), style: {} },
-        dua: { data: this.formatAverage(avg.total_2), style: {} },
-        tiga: { data: this.formatAverage(avg.total_3), style: {} },
-        empat: { data: this.formatAverage(avg.total_4), style: {} },
-        lima: { data: this.formatAverage(avg.total_5), style: {} },
-        enam: { data: this.formatAverage(avg.total_6), style: {} },
-        tujuh: { data: this.formatAverage(avg.total_7), style: {} },
-        delapan: { data: this.formatAverage(avg.total_8), style: {} },
-        sembilan: { data: this.formatAverage(avg.total_9), style: {} },
-        sepuluh: { data: this.formatAverage(avg.total_10), style: {} }
-      })
-
+      // list.push({
+      //   Date: { data: 'Room Average', style: {} },
+      //   satu: { data: this.formatAverage(avg.total_1) + '%', style: {} },
+      //   dua: { data: this.formatAverage(avg.total_2) + '%', style: {} },
+      //   tiga: { data: this.formatAverage(avg.total_3) + '%', style: {} },
+      //   empat: { data: this.formatAverage(avg.total_4) + '%', style: {} },
+      //   lima: { data: this.formatAverage(avg.total_5) + '%', style: {} },
+      //   enam: { data: this.formatAverage(avg.total_6) + '%', style: {} },
+      //   tujuh: { data: this.formatAverage(avg.total_7) + '%', style: {} },
+      //   delapan: { data: this.formatAverage(avg.total_8) + '%', style: {} },
+      //   sembilan: { data: this.formatAverage(avg.total_9) + '%', style: {} },
+      //   sepuluh: { data: this.formatAverage(avg.total_10) + '%', style: {} }
+      // })
+      console.log('list data after pushing room average:', list)
       this.data = list
     }
   }
 })
 </script>
+
+<style>
+.separator-line {
+  width: 100%;
+  border-top: 1px solid #000; /* Warna garis dan gaya bisa disesuaikan */ /* Sesuaikan margin agar terlihat rapih */
+}
+</style>

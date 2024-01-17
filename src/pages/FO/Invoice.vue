@@ -30,7 +30,7 @@
           dropdown-icon="o_expand_more"
         >
           <div>
-            <q-date v-model="datePicker" range />
+            <q-date v-model="datePicker" />
           </div>
         </q-btn-dropdown>
 
@@ -188,7 +188,13 @@ export default defineComponent({
     return {
       allObjectsInArray,
       selected: ref([]),
+      searchInput: ref(''),
       loading: ref(false),
+      datePicker: ref(),
+      filterDisplayOptions: [
+        { label: 'Artno', value: 'artno' },
+        { label: 'Description', value: 'description' }
+      ],
       columns: [
         { name: 'Art', label: 'Art', align: 'left', field: 'Art' },
         { name: 'Qty', label: 'Qty', align: 'left', field: 'Qty' },
@@ -222,8 +228,8 @@ export default defineComponent({
           data: '',
           options: ['1>', '1'],
           onOptionChange: (val) => {
-            if (val == '1>') this.filterSortOrder = { col: 'Qty', val: 'qty-asc' }
-            else if (val == '1') this.filterSortOrder = { col: 'Qty', val: 'qty-desc' }
+            if (val == '1>') this.filterSortOrder = { col: 'Qty', val: 'qty-desc' }
+            else if (val == '1') this.filterSortOrder = { col: 'Qty', val: 'qty-asc' }
             else this.filterSortOrder = { col: '', val: '' }
           }
         },
@@ -288,6 +294,9 @@ export default defineComponent({
   mounted() {
     this.fetchData()
   },
+  watch() {
+    searchDesc(this.searchInput)
+  },
   watch: {
     filterSortOrder: {
       // kontol
@@ -298,9 +307,37 @@ export default defineComponent({
         this.fetchData()
       }
       // kontol
+    },
+    datePicker: {
+      deep: true,
+      handler(newDateRange) {
+        this.fetchData()
+      }
+    },
+    searchInput: {
+      handler(newSearchInput) {
+        this.searchDesc(newSearchInput)
+      },
+      immediate: true
+    },
+    filterDisplay: {
+      handler(option) {
+        this.fetchData()
+      }
     }
   },
   methods: {
+    searchDesc(searchInput) {
+      // Make an API call to search based on searchInput
+      this.api.get(`invoice/1/1?search=${searchInput}`, ({ status, data }) => {
+        if (status === 200) {
+          // Update the data with the search result
+          this.formatData(data.invoices)
+        } else {
+          console.error('Error searching data')
+        }
+      })
+    },
     setSortOrder(val = '') {
       this.filterSortOrder = null
     },
@@ -315,6 +352,14 @@ export default defineComponent({
 
       if (this.filterSortOrder['col'] != '' && this.filterSortOrder['val'] != '')
         url += `&sort=${this.filterSortOrder['val']}`
+
+      if (this.filterDisplay !== null) url += `&disOpt=${this.filterDisplay}`
+
+      const Date = this.datePicker?.replace(/\//g, '-')
+
+      if (Date !== undefined && Date !== '') {
+        url += `&date=${Date}T${Date}`
+      }
 
       this.api.get(url, ({ status, data }) => {
         this.loading = false

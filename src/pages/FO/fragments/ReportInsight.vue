@@ -2,15 +2,29 @@
   <div class="column q-pa-md" style="background: #fafafa">
     <div class="row" style="gap: 10px">
       <!--Display Option-->
-      <q-select
-        outlined
-        dense
-        v-model="displayOpt"
-        :options="displayOption"
+      <q-btn-dropdown
+        flat
+        square
+        class="text-capitalize text-black"
         label="Display Option"
-        dropdown-icon="expand_more"
-        style="width: 150px"
-      />
+        color="primary"
+        dropdown-icon="o_expand_more"
+      >
+        <q-list>
+          <q-item clickable v-close-popup @click="setFilterDisplay('report/day')">
+            <q-item-section>Day</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup @click="setFilterDisplay('report/week')">
+            <q-item-section>Week</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup @click="setFilterDisplay('report/month')">
+            <q-item-section>Month</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup @click="setFilterDisplay('report/year')">
+            <q-item-section>Year</q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
       <!-- date picker  -->
       <q-btn-dropdown
         outline
@@ -87,7 +101,7 @@ export default defineComponent({
   components: {},
   setup() {
     return {
-      displayOption: ['Per-Day', 'Per-Week', 'Per-Month', 'Per-Years'],
+      displayOption: ref('day'),
       deluxeRoom: ref(),
       standardRoom: ref(),
       familyRoom: ref(),
@@ -159,12 +173,29 @@ export default defineComponent({
   mounted() {
     this.getDetailReport()
   },
+  watch: {
+    filterDisplay: {
+      handler(option) {
+        this.fetchData()
+      }
+    }
+  },
   methods: {
+    setFilterDisplay(option) {
+      this.filterDisplay = option
+      this.getDetailReport()
+    },
     getDetailReport() {
       this.loading = true
-      this.api.get(`detail/report`, ({ status, data }) => {
-        this.loading = false
 
+      let url = `detail/report`
+
+      // if (this.filterDisplay !== null) {
+      //   url += `/${this.filterDisplay}`
+      // }
+
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
         if (status == 200) {
           this.formatData(data.detail)
           this.formatLabel(data)

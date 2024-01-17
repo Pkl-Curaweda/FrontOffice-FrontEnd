@@ -2,22 +2,23 @@
   <q-page class="column" style="overflow-y: hidden; min-width: max-content">
     <FOMenubar>
       <template #left>
-        <q-btn-dropdown
+        <!-- <q-btn-dropdown
           flat
           square
-          class="text-capitalize"
+          class="text-capitalize text-black"
           label="Sorting"
+          color="primary"
           dropdown-icon="o_expand_more"
         >
           <q-list>
-            <q-item clickable v-close-popup>
-              <q-item-section>MostRevenue</q-item-section>
+            <q-item clickable v-close-popup @click="setSortingDisplay('desc')">
+              <q-item-section>Most Revenue</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup @click="setSortingDisplay('asc')">
               <q-item-section>Less Revenue</q-item-section>
             </q-item>
           </q-list>
-        </q-btn-dropdown>
+        </q-btn-dropdown> -->
         <q-separator vertical />
 
         <q-input v-model="searchInput" borderless label="Name" type="search">
@@ -44,24 +45,23 @@
         <q-btn-dropdown
           flat
           square
-          range
           class="text-capitalize text-black"
           label="Display Option"
           color="primary"
           dropdown-icon="o_expand_more"
         >
           <q-list>
-            <q-item clickable v-close-popup>
-              <q-item-section>Per-Day</q-item-section>
+            <q-item clickable v-close-popup @click="setFilterDisplay('report/day')">
+              <q-item-section>Day</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
-              <q-item-section>Per-Week</q-item-section>
+            <q-item clickable v-close-popup @click="setFilterDisplay('report/week')">
+              <q-item-section>Week</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
-              <q-item-section>Per-Month</q-item-section>
+            <q-item clickable v-close-popup @click="setFilterDisplay('report/month')">
+              <q-item-section>Month</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
-              <q-item-section>Per-Year</q-item-section>
+            <q-item clickable v-close-popup @click="setFilterDisplay('report/year')">
+              <q-item-section>Year</q-item-section>
             </q-item>
           </q-list>
         </q-btn-dropdown>
@@ -135,13 +135,8 @@ export default defineComponent({
       loading: ref(false),
       searchInput: ref(''),
       datePicker: ref({ from: '', to: '' }),
-      DisplayOpt: ref(null),
-      DisplayOptions: [
-        { label: 'Per-Day', value: 'perday' },
-        { label: 'Per-Week', value: 'perweek' },
-        { label: 'Per-Month', value: 'permonth' },
-        { label: 'Per-Years', value: 'peryears' }
-      ],
+      // sortingDisplay: ref(''),
+      filterDisplay: ref(''),
       columns: [
         { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
         { name: 'RmAvailable', label: 'Room Available', align: 'left', field: 'RmAvailable' },
@@ -171,21 +166,58 @@ export default defineComponent({
   mounted() {
     this.fetchData()
   },
+  watch() {
+    searchName(this.searchInput)
+  },
   watch: {
+    // sortingDisplay: {
+    //   handler(sorting) {
+    //     this.fetchData()
+    //   }
+    // },
     filterDisplay: {
-      handler(option) {
+      handler(display) {
+        this.fetchData()
+      }
+    },
+    datePicker: {
+      deep: true,
+      handler(newDateRange) {
         this.fetchData()
       }
     }
   },
   methods: {
+    // setSortingDisplay(sorting) {
+    //   this.sortingDisplay = sorting
+    //   this.fetchData()
+    // },
+    setFilterDisplay(display) {
+      this.filterDisplay = display
+      this.fetchData()
+    },
     onPaginationChange(props) {
       this.pagination = props.pagination
       this.fetchData()
     },
     fetchData() {
       this.loading = true
-      let url = `report`
+
+      let url = `report?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+
+      // if (this.sortingDisplay !== null) url += `&sort=${this.sortingDisplay}`
+
+      if (this.filterDisplay !== null) {
+        url += `/${this.filterDisplay}`
+      }
+
+      const fromDate = this.datePicker.from.replace(/\//g, '-')
+      const toDate = this.datePicker.to.replace(/\//g, '-')
+
+      if (fromDate !== '' && toDate !== '') {
+        url += `&date=${fromDate}+${toDate}`
+      }
+
       this.api.get(url, ({ status, data }) => {
         this.loading = false
 

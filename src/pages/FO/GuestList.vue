@@ -118,19 +118,8 @@
             <template v-slot:body="props">
               <q-tr :props="props">
                 <template v-for="(cell, key, i) in props.row" :key="i">
-                  <q-td v-if="!['ResRoomNo', 'RoomBoy'].includes(key)" :style="cell.style">
+                  <q-td v-if="!['ResRoomNo'].includes(key)" :style="cell.style">
                     {{ cell.data }}
-                  </q-td>
-                  <q-td v-if="['RoomBoy'].includes(key)" :style="cell.style">
-                    <q-avatar
-                      v-for="(rb, i) in cell.data"
-                      :key="i"
-                      size="40px"
-                      class="overlapping"
-                      :style="`left: ${i * 25}px`"
-                    >
-                      <img :src="rb.user.picture" />
-                    </q-avatar>
                   </q-td>
                 </template>
                 <q-td key="" :props="props" style="width: 10px">
@@ -530,7 +519,7 @@ export default defineComponent({
         this.loading = false
 
         if (status == 200) {
-          const roomBoys = this.getUniqueRoomBoys(data.reservations)
+          const roomBoys = this.getUniqueRoomBoys(data.roomBoys)
           this.filterColumns.RoomBoy.options = roomBoys
           this.formatData(data.reservations)
           this.pagination = {
@@ -541,18 +530,8 @@ export default defineComponent({
         }
       })
     },
-    getUniqueRoomBoys(reservations) {
-      const roomBoys = new Set()
-
-      reservations.forEach((rsrv) => {
-        rsrv.reservation.forEach((rr) => {
-          rr.roomMaids.forEach((roomBoy) => {
-            roomBoys.add(roomBoy.user.name)
-          })
-        })
-      })
-
-      return Array.from(roomBoys)
+    getUniqueRoomBoys(roomBoys) {
+      return roomBoys.map((boy) => boy.name)
     },
     formatData(raw = []) {
       const list = []
@@ -578,7 +557,7 @@ export default defineComponent({
             Arrival: { data: formatDate(rr.reservation.arrivalDate), style: {} },
             Depart: { data: formatDate(rr.reservation.departureDate), style: {} },
             Night: { data: rr.reservation.manyNight, style: {} },
-            RoomBoy: { data: rr.roomMaids, style: {} },
+            RoomBoy: { data: rr.roomMaids.user.name, style: {} },
             RoomRate: { data: rr.arrangment.rate, style: {} },
             CreatedDate: { data: formatDate(rr.reservation.created_at), style: {} }
           })

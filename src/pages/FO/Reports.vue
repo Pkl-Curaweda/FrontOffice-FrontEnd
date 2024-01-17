@@ -2,7 +2,7 @@
   <q-page class="column" style="overflow-y: hidden; min-width: max-content">
     <FOMenubar>
       <template #left>
-        <!-- <q-btn-dropdown
+        <q-btn-dropdown
           flat
           square
           class="text-capitalize text-black"
@@ -18,7 +18,7 @@
               <q-item-section>Less Revenue</q-item-section>
             </q-item>
           </q-list>
-        </q-btn-dropdown> -->
+        </q-btn-dropdown>
         <q-separator vertical />
 
         <q-input v-model="searchInput" borderless label="Name" type="search">
@@ -51,16 +51,16 @@
           dropdown-icon="o_expand_more"
         >
           <q-list>
-            <q-item clickable v-close-popup @click="setFilterDisplay('report/day')">
+            <q-item clickable v-close-popup @click="setFilterDisplay('day')">
               <q-item-section>Day</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup @click="setFilterDisplay('report/week')">
+            <q-item clickable v-close-popup @click="setFilterDisplay('week')">
               <q-item-section>Week</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup @click="setFilterDisplay('report/month')">
+            <q-item clickable v-close-popup @click="setFilterDisplay('month')">
               <q-item-section>Month</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup @click="setFilterDisplay('report/year')">
+            <q-item clickable v-close-popup @click="setFilterDisplay('year')">
               <q-item-section>Year</q-item-section>
             </q-item>
           </q-list>
@@ -135,7 +135,7 @@ export default defineComponent({
       loading: ref(false),
       searchInput: ref(''),
       datePicker: ref({ from: '', to: '' }),
-      // sortingDisplay: ref(''),
+      sortingDisplay: ref(''),
       filterDisplay: ref(''),
       columns: [
         { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
@@ -170,11 +170,11 @@ export default defineComponent({
     searchName(this.searchInput)
   },
   watch: {
-    // sortingDisplay: {
-    //   handler(sorting) {
-    //     this.fetchData()
-    //   }
-    // },
+    sortingDisplay: {
+      handler(sorting) {
+        this.fetchData()
+      }
+    },
     filterDisplay: {
       handler(display) {
         this.fetchData()
@@ -188,10 +188,10 @@ export default defineComponent({
     }
   },
   methods: {
-    // setSortingDisplay(sorting) {
-    //   this.sortingDisplay = sorting
-    //   this.fetchData()
-    // },
+    setSortingDisplay(sorting) {
+      this.sortingDisplay = sorting
+      this.fetchData()
+    },
     setFilterDisplay(display) {
       this.filterDisplay = display
       this.fetchData()
@@ -205,10 +205,10 @@ export default defineComponent({
 
       let url = `report?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
 
-      // if (this.sortingDisplay !== null) url += `&sort=${this.sortingDisplay}`
+      if (this.sortingDisplay !== null) url += `&sort=${this.sortingDisplay}`
 
       if (this.filterDisplay !== null) {
-        url += `/${this.filterDisplay}`
+        url += `&disOpt=${this.filterDisplay}`
       }
 
       const fromDate = this.datePicker.from.replace(/\//g, '-')

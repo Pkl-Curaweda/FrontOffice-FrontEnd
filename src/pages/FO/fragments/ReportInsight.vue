@@ -11,30 +11,32 @@
         dropdown-icon="o_expand_more"
       >
         <q-list>
-          <q-item clickable v-close-popup @click="setFilterDisplay('report/day')">
+          <q-item clickable v-close-popup @click="setFilterDisplay('day')">
             <q-item-section>Day</q-item-section>
           </q-item>
-          <q-item clickable v-close-popup @click="setFilterDisplay('report/week')">
+          <q-item clickable v-close-popup @click="setFilterDisplay('week')">
             <q-item-section>Week</q-item-section>
           </q-item>
-          <q-item clickable v-close-popup @click="setFilterDisplay('report/month')">
+          <q-item clickable v-close-popup @click="setFilterDisplay('month')">
             <q-item-section>Month</q-item-section>
           </q-item>
-          <q-item clickable v-close-popup @click="setFilterDisplay('report/year')">
+          <q-item clickable v-close-popup @click="setFilterDisplay('year')">
             <q-item-section>Year</q-item-section>
           </q-item>
         </q-list>
       </q-btn-dropdown>
       <!-- date picker  -->
       <q-btn-dropdown
-        outline
-        class="text-capitalize"
+        flat
+        square
+        class="text-capitalize date-btn text-black"
         label="TDate - FDate"
         icon="o_event"
+        color="primary"
         dropdown-icon="o_expand_more"
       >
         <div>
-          <q-date v-model="datePicker" range />
+          <q-date v-model="datePicker" />
         </div>
       </q-btn-dropdown>
     </div>
@@ -101,7 +103,9 @@ export default defineComponent({
   components: {},
   setup() {
     return {
-      displayOption: ref('day'),
+      datePicker: ref(),
+      displayOption: ref(''),
+      filterDisplay: ref(''),
       deluxeRoom: ref(),
       standardRoom: ref(),
       familyRoom: ref(),
@@ -178,6 +182,12 @@ export default defineComponent({
       handler(option) {
         this.fetchData()
       }
+    },
+    datePicker: {
+      deep: true,
+      handler(newDateRange) {
+        this.getDetailReport()
+      }
     }
   },
   methods: {
@@ -185,20 +195,28 @@ export default defineComponent({
       this.filterDisplay = option
       this.getDetailReport()
     },
+    formatAverage(num) {
+      return num.toFixed(1)
+    },
     getDetailReport() {
       this.loading = true
 
       let url = `detail/report`
 
-      // if (this.filterDisplay !== null) {
-      //   url += `/${this.filterDisplay}`
-      // }
+      const Date = this.datePicker?.replace(/\//g, '-')
+
+      if (Date !== undefined && Date !== '') {
+        url += `&date=${Date}`
+      }
+
+      if (this.filterDisplay !== null) {
+        url += this.filterDisplay
+      }
 
       this.api.get(url, ({ status, data }) => {
         this.loading = false
         if (status == 200) {
           this.formatData(data.detail)
-          this.formatLabel(data)
           const { total } = data
           console.log(total)
           this.deluxeRoom = total.DELUXE
@@ -217,16 +235,6 @@ export default defineComponent({
         list.push(chrt.percent) + '%'
       })
       this.series = list
-    },
-    formatLabel(raw = []) {
-      const list = []
-
-      raw = Object.values(raw)
-      raw.forEach((lbl) => {
-        console.log(lbl.detail)
-        list.push(lbl.detail)
-      })
-      this.label = list
     }
   }
 })

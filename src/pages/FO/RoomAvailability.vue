@@ -209,12 +209,12 @@ export default defineComponent({
 
       let url = `roomavail?`
 
-      // const fromDate = this.datePicker.from.replace(/\//g, '-')
-      // const toDate = this.datePicker.to.replace(/\//g, '-')
+      const fromDate = this.datePicker.from.replace(/\//g, '-')
+      const toDate = this.datePicker.to.replace(/\//g, '-')
 
-      // if (fromDate !== '' && toDate !== '') {
-      //   url += `&date=${fromDate}+${toDate}`
-      // }
+      if (fromDate !== '' && toDate !== '') {
+        url += `&date=${fromDate}+${toDate}`
+      }
 
       // Adjust the condition here
       if (this.sortingDisplay !== null) {

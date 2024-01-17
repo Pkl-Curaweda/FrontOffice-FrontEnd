@@ -40,9 +40,16 @@
         <q-separator vertical />
 
         <!--Search Button-->
-        <q-input v-model="searchInput" borderless label="Name" type="search">
+        <q-input
+          v-model="searchInput"
+          borderless
+          label="Name"
+          class="q-pl-sm"
+          type="search"
+          style="display: flex; justify-content: center"
+        >
           <template v-slot:prepend>
-            <q-icon name="search" class="q-ml-sm" color="primary" />
+            <q-icon name="search" color="primary" />
           </template>
         </q-input>
         <q-separator vertical />
@@ -155,7 +162,8 @@ export default defineComponent({
         { name: '109-FML-T', label: '109-FML-T', field: 'room_9', align: 'left' },
         { name: '110-FML-T', label: '110-FML-T', field: 'room_10', align: 'left' }
       ],
-      allObjectsInArray
+      allObjectsInArray,
+      searchInput: ref('')
     }
   },
   data() {
@@ -173,6 +181,9 @@ export default defineComponent({
   mounted() {
     this.fetchData()
   },
+  watch() {
+    searchName(this.searchInput)
+  },
   watch: {
     filterColumns: {
       handler(filters) {
@@ -185,6 +196,12 @@ export default defineComponent({
         this.fetchData()
       }
     },
+    searchInput: {
+      handler(newSearchInput) {
+        this.searchName(newSearchInput)
+      },
+      immediate: true
+    },
     datePicker: {
       deep: true,
       handler(newDateRange) {
@@ -193,6 +210,17 @@ export default defineComponent({
     }
   },
   methods: {
+    searchName(searchInput) {
+      // Make an API call to search based on searchInput
+      this.api.get(`roomavail?search=${searchInput}`, ({ status, data }) => {
+        if (status === 200) {
+          // Update the data with the search result
+          this.formatData(data.logData, data.roomAverage)
+        } else {
+          console.error('Error searching data')
+        }
+      })
+    },
     setSortingDisplay(option) {
       this.sortingDisplay = option
       this.fetchData()
@@ -238,6 +266,7 @@ export default defineComponent({
     formatData(raw = [], avg = []) {
       console.log(raw, avg)
       const list = []
+
       raw.forEach((rh) => {
         const date = rh.date
         list.push({
@@ -246,19 +275,19 @@ export default defineComponent({
         })
       })
 
-      // list.push({
-      //   Date: { data: 'Room Average', style: {} },
-      //   satu: { data: this.formatAverage(avg.total_1) + '%', style: {} },
-      //   dua: { data: this.formatAverage(avg.total_2) + '%', style: {} },
-      //   tiga: { data: this.formatAverage(avg.total_3) + '%', style: {} },
-      //   empat: { data: this.formatAverage(avg.total_4) + '%', style: {} },
-      //   lima: { data: this.formatAverage(avg.total_5) + '%', style: {} },
-      //   enam: { data: this.formatAverage(avg.total_6) + '%', style: {} },
-      //   tujuh: { data: this.formatAverage(avg.total_7) + '%', style: {} },
-      //   delapan: { data: this.formatAverage(avg.total_8) + '%', style: {} },
-      //   sembilan: { data: this.formatAverage(avg.total_9) + '%', style: {} },
-      //   sepuluh: { data: this.formatAverage(avg.total_10) + '%', style: {} }
-      // })
+      list.push({
+        Date: { data: 'Room Average', style: {} },
+        satu: { data: this.formatAverage(avg.total_1) + '%', style: {} },
+        dua: { data: this.formatAverage(avg.total_2) + '%', style: {} },
+        tiga: { data: this.formatAverage(avg.total_3) + '%', style: {} },
+        empat: { data: this.formatAverage(avg.total_4) + '%', style: {} },
+        lima: { data: this.formatAverage(avg.total_5) + '%', style: {} },
+        enam: { data: this.formatAverage(avg.total_6) + '%', style: {} },
+        tujuh: { data: this.formatAverage(avg.total_7) + '%', style: {} },
+        delapan: { data: this.formatAverage(avg.total_8) + '%', style: {} },
+        sembilan: { data: this.formatAverage(avg.total_9) + '%', style: {} },
+        sepuluh: { data: this.formatAverage(avg.total_10) + '%', style: {} }
+      })
       console.log('list data after pushing room average:', list)
       this.data = list
     }

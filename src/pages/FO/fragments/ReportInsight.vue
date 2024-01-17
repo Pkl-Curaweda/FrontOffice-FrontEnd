@@ -5,7 +5,8 @@
       <q-btn-dropdown
         flat
         square
-        class="text-capitalize text-black"
+        style="border: 1px #00000030 solid"
+        class="text-capitalize text-black rounded-borders"
         label="Display Option"
         color="primary"
         dropdown-icon="o_expand_more"
@@ -29,8 +30,9 @@
       <q-btn-dropdown
         flat
         square
-        class="text-capitalize date-btn text-black"
-        label="TDate - FDate"
+        style="border: 1px #00000030 solid"
+        class="text-capitalize date-btn text-black rounded-borders"
+        label="Date"
         icon="o_event"
         color="primary"
         dropdown-icon="o_expand_more"
@@ -104,8 +106,8 @@ export default defineComponent({
   setup() {
     return {
       datePicker: ref(),
-      displayOption: ref(''),
-      filterDisplay: ref(''),
+      displayOption: ref('day'),
+      filterDisplay: ref('day'),
       deluxeRoom: ref(),
       standardRoom: ref(),
       familyRoom: ref(),
@@ -201,7 +203,7 @@ export default defineComponent({
     getDetailReport() {
       this.loading = true
 
-      let url = `detail/report`
+      let url = `detail/report?`
 
       const Date = this.datePicker?.replace(/\//g, '-')
 
@@ -210,7 +212,7 @@ export default defineComponent({
       }
 
       if (this.filterDisplay !== null) {
-        url += this.filterDisplay
+        url += `&disOpt=${this.filterDisplay}`
       }
 
       this.api.get(url, ({ status, data }) => {

@@ -155,12 +155,12 @@ export default defineComponent({
         { name: '102-DLX-K', label: '102-DLX-K', field: 'room_2', align: 'left' },
         { name: '103-DLX-K', label: '103-DLX-K', field: 'room_3', align: 'left' },
         { name: '104-DLX-K', label: '104-DLX-K', field: 'room_4', align: 'left' },
-        { name: '105-STD-S', label: '105-STD-S', field: 'room_5', align: 'left' },
-        { name: '106-STD-S', label: '106-STD-S', field: 'room_6', align: 'left' },
-        { name: '107-STD-S', label: '107-STD-S', field: 'room_7', align: 'left' },
-        { name: '108-FML-T', label: '108-FML-T', field: 'room_8', align: 'left' },
-        { name: '109-FML-T', label: '109-FML-T', field: 'room_9', align: 'left' },
-        { name: '110-FML-T', label: '110-FML-T', field: 'room_10', align: 'left' }
+        { name: '105-STD-S', label: '105-FML-T', field: 'room_5', align: 'left' },
+        { name: '106-STD-S', label: '106-FML-T', field: 'room_6', align: 'left' },
+        { name: '107-STD-S', label: '107-FML-T', field: 'room_7', align: 'left' },
+        { name: '108-FML-T', label: '108-STD-S', field: 'room_8', align: 'left' },
+        { name: '109-FML-T', label: '109-STD-S', field: 'room_9', align: 'left' },
+        { name: '110-FML-T', label: '110-STD-S', field: 'room_10', align: 'left' }
       ],
       allObjectsInArray,
       searchInput: ref('')

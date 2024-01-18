@@ -291,11 +291,12 @@ export default defineComponent({
             }
           ],
           onOptionChange: (val) => {
-            if (val == 'King Bed')
+            console.log(val.value)
+            if (val.value == 'King bed')
               this.filterSortOrder = { col: 'BType', val: 'room+bedSetup+KING' }
-            else if (val == 'Twin Bed')
+            else if (val.value == 'Twin bed')
               this.filterSortOrder = { col: 'BType', val: 'room+bedSetup+TWIN' }
-            else if (val == 'Single Bed')
+            else if (val.value == 'Single bed')
               this.filterSortOrder = { col: 'BType', val: 'room+bedSetup+SINGLE' }
             else this.filterSortOrder = { col: '', val: '' }
           }

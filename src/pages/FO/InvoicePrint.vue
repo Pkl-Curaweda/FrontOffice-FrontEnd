@@ -141,6 +141,7 @@
         <div style="gap: 8px" class="q-mt-lg row no-wrap items-center justify-end">
           <q-btn
             label="Print"
+            @click="PrintInvoice()"
             unelevated
             color="primary"
             dense
@@ -196,6 +197,7 @@ export default defineComponent({
   components: { FOMenubar },
   data() {
     return {
+      url: '',
       api: new this.$Api('frontoffice'),
       data: []
     }
@@ -204,10 +206,17 @@ export default defineComponent({
     this.getDataTable()
   },
   methods: {
+    PrintInvoice(){
+      // this.loading = true
+      const currentUrl = this.url
+      const [url, query] = currentUrl.split('?')
+      this.api.post(`${url}/print`)
+    },
     getDataTable() {
       this.loading = true
 
-      let url = `invoice/payment/1/1`
+      let url = `invoice/1/1`
+      this.url = url
       this.api.get(url, ({ status, data }) => {
         this.loading = false
 

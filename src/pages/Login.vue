@@ -62,7 +62,7 @@ export default defineComponent({
   },
   data() {
     return {
-      api: new this.$Api('frontoffice'),
+      api: new this.$Api('root'),
       loading: false,
       dataModel: {
         email: ref(null),

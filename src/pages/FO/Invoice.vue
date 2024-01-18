@@ -458,9 +458,10 @@ export default defineComponent({
       this.fetchData()
     },
     fetchData() {
+      const { currentResvId, currentRoomResvId } = this.$ResvStore
       this.loading = true
 
-      let url = `invoice/1/1?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      let url = `invoice/${currentResvId}/${currentRoomResvId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
 
       if (this.filterSortOrder['col'] != '' && this.filterSortOrder['val'] != '')
         url += `&sort=${this.filterSortOrder['val']}`

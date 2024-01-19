@@ -177,36 +177,66 @@
           </q-card>
         </q-dialog>
       </div>
-
       <q-input
         dense
-        outlined
+        :outlined="!$ResvStore.fix"
+        :borderless="$ResvStore.fix"
+        :readonly="$ResvStore.fix"
         v-model="guestName"
-        label="Guest Name/ No Handphone"
+        :label="!$ResvStore.fix ? 'Guest Name/ No Handphone' : ''"
         class="q-mt-sm width-full"
+        :class="$ResvStore.fix ? 'q-my-sm text-bold' : 'q-mt-sm'"
       />
 
-      <div style="gap: 8px" class="row no-wrap items-center q-mt-sm">
-        <div class="bg-primary-tint text-primary text-bold q-px-sm rounded-borders">
-          {{ resvNo || '#ResNo' }}
-        </div>
+      <div
+        style="gap: 10px"
+        class="row no-wrap items-center"
+        :class="$ResvStore.fix ? 'q-my-sm' : 'q-mt-sm'"
+      >
+        <div
+          style="margin-top: auto; margin-bottom: auto; display: flex; width: 100%; padding: auto"
+          class="row text-bold"
+        >
+          <div
+            class="bg-primary-tint text-primary text-bold q-px-md rounded-borders text-center q-my-auto q-mr-sm"
+          >
+            {{ resvNo || '#ResNo' }}
+          </div>
+          <q-select
+            dense
+            v-if="!$ResvStore.fix"
+            :outlined="!$ResvStore.fix"
+            v-model="resvRecource"
+            :options="resvRecourceOpts"
+            :borderless="$ResvStore.fix"
+            :readonly="$ResvStore.fix"
+            :dropdown-icon="!$ResvStore ? 'expand_more' : ''"
+            :label="!$ResvStore.fix ? 'Reservation Resource' : ''"
+            class="col-grow text-center q-my-auto"
+          />
 
-        <q-select
-          outlined
-          dense
-          v-model="resvRecource"
-          :options="resvRecourceOpts"
-          label="Reservation Resource"
-          dropdown-icon="expand_more"
-          class="col-grow"
-        />
+          <div v-if="$ResvStore.fix">{{ resvRecource }}</div>
+        </div>
       </div>
 
-      <div style="gap: 8px" class="row no-wrap q-mt-sm">
+      <div
+        style="gap: 10px; width: 100%; display: flex"
+        class="q-mt-sm text-bold row"
+        v-if="$ResvStore.fix"
+      >
+        <div class="">
+          {{ roomType + ' (' + selected.id.split('-')[0] + ')' }}
+        </div>
+        <div class="">{{ roomNo }}</div>
+        <div class="">{{ roomBed.label + ' ' }} Bed</div>
+      </div>
+      <div v-if="!$ResvStore.fix" style="gap: 8px" class="row no-wrap q-mt-sm">
         <q-select
-          outlined
           dense
           v-model="roomType"
+          :outlined="!$ResvStore.fix"
+          :borderless="$ResvStore.fix"
+          :readonly="$ResvStore.fix"
           :options="roomTypeOpts"
           label="RmType"
           dropdown-icon="expand_more"
@@ -239,22 +269,49 @@
 
       <div class="text-bold q-mt-sm">Arrival &nbsp;&nbsp;&nbsp;Depart &nbsp;&nbsp;&nbsp;Night</div>
 
-      <q-btn-dropdown
+      <q-btn
+        v-if="$ResvStore.fix"
         flat
-        outlined
         dense
         class="text-capitalize dropdown-date full-width"
         style="border: 1px #00000030 solid"
         :label="arrivalDepartLabel"
         icon="o_calendar_today"
-        dropdown-icon="o_expand_more"
+        :outlined="!$ResvStore.fix"
+        :borderless="!$ResvStore.fix"
+        :readonly="$ResvStore.fix"
+      >
+      </q-btn>
+
+      <q-btn-dropdown
+        v-if="!$ResvStore.fix"
+        flat
+        dense
+        class="text-capitalize dropdown-date full-width"
+        style="border: 1px #00000030 solid"
+        :label="arrivalDepartLabel"
+        icon="o_calendar_today"
+        outlined
       >
         <q-date v-model="arrivalDepart" range />
       </q-btn-dropdown>
 
       <div class="text-bold q-mt-sm">Adult &nbsp;&nbsp;&nbsp;Child &nbsp;&nbsp;&nbsp;Baby</div>
 
+      <q-btn
+        v-if="$ResvStore.fix"
+        flat
+        outlined
+        dense
+        class="text-capitalize dropdown-date full-width"
+        style="border: 1px #00000030 solid"
+        :label="guestsLabel"
+        :readonly="$ResvStore.fix"
+        icon="meeting_room"
+        dropdown-icon="o_expand_more"
+      ></q-btn>
       <q-btn-dropdown
+        v-if="!$ResvStore.fix"
         flat
         outlined
         dense
@@ -448,9 +505,10 @@
         <q-btn
           unelevated
           dense
-          to="/guest-invoice"
           class="q-mt-sm text-capitalize q-px-sm"
           color="primary"
+          to="/fo/guest-invoice"
+          @click="kirimData()"
           label="Invoice"
         />
       </q-expansion-item>
@@ -508,11 +566,31 @@
 </template>
 
 <script>
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, ref, watch, provide, inject } from 'vue'
 import { useQuasar } from 'quasar'
+// import { bus } from 'src/stores/EventBus.js'
+
+// Create an event bus
+// const eventBusSymbol = Symbol('eventBus')
+// const eventBus = {}
+
+// export const provideEventBus = () => {
+//   provide(eventBusSymbol, eventBus)
+// }
+
+// export const injectEventBus = () => {
+//   return inject(eventBusSymbol)
+// }
 export default defineComponent({
   name: 'GuestForm',
   setup() {
+    const data = 'Ini adalah data yang akan dikirim'
+
+    // function kirimData() {
+    //   injectEventBus().$emit('dataDikirim', data)
+    //   console.log(data)
+    // }
+
     const isRbSelected = ref(false)
     const isRoSelected = ref(false)
     const isKtpSelected = ref(false)
@@ -581,6 +659,7 @@ export default defineComponent({
     }
 
     return {
+      fix: false,
       includeTax: false,
       roomImage: ref(''),
       guestName: ref(''),
@@ -711,6 +790,18 @@ export default defineComponent({
     }
   },
   methods: {
+    kirimData() {
+      const { currentResvId, currentRoomResvId } = this.$ResvStore
+      // const senddata = {
+      //   currentResvId,
+      //   currentRoomResvId
+      // }
+      // bus.$emit('dataDikirim', senddata)
+      // console.log(currentResvId)
+      // console.log(currentRoomResvId)
+      // this.$ResvStore.currentResvId = data
+      // this.$ResvStore.currentRoomResvId = rmno
+    },
     setRoww() {
       return {
         roomId: this.roomNo ? this.roomNo : 1,
@@ -907,10 +998,10 @@ export default defineComponent({
       }
     },
     getDetailResvRoom() {
-      const { currentResvId, currentRoomResvId } = this.$ResvStore
+      const { currentResvId, currentRoomResvId, fix } = this.$ResvStore
 
       if (currentResvId == 0 || currentRoomResvId == 0) return
-
+      this.fix = true ? (this.fix = fix) : false
       this.loading = true
       this.resvNo = currentResvId
       this.api.get(
@@ -1035,7 +1126,7 @@ export default defineComponent({
       const dataToUpdate = {
         nameContact: this.guestName,
         resourceName: this.resvRecource,
-        arrangmentCode: this.selected.id, //row
+        arrangmentCode: this.selected.id,
         manyAdult: this.guests.adult,
         manyChild: this.guests.child,
         manyBaby: this.guests.baby,

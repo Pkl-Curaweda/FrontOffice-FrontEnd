@@ -30,7 +30,7 @@
           dropdown-icon="o_expand_more"
         >
           <div>
-            <q-date v-model="datePicker" range />
+            <q-date v-model="datePicker" />
           </div>
         </q-btn-dropdown>
 
@@ -49,21 +49,12 @@
       </template>
       <template #right>
         <q-separator vertical />
-        <q-btn flat square color="primary">
-          <q-icon>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="19"
-              height="20"
-              viewBox="0 0 19 20"
-              fill="none"
-            >
-              <path
-                d="M16 10.09V4C16 1.79 12.42 0 8 0C3.58 0 0 1.79 0 4V14C0 16.21 3.59 18 8 18C8.46 18 8.9 18 9.33 17.94C9.1129 17.3162 9.00137 16.6605 9 16V15.95C8.68 16 8.35 16 8 16C4.13 16 2 14.5 2 14V11.77C3.61 12.55 5.72 13 8 13C8.65 13 9.27 12.96 9.88 12.89C10.4127 12.0085 11.1638 11.2794 12.0607 10.7731C12.9577 10.2668 13.9701 10.0005 15 10C15.34 10 15.67 10.04 16 10.09ZM14 9.45C12.7 10.4 10.42 11 8 11C5.58 11 3.3 10.4 2 9.45V6.64C3.47 7.47 5.61 8 8 8C10.39 8 12.53 7.47 14 6.64V9.45ZM8 6C4.13 6 2 4.5 2 4C2 3.5 4.13 2 8 2C11.87 2 14 3.5 14 4C14 4.5 11.87 6 8 6ZM19 15V17H16V20H14V17H11V15H14V12H16V15H19Z"
-                fill="#008444"
-              />
-            </svg>
-          </q-icon>
+        <q-btn flat square color="primary" icon="o_add_home">
+          <q-popup-proxy>
+            <q-banner>
+              <TableAddInvoice />
+            </q-banner>
+          </q-popup-proxy>
         </q-btn>
       </template>
     </FOMenubar>
@@ -71,7 +62,15 @@
     <MultiPane>
       <template #upper>
         <div class="my-table">
-          <q-table class="no-shadow" :rows="rows" :columns="columns" row-key="name">
+          <q-table
+            class="no-shadow"
+            v-model:pagination="pagination"
+            @request="onPaginationChange"
+            :rows="data"
+            :loading="loading"
+            :columns="columns"
+            row-key="name"
+          >
             <template v-slot:header="props">
               <q-tr class="table-head" :props="props">
                 <q-th
@@ -80,18 +79,19 @@
                   style="padding-top: 0px; padding-bottom: 0px"
                 >
                   <q-select
-                    v-if="filterCols.hasOwnProperty(col.name)"
+                    v-if="filterColumns.hasOwnProperty(col.name)"
                     clearable
                     borderless
                     dark
                     label-color="white"
                     style="min-width: 90px"
-                    v-model="filterCols[col.name].data"
-                    :options="filterCols[col.name].options"
+                    v-model="filterColumns[col.name].data"
+                    :options="filterColumns[col.name].options"
+                    @update:model-value="(val) => filterColumns[col.name].onOptionChange(val)"
                     :label="col.label"
                   >
                     <template
-                      v-if="allObjectsInArray(filterCols[col.name].options)"
+                      v-if="allObjectsInArray(filterColumns[col.name].options)"
                       v-slot:option="scope"
                     >
                       <q-item v-bind="scope.itemProps">
@@ -115,18 +115,24 @@
             </template>
             <template v-slot:body="props">
               <q-tr :props="props">
-                <q-td v-for="(cell, i) in props.row" :key="i" :style="cell.style">
-                  {{ cell.data }}
-                </q-td>
+                <template v-for="(cell, i) in props.row" :key="i">
+                  <q-td :style="cell.style">
+                    {{ cell.data }}
+                  </q-td>
+                </template>
                 <q-td key="" :props="props" style="width: 10px">
-                  <q-btn flat rounded size="13px" style="color: #008444"
+                  <q-btn
+                    flat
+                    rounded
+                    size="13px"
+                    @click="setRoomResv(props.row)"
+                    style="color: #008444"
                     ><svg
                       width="19"
                       height="19"
                       viewBox="0 0 19 19"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
-                      @click="setRoomResv(props.row)"
                     >
                       <path
                         d="M8 13C8.8 13 9.57 12.93 10.31 12.82L13.22 9.91C11.89 10.59 10 11 8 11C5.58 11 3.3 10.4 2 9.45V6.64C3.47 7.47 5.61 8 8 8C10.39 8 12.53 7.47 14 6.64V9.13L15.39 7.74C15.57 7.56 15.78 7.42 16 7.3V4C16 1.79 12.42 0 8 0C3.58 0 0 1.79 0 4V14C0 16.04 3.06 17.72 7 17.97V16.13L7.17 15.96C3.84 15.76 2 14.46 2 14V11.77C3.61 12.55 5.72 13 8 13ZM8 2C11.87 2 14 3.5 14 4C14 4.5 11.87 6 8 6C4.13 6 2 4.5 2 4C2 3.5 4.13 2 8 2ZM15.13 10.83L17.17 12.87L11.04 19H9V16.96L15.13 10.83ZM18.85 11.19L17.87 12.17L15.83 10.13L16.81 9.15C17 8.95 17.33 8.95 17.53 9.15L18.85 10.47C19.05 10.67 19.05 11 18.85 11.19Z"
@@ -134,7 +140,12 @@
                       />
                     </svg>
                   </q-btn>
-                  <q-btn flat rounded size="13px" style="color: #269861"
+                  <q-btn
+                    flat
+                    rounded
+                    size="13px"
+                    style="color: #269861"
+                    @click="deleteResv(props.row)"
                     ><svg
                       width="19"
                       height="19"
@@ -162,197 +173,281 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref, defineAsyncComponent } from 'vue'
 import FOMenubar from 'src/components/FOMenubar.vue'
 import MultiPane from 'src/layouts/MultiPane.vue'
 import InvoiceForm from './fragments/InvoiceForm.vue'
 import { allObjectsInArray } from 'src/utils/datatype'
 
-const columns = [
-  { name: 'Art', label: 'Art', align: 'left', field: 'Art' },
-  { name: 'Qty', label: 'Qty', align: 'left', field: 'Qty' },
-  { name: 'Description', label: 'Description', align: 'left', field: 'Description' },
-  { name: 'Rate', label: 'Rate', align: 'left', field: 'Rate' },
-  { name: 'Amount', label: 'Amount', align: 'left', field: 'Amount' },
-  { name: 'RmNo', label: 'RmNo', align: 'left', field: 'RmNo' },
-  { name: 'RoomBoy', label: 'Room Boy', field: 'RoomBoy', align: 'left' },
-  { name: 'VoucherNumber', label: 'Voucher Number', align: 'left', field: 'VoucherNumber' },
-  { name: 'BillDate', label: 'BillDate', align: 'left', field: 'BillDate' },
-  { name: '', label: '', align: 'center', field: '' }
-]
-
-const filterCols = {
-  Art: {
-    data: '',
-    options: ['1-999', '999-1']
-  },
-  Qty: {
-    data: '',
-    options: ['1', '>1']
-  },
-  Description: {
-    data: '',
-    options: ['1-999', '999-1', 'A-Z', 'Z-A']
-  },
-  Rate: {
-    data: '',
-    options: ['High Price', 'Low Price']
-  },
-  Amount: {
-    data: '',
-    options: ['High Price', 'Low Price']
-  },
-  RmNo: {
-    data: '',
-    options: ['', '']
-  },
-  RoomBoy: {
-    data: '',
-    options: ['ILYAS', 'RONI', 'YUTA', 'HERTIAMAN']
-  },
-  VoucherNumber: {
-    data: '',
-    options: ['', '']
-  },
-  BillDate: {
-    data: '',
-    options: ['Newest', 'Oldest']
-  }
-}
-
-const rows = [
-  {
-    Art: { data: '115', style: {} },
-    Qty: { data: '1', style: {} },
-    Description: { data: 'Blanket', style: { backgroundColor: '' } },
-    Rate: { data: 'Rp 30,000.00', style: {} },
-    Amount: { data: 'Rp 30,000.00', style: {} },
-    RmNo: { data: '101', style: {} },
-    RoomBoy: { data: 'Yanto', style: {} },
-    VoucherNumber: { data: '19', style: {} },
-    BillDate: { data: '12/02/23', style: {} }
-  },
-  {
-    Art: { data: '114', style: {} },
-    Qty: { data: '2', style: {} },
-    Description: { data: 'Pillow', style: { backgroundColor: '' } },
-    Rate: { data: 'Rp 10,000.00', style: {} },
-    Amount: { data: 'Rp 20,000.00', style: {} },
-    RmNo: { data: '101', style: {} },
-    RoomBoy: { data: 'Luthfi', style: {} },
-    VoucherNumber: { data: '20', style: {} },
-    BillDate: { data: '12/02/23', style: {} }
-  },
-  {
-    Art: { data: 'In Room', style: {} },
-    Qty: { data: '', style: {} },
-    Description: { data: 'Nasi Goreng', style: { backgroundColor: '' } },
-    Rate: { data: 'Rp 541,027.00', style: {} },
-    Amount: { data: 'Rp 541,027.00', style: {} },
-    RmNo: { data: '101', style: {} },
-    RoomBoy: { data: '103', style: {} },
-    VoucherNumber: { data: '103', style: {} },
-    BillDate: { data: '12/02/23', style: {} }
-  },
-  {
-    Art: { data: '1', style: {} },
-    Qty: { data: '1', style: {} },
-    Description: { data: 'Breakfast', style: { backgroundColor: '' } },
-    Rate: { data: 'Rp 541,027.00', style: {} },
-    Amount: { data: 'Rp 541,027.00', style: {} },
-    RmNo: { data: '101', style: {} },
-    RoomBoy: { data: '102', style: {} },
-    VoucherNumber: { data: '103', style: {} },
-    BillDate: { data: '13/02/23', style: {} }
-  },
-  {
-    Art: { data: '', style: {} },
-    Qty: { data: '', style: {} },
-    Description: { data: '', style: { backgroundColor: '' } },
-    Rate: { data: '', style: {} },
-    Amount: { data: '', style: {} },
-    RmNo: { data: '', style: {} },
-    RoomBoy: { data: '', style: {} },
-    VoucherNumber: { data: '', style: {} },
-    BillDate: { data: '', style: {} }
-  },
-  {
-    Art: { data: '', style: {} },
-    Qty: { data: '', style: {} },
-    Description: { data: '', style: { backgroundColor: '' } },
-    Rate: { data: '', style: {} },
-    Amount: { data: '', style: {} },
-    RmNo: { data: '', style: {} },
-    RoomBoy: { data: '', style: {} },
-    VoucherNumber: { data: '', style: {} },
-    BillDate: { data: '', style: {} }
-  },
-  {
-    Art: { data: '', style: {} },
-    Qty: { data: '', style: {} },
-    Description: { data: '', style: { backgroundColor: '' } },
-    Rate: { data: '', style: {} },
-    Amount: { data: '', style: {} },
-    RmNo: { data: '', style: {} },
-    RoomBoy: { data: '', style: {} },
-    VoucherNumber: { data: '', style: {} },
-    BillDate: { data: '', style: {} }
-  },
-  {
-    Art: { data: '', style: {} },
-    Qty: { data: '', style: {} },
-    Description: { data: '', style: { backgroundColor: '' } },
-    Rate: { data: '', style: {} },
-    Amount: { data: '', style: {} },
-    RmNo: { data: '', style: {} },
-    RoomBoy: { data: '', style: {} },
-    VoucherNumber: { data: '', style: {} },
-    BillDate: { data: '', style: {} }
-  },
-  {
-    Art: { data: '', style: {} },
-    Qty: { data: '', style: {} },
-    Description: { data: '', style: { backgroundColor: '' } },
-    Rate: { data: '', style: {} },
-    Amount: { data: '', style: {} },
-    RmNo: { data: '', style: {} },
-    RoomBoy: { data: '', style: {} },
-    VoucherNumber: { data: '', style: {} },
-    BillDate: { data: '', style: {} }
-  }
-]
+const TableAddInvoice = defineAsyncComponent(() => import('components/charts/TableAddInvoice.vue'))
 
 export default defineComponent({
   name: 'InvoicePage',
-  components: { FOMenubar, MultiPane, InvoiceForm },
+  components: { FOMenubar, MultiPane, InvoiceForm, TableAddInvoice },
+  setup() {
+    return {
+      allObjectsInArray,
+      selected: ref([]),
+      searchInput: ref(''),
+      loading: ref(false),
+      datePicker: ref(),
+      filterDisplayOptions: [
+        { label: 'Artno', value: 'artno' },
+        { label: 'Description', value: 'description' }
+      ],
+      columns: [
+        { name: 'Art', label: 'Art', align: 'left', field: 'Art' },
+        { name: 'Qty', label: 'Qty', align: 'left', field: 'Qty' },
+        { name: 'Description', label: 'Description', align: 'left', field: 'Description' },
+        { name: 'Rate', label: 'Rate', align: 'left', field: 'Rate' },
+        { name: 'Amount', label: 'Amount', align: 'left', field: 'Amount' },
+        { name: 'RmNo', label: 'RmNo', align: 'left', field: 'RmNo' },
+        { name: 'RoomBoy', label: 'Room Boy', field: 'RoomBoy', align: 'left' },
+        { name: 'VoucherNumber', label: 'Voucher Number', align: 'left', field: 'VoucherNumber' },
+        { name: 'BillDate', label: 'BillDate', align: 'left', field: 'BillDate' },
+        { name: '', label: '', align: 'center', field: '' }
+      ]
+    }
+  },
   data() {
     return {
-      filterCols,
-      rows,
-      columns,
-      allObjectsInArray
+      UniqueId: ref(),
+      filterSortOrder: ref({ col: '', val: '' }),
+      filterColumns: {
+        Art: {
+          data: '',
+          options: ['1-999', '999-1'],
+          onOptionChange: (val) => {
+            if (val == '1-999') this.filterSortOrder = { col: 'Art', val: 'art-asc' }
+            else if (val == '999-1') this.filterSortOrder = { col: 'Art', val: 'art-desc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
+        },
+        Qty: {
+          data: '',
+          options: ['1>', '1'],
+          onOptionChange: (val) => {
+            if (val == '1>') this.filterSortOrder = { col: 'Qty', val: 'qty-desc' }
+            else if (val == '1') this.filterSortOrder = { col: 'Qty', val: 'qty-asc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
+        },
+        Description: {
+          data: '',
+          options: ['A-Z', 'Z-A'],
+          onOptionChange: (val) => {
+            if (val == 'A-Z') this.filterSortOrder = { col: 'Description', val: 'desc-asc' }
+            else if (val == 'Z-A') this.filterSortOrder = { col: 'Description', val: 'desc-desc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
+        },
+        Rate: {
+          data: '',
+          options: ['High Price', 'Low Price'],
+          onOptionChange: (val) => {
+            if (val == 'High Price') this.filterSortOrder = { col: 'Rate', val: 'rate-desc' }
+            else if (val == 'Low Price') this.filterSortOrder = { col: 'Rate', val: 'rate-asc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
+        },
+        Amount: {
+          data: '',
+          options: ['High Price', 'Low Price'],
+          onOptionChange: (val) => {
+            if (val == 'High Price') this.filterSortOrder = { col: 'Amount', val: 'amount-desc' }
+            else if (val == 'Low Price') this.filterSortOrder = { col: 'Amount', val: 'amount-asc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
+        },
+        // RmNo: {
+        //   data: '',
+        //   options: ['', '']
+        // },
+        // RoomBoy: {
+        //   data: '',
+        //   options: ['ILYAS', 'RONI', 'YUTA', 'HERTIAMAN']
+        // },
+        // VoucherNumber: {
+        //   data: '',
+        //   options: ['', '']
+        // },
+        BillDate: {
+          data: '',
+          options: ['Newest', 'Oldest'],
+          onOptionChange: (val) => {
+            if (val == 'Newest') this.filterSortOrder = { col: 'BillDate', val: 'date-desc' }
+            else if (val == 'Oldest') this.filterSortOrder = { col: 'BillDate', val: 'date-asc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
+        }
+      },
+      api: new this.$Api('frontoffice'),
+      pagination: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 20
+      },
+      data: []
     }
+  },
+  mounted() {
+    this.fetchData()
+    // if (this.$ResvStore.currentRoomResvId) {
+    //   this.fetchData()
+    // }
+
+    // watch(
+    //   () => this.$ResvStore.currentRoomResvId,
+    //   () => {
+    //     this.fetchData()
+    //     this.getResvProps()
+    //   }
+    // )
+  },
+  watch() {
+    searchDesc(this.searchInput)
   },
   watch: {
-    filterCols: {
-      handler(filters) {
-        console.log(filters)
-      },
-      deep: true
-    }
-  },
-  method: {
-    setRoomResv(data){
-      this.$ResvStore.currentResvId = data['ResNo'].data
-      this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
-    },
-    async getData(){
-      try{
-        this.api.get()
-      }catch(error){
-
+    filterSortOrder: {
+      handler(oldFilter, newFilter) {
+        Object.keys(this.filterColumns).forEach((key) => {
+          if (oldFilter['col'] != key) this.filterColumns[key].data = null
+        })
+        this.fetchData()
       }
     },
+    datePicker: {
+      deep: true,
+      handler(newDateRange) {
+        this.fetchData()
+      }
+    },
+    searchInput: {
+      handler(newSearchInput) {
+        this.searchDesc(newSearchInput)
+      },
+      immediate: true
+    },
+    filterDisplay: {
+      handler(option) {
+        this.fetchData()
+      }
+    }
   },
+  methods: {
+    searchDesc(searchInput) {
+      // console.log('test' + searchInput)
+      //   if(searchInput != '' || searchInput != null){
+      //   // Make an API call to search based on searchInput
+      //   this.api.get(`invoice/1/1?search=${searchInput}`, ({ status, data }) => {
+      //     if (status === 200) {
+      //       // Update the data with the search result
+      //       this.formatData(data.invoices)
+      //     } else {
+      //       console.error('Error searching data')
+      //     }
+      //   })
+      // }else{
+      //   console.log('data kosong')
+      // }
+    },
+    setSortOrder(val = '') {
+      this.filterSortOrder = null
+    },
+    onPaginationChange(props) {
+      this.pagination = props.pagination
+      this.fetchData()
+    },
+    fetchData() {
+      this.loading = true
+
+      const { currentResvId, currentRoomResvId } = this.$ResvStore
+
+      if (currentResvId === 0 || currentRoomResvId === 0) {
+        this.loading = false
+        console.log(currentResvId)
+        return
+      }
+
+      let url = `/fo/invoice/${currentResvId}/${currentRoomResvId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+
+      if (this.filterSortOrder.col !== '' && this.filterSortOrder.val !== '') {
+        url += `&sort=${this.filterSortOrder.val}`
+      }
+
+      // if (this.filterDisplay !== null) {
+      //   url += `&disOpt=${this.filterDisplay}`
+      // }
+
+      const formattedDate = this.datePicker?.replace(/\//g, '-')
+
+      if (formattedDate) {
+        url += `&date=${formattedDate}T${formattedDate}`
+      }
+
+      this.$api
+        .get(url)
+        .then((response) => {
+          this.loading = false
+
+          if (response.status === 200) {
+            // this.uniqueId = response.data.data.invoices.uniqueId
+            // console.log(this.uniqueId)
+            this.formatData(response.data.data.invoices)
+            this.pagination = {
+              page: response.data.data.meta?.currPage,
+              rowsNumber: response.data.data.meta?.total,
+              rowsPerPage: response.data.data.meta?.perPage
+            }
+          }
+          this.triggerPositive('GET Data Successfully')
+        })
+        .catch((error) => {
+          this.loading = false
+          console.error('Error fetching data:', error)
+        })
+    },
+    formatCurrency(num = 0) {
+      return num.toLocaleString()
+    },
+    formatData(raw = []) {
+      const list = []
+
+      raw.forEach((inv) => {
+        list.push({
+          Art: { data: inv.art.label ? inv.art.label : inv.art, style: {} },
+          Qty: { data: inv.qty, style: {} },
+          Description: { data: inv.desc, style: {} },
+          Rate: { data: this.formatCurrency(inv.rate), style: {} },
+          Amount: { data: this.formatCurrency(inv.amount), style: {} },
+          RmNo: { data: 101, style: {} },
+          RoomBoy: { data: 'Asep', style: {} },
+          VoucherNumber: { data: 101111, style: {} },
+          BillDate: { data: inv.billDate, style: {} },
+          uniqueId: { data: inv.uniqueId, style: {} }
+        })
+      })
+      console.log(list)
+      this.data = list
+    },
+    setRoomResv(data) {
+      this.$ResvStore.dateBill = data['BillDate'].data
+      this.$ResvStore.Artlb = data['Art'].data
+      this.$ResvStore.UniqueId = data['uniqueId'].data
+      console.log(data['BillDate'].data)
+      console.log(this.$ResvStore.dateBill)
+      console.log(this.$ResvStore.UniqueId)
+    },
+    triggerPositive(message) {
+      this.$q.notify(
+        {
+          type: 'positive',
+          message: message || 'This is a "positive" type notification.',
+          timeout: 1000
+        },
+        4000
+      )
+    }
+  }
 })
 </script>

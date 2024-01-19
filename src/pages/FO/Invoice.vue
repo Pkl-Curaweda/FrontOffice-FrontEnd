@@ -175,6 +175,7 @@
                       viewBox="0 0 19 19"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
+                      @click="setRoomResv(props.row)"
                     >
                       <path
                         d="M8 13C8.8 13 9.57 12.93 10.31 12.82L13.22 9.91C11.89 10.59 10 11 8 11C5.58 11 3.3 10.4 2 9.45V6.64C3.47 7.47 5.61 8 8 8C10.39 8 12.53 7.47 14 6.64V9.13L15.39 7.74C15.57 7.56 15.78 7.42 16 7.3V4C16 1.79 12.42 0 8 0C3.58 0 0 1.79 0 4V14C0 16.04 3.06 17.72 7 17.97V16.13L7.17 15.96C3.84 15.76 2 14.46 2 14V11.77C3.61 12.55 5.72 13 8 13ZM8 2C11.87 2 14 3.5 14 4C14 4.5 11.87 6 8 6C4.13 6 2 4.5 2 4C2 3.5 4.13 2 8 2ZM15.13 10.83L17.17 12.87L11.04 19H9V16.96L15.13 10.83ZM18.85 11.19L17.87 12.17L15.83 10.13L16.81 9.15C17 8.95 17.33 8.95 17.53 9.15L18.85 10.47C19.05 10.67 19.05 11 18.85 11.19Z"
@@ -508,6 +509,19 @@ export default defineComponent({
       })
       this.data = list
     }
-  }
+  },
+  method: {
+    setRoomResv(data){
+      this.$ResvStore.currentResvId = data['ResNo'].data
+      this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
+    },
+    async getData(){
+      try{
+        this.api.get()
+      }catch(error){
+
+      }
+    },
+  },
 })
 </script>

@@ -78,6 +78,8 @@
           icon="o_add_home"
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
+          @click="newResvroom()"
+          :disabled="!this.$ResvStore.currentRoomResvId"
         />
 
         <!-- show modal to create card's credential: KTP, SIM, address  -->
@@ -89,6 +91,7 @@
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
           @click="dialogpayment = true"
+          :disabled="!this.$ResvStore.currentRoomResvId"
         />
 
         <q-dialog v-model="dialogpayment">
@@ -118,7 +121,7 @@
                       height: fit-content;
                       border-radius: 10px 0px 0px 10px;
                     "
-                    @click="toggleKtpSelected"
+                    @click="toggleKtpSelected && KTPSelected()"
                   >
                     KTP
                   </q-btn>
@@ -134,7 +137,7 @@
                       height: fit-content;
                       border-radius: 0px 10px 10px 0px;
                     "
-                    @click="toggleSimSelected"
+                    @click="toggleSimSelected && SIMSelected()"
                   >
                     SIM
                   </q-btn>
@@ -155,6 +158,7 @@
                   dense
                   class="rounded-borders text-capitalize text-black"
                   style="width: 60px"
+                  @click="dialogpayment = false"
                 >
                   Cancel
                 </q-btn>
@@ -162,6 +166,7 @@
                   flat
                   square
                   dense
+                  @click="CardId()"
                   class="rounded-borders text-capitalize"
                   style="background-color: #069550; color: white; width: 50px"
                 >
@@ -217,33 +222,16 @@
           dropdown-icon="expand_more"
           class="full-width"
         />
-
         <q-select
           outlined
           dense
           v-model="roomBed"
           :options="roomBedOpts"
-          label="Type Bed"
           dropdown-icon="expand_more"
           class="full-width"
+          option-label="value"
+          label="Type Bed"
         >
-          <!-- <template v-slot:option="roomBedOpts">
-            <q-item v-bind="roomBedOpts">
-              <q-item-section avatar>
-                <div class="flex justify-center">
-                  <q-icon size="24px" :name="roomBedOpts.opt.icon" />
-                  <q-icon
-                    size="24px"
-                    :name="roomBedOpts.opt.icon"
-                    v-if="roomBedOpts.opt.label === 'TWIN'"
-                  />
-                </div>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>{{ roomBedOpts.opt.label }}</q-item-label>
-              </q-item-section>
-            </q-item>
-          </template> -->
         </q-select>
       </div>
 
@@ -374,6 +362,7 @@
         <div class="text-bold">Res Status:</div>
         <div class="q-pa-md">
           <q-btn-dropdown
+            :disabled="this.$ResvStore.currentRoomResvId"
             color="primary"
             :label="resvStatus.label || resvStatus.description || 'Status'"
             outline
@@ -407,9 +396,11 @@
             style="
               border: 1.5px #eeeeee solid;
               height: fit-content;
+              pointer-events: none;
               border-radius: 10px 0px 0px 10px;
             "
-            @click="toggleRbSelected"
+            :disabled="this.$ResvStore.currentRoomResvId"
+            @click="checkedCode('RB')"
           >
             RB
           </q-btn>
@@ -420,12 +411,14 @@
             dense
             class="q-px-sm"
             :class="{ 'background-primary': isRoSelected }"
+            :disabled="this.$ResvStore.currentRoomResvId"
             style="
               border: 1.5px #eeeeee solid;
               height: fit-content;
+              pointer-events: none;
               border-radius: 0px 10px 10px 0px;
             "
-            @click="toggleRoSelected"
+            @click="checkedCode('RO')"
           >
             RO
           </q-btn>
@@ -440,20 +433,17 @@
         dense
         style="font-weight: bold"
       >
-        <div
-          style="display: flex; width: 80%"
-          v-for="row in arrangmentList"
-          :key="row.id"
-          clickable
-          @click="selectRow(row)"
-        >
-          <q-radio selection="single" v-model="selected" :val="row" />
+        <div v-for="row in resultRows" :key="row.id" clickable @click="selectRow(row)">
+          <div style="display: flex; width: 100%">
+            <q-radio selection="single" v-model="selected" :val="row" @click="checked(row.id)" />
 
-          <div style="display: flex; justify-content: space-around; margin: auto; width: 100%">
-            <div>{{ row.id.split('-')[0] }}</div>
-            <div>{{ row.rate }}</div>
-            <div>{{ row.id.split('-')[1] }}</div>
+            <div style="display: flex; justify-content: space-around; margin: auto; width: 100%">
+              <div>{{ row.id.split('-')[0] }}</div>
+              <div>{{ row.rate }}</div>
+              <div>{{ row.id.split('-')[1] }}</div>
+            </div>
           </div>
+          <q-separator horizontal class="q-ma-xs" />
         </div>
         <q-btn
           unelevated
@@ -499,6 +489,7 @@
           unelevated
           color="primary"
           dense
+          :disabled="!this.$ResvStore.currentRoomResvId"
           class="text-capitalize col-grow"
           @click="postcheckin()"
         />
@@ -507,6 +498,7 @@
           outline
           color="grey"
           dense
+          :disabled="!this.$ResvStore.currentRoomResvId"
           class="text-capitalize col-grow"
           @click="postcheckout()"
         />
@@ -517,7 +509,7 @@
 
 <script>
 import { defineComponent, ref, watch } from 'vue'
-
+import { useQuasar } from 'quasar'
 export default defineComponent({
   name: 'GuestForm',
   setup() {
@@ -525,7 +517,7 @@ export default defineComponent({
     const isRoSelected = ref(false)
     const isKtpSelected = ref(false)
     const isSimSelected = ref(false)
-
+    const $q = useQuasar()
     const columns = [
       {
         required: true,
@@ -539,6 +531,7 @@ export default defineComponent({
     ]
 
     const rows = []
+    const resultRows = ref([])
     const status = []
 
     const arrangmentList = [
@@ -619,6 +612,7 @@ export default defineComponent({
       toggleRoSelected,
       isKtpSelected,
       isSimSelected,
+      CardIdselect: ref(''),
       toggleKtpSelected,
       toggleSimSelected,
       dialogpayment: ref(false),
@@ -627,6 +621,7 @@ export default defineComponent({
       optionValue: ref(''),
       status,
       rows,
+      resultRows,
       newSetRow: ref(),
       nameidcard: ref(''),
       idcardnumber: ref(''),
@@ -646,7 +641,8 @@ export default defineComponent({
       selected: ref([]),
       selectedstatus: ref(),
       resvStatus: ref([]),
-      descSelect: ref('')
+      descSelect: ref(''),
+      arrangmentValue: ref([])
     }
   },
   data() {
@@ -669,12 +665,12 @@ export default defineComponent({
         this.getResvProps()
       }
     )
-    watch(
-      () => [this.roomNo, this.roomBed, this.roomType],
-      () => {
-        this.isRoomExist()
-      }
-    )
+    // watch(
+    //   () => [this.roomNo, this.roomBed, this.roomType],
+    //   () => {
+    //     this.isRoomExist()
+    //   }
+    // )
   },
   created() {
     for (let i = 1; i <= 10; i++) {
@@ -684,6 +680,16 @@ export default defineComponent({
   watch: {
     includeTax() {
       this.calculateTotal() // Panggil method calculateTotal() saat status checkbox berubah
+    },
+    roomType: {
+      handler(oldval, newval) {
+        this.resultRows = this.rows.filter((r) => {
+          console.log(r)
+          console.log(newval)
+          console.log(oldval)
+          return r.date == oldval
+        })
+      }
     },
     'arrivalDepart.from': {
       immediate: true,
@@ -713,16 +719,16 @@ export default defineComponent({
         arrangmentCode: this.selected && this.selected.id ? this.selected.id : ''
       }
     },
-    isRoomExist() {
-      if (this.roomType == null || this.roomNo == null || this.roomBed == null) return
+    // isRoomExist() {
+    //   if (this.roomType == null || this.roomNo == null || this.roomBed == null) return
 
-      this.availRooms.filter(
-        (r) =>
-          r.roomType == this.roomType && r.id == this.roomNo && r.bedSetup == this.roomBed.value
-      ).length < 1
-        ? this.$Helper.showNotif('Room Unavailable', '', 'warning')
-        : this.$Helper.showNotif('Room Available', '', 'positive')
-    },
+    //   this.availRooms.filter(
+    //     (r) =>
+    //       r.roomType == this.roomType && r.id == this.roomNo && r.bedSetup == this.roomBed.value
+    //   ).length < 1
+    //     ? this.$Helper.showNotif('Room Unavailable', '', 'warning')
+    //     : this.$Helper.showNotif('Room Available', '', 'positive')
+    // },
     roomBedMapper(bed) {
       let obj = {
         label: bed,
@@ -772,24 +778,31 @@ export default defineComponent({
       this.guestsLabel = `${this.guests['adult']} Adult, ${this.guests['child']} Child, ${this.guests['baby']} Baby`
     },
     removeRoomResv() {
-      this.resvNo = ''
-      this.guestName = ''
-      this.resvResource = null
-      this.selectedOption.value = null
-      this.arrivalDepart = { from: null, to: null }
-      this.arrivalDepartLabel = 'Arrival - Depature, 1 Nights'
-      this.guests = { adult: 0, baby: 0, child: 0 }
-      this.resvStatus = null
-      this.resvRemark = ''
-      this.roomImage = ''
-      this.roomNo = null
-      this.roomType = null
-      this.roomBed = null
+      try {
+        const { currentResvId, currentRoomResvId } = this.$ResvStore
+        connsole.log(currentResvId, currentRoomResvId)
+        this.api.delete(`/detail/reservation/${currentResvId}/${currentRoomResvId}/delete`)
+        // window.location.reload()
+      } catch (error) {
+        console.log(error)
+      }
     },
-    getResvProps() {},
+    getResvProps() {
+      this.api.get(`/detail/reservation/1/1/create`, ({ status, data }) => {
+        this.loading = false
+        if (status === 200) {
+          const { arrangmentCode } = data
+          const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
+          this.rows = formattedRoomRates
+          this.resultRows = formattedRoomRates
+          console.log(data)
+        }
+      })
+    },
     selectRow(row) {
       this.selected = row
-      this.calculateTotal() // Memanggil calculateTotal() setelah pemilihan opsi
+      console.log(this.selected)
+      this.calculateTotal()
     },
     calculateTotal() {
       if (this.selected) {
@@ -802,24 +815,74 @@ export default defineComponent({
         console.log(this.balance)
       }
     },
+    triggerPositive(message) {
+      this.$q.notify(
+        {
+          type: 'positive',
+          message: message || 'This is a "positive" type notification.',
+          timeout: 1000
+        },
+        4000
+      )
+    },
     calculateTax(subtotal) {
       // this.subtotal = this.DPP + this.total
       // console.log(this.subtotal)
       return subtotal * 0.1
     },
+    async newResvroom() {
+      // create get date time for new reservation room
+      try {
+        const { currentResvId, currentRoomResvId } = this.$ResvStore
+        // console.log(this.roomNo)
+        // console.log(currentRoomResvId)
+        const data = {
+          arrangmentCode: this.selected.id,
+          roomId: this.roomNo
+        }
+        if (currentResvId == 0 || currentRoomResvId == 0) return
+        this.loading = true
+        await this.api.post(
+          `/detail/reservation/${currentResvId}/${currentRoomResvId}/add-room`,
+          data,
+          ({ status, data }) => {
+            if (status == 200) {
+              console.log(data)
+              this.loading = false
+              this.triggerPositive('Create new room successfully')
+              this.refresh()
+            } else {
+              console.error('Gagal mengirim data')
+            }
+          }
+        )
+      } catch (error) {
+        console.error('error : ' + error)
+      }
+    },
     async postcheckin() {
+      // create get date time for checkin reservation
       try {
         const { currentResvId, currentRoomResvId } = this.$ResvStore
         if (currentResvId == 0 || currentRoomResvId == 0) return
-
         this.loading = true
-        const response = this.api.post(
-          `detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkin`
+        const response = await this.api.post(
+          `/detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkin`,
+          null,
+          ({ status, data }) => {
+            this.loading = false
+            if (status == 200) {
+              this.triggerPositive('Check-in Successfully')
+              console.log(response.data)
+            }
+          }
         )
-        this.loading = false
-        if (response.status === 200) {
-          console.log(response.data)
-        }
+        //   Dialog.create({
+        //   title: 'Success Checkin',
+        //   message: 'Success Checkin Reservation',
+        //   color: 'white',
+        //   ok: 'OK'
+        // })
       } catch (error) {
         console.error('error : ' + error)
       }
@@ -830,12 +893,13 @@ export default defineComponent({
         if (currentResvId == 0 || currentRoomResvId == 0) return
 
         this.loading = true
-        this.api.post(
-          `detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkout`,
+        await this.api.post(
+          `/detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkout`,
+          null,
           ({ status, data }) => {
             this.loading = false
-            if (status === 200) {
-              console.log(data)
+            if (status == 200) {
+              this.triggerPositive('Check-out successfully')
             }
           }
         )
@@ -843,25 +907,6 @@ export default defineComponent({
         console.error('error : ' + error)
       }
     },
-    // async postcheckin() {
-    //   try {
-    //     const { currentResvId, currentRoomResvId } = this.$ResvStore
-    //     if (currentResvId == 0 || currentRoomResvId == 0) return
-
-    //     this.loading = true
-    //     this.api.post(
-    //       `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkin`,
-    //       ({ status, data }) => {
-    //         this.loading = false
-    //         if (status == 200) {
-    //           console.log(data)
-    //         }
-    //       }
-    //     )
-    //   } catch (error) {
-    //     console.error('error : ' + error)
-    //   }
-    // },
     getDetailResvRoom() {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
 
@@ -869,13 +914,13 @@ export default defineComponent({
 
       this.loading = true
       this.resvNo = currentResvId
-
       this.api.get(
         `detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
         ({ status, data }) => {
           this.loading = false
           console.log('test')
           if (status == 200) {
+            this.triggerPositive('Data has been GET successfully')
             const { reservation, room, arrangment, balance } = data.reservation
             const { reservationStatus, arrangmentCode, availableRooms } = data.data
 
@@ -891,6 +936,7 @@ export default defineComponent({
               value: reservation.resvStatus.id,
               label: reservation.resvStatus.description
             }
+            this.arrangmentValue = { id: arrangment.id, rate: arrangment.rate }
             this.resvRemark = reservation.reservationRemarks
             this.roomImage = room.roomImage
             this.roomNo = room.id
@@ -902,12 +948,16 @@ export default defineComponent({
             ]
             const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
             this.rows = formattedRoomRates
-
+            this.resultRows = formattedRoomRates
             const formattedStatus = this.formatedStatus(reservationStatus)
             this.status = formattedStatus
+
             // this.resultStatus = this.checkData(reservation.description)
             // this.arrangmentCode = { id: arrangment.id, rate: arrangment.rate }
           }
+          console.log(this.arrangmentValue.id.split('-')[1])
+          this.selectRow(this.arrangmentValue)
+          this.checkedCode(this.arrangmentValue.id.split('-')[1])
           // connsole.log(this.rows)
           console.log(this.resvStatus.label)
         }
@@ -958,22 +1008,24 @@ export default defineComponent({
         arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
         departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
         reservationRemarks: this.resvRemark,
-        resvStatusId: this.resvStatus.id
+        resvStatusId: parseInt(this.resvStatus.id)
       }
       try {
-        this.api.post(
-          `detail/reservation/${currentResvId}/${currentRoomResvId}/create`,
+        await this.api.post(
+          `/detail/reservation/${currentResvId}/${currentRoomResvId}/create`,
           dataToUpdate,
           ({ status, data }) => {
             this.loading = false
             if (status === 200) {
+              this.triggerPositive('Create new reservation successfully')
               console.log('Data berhasil diperbarui:', data)
+              this.refresh()
             } else {
               console.error('Gagal memperbarui data')
             }
           }
         )
-        this.refresh()
+        // this.refresh()
       } catch (error) {
         console.error(error)
       }
@@ -996,14 +1048,15 @@ export default defineComponent({
       }
 
       try {
-        this.api.put(
-          `detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
+        await this.api.put(
+          `/detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
           dataToUpdate,
           ({ status, data }) => {
             this.loading = false
             console.log(this.resvStatus)
 
             if (status === 200) {
+              this.triggerPositive('Update Successfully')
               console.log('Data berhasil diperbarui:', data)
             } else {
               console.error('Gagal memperbarui data')
@@ -1028,7 +1081,7 @@ export default defineComponent({
     onItemClick(optionValue, desc) {
       this.optionValue = optionValue
       this.resvStatus = { id: optionValue, description: desc }
-      console.log(this.resvStatus.description)
+      console.log(this.resvStatus.id)
     },
     getDropdownLabel() {
       if (this.resvStatus.label) {
@@ -1043,6 +1096,68 @@ export default defineComponent({
     },
     refresh() {
       window.location.reload()
+    },
+    CardId() {
+      const { currentResvId, currentRoomResvId } = this.$ResvStore
+      const cardData = {
+        name: this.nameidcard,
+        cardIdentifier: this.CardIdselect,
+        cardId: this.idcardnumber,
+        address: this.address
+      }
+      try {
+        this.api.post(
+          `/detail/reservation/${currentResvId}/${currentRoomResvId}/add-idcard`,
+          cardData,
+          ({ status, data }) => {
+            this.loading = false
+            this.triggerPositive('Data has been successfully')
+            if (status === 200) {
+              console.log('Data berhasil diperbarui:', data)
+            } else {
+              console.error('Gagal memperbarui data')
+            }
+          }
+        )
+      } catch (error) {
+        console.error('error:' + error)
+      }
+    },
+    KTPSelected() {
+      this.CardIdselect = 'KTP'
+      console.log(this.CardIdselect)
+      this.isKtpSelected = !this.isKtpSelected
+      this.isSimSelected = false
+    },
+    SIMSelected() {
+      this.CardIdselect = 'SIM'
+      console.log(this.CardIdselect)
+      this.isSimSelected = !this.isSimSelected
+      this.isKtpSelected = false
+    },
+    checked(row) {
+      if (row.split('-')[1] == 'RO') {
+        this.isRoSelected = true
+        this.isRbSelected = false
+        console.log(row)
+      } else if (row.split('-')[1] == 'RB') {
+        this.isRbSelected = true
+        this.isRoSelected = false
+      } else {
+        console.log('data tidak sesuai')
+      }
+    },
+    checkedCode(type) {
+      if (type === 'RO') {
+        this.isRoSelected = true
+        this.isRbSelected = false
+      } else if (type === 'RB') {
+        this.isRbSelected = true
+        this.isRoSelected = false
+        this.selected.id.split('-')[1] = '-' + type
+      } else {
+        console.log('data tidak sesuai')
+      }
     }
   }
 })

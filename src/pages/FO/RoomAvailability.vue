@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column" style="overflow-y: hidden; min-width: max-content">
+  <q-page style="overflow-y: hidden; min-width: max-content">
     <FOMenubar>
       <template #left>
         <!--Sorting Dropdown-->
@@ -10,32 +10,29 @@
           label="Sorting"
           dropdown-icon="o_expand_more"
         >
-          <!--Konten Dropdown-->
           <q-list>
-            <q-item clickable v-close-popup>
-              <q-item-section>Deluxe</q-item-section>
+            <q-item clickable v-close-popup @click="setSortingDisplay('T_DELUXE')">
+              <q-item-section>DELUXE</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
-              <q-item-section>Standard</q-item-section>
+            <q-item clickable v-close-popup @click="setSortingDisplay('T_STANDARD')">
+              <q-item-section>STANDARD</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
-              <q-item-section> Family </q-item-section>
+            <q-item clickable v-close-popup @click="setSortingDisplay('T_FAMILY')">
+              <q-item-section>FAMILY</q-item-section>
             </q-item>
-            <q-separator />
             <q-item clickable v-close-popup>
               <q-item-section>101-110</q-item-section>
             </q-item>
             <q-item clickable v-close-popup>
               <q-item-section>110-101</q-item-section>
             </q-item>
-            <q-separator />
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup @click="setSortingDisplay('B_TWIN')">
               <q-item-section>Twin Bed</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup @click="setSortingDisplay('B_KING')">
               <q-item-section>King Bed</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup @click="setSortingDisplay('B_SINGLE')">
               <q-item-section>Single Bed</q-item-section>
             </q-item>
           </q-list>
@@ -43,9 +40,16 @@
         <q-separator vertical />
 
         <!--Search Button-->
-        <q-input v-model="searchInput" borderless label="Name" type="search">
+        <q-input
+          v-model="searchInput"
+          borderless
+          label="Name"
+          class="q-pl-sm"
+          type="search"
+          style="display: flex; justify-content: center"
+        >
           <template v-slot:prepend>
-            <q-icon name="search" class="q-ml-sm" color="primary" />
+            <q-icon name="search" color="primary" />
           </template>
         </q-input>
         <q-separator vertical />
@@ -75,13 +79,6 @@
           label="Display Option"
           dropdown-icon="o_expand_more"
         >
-          <select id="bahasaDropdown">
-            <option value="id">Bahasa Indonesia</option>
-            <option value="en">English</option>
-            <option value="es">Español</option>
-          </select>
-
-          <q-option-group :options="radioOptions" type="radio" v-model="radioInput" />
         </q-btn-dropdown>
       </template>
     </FOMenubar>
@@ -91,44 +88,39 @@
         <!--Table-->
         <!--Table-->
         <div class="my-table">
-          <q-table class="no-shadow" :rows="rows" :columns="columns" row-key="name">
-            <template v-slot:thead="props">
-              <q-tr :props="props">
-                <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                  {{ col.label }}
+          <q-table
+            class="no-shadow"
+            v-model:pagination="pagination"
+            @request="onPaginationChange"
+            :rows="data"
+            hide-bottom
+            :loading="loading"
+            :columns="columns"
+            row-key="name"
+          >
+            <template>
+              <q-tr class="table-head">
+                <q-th style="padding-top: 0px; padding-bottom: 0px">
+                  <template v-slot:header="props">
+                    <q-tr class="table-head" :props="props">
+                      <q-th
+                        v-for="(col, i) in props.cols"
+                        :key="i"
+                        style="padding-top: 0px; padding-bottom: 0px"
+                      >
+                      </q-th>
+                    </q-tr>
+                  </template>
                 </q-th>
-                <q-th style="width: 10px" :props="props"></q-th>
               </q-tr>
             </template>
             <template v-slot:body="props">
               <q-tr :props="props">
-                <q-td v-for="(cell, i) in props.row" :key="i" :style="cell.style">
-                  {{ cell.data }}
-                </q-td>
-                <q-td key="" :props="props" style="width: 10px">
-                  <q-btn flat rounded size="13px" style="color: #008444"
-                    ><svg
-                      width="19"
-                      height="19"
-                      viewBox="0 0 19 19"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <!-- SVG path for the first button -->
-                    </svg>
-                  </q-btn>
-                  <q-btn flat rounded size="13px" style="color: #269861"
-                    ><svg
-                      width="19"
-                      height="19"
-                      viewBox="0 0 19 19"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <!-- SVG path for the second button -->
-                    </svg>
-                  </q-btn>
-                </q-td>
+                <template v-for="(cell, key, i) in props.row" :key="i">
+                  <q-td :style="cell.style">
+                    {{ cell.data }}
+                  </q-td>
+                </template>
               </q-tr>
             </template>
           </q-table>
@@ -142,119 +134,170 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import FOMenubar from 'src/components/FOMenubar.vue'
 import MultiPane from 'src/layouts/MultiPane.vue'
 import GuestForm from './fragments/GuestForm.vue'
 import { allObjectsInArray } from 'src/utils/datatype'
+import { list } from 'postcss'
 
 export default defineComponent({
   name: 'RoomAvailabilityPage',
   components: { FOMenubar, MultiPane, GuestForm },
+  setup() {
+    return {
+      selectedSorting: ref(''),
+      datePicker: ref({ from: '', to: '' }),
+      sortingDisplay: ref(null),
+      columns: [
+        { name: 'Date', label: '', field: 'Date', align: 'left' },
+        { name: '101-DLX-K', label: '101-DLX-K', field: 'room_1', align: 'left' },
+        { name: '102-DLX-K', label: '102-DLX-K', field: 'room_2', align: 'left' },
+        { name: '103-DLX-K', label: '103-DLX-K', field: 'room_3', align: 'left' },
+        { name: '104-DLX-K', label: '104-DLX-K', field: 'room_4', align: 'left' },
+        { name: '105-STD-S', label: '105-FML-T', field: 'room_5', align: 'left' },
+        { name: '106-STD-S', label: '106-FML-T', field: 'room_6', align: 'left' },
+        { name: '107-STD-S', label: '107-FML-T', field: 'room_7', align: 'left' },
+        { name: '108-FML-T', label: '108-STD-S', field: 'room_8', align: 'left' },
+        { name: '109-FML-T', label: '109-STD-S', field: 'room_9', align: 'left' },
+        { name: '110-FML-T', label: '110-STD-S', field: 'room_10', align: 'left' }
+      ],
+      allObjectsInArray,
+      searchInput: ref('')
+    }
+  },
   data() {
     return {
-      datePicker: { from: null, to: null },
-      columns: [
-        { name: 'room', label: '', field: 'room' },
-        { name: 'averageroom', label: 'Average Room Occ (%)', align: 'left', field: 'averageroom' }
-      ],
-      rows: [],
-      allObjectsInArray
+      api: new this.$Api('frontoffice'),
+      pagination: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 20
+      },
+      data: []
     }
+  },
+
+  mounted() {
+    this.fetchData()
+  },
+  watch() {
+    searchName(this.searchInput)
   },
   watch: {
-    datePicker(newDate) {
-      // Pastikan bahwa newDate diinisiasi dengan benar
-      // Call the method to update columns and rows based on the selected date
-      this.updateTable(newDate)
+    filterColumns: {
+      handler(filters) {
+        console.log(filters)
+      },
+      deep: true
+    },
+    filterDisplay: {
+      handler(option) {
+        this.fetchData()
+      }
+    },
+    searchInput: {
+      handler(newSearchInput) {
+        this.searchName(newSearchInput)
+      },
+      immediate: true
+    },
+    datePicker: {
+      deep: true,
+      handler(newDateRange) {
+        this.fetchData()
+      }
     }
   },
-
   methods: {
-    updateTable(newDate) {
-      // Check if both 'from' and 'to' dates are selected
-      if (newDate.from && newDate.to) {
-        // Parse 'from' and 'to' dates
-        const startDate = new Date(newDate.from)
-        const endDate = new Date(newDate.to)
+    searchName(searchInput) {
+      // Make an API call to search based on searchInput
+      this.api.get(`roomavail?search=${searchInput}`, ({ status, data }) => {
+        if (status === 200) {
+          // Update the data with the search result
+          this.formatData(data.logData, data.roomAverage)
+        } else {
+          console.error('Error searching data')
+        }
+      })
+    },
+    setSortingDisplay(option) {
+      this.sortingDisplay = option
+      this.fetchData()
+    },
+    onPaginationChange(props) {
+      this.pagination = props.pagination
+      this.fetchData()
+    },
+    formatAverage(num) {
+      return num.toFixed(1)
+    },
+    fetchData() {
+      this.loading = true
 
-        // Calculate the number of days between 'from' and 'to' (inclusive)
-        const timeDifference = endDate.getTime() - startDate.getTime()
-        const numberOfDays = Math.ceil(timeDifference / (1000 * 3600 * 24)) + 1 // Add 1 to include the last day
+      let url = `roomavail?`
 
-        // Update column values with dynamic date labels
-        const newColumns = [
-          { name: 'room', label: '', field: 'room' },
-          ...Array.from({ length: numberOfDays }, (_, index) => {
-            const currentDate = new Date(startDate.getTime() + index * (24 * 60 * 60 * 1000))
-            const label = currentDate.toLocaleDateString('en-GB', {
-              day: '2-digit',
-              month: '2-digit',
-              year: '2-digit'
-            }) // This will result in a format like '23/12/23'
+      const fromDate = this.datePicker.from.replace(/\//g, '-')
+      const toDate = this.datePicker.to.replace(/\//g, '-')
 
-            return {
-              name: `date${index + 1}`,
-              label: `${label}`,
-              align: 'left',
-              field: `date${index + 1}`
-            }
-          }),
-          {
-            name: 'averageroom',
-            label: 'Average Room Occ (%)',
-            align: 'left',
-            field: 'averageroom'
-          }
-        ]
-
-        this.columns = newColumns
-
-        // Example: Update rows based on the newDate (customize this logic as needed)
-        this.rows = this.rows.map((row) => {
-          const updatedRow = {
-            room: row.room, // Make sure to include the room data
-            averageroom: row.averageroom // Make sure to include the averageroom data
-          }
-
-          // Add/update date fields in the row
-          Array.from({ length: numberOfDays }, (_, index) => {
-            const currentDate = new Date(startDate.getTime() + index * (24 * 60 * 60 * 1000))
-            const fieldName = `date${index + 1}`
-            const formattedDate = currentDate.toLocaleDateString('en-GB', {
-              day: '2-digit',
-              month: '2-digit',
-              year: '2-digit'
-            })
-
-            if (row.room === 1) {
-              // Customize cell content and style for room 1
-              if (formattedDate === 'your target date') {
-                // Customize content and style for the specific date
-                updatedRow[fieldName] = {
-                  data: 'DENI KUSNANDAR',
-                  style: { backgroundColor: 'red', color: 'white' }
-                }
-              } else {
-                // Set default content and style for other dates
-                updatedRow[fieldName] = {
-                  data: 'Other Data',
-                  style: { backgroundColor: 'default-color', color: 'default-color' }
-                }
-              }
-            } else {
-              // Set default content and style for other rooms
-              updatedRow[fieldName] = {
-                data: 'Other Data',
-                style: { backgroundColor: 'default-color', color: 'default-color' }
-              }
-            }
-          })
-
-          return updatedRow
-        })
+      if (fromDate !== '' && toDate !== '') {
+        url += `&date=${fromDate}+${toDate}`
       }
+
+      // Adjust the condition here
+      if (this.sortingDisplay !== null) {
+        url += `filter=${this.sortingDisplay}`
+      }
+
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+          this.formatData(data.logData, data.roomAverage)
+          console.log(data)
+          this.pagination = {
+            page: data.meta?.currPage,
+            rowsNumber: data.meta?.total,
+            rowsPerPage: data.meta?.perPage
+          }
+        }
+      })
+    },
+    formatData(raw = [], avg = []) {
+      console.log(raw, avg)
+      const list = []
+
+      raw.forEach((rh) => {
+        const date = rh.date
+        list.push({
+          Date: { data: date, style: {} },
+          ...rh.rmHist
+        })
+      })
+
+      list.push({
+        Date: { data: 'Room Average', style: {} },
+        satu: { data: this.formatAverage(avg.total_1) + '%', style: {} },
+        dua: { data: this.formatAverage(avg.total_2) + '%', style: {} },
+        tiga: { data: this.formatAverage(avg.total_3) + '%', style: {} },
+        empat: { data: this.formatAverage(avg.total_4) + '%', style: {} },
+        lima: { data: this.formatAverage(avg.total_5) + '%', style: {} },
+        enam: { data: this.formatAverage(avg.total_6) + '%', style: {} },
+        tujuh: { data: this.formatAverage(avg.total_7) + '%', style: {} },
+        delapan: { data: this.formatAverage(avg.total_8) + '%', style: {} },
+        sembilan: { data: this.formatAverage(avg.total_9) + '%', style: {} },
+        sepuluh: { data: this.formatAverage(avg.total_10) + '%', style: {} }
+      })
+      console.log('list data after pushing room average:', list)
+      this.data = list
     }
   }
 })
 </script>
+
+<style>
+.separator-line {
+  width: 100%;
+  border-top: 1px solid #000; /* Warna garis dan gaya bisa disesuaikan */ /* Sesuaikan margin agar terlihat rapih */
+}
+</style>

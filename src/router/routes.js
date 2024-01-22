@@ -1,5 +1,10 @@
 import frontoffice_routes from './frontoffice.router'
-import { housekeeping_routes, hkreports_routes } from './housekeeping.router'
+import {
+  housekeeping_routes,
+  hkreports_routes,
+  hkroomboy_routes,
+  hksupervisor_routes
+} from './housekeeping.router'
 
 const routes = [
   {
@@ -34,14 +39,26 @@ const routes = [
 
   {
     path: '/hk',
-    component: () => import('layouts/HKLayout.vue'),
+    component: () => import('layouts/HK/HKLayout.vue'),
     children: housekeeping_routes
   },
 
   {
     path: '/hk/reports',
-    component: () => import('layouts/HKLayout.vue'),
+    component: () => import('layouts/HK/HKLayout.vue'),
     children: hkreports_routes
+  },
+
+  {
+    path: '/hk/rb',
+    component: () => import('layouts/HK/ImppsLayout.vue'),
+    children: hkroomboy_routes
+  },
+
+  {
+    path: '/hk/spv',
+    component: () => import('layouts/HK/ImppsLayout.vue'),
+    children: hksupervisor_routes
   },
 
   {

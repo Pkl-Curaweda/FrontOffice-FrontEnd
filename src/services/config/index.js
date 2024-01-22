@@ -23,6 +23,9 @@ export const Config = {
     } else if (module == 'housekeeping') {
       url = 'http://localhost:3000/' // production
       if (hostname === 'localhost') url = 'http://localhost:3000/' // development
+    } else if (module == 'root') {
+      url = 'http://localhost:3000/'
+      if (hostname === 'localhost') url = 'http://localhost:3000/'
     } else {
       // default: frontoffice
       url = 'http://localhost:3000/fo/' // production

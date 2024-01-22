@@ -50,10 +50,52 @@
       <template #right>
         <q-separator vertical />
         <q-btn flat square color="primary" icon="o_add_home">
-          <q-popup-proxy>
-            <q-banner>
-              <TableAddInvoice />
-            </q-banner>
+          <q-popup-proxy :offset="[10, 10]">
+            <q-card>
+              <div class="my-table" style="max-height: 400px; overflow: auto">
+                <q-table
+                  flat
+                  bordered
+                  :rows="data2"
+                  :columns="columns2"
+                  row-key="name"
+                  selection="multiple"
+                  v-model:selected="selected"
+                >
+                  <template #body-cell-qty="props">
+                    <q-td :props="props">
+                      <q-btn
+                        class="q-pa-xs bg-primary"
+                        style="height: 100%"
+                        text-color="white"
+                        size="sm"
+                        @click="decrementQty(props.row)"
+                        icon="remove"
+                        flat
+                      ></q-btn>
+                      <span
+                        class="q-ma-xs q-pa-sm"
+                        style="border: 1px solid gray; border-radius: 3px"
+                        >{{ props.value }}</span
+                      >
+                      <q-btn
+                        class="q-pa-xs bg-primary"
+                        style="height: 100%"
+                        text-color="white"
+                        size="sm"
+                        @click="incrementQty(props.row)"
+                        icon="add"
+                        flat
+                      ></q-btn>
+                    </q-td>
+                  </template>
+                </q-table>
+              </div>
+              <div class="q-pa-sm flex justify-end" style="gap: 5px; border-top: 1px solid green">
+                <q-btn size="sm" no-caps outline>Cancel</q-btn>
+                <q-btn size="sm" no-caps color="primary" text-color="white">Add</q-btn>
+              </div>
+            </q-card>
           </q-popup-proxy>
         </q-btn>
       </template>
@@ -179,11 +221,71 @@ import MultiPane from 'src/layouts/MultiPane.vue'
 import InvoiceForm from './fragments/InvoiceForm.vue'
 import { allObjectsInArray } from 'src/utils/datatype'
 
-const TableAddInvoice = defineAsyncComponent(() => import('components/charts/TableAddInvoice.vue'))
+const columns2 = [
+  {
+    name: 'art',
+    required: true,
+    label: 'Art',
+    align: 'left',
+    field: (row) => row.name,
+    format: (val) => `${val}`,
+    sortable: true
+  },
+  {
+    name: 'description',
+    align: 'center',
+    label: 'Description',
+    field: 'description',
+    sortable: true
+  },
+  { name: 'qty', align: 'center', label: 'Qty', field: 'qty', sortable: true }
+]
+const data2 = [
+  {
+    name: 101,
+    description: 'Extra Bed',
+    qty: 0
+  },
+  {
+    name: 102,
+    description: 'Extra Pillow',
+    qty: 0
+  },
+  {
+    name: 103,
+    description: 'Extra Bed Cover',
+    qty: 0
+  },
+  {
+    name: 113,
+    description: ' Bed Cover',
+    qty: 0
+  },
+  {
+    name: 100,
+    description: ' Bed ooCover',
+    qty: 0
+  },
+  {
+    name: 900,
+    description: ' Bed ooover',
+    qty: 0
+  },
+  {
+    name: 100,
+    description: ' Bed ooCover',
+    qty: 0
+  },
+  {
+    name: 900,
+    description: ' Bed ooover',
+    qty: 0
+  }
+]
 
 export default defineComponent({
   name: 'InvoicePage',
-  components: { FOMenubar, MultiPane, InvoiceForm, TableAddInvoice },
+  components: { FOMenubar, MultiPane, InvoiceForm },
   setup() {
     return {
       allObjectsInArray,
@@ -191,6 +293,7 @@ export default defineComponent({
       searchInput: ref(''),
       loading: ref(false),
       datePicker: ref(),
+      columns2,
       filterDisplayOptions: [
         { label: 'Artno', value: 'artno' },
         { label: 'Description', value: 'description' }
@@ -211,17 +314,19 @@ export default defineComponent({
   },
   data() {
     return {
-      UniqueId: ref(),
       filterSortOrder: ref({ col: '', val: '' }),
+      data2,
       filterColumns: {
         Art: {
           data: '',
           options: ['1-999', '999-1'],
+          // kontol
           onOptionChange: (val) => {
             if (val == '1-999') this.filterSortOrder = { col: 'Art', val: 'art-asc' }
             else if (val == '999-1') this.filterSortOrder = { col: 'Art', val: 'art-desc' }
             else this.filterSortOrder = { col: '', val: '' }
           }
+          // akhir kontol
         },
         Qty: {
           data: '',
@@ -292,29 +397,20 @@ export default defineComponent({
   },
   mounted() {
     this.fetchData()
-    // if (this.$ResvStore.currentRoomResvId) {
-    //   this.fetchData()
-    // }
-
-    // watch(
-    //   () => this.$ResvStore.currentRoomResvId,
-    //   () => {
-    //     this.fetchData()
-    //     this.getResvProps()
-    //   }
-    // )
   },
   watch() {
     searchDesc(this.searchInput)
   },
   watch: {
     filterSortOrder: {
+      // kontol
       handler(oldFilter, newFilter) {
         Object.keys(this.filterColumns).forEach((key) => {
           if (oldFilter['col'] != key) this.filterColumns[key].data = null
         })
         this.fetchData()
       }
+      // kontol
     },
     datePicker: {
       deep: true,
@@ -335,21 +431,24 @@ export default defineComponent({
     }
   },
   methods: {
+    incrementQty(row) {
+      row.qty++
+    },
+    decrementQty(row) {
+      if (row.qty > 0) {
+        row.qty--
+      }
+    },
     searchDesc(searchInput) {
-      // console.log('test' + searchInput)
-      //   if(searchInput != '' || searchInput != null){
-      //   // Make an API call to search based on searchInput
-      //   this.api.get(`invoice/1/1?search=${searchInput}`, ({ status, data }) => {
-      //     if (status === 200) {
-      //       // Update the data with the search result
-      //       this.formatData(data.invoices)
-      //     } else {
-      //       console.error('Error searching data')
-      //     }
-      //   })
-      // }else{
-      //   console.log('data kosong')
-      // }
+      // Make an API call to search based on searchInput
+      this.api.get(`invoice/1/1?search=${searchInput}`, ({ status, data }) => {
+        if (status === 200) {
+          // Update the data with the search result
+          this.formatData(data.invoices)
+        } else {
+          console.error('Error searching data')
+        }
+      })
     },
     setSortOrder(val = '') {
       this.filterSortOrder = null
@@ -359,36 +458,24 @@ export default defineComponent({
       this.fetchData()
     },
     fetchData() {
+      const { currentResvId, currentRoomResvId } = this.$ResvStore
       this.loading = true
 
-      const { currentResvId, currentRoomResvId } = this.$ResvStore
+      let url = `invoice/${currentResvId}/${currentRoomResvId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
 
-      if (currentResvId === 0 || currentRoomResvId === 0) {
+      if (this.filterSortOrder['col'] != '' && this.filterSortOrder['val'] != '')
+        url += `&sort=${this.filterSortOrder['val']}`
+
+      if (this.filterDisplay !== null) url += `&disOpt=${this.filterDisplay}`
+
+      const Date = this.datePicker?.replace(/\//g, '-')
+
+      if (Date !== undefined && Date !== '') {
+        url += `&date=${Date}T${Date}`
+      }
+
+      this.api.get(url, ({ status, data }) => {
         this.loading = false
-        console.log(currentResvId)
-        return
-      }
-
-      let url = `/invoice/${currentResvId}/${currentRoomResvId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
-
-      if (this.filterSortOrder.col !== '' && this.filterSortOrder.val !== '') {
-        url += `&sort=${this.filterSortOrder.val}`
-      }
-
-      // if (this.filterDisplay !== null) {
-      //   url += `&disOpt=${this.filterDisplay}`
-      // }
-
-      const formattedDate = this.datePicker?.replace(/\//g, '-')
-
-      if (formattedDate) {
-        url += `&date=${formattedDate}T${formattedDate}`
-      }
-
-      this.$api
-        .get(url)
-        .then((response) => {
-          this.loading = false
 
           if (response.status === 200) {
             // this.uniqueId = response.data.data.invoices.uniqueId

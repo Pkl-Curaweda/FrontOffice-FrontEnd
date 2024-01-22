@@ -54,15 +54,24 @@ const frontoffice_routes = [
     }
   },
   {
+    path: '/fo/guest-invoice/print',
+    component: () => import('pages/FO/InvoicePrint.vue'),
+    meta: {
+      title: 'Payment',
+      main_route: false,
+      protected: true
+    }
+  },
+  {
     path: '/fo/payment/detail',
-    component: () => import('pages/FO/detailpayment.vue'),
+    component: () => import('pages/FO/DetailPayment.vue'),
     meta: {
       title: 'detail',
       main_route: false,
       protected: true,
       props: true
     }
-  },
+  }
 ]
 
 export default frontoffice_routes

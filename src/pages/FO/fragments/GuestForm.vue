@@ -874,7 +874,7 @@ export default defineComponent({
         this.api.delete(`detail/reservation/${currentResvId}/${this.roomNo}/delete`)
         window.location.reload()
       } catch (error) {
-        console.error(error)
+        console.log(error)
       }
     },
     getResvProps() {
@@ -885,7 +885,7 @@ export default defineComponent({
           const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
           this.rows = formattedRoomRates
           this.resultRows = formattedRoomRates
-          console.log(data)
+          // console.log(data)
         }
       })
     },
@@ -1057,7 +1057,7 @@ export default defineComponent({
       const rmt = []
       map.forEach((dt) => {
         const { id, rate } = dt
-        console.log(dt)
+        // console.log(dt)
         rmt.push({
           id,
           date: id.split('-')[0],
@@ -1065,7 +1065,7 @@ export default defineComponent({
           arrangement: id.split('-')[1]
         })
       })
-      console.log(rmt)
+      // console.log(rmt)
       return rmt
     },
     formattedStatus(map = []) {
@@ -1153,7 +1153,7 @@ export default defineComponent({
             }
           }
         )
-        this.refresh()
+        // this.refresh()
       } catch (error) {
         console.error(error)
       }

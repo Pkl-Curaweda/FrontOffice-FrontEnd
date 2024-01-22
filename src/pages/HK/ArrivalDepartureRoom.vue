@@ -129,41 +129,7 @@ import HKDateInput from 'src/components/HK/Form/HKDateInput.vue'
 import HKTable from 'src/components/HK/Table/HKTable.vue'
 import { ref } from 'vue'
 
-const arrivalData = [
-  {
-    label: 'Checked In Today',
-    room: 5,
-    person: 10
-  },
-  {
-    label: 'Arriving',
-    room: 4,
-    person: 8
-  },
-  {
-    label: 'Total Arrival',
-    room: 9,
-    person: 18
-  }
-]
-
-const departureData = [
-  {
-    label: 'Departed Today',
-    room: 5,
-    person: 10
-  },
-  {
-    label: 'Departing',
-    room: 4,
-    person: 8
-  },
-  {
-    label: 'Total Departure',
-    room: 9,
-    person: 18
-  }
-]
+const arrivalData = []
 
 const tableColumns = [
   {
@@ -260,172 +226,100 @@ const tableColumns = [
   }
 ]
 
-const tableRows = [
-  {
-    name: 188086,
-    res_resource: 'Individual Reservation',
-    rm_no: 101,
-    r_type: 'DLX',
-    b_type: 'K',
-    guest_name: 'RONO RUSTAN',
-    arr: 'RB',
-    arrival: '12/02/23',
-    depart: '13/02/23',
-    night: 1,
-    room_boy: 'ILYAS',
-    room_stat: 'ED',
-    created_date: '12/02/23'
-  },
-  {
-    name: 188086,
-    res_resource: 'Individual Reservation',
-    rm_no: 101,
-    r_type: 'DLX',
-    b_type: 'K',
-    guest_name: 'RONO RUSTAN',
-    arr: 'RB',
-    arrival: '12/02/23',
-    depart: '13/02/23',
-    night: 1,
-    room_boy: 'ILYAS',
-    room_stat: 'ED',
-    created_date: '12/02/23'
-  },
-  {
-    name: 188086,
-    res_resource: 'Individual Reservation',
-    rm_no: 101,
-    r_type: 'DLX',
-    b_type: 'K',
-    guest_name: 'RONO RUSTAN',
-    arr: 'RB',
-    arrival: '12/02/23',
-    depart: '13/02/23',
-    night: 1,
-    room_boy: 'ILYAS',
-    room_stat: 'ED',
-    created_date: '12/02/23'
-  },
-  {
-    name: 188086,
-    res_resource: 'Individual Reservation',
-    rm_no: 101,
-    r_type: 'DLX',
-    b_type: 'K',
-    guest_name: 'RONO RUSTAN',
-    arr: 'RB',
-    arrival: '12/02/23',
-    depart: '13/02/23',
-    night: 1,
-    room_boy: 'ILYAS',
-    room_stat: 'ED',
-    created_date: '12/02/23'
-  },
-  {
-    name: 188086,
-    res_resource: 'Individual Reservation',
-    rm_no: 101,
-    r_type: 'DLX',
-    b_type: 'K',
-    guest_name: 'RONO RUSTAN',
-    arr: 'RB',
-    arrival: '12/02/23',
-    depart: '13/02/23',
-    night: 1,
-    room_boy: 'ILYAS',
-    room_stat: 'ED',
-    created_date: '12/02/23'
-  },
-  {
-    name: 188086,
-    res_resource: 'Individual Reservation',
-    rm_no: 101,
-    r_type: 'DLX',
-    b_type: 'K',
-    guest_name: 'RONO RUSTAN',
-    arr: 'RB',
-    arrival: '12/02/23',
-    depart: '13/02/23',
-    night: 1,
-    room_boy: 'ILYAS',
-    room_stat: 'ED',
-    created_date: '12/02/23'
-  },
-  {
-    name: 188086,
-    res_resource: 'Individual Reservation',
-    rm_no: 101,
-    r_type: 'DLX',
-    b_type: 'K',
-    guest_name: 'RONO RUSTAN',
-    arr: 'RB',
-    arrival: '12/02/23',
-    depart: '13/02/23',
-    night: 1,
-    room_boy: 'ILYAS',
-    room_stat: 'ED',
-    created_date: '12/02/23'
-  },
-  {
-    name: 188086,
-    res_resource: 'Individual Reservation',
-    rm_no: 101,
-    r_type: 'DLX',
-    b_type: 'K',
-    guest_name: 'RONO RUSTAN',
-    arr: 'RB',
-    arrival: '12/02/23',
-    depart: '13/02/23',
-    night: 1,
-    room_boy: 'ILYAS',
-    room_stat: 'ED',
-    created_date: '12/02/23'
-  },
-  {
-    name: 188086,
-    res_resource: 'Individual Reservation',
-    rm_no: 101,
-    r_type: 'DLX',
-    b_type: 'K',
-    guest_name: 'RONO RUSTAN',
-    arr: 'RB',
-    arrival: '12/02/23',
-    depart: '13/02/23',
-    night: 1,
-    room_boy: 'ILYAS',
-    room_stat: 'ED',
-    created_date: '12/02/23'
-  },
-  {
-    name: 188086,
-    res_resource: 'Individual Reservation',
-    rm_no: 101,
-    r_type: 'DLX',
-    b_type: 'K',
-    guest_name: 'RONO RUSTAN',
-    arr: 'RB',
-    arrival: '12/02/23',
-    depart: '13/02/23',
-    night: 1,
-    room_boy: 'ILYAS',
-    room_stat: 'ED',
-    created_date: '12/02/23'
-  }
-]
+const departureData = []
+
+const tableRows = []
 
 export default {
   name: 'ArrivalPage',
   components: { HKCard, HKDateInput, HKTable },
   setup() {
     return {
-      arrivalData,
-      departureData,
+      arrivalData: ref(),
+      departureData: ref(),
+      loading: ref(false),
       tableColumns,
-      tableRows,
+      tableRows: ref(),
       sortingModel: ref('Room Number'),
       sortingOptions: ['Room Number', 'Reservation Number', 'Room Type', 'Guest Name'],
       guestHistoryModel: ref(false),
       searchModel: ref('')
+    }
+  },
+  data() {
+    return {
+      api: new this.$Api('housekeeping')
+    }
+  },
+  mounted() {
+    this.fetchData()
+  },
+  methods: {
+    fetchData() {
+      this.loading = true
+
+      let url = `arrival-departure`
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+          const { arrival, departure, table } = data
+
+          // Mengisi arrivalData dan departureData dengan data dari respons API
+          this.arrivalData = [
+            {
+              label: 'Checked In Today',
+              room: arrival.checkInToday.split('-')[0], // Mengambil jumlah kamar
+              person: arrival.checkInToday.split('-')[1] // Mengambil jumlah orang
+            },
+            {
+              label: 'Arriving',
+              room: arrival.arriving.split('-')[0],
+              person: arrival.arriving.split('-')[1]
+            },
+            {
+              label: 'Total Arrival',
+              room: arrival.totalArrival.split('-')[0],
+              person: arrival.totalArrival.split('-')[1]
+            }
+          ]
+
+          this.departureData = [
+            {
+              label: 'Departed Today',
+              room: departure.departedToday.split('-')[0],
+              person: departure.departedToday.split('-')[1]
+            },
+            {
+              label: 'Departing',
+              room: departure.departing.split('-')[0],
+              person: departure.departing.split('-')[1]
+            },
+            {
+              label: 'Total Departure',
+              room: departure.totalDeparture.split('-')[0],
+              person: departure.totalDeparture.split('-')[1]
+            }
+          ]
+
+          // Mengisi tableRows dengan data dari respons API
+          this.tableRows = table.map((row) => ({
+            name: row.resNo,
+            res_resource: row.resResource,
+            rm_no: row.roomNo,
+            r_type: row.roomType,
+            b_type: row.bedType,
+            guest_name: row.guestName,
+            arr: row.arrangment.split('-')[1],
+            arrival: row.arrival,
+            depart: row.departure,
+            night: row.night,
+            room_boy: row.roomBoy.user.name,
+            room_stat: row.roomStatus.shortDescription,
+            created_date: row.created
+          }))
+        }
+      })
     }
   }
 }

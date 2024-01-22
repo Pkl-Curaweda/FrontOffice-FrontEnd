@@ -511,17 +511,15 @@ export default defineComponent({
     }
   },
   method: {
-    setRoomResv(data){
+    setRoomResv(data) {
       this.$ResvStore.currentResvId = data['ResNo'].data
       this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
     },
-    async getData(){
-      try{
+    async getData() {
+      try {
         this.api.get()
-      }catch(error){
-
-      }
-    },
-  },
+      } catch (error) {}
+    }
+  }
 })
 </script>

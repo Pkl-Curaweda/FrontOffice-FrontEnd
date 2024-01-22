@@ -8,40 +8,6 @@
 
     <div class="row q-ma-md no-wrap" style="gap: 15px">
       <div style="width: 50%">
-        <q-img
-          src="../../assets/img/lingian-logo-colored.png"
-          style="
-            width: 10rem;
-            height: 10rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-          "
-          class="q-mx-auto"
-        />
-
-        <div class="q-pb-sm">
-          Bill Number: <span>{{ billNumber }}</span>
-        </div>
-        <div class="row q-pb-sm" style="justify-content: space-between">
-          <div>
-            Reservation Resource: <span class="text-bold">{{ reservationResource }}</span>
-          </div>
-          <div>
-            Guest Name: <span class="text-bold">{{ guestName }}</span>
-          </div>
-        </div>
-
-        <div style="background-color: #16a75c; height: 5px" class="col-grow"></div>
-
-        <div class="row q-py-sm" style="justify-content: space-between; max-width: 30%">
-          <div>Arrival:</div>
-          <div>{{ arrival }}</div>
-        </div>
-        <div class="row q-pb-sm" style="justify-content: space-between; max-width: 30%">
-          <div>Departure:</div>
-          <div>{{ departure }}</div>
-        </div>
         <div class="my-table q-pb-md">
           <q-table
             class="no-shadow"
@@ -79,13 +45,6 @@
               </q-tr>
             </template>
           </q-table>
-        </div>
-        <div style="background-color: #16a75c; height: 5px" class="col-grow"></div>
-        <div class="q-py-md">
-          Gedung lingian, Universitas Telkom, Jl. <br />
-          telekomunikasi No.01, Terusan<br />
-          Buahbatu, Bandung, Jawa Barat 40257 ;<br />
-          Phone. +62 8112072999
         </div>
       </div>
       <!-- <iframe src="src/assets/pdf/invoicePdf.pdf" frameborder="0"></iframe> -->
@@ -201,13 +160,6 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import FOMenubar from 'src/components/FOMenubar.vue'
-import { saveAs } from 'file-saver'
-
-const columns = [
-  { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
-  { name: 'Description', label: 'Description', align: 'left', field: 'Description' },
-  { name: 'Amount', label: 'Amount', align: 'left', field: 'Amount' }
-]
 
 export default defineComponent({
   name: 'Print',
@@ -228,7 +180,19 @@ export default defineComponent({
       guestName: ref(),
       arrival: ref(),
       departure: ref(),
-      columns
+      columns: [
+        { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
+        { name: 'RmAvailable', label: 'Room Available', align: 'left', field: 'RmAvailable' },
+        { name: 'Occupied', label: 'Occupied', align: 'left', field: 'Occupied' },
+        { name: 'Occ', label: 'Occ%', align: 'left', field: 'Occ' },
+        { name: 'RmRevenue', label: 'Room Revenue', align: 'left', field: 'RmRevenue' },
+        { name: 'Arr', label: 'Arr', align: 'left', field: 'Arr' },
+        { name: 'RmAvail', label: `DTD Rm.Avail`, align: 'left', field: 'RmAvail' },
+        { name: 'Rno', label: `DTD RNO`, align: 'left', field: 'Rno' },
+        { name: 'tdOcc', label: `DTD Occ %`, align: 'left', field: 'tdOcc' },
+        { name: 'tdRmRevenue', label: `DTD Rm.Revenue`, align: 'left', field: 'tdRmRevenue' },
+        { name: 'tdArr', label: `DTD ARR`, align: 'left', field: 'tdArr' }
+      ]
     }
   },
   components: { FOMenubar },
@@ -243,45 +207,30 @@ export default defineComponent({
     this.getDataTable()
   },
   methods: {
-    async PrintInvoice() {
-      const url = 'http://localhost:3000/fo/report/day' // Update the URL accordingly
+    PrintInvoice() {
+      const reportType = 'day'
 
-      try {
-        // Make the API request to get the file
-        const response = await this.api.get(`${url}/print`, (err, data) => {
-          if (err) {
-            console.error('Error in API request:', err)
-          } else {
-            console.log('API response data:', data)
-          }
+      this.api
+        .get(`report/${reportType}/print`, () => {})
+        .then((response) => {
+          const printUrl = response.data.printUrl
+          window.open(printUrl, '_blank')
         })
-
-        // Check if response is valid
-        if (response && response.status === 200 && response.blob) {
-          // Extract blob from response
-          const blob = await response.blob()
-
-          // Trigger the download using file-saver
-          saveAs(blob, 'invoice.pdf')
-          console.log('Permintaan print telah dikirim.')
-        } else {
-          console.error('Invalid response format:', response)
-        }
-      } catch (error) {
-        console.error('Error in print request:', error)
-      }
+        .catch((error) => {
+          console.error('Error while printing:', error)
+          // Handle the error, show a message, etc.
+        })
     },
-
     getDataTable() {
       this.loading = true
 
-      let url = `invoice/1/1`
+      let url = `report`
       this.url = url
       this.api.get(url, ({ status, data }) => {
         this.loading = false
 
         if (status == 200) {
-          this.formatData(data.invoices)
+          this.formatData(data.reports)
 
           this.billNumber = data.billNumber
           this.reservationResource = data.resourceName
@@ -294,11 +243,19 @@ export default defineComponent({
     formatData(raw = []) {
       const list = []
 
-      raw.forEach((ip) => {
+      raw.forEach((rp) => {
         list.push({
-          Date: { data: ip.billDate, style: {} },
-          Description: { data: ip.desc, style: {} },
-          Amount: { data: ip.amount, style: {} }
+          Date: { data: rp.date, style: {} },
+          RmAvailable: { data: rp.roomAvailable, style: {} },
+          Occupied: { data: rp.occupied, style: {} },
+          Occ: { data: rp.occ, style: {} },
+          RmRevenue: { data: rp.roomRevenue, style: {} },
+          Arr: { data: rp.arr, style: {} },
+          RmAvail: { data: rp.added.rm_avail, style: {} },
+          Rno: { data: rp.added.rno, style: {} },
+          tdOcc: { data: rp.added.occ, style: {} },
+          tdRmRevenue: { data: rp.added.rev, style: {} },
+          tdArr: { data: rp.added.arr, style: {} }
         })
       })
       console.log(this.data, list)

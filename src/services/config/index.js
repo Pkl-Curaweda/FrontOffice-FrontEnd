@@ -21,8 +21,8 @@ export const Config = {
       url = 'http://localhost:3000/' // production
       if (hostname === 'localhost') url = 'http://localhost:3000/' // development
     } else if (module == 'housekeeping') {
-      url = 'http://localhost:3000/' // production
-      if (hostname === 'localhost') url = 'http://localhost:3000/' // development
+      url = 'http://localhost:3000/hk/' // production
+      if (hostname === 'localhost') url = 'http://localhost:3000/hk/' // development
     } else if (module == 'root') {
       url = 'http://localhost:3000/'
       if (hostname === 'localhost') url = 'http://localhost:3000/'

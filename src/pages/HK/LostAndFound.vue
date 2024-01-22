@@ -30,7 +30,7 @@
           card_style="height: 20rem; flex: 1 1 0%; flex-wrap: nowrap;"
           radius="10px"
         >
-          <p style="font-size: 7.5rem; line-height: 6.5rem">6</p>
+          <p style="font-size: 7.5rem; line-height: 6.5rem">{{ found || 0 }}</p>
           <p style="font-size: 1.5rem; margin: 0; font-weight: bold">Found</p>
 
           <div
@@ -52,7 +52,7 @@
           card_style="height: 20rem; flex: 1 1 0%; flex-wrap: nowrap;"
           radius="10px"
         >
-          <p style="font-size: 7.5rem; line-height: 6.5rem">6</p>
+          <p style="font-size: 7.5rem; line-height: 6.5rem">{{ lost || 0 }}</p>
           <p style="font-size: 1.5rem; margin: 0; font-weight: bold">Lost</p>
 
           <div
@@ -308,160 +308,7 @@ const columns = [
     align: 'center'
   }
 ]
-const rows = [
-  {
-    name: 1,
-    date: '17/09/23',
-    time: '10:00:02',
-    room_no: '10',
-    pic: 'AA',
-    item_desc: 'Mainan anak',
-    reported_by: 'AA',
-    phone_no: '+6287xxxxxxxx',
-    reported_date: '17/10/23',
-    location: '10',
-    image: '../src/assets/img/lostItem.png',
-    action: ['edit', 'delete'],
-    dialogActive: false
-  },
-  {
-    name: 2,
-    date: '17/09/23',
-    time: '10:00:02',
-    room_no: '08',
-    pic: 'AD',
-    item_desc: 'Jaket biru',
-    reported_by: 'DD',
-    phone_no: '+6282xxxxxxxx',
-    reported_date: '17/10/23',
-    location: '08',
-    image: 'https://plus.unsplash.com/premium_photo-1700955017058-e301caea0a19?w=700',
-    action: ['edit', 'delete'],
-    dialogActive: false
-  },
-  {
-    name: 3,
-    date: '17/09/23',
-    time: '10:15:00',
-    room_no: '07',
-    pic: 'AZ',
-    item_desc: 'Kabel data',
-    reported_by: 'MM',
-    phone_no: '+6281xxxxxxxx',
-    reported_date: '17/10/23',
-    location: '07',
-    image: 'https://images.unsplash.com/photo-1701017655822-d4f7a0569b40?w=700',
-    action: ['edit', 'delete'],
-    dialogActive: false
-  },
-  {
-    name: 4,
-    date: '17/09/23',
-    time: '10:30:15',
-    room_no: '01',
-    pic: 'EB',
-    item_desc: 'Topi',
-    reported_by: 'MC',
-    phone_no: '+6285xxxxxxxx',
-    reported_date: '17/10/23',
-    location: '01',
-    image: 'https://images.unsplash.com/photo-1695938887083-31f814779e54?w=700',
-    action: ['edit', 'delete'],
-    dialogActive: false
-  },
-  {
-    name: 5,
-    date: '17/09/23',
-    time: '10:55:34',
-    room_no: '06',
-    pic: 'CF',
-    item_desc: 'Obat-obatan',
-    reported_by: 'ED',
-    phone_no: '+6283xxxxxxxx',
-    reported_date: '17/10/23',
-    location: '06',
-    image: 'https://images.unsplash.com/photo-1700657362828-c06952b22c5b?w=700',
-    action: ['edit', 'delete'],
-    dialogActive: false
-  },
-  {
-    name: 6,
-    date: '17/09/23',
-    time: '10:00:02',
-    room_no: '10',
-    pic: 'AA',
-    item_desc: 'Mainan anak',
-    reported_by: 'AA',
-    phone_no: '+6287xxxxxxxx',
-    reported_date: '17/10/23',
-    location: '10',
-    image: 'https://images.unsplash.com/photo-1701017655822-d4f7a0569b40?w=700',
-    action: ['edit', 'delete'],
-    dialogActive: false
-  },
-  {
-    name: 7,
-    date: '17/09/23',
-    time: '10:00:02',
-    room_no: '08',
-    pic: 'AA',
-    item_desc: 'Jaket biru',
-    reported_by: 'DD',
-    phone_no: '+6282xxxxxxxx',
-    reported_date: '17/10/23',
-    location: '08',
-    image: 'https://plus.unsplash.com/premium_photo-1700955017058-e301caea0a19?w=700',
-    action: ['edit', 'delete'],
-    dialogActive: false
-  },
-  {
-    name: 8,
-    date: '17/09/23',
-    time: '10:15:00',
-    room_no: '07',
-    pic: 'AA',
-    item_desc: 'Kabel data',
-    reported_by: 'MM',
-    phone_no: '+6281xxxxxxxx',
-    reported_date: '17/10/23',
-    location: '07',
-    image: 'https://images.unsplash.com/photo-1701017655822-d4f7a0569b40?w=700',
-    action: ['edit', 'delete'],
-    dialogActive: false
-  },
-  {
-    name: 9,
-    date: '17/09/23',
-    time: '10:30:15',
-    room_no: '01',
-    pic: 'AA',
-    item_desc: 'Topi',
-    reported_by: 'MC',
-    phone_no: '+6285xxxxxxxx',
-    reported_date: '17/10/23',
-    location: '01',
-    image: 'https://images.unsplash.com/photo-1701017655822-d4f7a0569b40?w=700',
-    action: ['edit', 'delete'],
-    dialogActive: false
-  },
-  {
-    name: 10,
-    date: '17/09/23',
-    time: '10:55:34',
-    room_no: '06',
-    pic: 'AA',
-    item_desc: 'Obat-obatan',
-    reported_by: 'ED',
-    phone_no: '+6283xxxxxxxx',
-    reported_date: '17/10/23',
-    location: '06',
-    image: 'https://images.unsplash.com/photo-1701017655822-d4f7a0569b40?w=700',
-    action: ['edit', 'delete'],
-    dialogActive: false
-  }
-]
-
-const chartSeries = [28, 39, 45]
+const chartSeries = []
 const chartOptions = {
   chart: {
     type: 'donut'
@@ -469,8 +316,9 @@ const chartOptions = {
   dataLabels: {
     enabled: false
   },
+
   colors: ['#364E30', '#54854C', '#8BAA84'],
-  labels: ['Lost', 'Found', 'On Progress'],
+  labels: ['Lost', 'Found'],
   legend: {
     offsetY: 55,
     fontSize: '20px',
@@ -517,17 +365,56 @@ export default defineComponent({
   },
   setup() {
     return {
+      loading: ref(false),
       sortingModel: ref('Room Number'),
       sortingOptions: ['Room Number', 'Reservation Number', 'Room Type', 'Guest Name'],
-      searchModel: ref('')
+      searchModel: ref(''),
+      found: ref(),
+      lost: ref(),
+      rows: ref(),
+      chartSeries
     }
   },
   data() {
     return {
-      chartSeries,
+      api: new this.$Api('housekeeping'),
       chartOptions,
-      columns,
-      rows
+      columns
+    }
+  },
+  mounted() {
+    this.fetchData()
+  },
+  methods: {
+    fetchData() {
+      this.loading = true
+
+      let url = `lostfound`
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+          const { graph, lostFounds } = data // Ambil objek graph dari respons
+          this.found = graph.found // Isi nilai found
+          this.lost = graph.lost // Isi nilai lost
+          this.chartSeries = [(this.lost = graph.lost), (this.found = graph.found)]
+          this.rows = lostFounds.map((lostFound) => ({
+            name: lostFound.roomId,
+            date: new Date(lostFound.created_at).toLocaleDateString(),
+            time: lostFound.time,
+            room_no: lostFound.roomId,
+            pic: lostFound.pic.name,
+            item_desc: lostFound.description,
+            reported_by: lostFound.user.name,
+            phone_no: lostFound.user.phone,
+            reported_date: new Date(lostFound.reportedDate).toLocaleDateString(),
+            location: lostFound.location,
+            image: lostFound.image,
+            action: ['edit', 'delete'],
+            dialogActive: false
+          }))
+        }
+      })
     }
   }
 })

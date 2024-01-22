@@ -113,80 +113,7 @@ const tableColumns = [
   }
 ]
 
-const tableRows = [
-  {
-    name: 101,
-    reason_room: 'Ceiling berjamur',
-    from: '17/09/2023',
-    until: '19/09/2023',
-    created_by: 'AA',
-    dept: 'ENG',
-    room_type: 'Standard'
-  },
-  {
-    name: 101,
-    reason_room: 'Ceiling berjamur',
-    from: '17/09/2023',
-    until: '19/09/2023',
-    created_by: 'AA',
-    dept: 'ENG',
-    room_type: 'Standard'
-  },
-  {
-    name: 101,
-    reason_room: 'Ceiling berjamur',
-    from: '17/09/2023',
-    until: '19/09/2023',
-    created_by: 'AA',
-    dept: 'ENG',
-    room_type: 'Standard'
-  },
-  {
-    name: 101,
-    reason_room: 'Ceiling berjamur',
-    from: '17/09/2023',
-    until: '19/09/2023',
-    created_by: 'AA',
-    dept: 'ENG',
-    room_type: 'Standard'
-  },
-  {
-    name: 101,
-    reason_room: 'Ceiling berjamur',
-    from: '17/09/2023',
-    until: '19/09/2023',
-    created_by: 'AA',
-    dept: 'ENG',
-    room_type: 'Standard'
-  },
-  {
-    name: 101,
-    reason_room: 'Ceiling berjamur',
-    from: '17/09/2023',
-    until: '19/09/2023',
-    created_by: 'AA',
-    dept: 'ENG',
-    room_type: 'Standard'
-  },
-  {
-    name: 101,
-    reason_room: 'Ceiling berjamur',
-    from: '17/09/2023',
-    until: '19/09/2023',
-    created_by: 'AA',
-    dept: 'ENG',
-    room_type: 'Standard'
-  },
-  {
-    name: 101,
-    reason_room: 'Ceiling berjamur',
-    from: '17/09/2023',
-    until: '19/09/2023',
-    created_by: 'AA',
-    dept: 'ENG',
-    room_type: 'Standard'
-  }
-]
+const tableRows = []
 
 export default defineComponent({
   name: 'OOOPages',
@@ -194,9 +121,41 @@ export default defineComponent({
   setup() {
     return {
       tableColumns,
-      tableRows,
+      tableRows: ref(),
       sortingModel: ref('Room Number'),
       sortingOptions: ['O-O-O', 'Off Market', 'Department', 'Person In Charge', 'All']
+    }
+  },
+  data() {
+    return {
+      api: new this.$Api('housekeeping')
+    }
+  },
+  mounted() {
+    this.fetchData()
+  },
+  methods: {
+    fetchData() {
+      this.loading = true
+
+      let url = `ooo-rooms`
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+          const { OOORoom } = data
+
+          this.tableRows = OOORoom.map((ooo) => ({
+            name: ooo.roomNo,
+            reason_room: ooo.reason,
+            from: ooo.from,
+            until: ooo.until,
+            created_by: ooo.pic,
+            dept: ooo.department,
+            room_type: ooo.roomType
+          }))
+        }
+      })
     }
   }
 })

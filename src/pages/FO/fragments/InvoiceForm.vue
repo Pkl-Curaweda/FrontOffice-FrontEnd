@@ -106,7 +106,7 @@
           flat
           square
           color="primary"
-          to="/fo/print"
+          to="/fo/guest-invoice/print"
           icon="o_print"
           class="border-button rounded-borders"
           style="padding: 6px 3px"
@@ -181,7 +181,7 @@ export default defineComponent({
     },
     getDetailForm() {
       this.loading = true
-      this.api.get(`detail/invoice/1/1/2024-01-15?ids=998-1`, ({ status, data }) => {
+      this.api.get(`detail/invoice/1/1`, ({ status, data }) => {
         this.loading = false
 
         if (status == 200) {

@@ -47,14 +47,6 @@ export const housekeeping_routes = [
     }
   },
   {
-    path: '/hk/rooming-list',
-    component: () => import('pages/HK/RoomingList.vue'),
-    meta: {
-      title: 'Rooming List',
-      icon: 'o_meeting_room'
-    }
-  },
-  {
     path: '/hk/lost-found',
     component: () => import('pages/HK/LostAndFound.vue'),
     meta: {
@@ -66,32 +58,10 @@ export const housekeeping_routes = [
 
 export const hkreports_routes = [
   {
-    path: '/hk/report/room-maid-reports',
-    component: () => import('pages/HK/reports/RoomMaid.vue'),
-    meta: {
-      title: 'Room Maid Reports'
-    }
-  },
-  {
-    path: '/hk/report/daily-room-usage',
-    component: () => import('pages/HK/reports/DailyRoomUsage.vue'),
-    meta: {
-      title: 'Daily Room Usage'
-    }
-  },
-  {
     path: '/hk/report/room-plan',
     component: () => import('pages/HK/reports/RoomPlan.vue'),
     meta: {
       title: 'Room Plan'
-    }
-  },
-
-  {
-    path: '/hk/report/vip-list',
-    component: () => import('pages/HK/reports/VipList.vue'),
-    meta: {
-      title: 'VIP List'
     }
   },
   {
@@ -99,13 +69,6 @@ export const hkreports_routes = [
     component: () => import('pages/HK/reports/RoomChange.vue'),
     meta: {
       title: 'Room Change Report'
-    }
-  },
-  {
-    path: '/hk/report/monthly-room',
-    component: () => import('pages/HK/reports/MonthlyRoom.vue'),
-    meta: {
-      title: 'Monthly Room Occupancy Forecast'
     }
   },
   {

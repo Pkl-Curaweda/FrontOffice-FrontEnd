@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-md">
     <div class="q-pa-md">
-      <div class="row flex q-gutter-md flex-center q-pa-xl">
+      <div class="row q-gutter-md flex-center q-pa-xl">
         <HKCard
           card_class="q-col-xs-12 q-col-sm-6 q-col-md-4 q-col-lg-3"
           card_style="width:230px; height:330px;"
@@ -284,7 +284,7 @@
               <p class="text-weight-bold text-body1 q-mt-sm">Arrival :</p>
             </div>
             <div>
-              <HKDateInput style="height: 10px; border-radius: 10px;" size="16px" />
+              <HKDateInput style="height: 10px; border-radius: 10px" size="16px" />
             </div>
           </div>
           <div class="row q-gutter-sm">
@@ -372,21 +372,10 @@
   </q-page>
 </template>
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
 import HKDateInput from 'src/components/HK/Form/HKDateInput.vue'
 
-export default defineComponent({
-  name: 'CleanDirtyPage',
-  components: { HKCard, HKDateInput },
-  setup() {
-    return {
-      columns,
-      rows,
-      selectedColumn: null
-    }
-  }
-})
 const columns = [
   { name: 'Roomno', label: 'Room No', align: 'left', field: 'Roomno' },
   { name: 'Roomstatus', label: 'Room Status', align: 'left', field: 'Roomstatus' },
@@ -397,62 +386,51 @@ const columns = [
   { name: 'Action', label: 'Action', align: 'center', field: 'Action' }
 ]
 
-const rows = [
-  {
-    Roomno: '101',
-    Roomstatus: 'Occupied',
-    Guestname: 'John Doe',
-    Arrival: '2023-12-01',
-    Departure: '2023-12-10',
-    Personinchange: 'Alice',
-    Action: 'Check Out'
+const rows = []
+
+export default defineComponent({
+  name: 'CleanDirtyPage',
+  components: { HKCard, HKDateInput },
+  setup() {
+    return {
+      columns,
+      rows: ref(),
+      selectedColumn: null
+    }
   },
-  {
-    Roomno: '102',
-    Roomstatus: 'Vacant',
-    Guestname: 'Jane Doe',
-    Arrival: '2023-12-05',
-    Departure: '2023-12-15',
-    Personinchange: 'Bob',
-    Action: 'Check In'
+  data() {
+    return {
+      api: new this.$Api('housekeeping')
+    }
   },
-  {
-    Roomno: '103',
-    Roomstatus: 'Occupied',
-    Guestname: 'Sam Smith',
-    Arrival: '2023-12-10',
-    Departure: '2023-12-20',
-    Personinchange: 'Charlie',
-    Action: 'Extend Stay'
+  mounted() {
+    this.fetchData()
   },
-  {
-    Roomno: '104',
-    Roomstatus: 'Vacant',
-    Guestname: 'Eva Johnson',
-    Arrival: '2023-12-15',
-    Departure: '2023-12-25',
-    Personinchange: 'David',
-    Action: 'Check In'
-  },
-  {
-    Roomno: '105',
-    Roomstatus: 'Occupied',
-    Guestname: 'Michael Brown',
-    Arrival: '2023-12-20',
-    Departure: '2023-12-30',
-    Personinchange: 'Emily',
-    Action: 'Check Out'
-  },
-  {
-    Roomno: '106',
-    Roomstatus: 'Occupied',
-    Guestname: 'Michael Brown',
-    Arrival: '2023-12-20',
-    Departure: '2023-12-30',
-    Personinchange: 'Emily',
-    Action: 'Check Out'
+  methods: {
+    fetchData() {
+      this.loading = true
+
+      let url = `clean-dirty`
+
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+          const { room } = data
+
+          this.rows = room.map((room) => ({
+            Roomno: room.roomNo,
+            Roomstatus: room.roomStatus,
+            Guestname: room.guestName,
+            Arrival: room.arrival,
+            Departure: room.departure,
+            Personinchange: room.pic.user.name
+          }))
+        }
+      })
+    }
   }
-]
+})
 </script>
 
 <style>

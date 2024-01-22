@@ -507,7 +507,7 @@
           dense
           class="q-mt-sm text-capitalize q-px-sm"
           color="primary"
-          to="/fo/guest-invoice"
+          to="guest-invoice"
           @click="kirimData()"
           label="Invoice"
         />
@@ -871,14 +871,14 @@ export default defineComponent({
     removeRoomResv() {
       try {
         const { currentResvId, currentRoomResvId } = this.$ResvStore
-        this.api.delete(`/fo/detail/reservation/${currentResvId}/${this.roomNo}/delete`)
+        this.api.delete(`detail/reservation/${currentResvId}/${this.roomNo}/delete`)
         window.location.reload()
       } catch (error) {
         console.error(error)
       }
     },
     getResvProps() {
-      this.api.get(`/fo/detail/reservation/1/1/create`, ({ status, data }) => {
+      this.api.get(`detail/reservation/1/1/create`, ({ status, data }) => {
         this.loading = false
         if (status === 200) {
           const { arrangmentCode } = data
@@ -933,7 +933,7 @@ export default defineComponent({
         if (currentResvId == 0 || currentRoomResvId == 0) return
         this.loading = true
         await this.api.post(
-          `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/add-room`,
+          `detail/reservation/${currentResvId}/${currentRoomResvId}/add-room`,
           data,
           ({ status, data }) => {
             if (status == 200) {
@@ -957,7 +957,7 @@ export default defineComponent({
         if (currentResvId == 0 || currentRoomResvId == 0) return
         this.loading = true
         const response = await this.api.post(
-          `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkin`,
+          `detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkin`,
           null,
           ({ status, data }) => {
             this.loading = false
@@ -984,7 +984,7 @@ export default defineComponent({
 
         this.loading = true
         await this.api.post(
-          `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkout`,
+          `detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkout`,
           null,
           ({ status, data }) => {
             this.loading = false
@@ -1005,7 +1005,7 @@ export default defineComponent({
       this.loading = true
       this.resvNo = currentResvId
       this.api.get(
-        `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
+        `detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
         ({ status, data }) => {
           this.loading = false
           console.log('test')
@@ -1102,7 +1102,7 @@ export default defineComponent({
       }
       try {
         await this.api.post(
-          `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/create`,
+          `detail/reservation/${currentResvId}/${currentRoomResvId}/create`,
           dataToUpdate,
           ({ status, data }) => {
             this.loading = false
@@ -1139,7 +1139,7 @@ export default defineComponent({
 
       try {
         await this.api.put(
-          `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
+          `detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
           dataToUpdate,
           ({ status, data }) => {
             this.loading = false
@@ -1197,7 +1197,7 @@ export default defineComponent({
       }
       try {
         this.api.post(
-          `/fo/detail/reservation/${currentResvId}/${currentRoomResvId}/add-idcard`,
+          `detail/reservation/${currentResvId}/${currentRoomResvId}/add-idcard`,
           cardData,
           ({ status, data }) => {
             this.loading = false

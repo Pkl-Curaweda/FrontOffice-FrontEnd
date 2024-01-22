@@ -25,8 +25,8 @@ export const Config = {
       if (hostname === 'localhost') url = 'http://localhost:3000/' // development
     } else {
       // default: frontoffice
-      url = 'http://localhost:3000' // production
-      if (hostname === 'localhost') url = 'http://localhost:3000' // development
+      url = 'http://localhost:3000/fo/' // production
+      if (hostname === 'localhost') url = 'http://localhost:3000/fo/' // development
     }
     return url
   },

@@ -421,7 +421,7 @@ export default defineComponent({
         const resvId = data['ResNo'].data
         const roomNo = data['RmNo'].data
         console.log(roomNo)
-        this.api.delete(`/fo/detail/reservation/${resvId}/${roomNo}/delete`)
+        this.api.delete(`detail/reservation/${resvId}/${roomNo}/delete`)
         window.location.reload()
       } catch (error) {
         console.error('Terjadi kesalahan:', error)
@@ -434,7 +434,7 @@ export default defineComponent({
     //     const resRoomNo = data['ResRoomNo'].data
     //     console.log(resvId, resRoomNo)
     //     const response = await this.api.delete(
-    //       `/fo/detail/reservation/${resvId}/${resRoomNo}/delete`
+    //       `detail/reservation/${resvId}/${resRoomNo}/delete`
     //     )
     //     if (response.status === 200) {
     //       const index = this.data.findIndex(
@@ -458,7 +458,7 @@ export default defineComponent({
     fetchData() {
       this.loading = true
 
-      let url = `/fo/arrival?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      let url = `arrival?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
 
       if (this.filterDisplay !== null) url += `&disOpt=${this.filterDisplay}`
 

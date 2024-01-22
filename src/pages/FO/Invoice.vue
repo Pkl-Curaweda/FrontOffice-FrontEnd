@@ -369,7 +369,7 @@ export default defineComponent({
         return
       }
 
-      let url = `/fo/invoice/${currentResvId}/${currentRoomResvId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      let url = `/invoice/${currentResvId}/${currentRoomResvId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
 
       if (this.filterSortOrder.col !== '' && this.filterSortOrder.val !== '') {
         url += `&sort=${this.filterSortOrder.val}`

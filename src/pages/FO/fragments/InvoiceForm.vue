@@ -76,7 +76,7 @@
           class="text-capitalize q-px-sm"
           color="primary"
           label="Invoice"
-          to="/fo/payment"
+          to="payment"
         />
         <q-btn
           flat
@@ -107,7 +107,7 @@
           flat
           square
           color="primary"
-          to="/fo/print"
+          to="print"
           icon="o_print"
           class="border-button rounded-borders"
           style="padding: 6px 3px"
@@ -226,7 +226,7 @@ export default defineComponent({
       const { currentResvId, currentRoomResvId, dateBill, Artlb, UniqueId } = this.$ResvStore
       this.loading = true
       this.api.get(
-        `/fo/detail/invoice/${currentResvId}/${currentRoomResvId}/${dateBill}?ids=${Artlb}-${UniqueId}`,
+        `detail/invoice/${currentResvId}/${currentRoomResvId}/${dateBill}?ids=${Artlb}-${UniqueId}`,
         ({ status, data }) => {
           this.loading = false
 
@@ -255,7 +255,7 @@ export default defineComponent({
       }
       try {
         await this.api.put(
-          `/fo/detail/invoice/${currentResvId}/${currentRoomResvId}/${dateBill}?ids=${Artlb}-${UniqueId}`,
+          `detail/invoice/${currentResvId}/${currentRoomResvId}/${dateBill}?ids=${Artlb}-${UniqueId}`,
           data,
           ({ status, data }) => {
             this.loading = true

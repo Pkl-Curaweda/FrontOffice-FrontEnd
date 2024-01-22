@@ -136,19 +136,19 @@ export default defineComponent({
       searchInput: ref(''),
       datePicker: ref({ from: '', to: '' }),
       sortingDisplay: ref(''),
-      filterDisplay: ref('day'),
+      filterDisplay: ref(''),
       columns: [
-      { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
-            { name: 'RmAvailable', label: 'Room Available', align: 'left', field: 'RmAvailable' },
-            { name: 'Occupied', label: 'Occupied', align: 'left', field: 'Occupied' },
-            { name: 'Occ', label: 'Occ%', align: 'left', field: 'Occ' },
-            { name: 'RmRevenue', label: 'Room Revenue', align: 'left', field: 'RmRevenue' },
-            { name: 'Arr', label: 'Arr', align: 'left', field: 'Arr' },
-            { name: 'RmAvail', label: `DTD Rm.Avail`, align: 'left', field: 'RmAvail' },
-            { name: 'Rno', label: `DTD RNO`, align: 'left', field: 'Rno' },
-            { name: 'tdOcc', label:  `DTD Occ %`, align: 'left', field: 'tdOcc' },
-            { name: 'tdRmRevenue', label: `DTD Rm.Revenue`, align: 'left', field: 'tdRmRevenue' },
-            { name: 'tdArr', label:  `DTD ARR`, align: 'left', field: 'tdArr' }
+        { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
+        { name: 'RmAvailable', label: 'Room Available', align: 'left', field: 'RmAvailable' },
+        { name: 'Occupied', label: 'Occupied', align: 'left', field: 'Occupied' },
+        { name: 'Occ', label: 'Occ%', align: 'left', field: 'Occ' },
+        { name: 'RmRevenue', label: 'Room Revenue', align: 'left', field: 'RmRevenue' },
+        { name: 'Arr', label: 'Arr', align: 'left', field: 'Arr' },
+        { name: 'RmAvail', label: `DTD Rm.Avail`, align: 'left', field: 'RmAvail' },
+        { name: 'Rno', label: `DTD RNO`, align: 'left', field: 'Rno' },
+        { name: 'tdOcc', label: `DTD Occ %`, align: 'left', field: 'tdOcc' },
+        { name: 'tdRmRevenue', label: `DTD Rm.Revenue`, align: 'left', field: 'tdRmRevenue' },
+        { name: 'tdArr', label: `DTD ARR`, align: 'left', field: 'tdArr' }
       ]
     }
   },
@@ -232,10 +232,15 @@ export default defineComponent({
             { name: 'Arr', label: 'Arr', align: 'left', field: 'Arr' },
             { name: 'RmAvail', label: `${identifier} Rm.Avail`, align: 'left', field: 'RmAvail' },
             { name: 'Rno', label: `${identifier} RNO`, align: 'left', field: 'Rno' },
-            { name: 'tdOcc', label:  `${identifier} Occ %`, align: 'left', field: 'tdOcc' },
-            { name: 'tdRmRevenue', label: `${identifier} Rm.Revenue`, align: 'left', field: 'tdRmRevenue' },
-            { name: 'tdArr', label:  `${identifier} ARR`, align: 'left', field: 'tdArr' }
-        ]
+            { name: 'tdOcc', label: `${identifier} Occ %`, align: 'left', field: 'tdOcc' },
+            {
+              name: 'tdRmRevenue',
+              label: `${identifier} Rm.Revenue`,
+              align: 'left',
+              field: 'tdRmRevenue'
+            },
+            { name: 'tdArr', label: `${identifier} ARR`, align: 'left', field: 'tdArr' }
+          ]
           this.formatData(data.reports)
           this.pagination = {
             page: data.meta?.currPage,

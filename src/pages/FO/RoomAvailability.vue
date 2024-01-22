@@ -93,7 +93,6 @@
             v-model:pagination="pagination"
             @request="onPaginationChange"
             :rows="data"
-            hide-bottom
             :loading="loading"
             :columns="columns"
             row-key="name"
@@ -235,7 +234,7 @@ export default defineComponent({
     fetchData() {
       this.loading = true
 
-      let url = `roomavail?`
+      let url = `roomavail?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
 
       const fromDate = this.datePicker.from.replace(/\//g, '-')
       const toDate = this.datePicker.to.replace(/\//g, '-')
@@ -246,7 +245,7 @@ export default defineComponent({
 
       // Adjust the condition here
       if (this.sortingDisplay !== null) {
-        url += `filter=${this.sortingDisplay}`
+        url += `&filter=${this.sortingDisplay}`
       }
 
       this.api.get(url, ({ status, data }) => {

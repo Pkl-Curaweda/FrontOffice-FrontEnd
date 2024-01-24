@@ -33,7 +33,7 @@ export class Api {
     return await this.request('PUT', path, data, callback)
   }
   async delete(path, callback) {
-    return await this.request('DELETE', path, null, callback);
+    return await this.request('DELETE', path, null, callback)
   }
 
   async request(method = 'GET', path = '', data = null, callback) {

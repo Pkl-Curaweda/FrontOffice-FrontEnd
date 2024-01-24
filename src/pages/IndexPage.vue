@@ -223,10 +223,9 @@ export default {
       currentClock = '-',
       currentDate = '-'
 
-    const recentReservationDate = ref('')
-
     return {
       newReservation: ref(''),
+      recentReservationDate: ref(''),
       availableRooms: ref(''),
       checkIn: ref(''),
       checkOut: ref(''),
@@ -234,7 +233,6 @@ export default {
       leftDrawerOpen,
       currentClock,
       currentDate,
-      recentReservationDate,
       columns: [
         { name: 'ResNo', label: 'ResNo', align: 'left', field: 'ResNo' },
         { name: 'GuestName', label: 'GuestName', align: 'left', field: 'GuestName' },
@@ -248,7 +246,20 @@ export default {
   data() {
     return {
       api: new this.$Api('root'),
-      data: []
+      data: [],
+      pagination: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 20
+      }
+    }
+  },
+  watch: {
+    recentReservationDate: {
+      deep: true,
+      handler(newDate) {
+        this.getValueDashboard()
+      }
     }
   },
   mounted() {
@@ -263,6 +274,10 @@ export default {
     }, 60000)
   },
   methods: {
+    onPaginationChange(props) {
+      this.pagination = props.pagination
+      this.getValueDashboard()
+    },
     toggleLeftDrawer() {
       leftDrawerOpen.value = !leftDrawerOpen.value
     },
@@ -273,7 +288,16 @@ export default {
     },
     getValueDashboard() {
       this.loading = true
-      this.api.get(`dashboard`, ({ status, data }) => {
+
+      let url = `dashboard?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+
+      const Date = this.recentReservationDate?.replace(/\//g, '-')
+
+      if (Date !== undefined && Date !== '') {
+        url += `&date=${Date}`
+      }
+
+      this.api.get(url, ({ status, data }) => {
         this.loading = false
 
         if (status == 200) {

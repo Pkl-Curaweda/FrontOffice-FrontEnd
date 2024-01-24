@@ -172,7 +172,7 @@
         <div style="gap: 8px" class="q-mt-lg row no-wrap items-center justify-end">
           <q-btn
             label="Print"
-            @click="PrintInvoice()"
+            @click="downloadDesign()"
             unelevated
             color="primary"
             dense
@@ -243,35 +243,33 @@ export default defineComponent({
     this.getDataTable()
   },
   methods: {
-    async PrintInvoice() {
-      const url = 'http://localhost:3000/fo/report/day' // Update the URL accordingly
+    async downloadDesign() {
+      const url = 'invoice/1/1'
 
       try {
         // Make the API request to get the file
-        const response = await this.api.get(`${url}/print`, (err, data) => {
-          if (err) {
-            console.error('Error in API request:', err)
+        const blob = await this.api.post(`${url}/print`, null, async (response) => {
+          if (response && response.status == 200 && response.blob) {
+            const blob = await response.blob
+            return blob
           } else {
-            console.log('API response data:', data)
+            console.error('Invalid response format:', response)
+            return null
           }
         })
 
-        // Check if response is valid
-        if (response && response.status === 200 && response.blob) {
-          // Extract blob from response
-          const blob = await response.blob()
-
+        // Check if blob is valid
+        if (blob) {
           // Trigger the download using file-saver
-          saveAs(blob, 'invoice.pdf')
+          saveAs(blob, 'invoicePdf.pdf')
           console.log('Permintaan print telah dikirim.')
         } else {
-          console.error('Invalid response format:', response)
+          console.error('Invalid or null blob received.')
         }
       } catch (error) {
         console.error('Error in print request:', error)
       }
     },
-
     getDataTable() {
       this.loading = true
 

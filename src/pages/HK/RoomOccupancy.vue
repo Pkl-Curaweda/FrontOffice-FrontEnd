@@ -367,13 +367,17 @@ export default defineComponent({
       tableCol,
       roomTypeVal
     }
-  },
-  methods: {
-    changeRoom(val) {
-      console.log(this.r_group)
+    return {
+      api: new this.$Api('housekeeping')
     }
   },
-  watch: {}
+  mounted() {
+    this.fetchData()
+  },
+  watch: {},
+  methods: {
+    fetchData() {}
+  }
 })
 </script>
 

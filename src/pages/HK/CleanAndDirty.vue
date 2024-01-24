@@ -457,7 +457,7 @@ export default defineComponent({
       datePickerArrival: ref(),
       datePickerDeparture: ref(),
       formattedArrivalDate: ref(), // Tambahkan variabel formattedArrivalDate
-      formattedDepartureDate: ref(''),
+      formattedDepartureDate: ref(),
       mainData: {},
       selectedColumn: null
     }

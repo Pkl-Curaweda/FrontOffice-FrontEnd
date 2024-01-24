@@ -103,7 +103,7 @@
                   <template v-slot:header="props">
                     <q-tr class="table-head" :props="props">
                       <q-th
-                        v-for="(col, i) in props.cols"
+                        v-for="(col, i) in props.cols.label"
                         :key="i"
                         style="padding-top: 0px; padding-bottom: 0px"
                       >
@@ -116,8 +116,28 @@
             <template v-slot:body="props">
               <q-tr :props="props">
                 <template v-for="(cell, key, i) in props.row" :key="i">
-                  <q-td :style="cell.style">
-                    {{ cell.data }}
+                  <q-td :style="cell.style" @click="!cell.data.label ? '' : getDetailform(cell.data.resvId, cell.data.resvRoomId) && triggerPositive()">
+                    {{ cell.data.label }}
+                    <!-- <q-popup-edit v-if="cell.data.label" v-model="props.row.name" title="" auto-save>
+                      <q-list style="align-content: flex-end; width: 100%">
+                        <q-item
+                          clickable
+                          v-close-popup
+                          @click="getDetailform(cell.data.resvId, cell.data.resvRoomId)"
+                          style="
+                            display: flex;
+                            padding: 5px;
+                            border-radius: 30px;
+                          "
+                        >
+                          <q-item-section>
+                            <q-item-label style="color: black" class="font-bold"
+                              >{{ cell.data.label? cell.data.label : ''   }}</q-item-label
+                            >
+                          </q-item-section>
+                        </q-item>
+                      </q-list></q-popup-edit
+                    > -->
                   </q-td>
                 </template>
               </q-tr>
@@ -136,6 +156,7 @@
 import { defineComponent, ref } from 'vue'
 import FOMenubar from 'src/components/FOMenubar.vue'
 import MultiPane from 'src/layouts/MultiPane.vue'
+import { useQuasar } from 'quasar'
 import GuestForm from './fragments/GuestForm.vue'
 import { allObjectsInArray } from 'src/utils/datatype'
 import { list } from 'postcss'
@@ -144,12 +165,13 @@ export default defineComponent({
   name: 'RoomAvailabilityPage',
   components: { FOMenubar, MultiPane, GuestForm },
   setup() {
+    const $q = useQuasar()
     return {
       selectedSorting: ref(''),
       datePicker: ref({ from: '', to: '' }),
       sortingDisplay: ref(null),
       columns: [
-        { name: 'Date', label: '', field: 'Date', align: 'left' },
+        { name: 'Date', label: 'Date', field: 'Date', align: 'left' },
         { name: '101-DLX-K', label: '101-DLX-K', field: 'room_1', align: 'left' },
         { name: '102-DLX-K', label: '102-DLX-K', field: 'room_2', align: 'left' },
         { name: '103-DLX-K', label: '103-DLX-K', field: 'room_3', align: 'left' },
@@ -209,6 +231,11 @@ export default defineComponent({
     }
   },
   methods: {
+    getDetailform(resvId, resvRoomId){
+      this.$ResvStore.currentResvId = resvId
+      this.$ResvStore.currentRoomResvId = resvRoomId
+      console.log(resvId, resvRoomId)
+    },
     searchName(searchInput) {
       // Make an API call to search based on searchInput
       this.api.get(`roomavail?search=${searchInput}`, ({ status, data }) => {
@@ -269,27 +296,47 @@ export default defineComponent({
       raw.forEach((rh) => {
         const date = rh.date
         list.push({
-          Date: { data: date, style: {} },
+          Date: { data: { label: date }, style: {} },
           ...rh.rmHist
         })
       })
 
       list.push({
-        Date: { data: 'Room Average', style: {} },
-        satu: { data: this.formatAverage(avg.total_1) + '%', style: {} },
-        dua: { data: this.formatAverage(avg.total_2) + '%', style: {} },
-        tiga: { data: this.formatAverage(avg.total_3) + '%', style: {} },
-        empat: { data: this.formatAverage(avg.total_4) + '%', style: {} },
-        lima: { data: this.formatAverage(avg.total_5) + '%', style: {} },
-        enam: { data: this.formatAverage(avg.total_6) + '%', style: {} },
-        tujuh: { data: this.formatAverage(avg.total_7) + '%', style: {} },
-        delapan: { data: this.formatAverage(avg.total_8) + '%', style: {} },
-        sembilan: { data: this.formatAverage(avg.total_9) + '%', style: {} },
-        sepuluh: { data: this.formatAverage(avg.total_10) + '%', style: {} }
+        Date: { data: { label: 'Room Average' }, style: {} },
+        room_1: { data: { label: avg.total_1 + '%'}, style: {} },
+        room_2: { data: { label: avg.total_2+ '%'}, style: {} },
+        tiga: { data: { label: avg.total_3+ '%'}, style: {} },
+        empat: { data: { label: avg.total_4+ '%'}, style: {} },
+        lima: { data: { label: avg.total_5+ '%'}, style: {} },
+        enam: { data: { label: avg.total_6+ '%'}, style: {} },
+        tujuh: { data: { label: avg.total_7+ '%'}, style: {} },
+        delapan: { data: { label: avg.total_8+ '%'}, style: {} },
+        sembilan: { data: {label: avg.total_9+ '%'}, style: {} },
+        sepuluh: { data: {label: avg.total_10 + '%'}, style: {} }
       })
-      console.log('list data after pushing room average:', list)
       this.data = list
-    }
+      console.log('list data after pushing room average:', this.data)
+    },
+    triggerNegative (data) {
+        this.$q.notify(
+          {
+          type: 'negative',
+          message: data || 'error',
+          timeout: 1000
+        },
+        4000
+        )
+      },
+      triggerPositive (data) {
+        this.$q.notify(
+          {
+          type: 'positive',
+          message: data || 'data has successfully',
+          timeout: 1000
+        },
+        4000
+        )
+      },
   }
 })
 </script>

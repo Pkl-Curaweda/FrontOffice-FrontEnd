@@ -50,52 +50,10 @@
       <template #right>
         <q-separator vertical />
         <q-btn flat square color="primary" icon="o_add_home">
-          <q-popup-proxy :offset="[10, 10]">
-            <q-card>
-              <div class="my-table" style="max-height: 400px; overflow: auto">
-                <q-table
-                  flat
-                  bordered
-                  :rows="data2"
-                  :columns="columns2"
-                  row-key="name"
-                  selection="multiple"
-                  v-model:selected="selected"
-                >
-                  <template #body-cell-qty="props">
-                    <q-td :props="props">
-                      <q-btn
-                        class="q-pa-xs bg-primary"
-                        style="height: 100%"
-                        text-color="white"
-                        size="sm"
-                        @click="decrementQty(props.row)"
-                        icon="remove"
-                        flat
-                      ></q-btn>
-                      <span
-                        class="q-ma-xs q-pa-sm"
-                        style="border: 1px solid gray; border-radius: 3px"
-                        >{{ props.value }}</span
-                      >
-                      <q-btn
-                        class="q-pa-xs bg-primary"
-                        style="height: 100%"
-                        text-color="white"
-                        size="sm"
-                        @click="incrementQty(props.row)"
-                        icon="add"
-                        flat
-                      ></q-btn>
-                    </q-td>
-                  </template>
-                </q-table>
-              </div>
-              <div class="q-pa-sm flex justify-end" style="gap: 5px; border-top: 1px solid green">
-                <q-btn size="sm" no-caps outline>Cancel</q-btn>
-                <q-btn size="sm" no-caps color="primary" text-color="white">Add</q-btn>
-              </div>
-            </q-card>
+          <q-popup-proxy>
+            <q-banner>
+              <TableAddInvoice />
+            </q-banner>
           </q-popup-proxy>
         </q-btn>
       </template>
@@ -157,8 +115,8 @@
             </template>
             <template v-slot:body="props">
               <q-tr :props="props">
-                <template v-for="(cell, i) in props.row" :key="i">
-                  <q-td :style="cell.style">
+                <template v-for="(cell,key, i) in props.row" :key="i">
+                  <q-td v-if="!['uniqueId'].includes(key)" :style="cell.style">
                     {{ cell.data }}
                   </q-td>
                 </template>
@@ -175,7 +133,6 @@
                       viewBox="0 0 19 19"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
-                      @click="setRoomResv(props.row)"
                     >
                       <path
                         d="M8 13C8.8 13 9.57 12.93 10.31 12.82L13.22 9.91C11.89 10.59 10 11 8 11C5.58 11 3.3 10.4 2 9.45V6.64C3.47 7.47 5.61 8 8 8C10.39 8 12.53 7.47 14 6.64V9.13L15.39 7.74C15.57 7.56 15.78 7.42 16 7.3V4C16 1.79 12.42 0 8 0C3.58 0 0 1.79 0 4V14C0 16.04 3.06 17.72 7 17.97V16.13L7.17 15.96C3.84 15.76 2 14.46 2 14V11.77C3.61 12.55 5.72 13 8 13ZM8 2C11.87 2 14 3.5 14 4C14 4.5 11.87 6 8 6C4.13 6 2 4.5 2 4C2 3.5 4.13 2 8 2ZM15.13 10.83L17.17 12.87L11.04 19H9V16.96L15.13 10.83ZM18.85 11.19L17.87 12.17L15.83 10.13L16.81 9.15C17 8.95 17.33 8.95 17.53 9.15L18.85 10.47C19.05 10.67 19.05 11 18.85 11.19Z"
@@ -216,77 +173,17 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, defineAsyncComponent } from 'vue'
 import FOMenubar from 'src/components/FOMenubar.vue'
 import MultiPane from 'src/layouts/MultiPane.vue'
 import InvoiceForm from './fragments/InvoiceForm.vue'
 import { allObjectsInArray } from 'src/utils/datatype'
 
-const columns2 = [
-  {
-    name: 'art',
-    required: true,
-    label: 'Art',
-    align: 'left',
-    field: (row) => row.name,
-    format: (val) => `${val}`,
-    sortable: true
-  },
-  {
-    name: 'description',
-    align: 'center',
-    label: 'Description',
-    field: 'description',
-    sortable: true
-  },
-  { name: 'qty', align: 'center', label: 'Qty', field: 'qty', sortable: true }
-]
-const data2 = [
-  {
-    name: 101,
-    description: 'Extra Bed',
-    qty: 0
-  },
-  {
-    name: 102,
-    description: 'Extra Pillow',
-    qty: 0
-  },
-  {
-    name: 103,
-    description: 'Extra Bed Cover',
-    qty: 0
-  },
-  {
-    name: 113,
-    description: ' Bed Cover',
-    qty: 0
-  },
-  {
-    name: 100,
-    description: ' Bed ooCover',
-    qty: 0
-  },
-  {
-    name: 900,
-    description: ' Bed ooover',
-    qty: 0
-  },
-  {
-    name: 100,
-    description: ' Bed ooCover',
-    qty: 0
-  },
-  {
-    name: 900,
-    description: ' Bed ooover',
-    qty: 0
-  }
-]
+const TableAddInvoice = defineAsyncComponent(() => import('components/charts/TableAddInvoice.vue'))
 
 export default defineComponent({
   name: 'InvoicePage',
-  components: { FOMenubar, MultiPane, InvoiceForm },
+  components: { FOMenubar, MultiPane, InvoiceForm, TableAddInvoice },
   setup() {
     return {
       allObjectsInArray,
@@ -294,7 +191,6 @@ export default defineComponent({
       searchInput: ref(''),
       loading: ref(false),
       datePicker: ref(),
-      columns2,
       filterDisplayOptions: [
         { label: 'Artno', value: 'artno' },
         { label: 'Description', value: 'description' }
@@ -316,18 +212,15 @@ export default defineComponent({
   data() {
     return {
       filterSortOrder: ref({ col: '', val: '' }),
-      data2,
       filterColumns: {
         Art: {
           data: '',
           options: ['1-999', '999-1'],
-          // kontol
           onOptionChange: (val) => {
             if (val == '1-999') this.filterSortOrder = { col: 'Art', val: 'art-asc' }
             else if (val == '999-1') this.filterSortOrder = { col: 'Art', val: 'art-desc' }
             else this.filterSortOrder = { col: '', val: '' }
           }
-          // akhir kontol
         },
         Qty: {
           data: '',
@@ -393,25 +286,35 @@ export default defineComponent({
         rowsNumber: 0,
         rowsPerPage: 20
       },
-      data: []
+      data: [],
+      uniqueId: []
     }
   },
   mounted() {
     this.fetchData()
+    // if (this.$ResvStore.currentRoomResvId) {
+    //   this.fetchData()
+    // }
+
+    // watch(
+    //   () => this.$ResvStore.currentRoomResvId,
+    //   () => {
+    //     this.fetchData()
+    //     this.getResvProps()
+    //   }
+    // )
   },
   watch() {
     searchDesc(this.searchInput)
   },
   watch: {
     filterSortOrder: {
-      // kontol
       handler(oldFilter, newFilter) {
         Object.keys(this.filterColumns).forEach((key) => {
           if (oldFilter['col'] != key) this.filterColumns[key].data = null
         })
         this.fetchData()
       }
-      // kontol
     },
     datePicker: {
       deep: true,
@@ -432,24 +335,21 @@ export default defineComponent({
     }
   },
   methods: {
-    incrementQty(row) {
-      row.qty++
-    },
-    decrementQty(row) {
-      if (row.qty > 0) {
-        row.qty--
-      }
-    },
     searchDesc(searchInput) {
-      // Make an API call to search based on searchInput
-      this.api.get(`invoice/1/1?search=${searchInput}`, ({ status, data }) => {
-        if (status === 200) {
-          // Update the data with the search result
-          this.formatData(data.invoices)
-        } else {
-          console.error('Error searching data')
-        }
-      })
+      console.log('test' + searchInput)
+      if (searchInput != '' || searchInput != null) {
+        // Make an API call to search based on searchInput
+        this.api.get(`invoice/1/1?search=${searchInput}`, ({ status, data }) => {
+          if (status === 200) {
+            // Update the data with the search result
+            this.formatData(data.invoices)
+          } else {
+            console.error('Error searching data')
+          }
+        })
+      } else {
+        console.log('data kosong')
+      }
     },
     setSortOrder(val = '') {
       this.filterSortOrder = null
@@ -459,42 +359,66 @@ export default defineComponent({
       this.fetchData()
     },
     fetchData() {
-      const { currentResvId, currentRoomResvId } = this.$ResvStore
       this.loading = true
 
-      let url = `invoice/${currentResvId}/${currentRoomResvId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      const { currentResvId, currentRoomResvId } = this.$ResvStore
 
-      if (this.filterSortOrder['col'] != '' && this.filterSortOrder['val'] != '')
-        url += `&sort=${this.filterSortOrder['val']}`
-
-      if (this.filterDisplay !== null) url += `&disOpt=${this.filterDisplay}`
-
-      const Date = this.datePicker?.replace(/\//g, '-')
-
-      if (Date !== undefined && Date !== '') {
-        url += `&date=${Date}T${Date}`
+      if (currentResvId === 0 || currentRoomResvId === 0) {
+        this.loading = false
+        console.log(currentResvId)
+        return
       }
 
-      this.api.get(url, ({ status, data }) => {
-        this.loading = false
+      let url = `/fo/invoice/${currentResvId}/${currentRoomResvId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
 
-        if (status == 200) {
-          this.formatData(data.invoices)
-          this.pagination = {
-            page: data.meta?.currPage,
-            rowsNumber: data.meta?.total,
-            rowsPerPage: data.meta?.perPage
+      if (this.filterSortOrder.col !== '' && this.filterSortOrder.val !== '') {
+        url += `&sort=${this.filterSortOrder.val}`
+      }
+
+      // if (this.filterDisplay !== null) {
+      //   url += `&disOpt=${this.filterDisplay}`
+      // }
+
+      const formattedDate = this.datePicker?.replace(/\//g, '-')
+
+      if (formattedDate) {
+        url += `&date=${formattedDate}T${formattedDate}`
+      }
+
+      this.$api
+        .get(url)
+        .then((response) => {
+          this.loading = false
+
+          if (response.status === 200) {
+            // this.uniqueId = response.data.data.invoices.uniqueId
+            // console.log(this.uniqueId)
+            // this.uniqueId = response.data.data.invoices.uniqueId
+            // console.log(response.data.data.invoices.uniqueId)
+            this.formatData(response.data.data.invoices)
+            this.pagination = {
+              page: response.data.data.meta?.currPage,
+              rowsNumber: response.data.data.meta?.total,
+              rowsPerPage: response.data.data.meta?.perPage
+            }
           }
-        }
-      })
+          this.triggerPositive('GET Data Successfully')
+        })
+        .catch((error) => {
+          this.loading = false
+          console.error('Error fetching data:', error)
+        })
     },
     formatCurrency(num = 0) {
       return num.toLocaleString()
     },
     formatData(raw = []) {
       const list = []
+      const unique = []
 
       raw.forEach((inv) => {
+        // uniqueId: { data: inv.uniqueId, style: {} }
+
         list.push({
           Art: { data: inv.art.label ? inv.art.label : inv.art, style: {} },
           Qty: { data: inv.qty, style: {} },
@@ -504,21 +428,31 @@ export default defineComponent({
           RmNo: { data: 101, style: {} },
           RoomBoy: { data: 'Asep', style: {} },
           VoucherNumber: { data: 101111, style: {} },
-          BillDate: { data: inv.billDate, style: {} }
+          BillDate: { data: inv.billDate, style: {} },
+          uniqueId: { data: inv.uniqueId, style: {} }
         })
       })
+      console.log(list)
       this.data = list
-    }
-  },
-  method: {
-    setRoomResv(data) {
-      this.$ResvStore.currentResvId = data['ResNo'].data
-      this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
+      // this.uniqueId = unique
     },
-    async getData() {
-      try {
-        this.api.get()
-      } catch (error) {}
+    setRoomResv(data) {
+      this.$ResvStore.dateBill = data['BillDate'].data
+      this.$ResvStore.Artlb = data['Art'].data
+      this.$ResvStore.UniqueId = data['uniqueId'].data
+      console.log(data['BillDate'].data)
+      console.log(this.$ResvStore.dateBill)
+      console.log(this.$ResvStore.UniqueId)
+    },
+    triggerPositive(message) {
+      this.$q.notify(
+        {
+          type: 'positive',
+          message: message || 'This is a "positive" type notification.',
+          timeout: 1000
+        },
+        4000
+      )
     }
   }
 })

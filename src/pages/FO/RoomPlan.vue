@@ -12,7 +12,7 @@
           dropdown-icon="o_expand_more"
         >
           <div>
-            <q-date v-model="datePicker" />
+            <q-date v-model="datePicker" range />
           </div>
         </q-btn-dropdown>
       </template>
@@ -368,7 +368,7 @@ export default defineComponent({
   data() {
     return {
       api: new this.$Api('frontoffice'),
-      datePicker: ref(),
+      datePicker,
       floor,
       statuses,
       subGroupingArray,
@@ -391,45 +391,26 @@ export default defineComponent({
   mounted() {
     this.backgroundRoom()
   },
-  watch: {
-    datePicker: {
-      deep: true,
-      handler(newDate) {
-        this.backgroundRoom()
-      }
-    }
-  },
   methods: {
     backgroundRoom() {
       this.loading = true
-
-      let url = `floorplan?`
-
-      const Date = this.datePicker?.replace(/\//g, '-')
-
-      if (Date !== undefined && Date !== '') {
-        url += `date=${Date}`
-      }
-
-      this.api.get(url, ({ status, data }) => {
+      this.api.get(`floorplan`, ({ status, data }) => {
         this.loading = false
         if (status == 200) {
-          const { roomHistory } = data
-
-          Object.keys(roomHistory).forEach((roomKey) => {
-            const roomIndex = parseInt(roomKey.split('_')[1]) - 1
-
-            if (roomIndex >= 0 && roomIndex < this.roomData.length) {
-              const roomDataItem = this.roomData[roomIndex]
-              const roomApiData = roomHistory[roomKey]
-
-              // Update roomDataItem with API data
-              roomDataItem.bg_color = roomApiData.resvStatus.rowColor
-              roomDataItem.text_color = roomApiData.resvStatus.textColor
-            }
-          })
+          this.formatData(data)
         }
       })
+    },
+    formatData(raw = []) {
+      const list = []
+      raw.forEach((fp) => {
+        console.log(fp)
+        list.push({
+          bg_color: fp.roomStatus.rowColor,
+          text_color: fp.roomStatus.textColor
+        })
+      })
+      this.roomData = list
     },
     handleStatus(data) {
       const index = this.roomData.findIndex((room) => room.room === data.room)

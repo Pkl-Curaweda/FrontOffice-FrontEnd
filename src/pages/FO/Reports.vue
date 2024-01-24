@@ -67,7 +67,7 @@
         </q-btn-dropdown>
       </template>
       <template #right>
-        <q-btn flat square color="primary" icon="o_print" to="/fo/report/print" />
+        <q-btn flat square color="primary" icon="o_print" to="/fo/reports/print" />
       </template>
     </FOMenubar>
 

@@ -63,7 +63,7 @@ const frontoffice_routes = [
     }
   },
   {
-    path: '/fo/report/print',
+    path: '/fo/reports/print',
     component: () => import('pages/FO/ReportPrint.vue'),
     meta: {
       title: 'Print',

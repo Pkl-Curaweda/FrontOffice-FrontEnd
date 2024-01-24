@@ -1,10 +1,6 @@
 <template>
   <q-page style="overflow-y: scroll; height: 100%">
-    <FOMenubar>
-      <template #right>
-        <q-btn flat square color="primary" icon="o_print" />
-      </template>
-    </FOMenubar>
+    <FOMenubar />
 
     <div class="row q-ma-md no-wrap" style="gap: 15px">
       <div style="width: 50%">
@@ -201,6 +197,11 @@ export default defineComponent({
     return {
       url: '',
       api: new this.$Api('frontoffice'),
+      pagination: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 20
+      },
       data: []
     }
   },
@@ -212,12 +213,16 @@ export default defineComponent({
       const element = this.$refs.pdfContainer
 
       html2pdf(element, {
-        margin: 0, // Atur margin atas dan bawah
+        margin: 0,
         filename: 'invoice.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true }, // Sesuaikan skala dan gunakan CORS jika diperlukan
+        html2canvas: { scale: 2 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
       })
+    },
+    onPaginationChange(props) {
+      this.pagination = props.pagination
+      this.fetchData()
     },
     getDataTable() {
       this.loading = true

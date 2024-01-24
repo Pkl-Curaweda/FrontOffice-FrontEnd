@@ -17,7 +17,6 @@
             />
           </svg>
         </q-btn>
-
         <HKPrintModal :columns="tableColumns" :rows="tableRows" />
       </div>
 
@@ -25,25 +24,70 @@
       <div class="flex justify-between q-mb-sm" style="gap: 8px">
         <div class="flex items-center" style="column-gap: 8px">
           <span style="font-size: 14px; font-weight: 500">Sorting :</span>
-          <q-select
-            outlined
-            dense
-            v-model="sortingModel"
-            dropdown-icon="expand_more"
-            :options="sortingOptions"
-            style="width: 12rem"
-            class="input-border"
-          />
+          <q-btn-dropdown
+            flat
+            square
+            style="border: 1px #00000030 solid"
+            class="text-capitalize text-black rounded-borders"
+            :label="filterDisplayLabel"
+            color="primary"
+            dropdown-icon="o_expand_more"
+          >
+            <q-list>
+              <q-item
+                clickable
+                v-close-popup
+                @click="setFilterDisplay('roomNumber', 'Room Number')"
+              >
+                <q-item-section>Room Number</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="setFilterDisplay('department', 'Off Market')">
+                <q-item-section>Off Market</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="setFilterDisplay('department', 'Department')">
+                <q-item-section>Department</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="setFilterDisplay(null, 'All')">
+                <q-item-section>All</q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
         </div>
 
         <div class="flex" style="gap: 8px 16px">
           <div class="flex items-center" style="gap: 8px">
             <span style="font-size: 14px; font-weight: 500">From :</span>
-            <HKDateInput />
+            <q-btn-dropdown
+              flat
+              square
+              style="border: 1px #00000030 solid"
+              class="text-capitalize date-btn text-black rounded-borders"
+              :label="datePickerArrival?.replace(/\//g, '-')"
+              icon="o_event"
+              color="primary"
+              dropdown-icon="o_expand_more"
+            >
+              <div>
+                <q-date v-model="datePickerArrival" color="green" today-btn />
+              </div>
+            </q-btn-dropdown>
           </div>
           <div class="flex items-center" style="gap: 8px">
             <span style="font-size: 14px; font-weight: 500">To :</span>
-            <HKDateInput />
+            <q-btn-dropdown
+              flat
+              square
+              style="border: 1px #00000030 solid"
+              class="text-capitalize date-btn text-black rounded-borders"
+              :label="datePickerDeparture?.replace(/\//g, '-')"
+              icon="o_event"
+              color="primary"
+              dropdown-icon="o_expand_more"
+            >
+              <div>
+                <q-date v-model="datePickerDeparture" color="green" today-btn />
+              </div>
+            </q-btn-dropdown>
           </div>
         </div>
       </div>
@@ -55,11 +99,9 @@
 </template>
 <script>
 import HKCard from 'src/components/HK/Card/HKCard.vue'
-import HKDateInput from 'src/components/HK/Form/HKDateInput.vue'
 import HKTable from 'src/components/HK/Table/HKTable.vue'
 import HKPrintModal from 'src/components/HK/Modal/HKPrintModal.vue'
 import { defineComponent, ref } from 'vue'
-
 const tableColumns = [
   {
     name: 'room-no',
@@ -112,16 +154,21 @@ const tableColumns = [
     align: 'left'
   }
 ]
-
 const tableRows = []
 
 export default defineComponent({
   name: 'OOOPages',
-  components: { HKCard, HKTable, HKDateInput, HKPrintModal },
+  components: { HKCard, HKTable, HKPrintModal },
   setup() {
     return {
       tableColumns,
       tableRows: ref(),
+      filterDisplay: ref('roomNumber'),
+      filterDisplayLabel: ref('Room Number'),
+      datePickerArrival: ref(),
+      datePickerDeparture: ref(),
+      formattedArrivalDate: ref(), // Tambahkan variabel formattedArrivalDate
+      formattedDepartureDate: ref(''),
       sortingModel: ref('Room Number'),
       sortingOptions: ['O-O-O', 'Off Market', 'Department', 'Person In Charge', 'All']
     }
@@ -134,17 +181,82 @@ export default defineComponent({
   mounted() {
     this.fetchData()
   },
+  watch: {
+    datePickerArrival: {
+      deep: true,
+      handler(newDate) {
+        this.fetchData()
+      }
+    },
+    filterDisplay(newOption) {
+      // Update the label based on the selected option
+      this.updateFilterDisplayLabel(newOption)
+    },
+    datePickerDeparture: {
+      deep: true,
+      handler(newDate) {
+        this.fetchData()
+      }
+    }
+  },
   methods: {
+    setFilterDisplay(option, label) {
+      this.filterDisplay = option
+      this.updateFilterDisplayLabel(option)
+      this.fetchData()
+    },
+    updateFilterDisplayLabel(option) {
+      // Logic to update the label based on the selected option
+      switch (option) {
+        case 'roomNumbwe':
+          this.filterDisplayLabel = 'Room Number'
+          break
+        case 'department':
+          this.filterDisplayLabel = 'Off Market'
+          break
+        case 'department':
+          this.filterDisplayLabel = 'Department'
+          break
+        case null:
+          this.filterDisplayLabel = 'All'
+          break
+        // Add other cases as needed
+        default:
+          this.filterDisplayLabel = 'Default Label'
+      }
+    },
     fetchData() {
       this.loading = true
+      let url = `ooo-rooms?`
 
-      let url = `ooo-rooms`
+      const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
+      if (DateArrival !== undefined && DateArrival !== '') {
+        url += `&arr=${DateArrival}`
+      }
+
+      const DateDeparture = this.datePickerDeparture?.replace(/\//g, '-')
+      if (DateDeparture !== undefined && DateDeparture !== '') {
+        url += `&dep=${DateDeparture}` // Ganti 'arrival' dengan 'departure'
+      }
+
+      if (this.filterDisplay !== null) {
+        url += `&sortOrder=${this.filterDisplay}`
+      }
+
       this.api.get(url, ({ status, data }) => {
         this.loading = false
-
         if (status == 200) {
-          const { OOORoom } = data
+          const { OOORoom, arrival, departure } = data
 
+          const arrivalDate = data.arr // Gantilah 'arrival.arr' dengan properti yang benar
+          if (arrivalDate) {
+            this.datePickerArrival = arrivalDate
+          }
+
+          const departureDate = data.dep // Gantilah 'data.dep' dengan properti yang benar
+          if (departureDate) {
+            this.datePickerDeparture = departureDate
+          }
           this.tableRows = OOORoom.map((ooo) => ({
             name: ooo.roomNo,
             reason_room: ooo.reason,
@@ -160,7 +272,6 @@ export default defineComponent({
   }
 })
 </script>
-
 <style>
 .input-border .q-field__control::before {
   border-color: #d9d9d9 !important;

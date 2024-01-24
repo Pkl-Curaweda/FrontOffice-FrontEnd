@@ -15,6 +15,7 @@ export const roomStatus = [
     { status: 'OM', desc: 'Out of Market', bg_color: '#000000', text_color: '#f10000' }
   ],
   [
+    { status: 'House Use', desc: 'House Use', bg_color: '#666666', text_color: '#ffffff' },
     { status: 'VIP', desc: 'VIP', bg_color: '#ffffff', text_color: '#f10000' },
     { status: 'INCOGNITO', desc: 'INCOGNITO', bg_color: '#f10000', text_color: '#ffffff' }
   ]

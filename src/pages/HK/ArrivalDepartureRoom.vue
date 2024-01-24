@@ -56,17 +56,61 @@
         <div class="flex" style="gap: 16px">
           <div class="flex items-center" style="gap: 8px">
             <span style="font-size: 16px; font-weight: 500">Sorting :</span>
-            <q-select
-              outlined
-              dense
-              v-model="sortingModel"
-              dropdown-icon="expand_more"
-              :options="sortingOptions"
-              style="width: 11rem"
-              class="input-border"
-            />
+            <q-btn-dropdown
+              flat
+              square
+              style="border: 1px #00000030 solid"
+              class="text-capitalize text-black rounded-borders"
+              :label="filterDisplayLabel"
+              color="primary"
+              dropdown-icon="o_expand_more"
+            >
+              <q-list>
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="setFilterDisplay('room+id+asc', 'Room Number')"
+                >
+                  <q-item-section>Room Number</q-item-section>
+                </q-item>
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="setFilterDisplay('room+type+DELUXE', 'Room Type Deluxe')"
+                >
+                  <q-item-section>Room Type Deluxe</q-item-section>
+                </q-item>
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="setFilterDisplay('room+type+FAMILY', 'Room Type Family')"
+                >
+                  <q-item-section>Room Type Family</q-item-section>
+                </q-item>
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="setFilterDisplay('room+type+STANDARD', 'Room Type Standard')"
+                >
+                  <q-item-section>Room Type Standard</q-item-section>
+                </q-item>
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="setFilterDisplay('rese+name+asc', 'Guest Name')"
+                >
+                  <q-item-section>Guest Name</q-item-section>
+                </q-item>
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="setFilterDisplay('resv+id+asc', 'Reservation Number')"
+                >
+                  <q-item-section>Reservation Number</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
           </div>
-
           <q-btn
             outline
             dense
@@ -84,12 +128,38 @@
         <div class="flex" style="gap: 16px">
           <div class="flex items-center" style="gap: 8px">
             <span style="font-size: 16px; font-weight: 500">Arrival :</span>
-            <HKDateInput />
+            <q-btn-dropdown
+              flat
+              square
+              style="border: 1px #00000030 solid"
+              class="text-capitalize date-btn text-black rounded-borders"
+              :label="datePickerArrival?.replace(/\//g, '-')"
+              icon="o_event"
+              color="primary"
+              dropdown-icon="o_expand_more"
+            >
+              <div>
+                <q-date v-model="datePickerArrival" color="green" today-btn />
+              </div>
+            </q-btn-dropdown>
           </div>
 
           <div class="flex items-center" style="gap: 8px">
             <span style="font-size: 16px; font-weight: 500">Departure :</span>
-            <HKDateInput />
+            <q-btn-dropdown
+              flat
+              square
+              style="border: 1px #00000030 solid"
+              class="text-capitalize date-btn text-black rounded-borders"
+              :label="datePickerDeparture?.replace(/\//g, '-')"
+              icon="o_event"
+              color="primary"
+              dropdown-icon="o_expand_more"
+            >
+              <div>
+                <q-date v-model="datePickerDeparture" color="green" today-btn />
+              </div>
+            </q-btn-dropdown>
           </div>
         </div>
       </div>
@@ -116,7 +186,12 @@
               </template>
             </q-input>
           </div>
-          <HKTable :columns="tableColumns" :rows="tableRows" />
+          <HKTable
+            v-model:pagination="pagination"
+            @request="onPaginationChange"
+            :columns="tableColumns"
+            :rows="tableRows"
+          />
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -127,7 +202,7 @@
 import HKCard from 'src/components/HK/Card/HKCard.vue'
 import HKDateInput from 'src/components/HK/Form/HKDateInput.vue'
 import HKTable from 'src/components/HK/Table/HKTable.vue'
-import { ref } from 'vue'
+import { defineComponent, ref } from 'vue'
 
 const arrivalData = []
 
@@ -230,18 +305,24 @@ const departureData = []
 
 const tableRows = []
 
-export default {
+export default defineComponent({
   name: 'ArrivalPage',
-  components: { HKCard, HKDateInput, HKTable },
+  components: { HKCard, HKTable },
   setup() {
     return {
       arrivalData: ref(),
       departureData: ref(),
       loading: ref(false),
       tableColumns,
+      filterDisplay: ref('room+id+asc'),
+      filterDisplayLabel: ref('Room Number'),
+      inputtedDate: ref(),
+      formattedDate: ref(),
+      datePickerArrival: ref(),
+      datePickerDeparture: ref(),
+      formattedArrivalDate: ref(), // Tambahkan variabel formattedArrivalDate
+      formattedDepartureDate: ref(''),
       tableRows: ref(),
-      sortingModel: ref('Room Number'),
-      sortingOptions: ['Room Number', 'Reservation Number', 'Room Type', 'Guest Name'],
       guestHistoryModel: ref(false),
       searchModel: ref('')
     }
@@ -254,16 +335,95 @@ export default {
   mounted() {
     this.fetchData()
   },
+  watch: {
+    datePickerArrival: {
+      deep: true,
+      handler(newDate) {
+        this.fetchData()
+      }
+    },
+    filterDisplay(newOption) {
+      // Update the label based on the selected option
+      this.updateFilterDisplayLabel(newOption)
+    },
+    datePickerDeparture: {
+      deep: true,
+      handler(newDate) {
+        this.fetchData()
+      }
+    },
+    filterDisplay: {
+      handler(option) {
+        this.fetchData()
+      }
+    }
+  },
+
   methods: {
+    setFilterDisplay(option, label) {
+      this.filterDisplay = option
+      this.updateFilterDisplayLabel(option)
+      this.fetchData()
+    },
+    updateFilterDisplayLabel(option) {
+      // Logic to update the label based on the selected option
+      switch (option) {
+        case 'room+id+asc':
+          this.filterDisplayLabel = 'Room Number'
+          break
+        case 'room+type+DELUXE':
+          this.filterDisplayLabel = 'Room Type Deluxe'
+          break
+        case 'room+type+FAMILY':
+          this.filterDisplayLabel = 'Room Type Family'
+          break
+        case 'room+type+STANDARD':
+          this.filterDisplayLabel = 'Room Type Standard'
+          break
+        case 'rese+name+asc':
+          this.filterDisplayLabel = 'Guest Name'
+          break
+        case 'resv+id+asc':
+          this.filterDisplayLabel = 'Reservation Number'
+          break
+        // Add other cases as needed
+        default:
+          this.filterDisplayLabel = 'Default Label'
+      }
+    },
     fetchData() {
       this.loading = true
 
-      let url = `arrival-departure`
+      let url = `arrival-departure?`
+
+      const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
+      if (DateArrival !== undefined && DateArrival !== '') {
+        url += `&arrival=${DateArrival}`
+      }
+
+      const DateDeparture = this.datePickerDeparture?.replace(/\//g, '-')
+      if (DateDeparture !== undefined && DateDeparture !== '') {
+        url += `&depart=${DateDeparture}` // Ganti 'arrival' dengan 'departure'
+      }
+
+      // if (this.filterDisplay !== null) {
+      //   url += `&sortOrder=${this.filterDisplay}`
+      // }
       this.api.get(url, ({ status, data }) => {
         this.loading = false
 
         if (status == 200) {
           const { arrival, departure, table } = data
+
+          const arrivalDate = data.arr // Gantilah 'arrival.arr' dengan properti yang benar
+          if (arrivalDate) {
+            this.datePickerArrival = arrivalDate
+          }
+
+          const departureDate = data.dep // Gantilah 'data.dep' dengan properti yang benar
+          if (departureDate) {
+            this.datePickerDeparture = departureDate
+          }
 
           // Mengisi arrivalData dan departureData dengan data dari respons API
           this.arrivalData = [
@@ -306,7 +466,7 @@ export default {
           this.tableRows = table.map((row) => ({
             name: row.resNo,
             res_resource: row.resResource,
-            rm_no: row.roomNo,
+            rm_no: row.roomNo.id,
             r_type: row.roomType,
             b_type: row.bedType,
             guest_name: row.guestName,
@@ -322,7 +482,7 @@ export default {
       })
     }
   }
-}
+})
 </script>
 
 <style>

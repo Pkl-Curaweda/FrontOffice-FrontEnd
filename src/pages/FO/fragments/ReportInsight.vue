@@ -53,7 +53,7 @@
           <p class="text-h6 text-bold">OCCUPIED</p>
         </div>
         <div class="">
-          <p class="text-h2 data text-center">{{ deluxeRoom || 0 }}</p>
+          <p class="text-h2 data text-center q-pb-lg">{{ deluxeRoom || 0 }}</p>
           <p class="text-h6 text-bold">DELUXE ROOM</p>
         </div>
       </div>
@@ -65,7 +65,7 @@
           <p class="text-h6 text-bold">OCCUPIED</p>
         </div>
         <div class="">
-          <p class="text-h2 data text-center">{{ standardRoom || 0 }}</p>
+          <p class="text-h2 data text-center q-pb-lg">{{ standardRoom || 0 }}</p>
           <p class="text-h6 text-bold">STANDARD ROOM</p>
         </div>
       </div>
@@ -77,7 +77,7 @@
           <p class="text-h6 text-bold">OCCUPIED</p>
         </div>
         <div class="">
-          <p class="text-h2 data text-center">{{ familyRoom || 0 }}</p>
+          <p class="text-h2 data text-center q-pb-lg">{{ familyRoom || 0 }}</p>
           <p class="text-h6 text-bold">FAMILY ROOM</p>
         </div>
       </div>
@@ -89,7 +89,7 @@
           <p class="text-h6 text-bold">OCCUPIED</p>
         </div>
         <div class="">
-          <p class="text-h2 data text-center">{{ roomRes || 0 }}</p>
+          <p class="text-h2 data text-center q-pb-lg">{{ roomRes || 0 }}</p>
           <p class="text-h6 text-bold">ROOM RES</p>
         </div>
       </div>

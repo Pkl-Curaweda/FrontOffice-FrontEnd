@@ -42,9 +42,6 @@
       </q-expansion-item>
     </q-expansion-item>
 
-    <q-expansion-item class="rounded" label="In Room Service" icon="o_door_front">
-    </q-expansion-item>
-
     <!-- <q-separator class="q-my-md" /> -->
 
     <!-- <q-item clickable class="text-negative">

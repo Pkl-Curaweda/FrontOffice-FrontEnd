@@ -79,15 +79,37 @@
         <div class="flex" style="gap: 16px">
           <div class="flex items-center" style="gap: 8px">
             <span style="font-size: 16px; font-weight: 500">Sorting :</span>
-            <q-select
-              outlined
-              dense
-              v-model="sortingModel"
-              dropdown-icon="expand_more"
-              :options="sortingOptions"
-              style="width: 12rem"
-              class="input-border"
-            />
+            <q-btn-dropdown
+              flat
+              square
+              style="border: 1px #00000030 solid"
+              class="text-capitalize text-black rounded-borders"
+              :label="filterDisplayLabel"
+              color="primary"
+              dropdown-icon="o_expand_more"
+            >
+              <q-list>
+                <q-item clickable v-close-popup @click="setFilterDisplay('roomNum', 'Room Number')">
+                  <q-item-section>Room Number</q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup @click="setFilterDisplay('pic', 'PIC')">
+                  <q-item-section>PIC</q-item-section>
+                </q-item>
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="setFilterDisplay('reported', 'Reported By')"
+                >
+                  <q-item-section>Reported By</q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup @click="setFilterDisplay('', 'Guest Name')">
+                  <q-item-section>Guest Name</q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup @click="setFilterDisplay('', 'Location')">
+                  <q-item-section>Location</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
           </div>
 
           <div class="flex items-center" style="gap: 8px">
@@ -125,6 +147,8 @@
         :card-style="{ boxShadow: 'none' }"
         rows-per-page-label="Show"
         :dense="$q.screen.lt.md"
+        v-model:pagination="pagination"
+        @request="onPaginationChange"
       >
         <template v-slot:body="props">
           <q-tr :props="props">
@@ -366,6 +390,8 @@ export default defineComponent({
   setup() {
     return {
       loading: ref(false),
+      filterDisplay: ref('roomNum'),
+      filterDisplayLabel: ref('Room Number'),
       sortingModel: ref('Room Number'),
       sortingOptions: ['Room Number', 'Reservation Number', 'Room Type', 'Guest Name'],
       searchModel: ref(''),
@@ -379,17 +405,64 @@ export default defineComponent({
     return {
       api: new this.$Api('housekeeping'),
       chartOptions,
-      columns
+      columns,
+      pagination: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 20
+      }
     }
   },
   mounted() {
     this.fetchData()
   },
+  watch: {
+    filterDisplay(newOption) {
+      // Update the label based on the selected option
+      this.updateFilterDisplayLabel(newOption)
+    }
+  },
   methods: {
+    updateFilterDisplayLabel(option) {
+      // Logic to update the label based on the selected option
+      switch (option) {
+        case 'roomNum':
+          this.filterDisplayLabel = 'Room Number'
+          break
+        case 'pic':
+          this.filterDisplayLabel = 'PIC'
+          break
+        case 'reported':
+          this.filterDisplayLabel = 'Reported By'
+          break
+        case '':
+          this.filterDisplayLabel = 'Guest Name'
+          break
+        case '':
+          this.filterDisplayLabel = 'Location'
+          break
+        // Add other cases as needed
+        default:
+          this.filterDisplayLabel = 'Default Label'
+      }
+    },
+    setFilterDisplay(option, label) {
+      this.filterDisplay = option
+      this.updateFilterDisplayLabel(option)
+      this.fetchData()
+    },
+    onPaginationChange(props) {
+      this.pagination = props.pagination
+      this.fetchData()
+    },
     fetchData() {
       this.loading = true
 
-      let url = `lostfound`
+      let url = `lostfound?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+
+      if (this.filterDisplay !== null) {
+        url += `&sortOrder=${this.filterDisplay}`
+      }
       this.api.get(url, ({ status, data }) => {
         this.loading = false
 

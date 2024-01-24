@@ -40,19 +40,19 @@
                 class="q-ml-auto"
               >
                 <q-list>
-                  <q-item clickable v-close-popup @click="onItemClick">
+                  <q-item clickable v-close-popup @click="onItemClick('VC')">
                     <q-item-section>
                       <q-item-label>Vacant Clean Checked</q-item-label>
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable v-close-popup @click="onItemClick">
+                  <q-item clickable v-close-popup @click="onItemClick('VCU')">
                     <q-item-section>
                       <q-item-label>Vacant Clean Unchecked</q-item-label>
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable v-close-popup @click="onItemClick">
+                  <q-item clickable v-close-popup @click="onItemClick('VD')">
                     <q-item-section>
                       <q-item-label>Vacant Dirty</q-item-label>
                     </q-item-section>
@@ -65,12 +65,11 @@
               class="text-weight-bold flex items-center justify-center q-pt-sm"
               style="font-size: 110px"
             >
-              05
+              {{ vacantNominal }}
             </div>
-            <div class="text-weight-bold flex items-center justify-center text-h5">
-              Vacant Clean
+            <div class="text-weight-bold text-center text-h5">
+              {{ vacantLabel }}
             </div>
-            <div class="text-weight-bold flex items-center justify-center text-h5">Checked</div>
           </div>
         </HKCard>
 
@@ -108,13 +107,13 @@
                 class="q-ml-auto"
               >
                 <q-list>
-                  <q-item clickable v-close-popup @click="onItemClick">
+                  <q-item clickable v-close-popup @click="onItemClick('OC')">
                     <q-item-section>
                       <q-item-label>Occupied Cleaned</q-item-label>
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable v-close-popup @click="onItemClick">
+                  <q-item clickable v-close-popup @click="onItemClick('OD')">
                     <q-item-section>
                       <q-item-label>Occupied Dirty</q-item-label>
                     </q-item-section>
@@ -127,10 +126,9 @@
               class="text-weight-bold flex items-center justify-center q-pt-sm"
               style="font-size: 110px"
             >
-              05
+              {{ occupiedNominal }}
             </div>
-            <div class="text-weight-bold flex items-center justify-center text-h5">Occupied</div>
-            <div class="text-weight-bold flex items-center justify-center text-h5">Cleaned</div>
+            <div class="text-weight-bold text-center text-h5">{{ occupiedLabel }}</div>
           </div>
         </HKCard>
 
@@ -168,13 +166,13 @@
                 class="q-ml-auto"
               >
                 <q-list>
-                  <q-item clickable v-close-popup @click="onItemClick">
+                  <q-item clickable v-close-popup @click="onItemClick('ED')">
                     <q-item-section>
                       <q-item-label>Expected Departure</q-item-label>
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable v-close-popup @click="onItemClick">
+                  <q-item clickable v-close-popup @click="onItemClick('DnD')">
                     <q-item-section>
                       <q-item-label>Do not Disturb</q-item-label>
                     </q-item-section>
@@ -187,10 +185,9 @@
               class="text-weight-bold flex items-center justify-center q-pt-sm"
               style="font-size: 110px"
             >
-              05
+              {{ expectedNominal }}
             </div>
-            <div class="text-weight-bold flex items-center justify-center text-h5">Expected</div>
-            <div class="text-weight-bold flex items-center justify-center text-h5">Departure</div>
+            <div class="text-weight-bold text-center text-h5">{{ expectedLabel }}</div>
           </div>
         </HKCard>
 
@@ -233,13 +230,13 @@
                 class="q-ml-auto"
               >
                 <q-list>
-                  <q-item clickable v-close-popup @click="onItemClick">
+                  <q-item clickable v-close-popup @click="onItemClick('OO')">
                     <q-item-section>
                       <q-item-label>Out-of-Order</q-item-label>
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable v-close-popup @click="onItemClick">
+                  <q-item clickable v-close-popup @click="onItemClick('OF')">
                     <q-item-section>
                       <q-item-label>Out Market Room</q-item-label>
                     </q-item-section>
@@ -252,31 +249,57 @@
               class="text-weight-bold flex items-center justify-center q-pt-sm"
               style="font-size: 110px"
             >
-              05
+              {{ outNominal }}
             </div>
-            <div class="text-weight-bold flex items-center justify-center text-h5">
-              Out-of-Order
+            <div class="text-weight-bold text-center text-h5">
+              {{ outLabel }}
             </div>
           </div>
         </HKCard>
       </div>
       <div class="row q-px-md">
-        <div class="row sorting">
+        <div class="row sorting" style="gap: 10px">
           <p class="text-weight-bold text-body1 q-mt-sm">Sorting :</p>
-          <q-select
-            v-model="selectedColumn"
-            dense
-            round
-            standout
-            outlined
-            style="width: 210px; border-radius: 10px"
-            class="q-pl-sm"
-            dropdown-icon="expand_more"
-            no-caps
-            :options="columns"
-            option-value="field"
-            option-label="label"
-          />
+          <q-btn-dropdown
+            flat
+            square
+            style="border: 1px #00000030 solid"
+            class="text-capitalize text-black rounded-borders"
+            :label="filterDisplayLabel"
+            color="primary"
+            dropdown-icon="o_expand_more"
+          >
+            <q-list>
+              <q-item
+                clickable
+                v-close-popup
+                @click="setFilterDisplay('roomId+desc', 'Room Number')"
+              >
+                <q-item-section>Room Number</q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                v-close-popup
+                @click="setFilterDisplay('roomType+asc', 'Room Type')"
+              >
+                <q-item-section>Room Type</q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                v-close-popup
+                @click="setFilterDisplay('guestName+asc', 'Guest Name')"
+              >
+                <q-item-section>Guest Name</q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                v-close-popup
+                @click="setFilterDisplay('pic+asc', 'Person In Charge')"
+              >
+                <q-item-section>Person In Charge</q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
         </div>
         <div class="row q-ml-auto">
           <div class="row q-pr-lg q-gutter-sm arrival">
@@ -284,7 +307,20 @@
               <p class="text-weight-bold text-body1 q-mt-sm">Arrival :</p>
             </div>
             <div>
-              <HKDateInput style="height: 10px; border-radius: 10px" size="16px" />
+              <q-btn-dropdown
+                flat
+                square
+                style="border: 1px #00000030 solid"
+                class="text-capitalize date-btn text-black rounded-borders"
+                :label="datePickerArrival?.replace(/\//g, '-')"
+                icon="o_event"
+                color="primary"
+                dropdown-icon="o_expand_more"
+              >
+                <div>
+                  <q-date v-model="datePickerArrival" color="green" today-btn />
+                </div>
+              </q-btn-dropdown>
             </div>
           </div>
           <div class="row q-gutter-sm">
@@ -292,7 +328,20 @@
               <p class="text-weight-bold text-body1 q-mt-sm">Departure :</p>
             </div>
             <div>
-              <HKDateInput style="height: 10px; border-radius: 10px" size="16px" />
+              <q-btn-dropdown
+                flat
+                square
+                style="border: 1px #00000030 solid"
+                class="text-capitalize date-btn text-black rounded-borders"
+                :label="datePickerDeparture?.replace(/\//g, '-')"
+                icon="o_event"
+                color="primary"
+                dropdown-icon="o_expand_more"
+              >
+                <div>
+                  <q-date v-model="datePickerDeparture" color="green" today-btn />
+                </div>
+              </q-btn-dropdown>
             </div>
           </div>
         </div>
@@ -311,7 +360,8 @@
           }"
           :card-style="{ boxShadow: 'none' }"
           rows-per-page-label="Show"
-          :hide-pagination="hidePagination"
+          v-model:pagination="pagination"
+          @request="onPaginationChange"
           :dense="$q.screen.lt.md"
         >
           <template v-slot:body="props">
@@ -374,7 +424,6 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
-import HKDateInput from 'src/components/HK/Form/HKDateInput.vue'
 
 const columns = [
   { name: 'Roomno', label: 'Room No', align: 'left', field: 'Roomno' },
@@ -390,34 +439,171 @@ const rows = []
 
 export default defineComponent({
   name: 'CleanDirtyPage',
-  components: { HKCard, HKDateInput },
+  components: { HKCard },
   setup() {
     return {
       columns,
       rows: ref(),
+      filterDisplay: ref('guestName+asc'),
+      filterDisplayLabel: ref('Room Number'),
+      vacantLabel: ref('Vacant Clean Checked'),
+      occupiedLabel: ref('Occupied Clean'),
+      occupiedNominal: ref(),
+      vacantNominal: ref(),
+      expectedLabel: ref('Expected Departure'),
+      expectedNominal: ref(),
+      outLabel: ref('Out of Order'),
+      outNominal: ref(),
+      datePickerArrival: ref(),
+      datePickerDeparture: ref(),
+      formattedArrivalDate: ref(), // Tambahkan variabel formattedArrivalDate
+      formattedDepartureDate: ref(''),
+      mainData: {},
       selectedColumn: null
     }
   },
   data() {
     return {
-      api: new this.$Api('housekeeping')
+      api: new this.$Api('housekeeping'),
+      pagination: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 20
+      }
     }
   },
   mounted() {
     this.fetchData()
   },
+  watch: {
+    datePickerArrival: {
+      deep: true,
+      handler(newDate) {
+        this.fetchData()
+      }
+    },
+    datePickerDeparture: {
+      deep: true,
+      handler(newDate) {
+        this.fetchData()
+      }
+    },
+    filterDisplay(newOption) {
+      // Update the label based on the selected option
+      this.updateFilterDisplayLabel(newOption)
+    }
+  },
   methods: {
+    updateFilterDisplayLabel(option) {
+      // Logic to update the label based on the selected option
+      switch (option) {
+        case 'roomId+desc':
+          this.filterDisplayLabel = 'Room Number'
+          break
+        case 'roomType+asc':
+          this.filterDisplayLabel = 'Room Type'
+          break
+        case 'guestName+asc':
+          this.filterDisplayLabel = 'Guest Name'
+          break
+        case 'pic+asc':
+          this.filterDisplayLabel = 'Person In Charge'
+          break
+        // Add other cases as needed
+        default:
+          this.filterDisplayLabel = 'Default Label'
+      }
+    },
+    setFilterDisplay(option, label) {
+      this.filterDisplay = option
+      this.updateFilterDisplayLabel(option)
+      this.fetchData()
+    },
+    onPaginationChange(props) {
+      this.pagination = props.pagination
+      this.fetchData()
+    },
+    onItemClick(label) {
+      console.log(this.mainData)
+      switch (label) {
+        case 'VC':
+          this.vacantLabel = 'Vacant Clean Checked'
+          this.vacantNominal = this.mainData[label]
+          break
+        case 'VCU':
+          this.vacantLabel = 'Vacant Clean Unchecked'
+          this.vacantNominal = this.mainData[label]
+          break
+        case 'CD':
+          this.vacantLabel = 'Vacant Dirty'
+          this.vacantNominal = this.mainData[label]
+          break
+        case 'OC':
+          this.occupiedLabel = 'Occupied Clean'
+          this.occupiedNominal = this.mainData[label]
+          break
+        case 'OD':
+          this.occupiedLabel = 'Occupied Dirty'
+          this.occupiedNominal = this.mainData[label]
+          break
+        case 'ED':
+          this.expectedLabel = 'Expected Departure'
+          this.expectedNominal = this.mainData[label]
+          break
+        case 'DnD':
+          this.expectedLabel = 'Do not Disturb'
+          this.expectedNominal = this.mainData[label]
+          break
+        case 'OO':
+          this.outLabel = 'Out of Order'
+          this.outNominal = this.mainData[label]
+          break
+        case 'OF':
+          this.outLabel = ' Out Market Room'
+          this.outNominal = this.mainData[label]
+          break
+      }
+    },
     fetchData() {
       this.loading = true
 
-      let url = `clean-dirty`
+      let url = `clean-dirty?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
 
+      const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
+      if (DateArrival !== undefined && DateArrival !== '') {
+        url += `&arrival=${DateArrival}`
+      }
+
+      const DateDeparture = this.datePickerDeparture?.replace(/\//g, '-')
+      if (DateDeparture !== undefined && DateDeparture !== '') {
+        url += `&depart=${DateDeparture}` // Ganti 'arrival' dengan 'departure'
+      }
+
+      if (this.filterDisplay !== null) {
+        url += `&sortOrder=${this.filterDisplay}`
+      }
       this.api.get(url, ({ status, data }) => {
         this.loading = false
 
         if (status == 200) {
-          const { room } = data
+          const { room, arrrival, departure } = data
 
+          const arrivalDate = data.arr // Gantilah 'arrival.arr' dengan properti yang benar
+          if (arrivalDate) {
+            this.datePickerArrival = arrivalDate
+          }
+
+          const departureDate = data.dep // Gantilah 'data.dep' dengan properti yang benar
+          if (departureDate) {
+            this.datePickerDeparture = departureDate
+          }
+
+          this.mainData = data.main
+          this.vacantNominal = data.main.VC
+          this.occupiedNominal = data.main.OC
+          this.expectedNominal = data.main.ED
+          this.outNominal = data.main.OO
+          console.log(data)
           this.rows = room.map((room) => ({
             Roomno: room.roomNo,
             Roomstatus: room.roomStatus,

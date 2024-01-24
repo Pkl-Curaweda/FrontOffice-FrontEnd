@@ -12,7 +12,6 @@
       }"
       :card-style="{ boxShadow: 'none' }"
       rows-per-page-label="Show"
-      :hide-pagination="hidePagination"
       :dense="$q.screen.lt.md"
       :title="title"
       selection="single"
@@ -26,6 +25,7 @@ import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'HKTable',
+
   setup() {
     return {
       gapColorClass: ref('gapWhite'),

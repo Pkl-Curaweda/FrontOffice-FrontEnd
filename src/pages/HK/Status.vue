@@ -13,21 +13,42 @@
                   >Sorting</label
                 >
                 <div class="ambatukam">
-                  <q-select
-                    standout
-                    dense
-                    v-model="model2"
-                    :options="options2"
-                    class="q-pt-md"
-                    align="left"
-                    style="width: 80%"
-                    id="display"
-                    dropdown-icon="expand_more"
-                    no-caps
-                    radius="100px;"
-                    outlined
+                  <q-btn-dropdown
+                    flat
+                    square
+                    style="border: 1px #00000030 solid"
+                    class="text-capitalize text-black rounded-borders"
+                    :label="filterDisplayLabel"
+                    color="primary"
+                    dropdown-icon="o_expand_more"
                   >
-                  </q-select>
+                    <q-list>
+                      <q-item
+                        clickable
+                        v-close-popup
+                        @click="setFilterDisplay('roomNum', 'Room Number')"
+                      >
+                        <q-item-section>Room Number</q-item-section>
+                      </q-item>
+                      <q-item
+                        clickable
+                        v-close-popup
+                        @click="setFilterDisplay('roomType', 'Bed Type')"
+                      >
+                        <q-item-section>Room Type</q-item-section>
+                      </q-item>
+                      <q-item
+                        clickable
+                        v-close-popup
+                        @click="setFilterDisplay('bedType', 'Bed Type')"
+                      >
+                        <q-item-section>Bed Type</q-item-section>
+                      </q-item>
+                      <q-item clickable v-close-popup @click="setFilterDisplay(null, 'All')">
+                        <q-item-section>All</q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-btn-dropdown>
                   <HKPrintModal :rows="dataRows" :columns="dataColumns" />
                 </div>
               </div>
@@ -46,8 +67,8 @@
                   }"
                   :card-style="{ boxShadow: 'none' }"
                   rows-per-page-label="Show"
-                  :pagination="{ rowsPerPage: 10 }"
-                  :hide-pagination="false"
+                  v-model:pagination="paginationRoom"
+                  @request="onPaginationChangeRoom"
                 >
                   <template v-slot:body="props">
                     <q-tr :props="props" class="q-d-xs q-d-sm q-d-md">
@@ -87,58 +108,15 @@
                 <div class="column">
                   <div class="text-weight-bold">Change Status to :</div>
                   <q-radio
+                    v-for="option in options"
+                    :key="option.val"
                     v-model="status"
-                    val="cleanChecked"
-                    label="Clean Checked"
-                    color="#069550"
-                    size="xs"
+                    :val="option.val"
+                    :label="option.label"
+                    :color="option.color"
+                    :size="option.size"
                     dense
-                    class="q-pt-md"
-                  />
-                  <q-radio
-                    v-model="status"
-                    val="cleanUnchecked"
-                    label="Clean Unchecked"
-                    color="#069550"
-                    size="xs"
-                    dense
-                    class="q-pt-sm"
-                  />
-                  <q-radio
-                    v-model="status"
-                    val="dirty"
-                    label="Dirty"
-                    color="#069550"
-                    size="xs"
-                    dense
-                    class="q-pt-sm"
-                  />
-                  <q-radio
-                    v-model="status"
-                    val="doNotDisturb"
-                    label="Do not Disturb"
-                    color="#069550"
-                    size="xs"
-                    dense
-                    class="q-pt-sm"
-                  />
-                  <q-radio
-                    v-model="status"
-                    val="outOfOrder"
-                    label="Out of Order"
-                    color="#069550"
-                    size="xs"
-                    dense
-                    class="q-pt-sm"
-                  />
-                  <q-radio
-                    v-model="status"
-                    val="offMarket"
-                    label="Off Market"
-                    color="#069550"
-                    size="xs"
-                    dense
-                    class="q-pt-sm"
+                    :class="option.class"
                   />
                 </div>
                 <div class="column flex items-center" style="margin-top: 10%">
@@ -238,8 +216,8 @@
                 }"
                 :card-style="{ boxShadow: 'none' }"
                 rows-per-page-label="Show"
-                :pagination="{ rowsPerPage: 10 }"
-                :hide-pagination="false"
+                v-model:pagination="paginationTask"
+                @request="onPaginationChangeTask"
               >
                 <template v-slot:body="props">
                   <q-tr :props="props" class="q-d-xs q-d-sm q-d-md">
@@ -270,25 +248,6 @@ import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
 import HKTable from 'src/components/HK/Table/HKTable.vue'
 import HKPrintModal from 'src/components/HK/Modal/HKPrintModal.vue'
-
-export default defineComponent({
-  name: 'StatusPage',
-  components: { HKCard, HKPrintModal },
-  setup() {
-    const status = ref('cleanChecked')
-    return {
-      dataColumns,
-      dataColumns2,
-      dataRows2,
-      dataRows,
-      status,
-      model: ref('All'),
-      model2: ref('Room Number'),
-      options: ['All', 'Waduhek'],
-      options2: ['Room Number']
-    }
-  }
-})
 
 const dataColumns = [
   {
@@ -346,33 +305,148 @@ const dataColumns2 = [
   }
 ]
 
-const dataRows2 = [
-  {
-    roomno: '101',
-    Request: 'Maintenance',
-    PIC: 'John Doe',
-    Status: 'Pending'
+export default defineComponent({
+  name: 'StatusPage',
+  components: { HKCard, HKPrintModal },
+  setup() {
+    const status = ref('cleanChecked')
+    return {
+      dataColumns,
+      dataColumns2,
+      filterDisplay: ref('roomNum'),
+      filterDisplayLabel: ref('Room Number'),
+      dataRows2: ref(),
+      dataRows: ref(),
+      model: ref('All'),
+      model2: ref('Room Number')
+      // options: ['All', 'Waduhek'],
+      // options2: ['Room Number']
+    }
   },
-  {
-    roomno: '102',
-    Request: 'Cleaning',
-    PIC: 'Jane Doe',
-    Status: 'Completed'
-  }
-]
+  data() {
+    return {
+      status: '',
+      options: [
+        {
+          val: 'cleanChecked',
+          label: 'Clean Checked',
+          color: '#069550',
+          size: 'xs',
+          class: 'q-pt-md'
+        },
+        {
+          val: 'cleanUnchecked',
+          label: 'Clean Unchecked',
+          color: '#069550',
+          size: 'xs',
+          class: 'q-pt-sm'
+        },
+        { val: 'dirty', label: 'Dirty', color: '#069550', size: 'xs', class: 'q-pt-sm' },
+        {
+          val: 'doNotDisturb',
+          label: 'Do not Disturb',
+          color: '#069550',
+          size: 'xs',
+          class: 'q-pt-sm'
+        },
+        {
+          val: 'outOfOrder',
+          label: 'Out of Order',
+          color: '#069550',
+          size: 'xs',
+          class: 'q-pt-sm'
+        },
+        { val: 'offMarket', label: 'Off Market', color: '#069550', size: 'xs', class: 'q-pt-sm' }
+      ],
+      api: new this.$Api('housekeeping'),
+      paginationRoom: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 20
+      },
+      paginationTask: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 20
+      }
+    }
+  },
+  mounted() {
+    this.fetchData()
+  },
+  watch: {
+    filterDisplay(newOption) {
+      // Update the label based on the selected option
+      this.updateFilterDisplayLabel(newOption)
+    }
+  },
+  methods: {
+    setFilterDisplay(option, label) {
+      this.filterDisplay = option
+      this.updateFilterDisplayLabel(option)
+      this.fetchData()
+    },
+    updateFilterDisplayLabel(option) {
+      // Logic to update the label based on the selected option
+      switch (option) {
+        case 'roomNum':
+          this.filterDisplayLabel = 'Room Number'
+          break
+        case 'roomType':
+          this.filterDisplayLabel = 'Room Type'
+          break
+        case 'bedType':
+          this.filterDisplayLabel = 'Bed Type'
+          break
+        case null:
+          this.filterDisplayLabel = 'All'
+          break
+        // Add other cases as needed
+        default:
+          this.filterDisplayLabel = 'Default Label'
+      }
+    },
+    onPaginationChangeRoom(props) {
+      this.paginationRoom = props.paginationRoom
+      this.fetchData()
+    },
+    onPaginationChangeTask(props) {
+      this.paginationTask = props.paginationTask
+      this.fetchData()
+    },
+    fetchData() {
+      this.loading = true
 
-const dataRows = [
-  { roomno: '101', roomtype: 'A', btype: 'K', statusdescription: 'Expected Departure' },
-  { roomno: '102', roomtype: 'B', btype: 'S', statusdescription: 'Expected Departure' },
-  { roomno: '103', roomtype: 'C', btype: 'K', statusdescription: 'Expected Departure' },
-  { roomno: '104', roomtype: 'D', btype: 'S', statusdescription: 'Expected Departure' },
-  { roomno: '106', roomtype: 'E', btype: 'K', statusdescription: 'Expected Departure' },
-  { roomno: '107', roomtype: 'E', btype: 'K', statusdescription: 'Expected Departure' },
-  { roomno: '108', roomtype: 'E', btype: 'K', statusdescription: 'Expected Departure' },
-  { roomno: '109', roomtype: 'E', btype: 'K', statusdescription: 'Expected Departure' },
-  { roomno: '110', roomtype: 'E', btype: 'K', statusdescription: 'Expected Departure' },
-  { roomno: '111', roomtype: 'E', btype: 'K', statusdescription: 'Expected Departure' }
-]
+      let url = `status?roomPage=${this.paginationRoom.page}`
+
+      if (this.filterDisplay !== null) {
+        url += `&roomSortOrder=${this.filterDisplay}`
+      }
+
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+          const { roomStatus, taskData } = data
+
+          this.dataRows = roomStatus.map((rs) => ({
+            roomno: rs.id,
+            roomtype: rs.roomType,
+            btype: rs.bedSetup,
+            statusdescription: rs.roomStatus.longDescription
+          }))
+
+          this.dataRows2 = taskData.map((td) => ({
+            roomno: td.roomId,
+            Request: td.request,
+            PIC: td.roomMaid.user.name,
+            Status: td.mainStatus
+          }))
+        }
+      })
+    }
+  }
+})
 </script>
 <style>
 .q-field--auto-height.q-field--dense .q-field__control {
@@ -381,6 +455,7 @@ const dataRows = [
 
 .ambatukam {
   display: flex;
+  justify-content: space-between;
   align-items: end;
   column-gap: 16px;
   width: 80%;

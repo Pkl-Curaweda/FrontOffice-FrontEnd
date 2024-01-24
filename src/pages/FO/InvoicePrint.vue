@@ -7,7 +7,7 @@
     </FOMenubar>
 
     <div class="row q-ma-md no-wrap" style="gap: 15px">
-      <div style="width: 50%">
+      <div class="col-grow" ref="pdfContainer">
         <q-img
           src="../../assets/img/lingian-logo-colored.png"
           style="
@@ -19,12 +19,36 @@
           "
           class="q-mx-auto"
         />
-        <div class="my-table">
+
+        <div class="q-pb-sm">
+          Bill Number: <span>{{ billNumber }}</span>
+        </div>
+        <div class="row q-pb-sm" style="justify-content: space-between">
+          <div>
+            Reservation Resource: <span class="text-bold">{{ reservationResource }}</span>
+          </div>
+          <div>
+            Guest Name: <span class="text-bold">{{ guestName }}</span>
+          </div>
+        </div>
+
+        <div style="background-color: #16a75c; height: 5px" class="col-grow"></div>
+
+        <div class="row q-py-sm" style="justify-content: space-between; max-width: 30%">
+          <div>Arrival:</div>
+          <div>{{ arrival }}</div>
+        </div>
+        <div class="row q-pb-sm" style="justify-content: space-between; max-width: 30%">
+          <div>Departure:</div>
+          <div>{{ departure }}</div>
+        </div>
+        <div class="my-table q-pb-md">
           <q-table
             class="no-shadow"
             v-model:pagination="pagination"
             @request="onPaginationChange"
             :rows="data"
+            hide-bottom
             :loading="loading"
             :columns="columns"
             row-key="name"
@@ -55,6 +79,13 @@
               </q-tr>
             </template>
           </q-table>
+        </div>
+        <div style="background-color: #16a75c; height: 5px" class="col-grow"></div>
+        <div class="q-py-md">
+          Gedung lingian, Universitas Telkom, Jl. <br />
+          telekomunikasi No.01, Terusan<br />
+          Buahbatu, Bandung, Jawa Barat 40257 ;<br />
+          Phone. +62 8112072999
         </div>
       </div>
       <!-- <iframe src="src/assets/pdf/invoicePdf.pdf" frameborder="0"></iframe> -->
@@ -141,6 +172,7 @@
         <div style="gap: 8px" class="q-mt-lg row no-wrap items-center justify-end">
           <q-btn
             label="Print"
+            @click="print"
             unelevated
             color="primary"
             dense
@@ -169,6 +201,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import FOMenubar from 'src/components/FOMenubar.vue'
+import html2pdf from 'html2pdf.js'
 
 const columns = [
   { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
@@ -190,12 +223,18 @@ export default defineComponent({
       pagesperOpt: ['1', 'Custom'],
       margin: ref(null),
       marginOpt: ['Default', 'Custom'],
+      billNumber: ref(),
+      reservationResource: ref(),
+      guestName: ref(),
+      arrival: ref(),
+      departure: ref(),
       columns
     }
   },
   components: { FOMenubar },
   data() {
     return {
+      url: '',
       api: new this.$Api('frontoffice'),
       data: []
     }
@@ -204,15 +243,33 @@ export default defineComponent({
     this.getDataTable()
   },
   methods: {
+    print() {
+      const element = this.$refs.pdfContainer
+
+      html2pdf(element, {
+        margin: 10,
+        filename: 'invoice.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      })
+    },
     getDataTable() {
       this.loading = true
 
-      let url = `invoice/payment/1/1`
+      let url = `invoice/1/1/print`
+      this.url = url
       this.api.get(url, ({ status, data }) => {
         this.loading = false
 
         if (status == 200) {
           this.formatData(data.invoices)
+
+          this.billNumber = data.billNumber
+          this.reservationResource = data.resourceName
+          this.guestName = data.guestName
+          this.arrival = data.arrivalDate
+          this.departure = data.departureDate
         }
       })
     },

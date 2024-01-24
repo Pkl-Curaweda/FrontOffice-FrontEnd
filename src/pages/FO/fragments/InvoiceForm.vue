@@ -69,7 +69,14 @@
       </div>
 
       <div class="row" style="gap: 7px">
-        <q-btn unelevated dense class="text-capitalize q-px-sm" color="primary" label="Invoice" />
+        <q-btn
+          unelevated
+          dense
+          class="text-capitalize q-px-sm"
+          color="primary"
+          label="Invoice"
+          to="/fo/payment"
+        />
         <q-btn
           flat
           square
@@ -99,7 +106,7 @@
           flat
           square
           color="primary"
-          to="/fo/print"
+          to="/fo/guest-invoice/print"
           icon="o_print"
           class="border-button rounded-borders"
           style="padding: 6px 3px"
@@ -174,7 +181,7 @@ export default defineComponent({
     },
     getDetailForm() {
       this.loading = true
-      this.api.get(`detail/invoice/1/1/2023-12-19?ids=998-1`, ({ status, data }) => {
+      this.api.get(`detail/invoice/1/1`, ({ status, data }) => {
         this.loading = false
 
         if (status == 200) {

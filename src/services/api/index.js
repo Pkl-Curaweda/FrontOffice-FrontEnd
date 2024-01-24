@@ -32,8 +32,8 @@ export class Api {
   async put(path, data, callback) {
     return await this.request('PUT', path, data, callback)
   }
-  async delete(path) {
-    return await this.request('DELETE', path);
+  async delete(path, callback) {
+    return await this.request('DELETE', path, null, callback)
   }
 
   async request(method = 'GET', path = '', data = null, callback) {

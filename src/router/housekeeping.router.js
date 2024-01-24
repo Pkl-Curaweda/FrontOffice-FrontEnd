@@ -47,14 +47,6 @@ export const housekeeping_routes = [
     }
   },
   {
-    path: '/hk/rooming-list',
-    component: () => import('pages/HK/RoomingList.vue'),
-    meta: {
-      title: 'Rooming List',
-      icon: 'o_meeting_room'
-    }
-  },
-  {
     path: '/hk/lost-found',
     component: () => import('pages/HK/LostAndFound.vue'),
     meta: {
@@ -66,32 +58,10 @@ export const housekeeping_routes = [
 
 export const hkreports_routes = [
   {
-    path: '/hk/report/room-maid-reports',
-    component: () => import('pages/HK/reports/RoomMaid.vue'),
-    meta: {
-      title: 'Room Maid Reports'
-    }
-  },
-  {
-    path: '/hk/report/daily-room-usage',
-    component: () => import('pages/HK/reports/DailyRoomUsage.vue'),
-    meta: {
-      title: 'Daily Room Usage'
-    }
-  },
-  {
     path: '/hk/report/room-plan',
     component: () => import('pages/HK/reports/RoomPlan.vue'),
     meta: {
       title: 'Room Plan'
-    }
-  },
-
-  {
-    path: '/hk/report/vip-list',
-    component: () => import('pages/HK/reports/VipList.vue'),
-    meta: {
-      title: 'VIP List'
     }
   },
   {
@@ -102,17 +72,28 @@ export const hkreports_routes = [
     }
   },
   {
-    path: '/hk/report/monthly-room',
-    component: () => import('pages/HK/reports/MonthlyRoom.vue'),
-    meta: {
-      title: 'Monthly Room Occupancy Forecast'
-    }
-  },
-  {
     path: '/hk/report/extrabed-availability',
     component: () => import('pages/HK/reports/ExtrabedAvailability.vue'),
     meta: {
       title: 'Extrabed Availability'
     }
+  }
+]
+
+export const hkroomboy_routes = [
+  {
+    path: '/hk/rb/dashboard',
+    component: () => import('pages/HK/IMPPS/RoomBoy/Dashboard.vue')
+  },
+  {
+    path: '/hk/rb/lostfound',
+    component: () => import('pages/HK/IMPPS/RoomBoy/LostFound.vue')
+  }
+]
+
+export const hksupervisor_routes = [
+  {
+    path: '/hk/spv/dashboard',
+    component: () => import('pages/HK/IMPPS/Supervisor/Dashboard.vue')
   }
 ]

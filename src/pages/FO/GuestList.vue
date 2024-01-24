@@ -69,6 +69,7 @@
             v-model:pagination="pagination"
             @request="onPaginationChange"
             :rows="data"
+            @row-click="setRoomResv()"
             :loading="loading"
             :columns="columns"
             row-key="name"
@@ -89,6 +90,7 @@
                     style="min-width: 90px"
                     v-model="filterColumns[col.name].data"
                     :options="filterColumns[col.name].options"
+                    @update:model-value="(val) => filterColumns[col.name].onOptionChange(val)"
                     :label="col.label"
                   >
                     <template
@@ -117,19 +119,8 @@
             <template v-slot:body="props">
               <q-tr :props="props">
                 <template v-for="(cell, key, i) in props.row" :key="i">
-                  <q-td v-if="!['ResRoomNo', 'RoomBoy'].includes(key)" :style="cell.style">
+                  <q-td v-if="!['ResRoomNo'].includes(key)" :style="cell.style">
                     {{ cell.data }}
-                  </q-td>
-                  <q-td v-if="['RoomBoy'].includes(key)" :style="cell.style">
-                    <q-avatar
-                      v-for="(rb, i) in cell.data"
-                      :key="i"
-                      size="40px"
-                      class="overlapping"
-                      :style="`left: ${i * 25}px`"
-                    >
-                      <img :src="rb.user.picture" />
-                    </q-avatar>
                   </q-td>
                 </template>
                 <q-td key="" :props="props" style="width: 10px">
@@ -202,6 +193,7 @@ export default defineComponent({
       searchInput: ref(''),
       datePicker: ref({ from: '', to: '' }),
       filterDisplay: ref(null),
+
       filterDisplayOptions: [
         { label: 'All', value: null },
         { label: 'Reservation', value: 'reservation' },
@@ -229,22 +221,56 @@ export default defineComponent({
   },
   data() {
     return {
+      // kontol
+      filterSortOrder: ref({ col: '', val: '' }),
+      // akhir kontol
       filterColumns: {
         ResNo: {
           data: '',
-          options: ['Newest', 'Oldest']
+          options: ['Newest', 'Oldest'],
+          // kontol
+          onOptionChange: (val) => {
+            if (val == 'Newest') this.filterSortOrder = { col: 'ResNo', val: 'resv+id+desc' }
+            else if (val == 'Oldest') this.filterSortOrder = { col: 'ResNo', val: 'resv+id+asc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
+          // akhir kontol
         },
         ResResource: {
           data: '',
-          options: ['Whatsapp', 'Walk-In']
+          options: ['Individual Reservation', 'Walk-In'],
+          onOptionChange: (val) => {
+            if (val == 'Individual Reservation')
+              this.filterSortOrder = { col: 'ResResource', val: 'rese+resourceName+individual' }
+            else if (val == 'Walk-In')
+              this.filterSortOrder = { col: 'ResResource', val: 'rese+resourceName+walk' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
         },
         RmNo: {
           data: '',
-          options: ['101-110', '110-101', 'Guaranted', '6 PM', 'Tentative']
+          options: ['101-110', '110-101', 'Guaranted', '6 PM', 'Tentative'],
+          onOptionChange: (val) => {
+            if (val == '101-110') this.filterSortOrder = { col: 'RmNo', val: 'room+id+asc' }
+            else if (val == '110-101') this.filterSortOrder = { col: 'RmNo', val: 'room+id+desc' }
+            else if (val == 'Guaranted')
+              this.filterSortOrder = { col: 'RmNo', val: 'resv+status+1' }
+            else if (val == '6 PM') this.filterSortOrder = { col: 'RmNo', val: 'resv+status+2' }
+            else if (val == 'Tentative')
+              this.filterSortOrder = { col: 'RmNo', val: 'resv+status+3' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
         },
         RType: {
           data: '',
-          options: ['DLX', 'STD', 'FML']
+          options: ['DLX', 'STD', 'FML'],
+          onOptionChange: (val) => {
+            if (val == 'DLX') this.filterSortOrder = { col: 'RType', val: 'room+type+DELUXE' }
+            else if (val == 'STD')
+              this.filterSortOrder = { col: 'RType', val: 'room+type+STANDARD' }
+            else if (val == 'FML') this.filterSortOrder = { col: 'RType', val: 'room+type+FAMILY' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
         },
         BType: {
           data: '',
@@ -264,39 +290,97 @@ export default defineComponent({
               label: 'Single bed',
               value: 'Single bed'
             }
-          ]
+          ],
+          onOptionChange: (val) => {
+            console.log(val.value)
+            if (val.value == 'King bed')
+              this.filterSortOrder = { col: 'BType', val: 'room+bedSetup+KING' }
+            else if (val.value == 'Twin bed')
+              this.filterSortOrder = { col: 'BType', val: 'room+bedSetup+TWIN' }
+            else if (val.value == 'Single bed')
+              this.filterSortOrder = { col: 'BType', val: 'room+bedSetup+SINGLE' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
         },
         GuestName: {
           data: '',
-          options: ['A-Z', 'Z-A']
+          options: ['A-Z', 'Z-A'],
+          onOptionChange: (val) => {
+            if (val == 'A-Z') this.filterSortOrder = { col: 'GuestName', val: 'rese+name+asc' }
+            else if (val == 'Z-A')
+              this.filterSortOrder = { col: 'GuestName', val: 'rese+name+desc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
         },
         Arr: {
           data: '',
-          options: ['RB', 'RO']
+          options: ['RB', 'RO'],
+          onOptionChange: (val) => {
+            if (val == 'RB') this.filterSortOrder = { col: 'Arr', val: 'resv+arrCode+RB' }
+            else if (val == 'RO') this.filterSortOrder = { col: 'Arr', val: 'resv+arrCode+RO' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
         },
         Arrival: {
           data: '',
-          options: ['Newest', 'Oldest']
+          options: ['Newest', 'Oldest'],
+          onOptionChange: (val) => {
+            if (val == 'Newest')
+              this.filterSortOrder = { col: 'Arrival', val: 'resv+arrivalDate+desc' }
+            else if (val == 'Oldest')
+              this.filterSortOrder = { col: 'Arrival', val: 'resv+arrivalDate+asc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
         },
         Depart: {
           data: '',
-          options: ['Newest', 'Oldest']
+          options: ['Newest', 'Oldest'],
+          onOptionChange: (val) => {
+            if (val == 'Newest')
+              this.filterSortOrder = { col: 'Depart', val: 'resv+departureDate+desc' }
+            else if (val == 'Oldest')
+              this.filterSortOrder = { col: 'Depart', val: 'resv+departureDate+asc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
         },
         Night: {
           data: '',
-          options: ['1', '>1']
+          options: ['1', '>1'],
+          onOptionChange: (val) => {
+            if (val == '1') this.filterSortOrder = { col: 'Night', val: 'resv+night+asc' }
+            else if (val == '>1') this.filterSortOrder = { col: 'Night', val: 'resv+night+desc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
         },
         RoomBoy: {
           data: '',
-          options: []
+          options: [],
+          onOptionChange: (val) => {
+            if (val == null) this.filterSortOrder['col'] != ''
+            else this.filterSortOrder = { col: 'RoomBoy', val: 'room+name+' + val }
+          }
         },
         RoomRate: {
           data: '',
-          options: ['High Price', 'Low Price']
+          options: ['High Price', 'Low Price'],
+          onOptionChange: (val) => {
+            if (val == 'High Price')
+              this.filterSortOrder = { col: 'RoomRate', val: 'resv+rate+desc' }
+            else if (val == 'Low Price')
+              this.filterSortOrder = { col: 'RoomRate', val: 'resv+rate+asc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
         },
         CreatedDate: {
           data: '',
-          options: ['Newest', 'Oldest']
+          options: ['Newest', 'Oldest'],
+          onOptionChange: (val) => {
+            if (val == 'Newest')
+              this.filterSortOrder = { col: 'CreatedDate', val: 'resv+created_at+desc' }
+            else if (val == 'Oldest')
+              this.filterSortOrder = { col: 'CreatedDate', val: 'resv+created_at+asc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
         }
       },
       api: new this.$Api('frontoffice'),
@@ -312,14 +396,30 @@ export default defineComponent({
     this.fetchData()
   },
   watch() {
-    searchitem(this.searchInput)
+    searchName(this.searchInput)
   },
   watch: {
-    filterColumns: {
-      handler(filters) {
-        console.log(filters)
+    filterSortOrder: {
+      // kontol
+      handler(oldFilter, newFilter) {
+        Object.keys(this.filterColumns).forEach((key) => {
+          if (oldFilter['col'] != key) this.filterColumns[key].data = null
+        })
+        this.fetchData()
+      }
+      // kontol
+    },
+    searchInput: {
+      handler(newSearchInput) {
+        this.searchName(newSearchInput)
       },
-      deep: true
+      immediate: true
+    },
+    datePicker: {
+      deep: true,
+      handler(newDateRange) {
+        this.fetchData()
+      }
     },
     filterDisplay: {
       handler(option) {
@@ -328,40 +428,38 @@ export default defineComponent({
     }
   },
   methods: {
-    searchitem(searchResNo) {
-      let searchInput = this.data.filte((item) => {
-        return item.RessNo.data === searchResNo
+    setSortOrder(val = '') {
+      this.filterSortOrder = null
+    },
+    searchName(searchInput) {
+      // Make an API call to search based on searchInput
+      this.api.get(`arrival?name=${searchInput}`, ({ status, data }) => {
+        if (status === 200) {
+          // Update the data with the search result
+          this.formatData(data.reservations)
+        } else {
+          console.error('Error searching data')
+        }
       })
-      console.log(searchInput)
     },
     setRoomResv(data) {
+      console.log(data)
       this.$ResvStore.currentResvId = data['ResNo'].data
       this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
     },
     async deleteResv(data) {
+      // const resvId = data['ResNo']?.data
+      // const resRoomNo = data['ResRoomNo']?.data?.rr?.id
       try {
         const resvId = data['ResNo'].data
-        const resRoomNo = data['ResRoomNo'].data
-
-        const response = await this.api.delete(
-          `/fo/detail/reservation/${resvId}/${resRoomNo}/delete`
-        )
-
-        if (response.status === 200) {
-          console.log(response.data)
-          // const index = this.data.findIndex(
-          //   (item) => item.ResNo.data === resvId && item.ResRoomNo.data === resRoomNo
-          // )
-
-          // if (index !== -1) {
-          //   this.data.splice(index, 1)
-          //   console.log('Data berhasil dihapus')
-          // }
-        } else {
-          console.error('Gagal menghapus data')
-        }
+        const roomNo = data['RmNo'].data
+        console.log(roomNo)
+        this.api.delete(`/detail/reservation/${resvId}/${roomNo}/delete`,  ({ data }) => {
+          // window.location.reload()
+          this.triggerPositive(data.message)
+        })
       } catch (error) {
-        console.error('Terjadi kesalahan:', error)
+        console.error('Terjadi kesalahan, mohon coba lagi')
       }
     },
 
@@ -399,11 +497,21 @@ export default defineComponent({
 
       if (this.filterDisplay !== null) url += `&disOpt=${this.filterDisplay}`
 
+      if (this.filterSortOrder['col'] != '' && this.filterSortOrder['val'] != '')
+        url += `&sortOrder=${this.filterSortOrder['val']}`
+
+      const fromDate = this.datePicker.from.replace(/\//g, '-')
+      const toDate = this.datePicker.to.replace(/\//g, '-')
+
+      if (fromDate !== '' && toDate !== '') {
+        url += `&date=${fromDate}+${toDate}`
+      }
+
       this.api.get(url, ({ status, data }) => {
         this.loading = false
 
         if (status == 200) {
-          const roomBoys = this.getUniqueRoomBoys(data.reservations)
+          const roomBoys = this.getUniqueRoomBoys(data.roomBoys)
           this.filterColumns.RoomBoy.options = roomBoys
           this.formatData(data.reservations)
           this.pagination = {
@@ -414,24 +522,25 @@ export default defineComponent({
         }
       })
     },
-    getUniqueRoomBoys(reservations) {
-      const roomBoys = new Set()
-
-      reservations.forEach((rsrv) => {
-        rsrv.reservation.forEach((rr) => {
-          rr.roomMaids.forEach((roomBoy) => {
-            roomBoys.add(roomBoy.user.name)
-          })
-        })
-      })
-
-      return Array.from(roomBoys)
+    getUniqueRoomBoys(roomBoys) {
+      return roomBoys.map((boy) => boy.name)
+    },
+    triggerPositive(message) {
+      this.$q.notify(
+        {
+          type: 'positive',
+          message: message || 'This is a "positive" type notification.',
+          timeout: 1000
+        },
+        4000
+      )
     },
     formatData(raw = []) {
       const list = []
 
       raw.forEach((rsrv) => {
         rsrv.reservation.forEach((rr) => {
+          const { id } = rr.arrangment
           list.push({
             ResNo: { data: rsrv.reservationId, style: {} },
             ResRoomNo: { data: rr.id, style: {} },
@@ -440,17 +549,17 @@ export default defineComponent({
               data: rr.room.id,
               style: {
                 backgroundColor: rr.reservation.resvStatus.rowColor,
-                textColor: rr.reservation.resvStatus.textColor
+                color: rr.reservation.resvStatus.textColor
               }
             },
             RType: { data: rr.room.roomType, style: {} },
             BType: { data: rr.room.bedSetup, style: {} },
             GuestName: { data: rr.reservation.reserver.guest.name, style: {} },
-            Arr: { data: rr.arrangment.id, style: {} },
+            Arr: { data: id.split('-')[1], style: {} },
             Arrival: { data: formatDate(rr.reservation.arrivalDate), style: {} },
             Depart: { data: formatDate(rr.reservation.departureDate), style: {} },
             Night: { data: rr.reservation.manyNight, style: {} },
-            RoomBoy: { data: rr.roomMaids, style: {} },
+            RoomBoy: { data: rr.roomMaids.user.name, style: {} },
             RoomRate: { data: rr.arrangment.rate, style: {} },
             CreatedDate: { data: formatDate(rr.reservation.created_at), style: {} }
           })

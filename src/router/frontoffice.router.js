@@ -54,10 +54,19 @@ const frontoffice_routes = [
     }
   },
   {
-    path: '/fo/payment/print',
-    component: () => import('pages/FO/Print.vue'),
+    path: '/fo/guest-invoice/print',
+    component: () => import('pages/FO/InvoicePrint.vue'),
     meta: {
-      title: 'Payment',
+      title: 'Print',
+      main_route: false,
+      protected: true
+    }
+  },
+  {
+    path: '/fo/report/print',
+    component: () => import('pages/FO/ReportPrint.vue'),
+    meta: {
+      title: 'Print',
       main_route: false,
       protected: true
     }

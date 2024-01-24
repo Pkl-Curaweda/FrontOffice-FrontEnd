@@ -1,5 +1,5 @@
 <template>
-  <div class="tableComp">
+  <div :class="`tableComp ${gapColorClass}`">
     <q-table
       :rows="rows"
       :columns="columns"
@@ -12,27 +12,64 @@
       }"
       :card-style="{ boxShadow: 'none' }"
       rows-per-page-label="Show"
-      :hide-pagination="hidePagination"
       :dense="$q.screen.lt.md"
+      :title="title"
+      selection="single"
+      v-model:selected="selected"
     />
   </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'HKTable',
+
+  setup() {
+    return {
+      gapColorClass: ref('gapWhite'),
+      selected: ref([])
+    }
+  },
   props: {
     columns: Array,
     rows: Array,
-    hidePagination: Boolean
+    hidePagination: Boolean,
+    gapTable: Boolean,
+    gapColor: String,
+    title: String
+  },
+  methods: {
+    getGapColor() {
+      if (this.gapColor) {
+        switch (this.gapColor) {
+          case 'white':
+            this.gapColorClass = 'gapWhite'
+            break
+          case 'grey':
+            this.gapColorClass = 'gapGrey'
+            break
+          default:
+            break
+        }
+      }
+    }
+  },
+  created() {
+    this.getGapColor()
   }
 })
 </script>
 
 <style>
-.tableComp .q-table th {
+.tableComp.gapGrey .q-table th {
+  border: 1px solid #b9b9b9;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+}
+.tableComp.gapWhite .q-table th {
   border-top-width: 0;
   border-right-width: 4px;
   border-bottom-width: 0;
@@ -72,5 +109,12 @@ export default defineComponent({
 }
 .tableComp .disabled * {
   opacity: 0;
+}
+
+.tableComp .q-table__card .q-table__top {
+  justify-content: center;
+  background-color: #069550;
+  color: white;
+  font-size: 12px;
 }
 </style>

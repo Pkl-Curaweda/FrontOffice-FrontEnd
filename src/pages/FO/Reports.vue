@@ -5,15 +5,16 @@
         <q-btn-dropdown
           flat
           square
-          class="text-capitalize"
+          class="text-capitalize text-black"
           label="Sorting"
+          color="primary"
           dropdown-icon="o_expand_more"
         >
           <q-list>
-            <q-item clickable v-close-popup>
-              <q-item-section>MostRevenue</q-item-section>
+            <q-item clickable v-close-popup @click="setSortingDisplay('desc')">
+              <q-item-section>Most Revenue</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup @click="setSortingDisplay('asc')">
               <q-item-section>Less Revenue</q-item-section>
             </q-item>
           </q-list>
@@ -44,30 +45,29 @@
         <q-btn-dropdown
           flat
           square
-          range
           class="text-capitalize text-black"
           label="Display Option"
           color="primary"
           dropdown-icon="o_expand_more"
         >
           <q-list>
-            <q-item clickable v-close-popup>
-              <q-item-section>Per-Day</q-item-section>
+            <q-item clickable v-close-popup @click="setFilterDisplay('day')">
+              <q-item-section>Day</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
-              <q-item-section>Per-Week</q-item-section>
+            <q-item clickable v-close-popup @click="setFilterDisplay('week')">
+              <q-item-section>Week</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
-              <q-item-section>Per-Month</q-item-section>
+            <q-item clickable v-close-popup @click="setFilterDisplay('month')">
+              <q-item-section>Month</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
-              <q-item-section>Per-Year</q-item-section>
+            <q-item clickable v-close-popup @click="setFilterDisplay('year')">
+              <q-item-section>Year</q-item-section>
             </q-item>
           </q-list>
         </q-btn-dropdown>
       </template>
       <template #right>
-        <q-btn flat square color="primary" icon="o_print" to="/fo/print" />
+        <q-btn flat square color="primary" icon="o_print" to="/fo/report/print" />
       </template>
     </FOMenubar>
 
@@ -135,12 +135,21 @@ export default defineComponent({
       loading: ref(false),
       searchInput: ref(''),
       datePicker: ref({ from: '', to: '' }),
-      DisplayOpt: ref(null),
-      DisplayOptions: [
-        { label: 'Per-Day', value: 'perday' },
-        { label: 'Per-Week', value: 'perweek' },
-        { label: 'Per-Month', value: 'permonth' },
-        { label: 'Per-Years', value: 'peryears' }
+      sortingDisplay: ref(''),
+      filterDisplay: ref(''),
+      columns: [
+        { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
+        { name: 'RmAvailable', label: 'Room Available', align: 'left', field: 'RmAvailable' },
+        { name: 'Occupied', label: 'Occupied', align: 'left', field: 'Occupied' },
+        { name: 'Occ', label: 'Occ%', align: 'left', field: 'Occ' },
+        { name: 'RmRevenue', label: 'Room Revenue', align: 'left', field: 'RmRevenue' },
+        { name: 'Arr', label: 'Arr', align: 'left', field: 'Arr' },
+        { name: 'RmAvail', label: `DTD Rm.Avail`, align: 'left', field: 'RmAvail' },
+        { name: 'Rno', label: `DTD RNO`, align: 'left', field: 'Rno' },
+        { name: 'tdOcc', label: `DTD Occ %`, align: 'left', field: 'tdOcc' },
+        { name: 'tdRmRevenue', label: `DTD Rm.Revenue`, align: 'left', field: 'tdRmRevenue' },
+        { name: 'tdArr', label: `DTD ARR`, align: 'left', field: 'tdArr' },
+        { name: 'TaxService', label: `Tax & Service`, align: 'left', field: 'taxService' }
       ]
     }
   },
@@ -152,33 +161,89 @@ export default defineComponent({
         rowsNumber: 0,
         rowsPerPage: 20
       },
+      ident: 'Dtd',
       data: []
     }
   },
   mounted() {
     this.fetchData()
   },
+  watch() {
+    searchName(this.searchInput)
+  },
   watch: {
+    sortingDisplay: {
+      handler(sorting) {
+        this.fetchData()
+      }
+    },
     filterDisplay: {
-      handler(option) {
+      handler(display) {
+        this.fetchData()
+      }
+    },
+    datePicker: {
+      deep: true,
+      handler(newDateRange) {
         this.fetchData()
       }
     }
   },
   methods: {
+    setSortingDisplay(sorting) {
+      this.sortingDisplay = sorting
+      this.fetchData()
+    },
+    setFilterDisplay(display) {
+      this.filterDisplay = display
+      this.fetchData()
+    },
     onPaginationChange(props) {
       this.pagination = props.pagination
       this.fetchData()
     },
     fetchData() {
       this.loading = true
-      let url = `report`
+      let url = `report?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+
+      if (this.sortingDisplay !== null) url += `&sort=${this.sortingDisplay}`
+
+      if (this.filterDisplay !== null) {
+        url += `&disOpt=${this.filterDisplay}`
+      }
+
+      const fromDate = this.datePicker.from.replace(/\//g, '-')
+      const toDate = this.datePicker.to.replace(/\//g, '-')
+
+      if (fromDate !== '' && toDate !== '') {
+        url += `&date=${fromDate}+${toDate}`
+      }
+
       this.api.get(url, ({ status, data }) => {
         this.loading = false
 
         if (status == 200) {
+          const identifier = data.ident
+          this.columns = [
+            { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
+            { name: 'RmAvailable', label: 'Room Available', align: 'left', field: 'RmAvailable' },
+            { name: 'Occupied', label: 'Occupied', align: 'left', field: 'Occupied' },
+            { name: 'Occ', label: 'Occ%', align: 'left', field: 'Occ' },
+            { name: 'RmRevenue', label: 'Room Revenue', align: 'left', field: 'RmRevenue' },
+            { name: 'Arr', label: 'Arr', align: 'left', field: 'Arr' },
+            { name: 'RmAvail', label: `${identifier} Rm.Avail`, align: 'left', field: 'RmAvail' },
+            { name: 'Rno', label: `${identifier} RNO`, align: 'left', field: 'Rno' },
+            { name: 'tdOcc', label: `${identifier} Occ %`, align: 'left', field: 'tdOcc' },
+            {
+              name: 'tdRmRevenue',
+              label: `${identifier} Rm.Revenue`,
+              align: 'left',
+              field: 'tdRmRevenue'
+            },
+            { name: 'tdArr', label: `${identifier} ARR`, align: 'left', field: 'tdArr' },
+            { name: 'TaxService', label: `Tax & Service`, align: 'left', field: 'taxService' }
+          ]
           this.formatData(data.reports)
-          this.labelData(data.reports.added)
           this.pagination = {
             page: data.meta?.currPage,
             rowsNumber: data.meta?.total,
@@ -187,49 +252,33 @@ export default defineComponent({
         }
       })
     },
+    formatCurrency(num = 0) {
+      return num.toLocaleString()
+    },
+    formatAverage(num) {
+      return num.toFixed(2)
+    },
     formatData(raw = []) {
       const list = []
-
       raw.forEach((rp) => {
         list.push({
           Date: { data: rp.date, style: {} },
           RmAvailable: { data: rp.roomAvailable, style: {} },
           Occupied: { data: rp.occupied, style: {} },
-          Occ: { data: rp.occ, style: {} },
-          RmRevenue: { data: rp.roomRevenue, style: {} },
-          Arr: { data: rp.arr, style: {} },
+          Occ: { data: this.formatAverage(rp.occ) + '%', style: {} },
+          RmRevenue: { data: this.formatCurrency(rp.roomRevenue), style: {} },
+          Arr: { data: this.formatCurrency(rp.arr), style: {} },
           RmAvail: { data: rp.added.rm_avail, style: {} },
           Rno: { data: rp.added.rno, style: {} },
-          tdOcc: { data: rp.added.occ, style: {} },
-          tdRmRevenue: { data: rp.added.rev, style: {} },
-          tdArr: { data: rp.added.arr, style: {} }
+          tdOcc: { data: this.formatAverage(rp.added.occ) + '%', style: {} },
+          tdRmRevenue: { data: this.formatCurrency(rp.added.rev), style: {} },
+          tdArr: { data: this.formatCurrency(rp.added.arr), style: {} },
+          taxSerive: { data: this.formatCurrency(rp.taxService.taxed) }
         })
       })
       console.log(this.data, list)
       this.data = list
       console.log(this.data)
-    },
-    labelData(raw = []) {
-      const list = []
-
-      raw((label) => {
-        list.push({
-          columns: [
-            { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
-            { name: 'RmAvailable', label: 'Room Available', align: 'left', field: 'RmAvailable' },
-            { name: 'Occupied', label: 'Occupied', align: 'left', field: 'Occupied' },
-            { name: 'Occ', label: 'Occ%', align: 'left', field: 'Occ' },
-            { name: 'RmRevenue', label: 'Room Revenue', align: 'left', field: 'RmRevenue' },
-            { name: 'Arr', label: 'Arr', align: 'left', field: 'Arr' },
-            { name: 'RmAvail', label: '', align: 'left', field: 'RmAvail' },
-            { name: 'Rno', label: '', align: 'left', field: 'Rno' },
-            { name: 'tdOcc', label: '', align: 'left', field: 'tdOcc' },
-            { name: 'tdRmRevenue', label: '', align: 'left', field: 'tdRmRevenue' },
-            { name: 'tdArr', label: '', align: 'left', field: 'tdArr' }
-          ]
-        })
-      })
-      this.columns = list
     }
   }
 })

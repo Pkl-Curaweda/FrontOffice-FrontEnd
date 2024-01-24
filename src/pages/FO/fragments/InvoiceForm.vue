@@ -226,7 +226,7 @@ export default defineComponent({
       const { currentResvId, currentRoomResvId, dateBill, Artlb, UniqueId } = this.$ResvStore
       this.loading = true
       this.api.get(
-        `detail/invoice/${currentResvId}/${currentRoomResvId}/${dateBill}?ids=${Artlb}-${UniqueId}`,
+        `detail/invoice/${currentResvId}/${currentRoomResvId}/?ids=${UniqueId}`,
         ({ status, data }) => {
           this.loading = false
 
@@ -249,13 +249,13 @@ export default defineComponent({
       )
     },
     async editDataInv() {
-      const { currentResvId, currentRoomResvId, dateBill, Artlb, UniqueId } = this.$ResvStore
+      const { currentResvId, currentRoomResvId, dateBill, UniqueId } = this.$ResvStore
       const data = {
         qty: this.qty
       }
       try {
         await this.api.put(
-          `detail/invoice/${currentResvId}/${currentRoomResvId}/${dateBill}?ids=${Artlb}-${UniqueId}`,
+          `detail/invoice/${currentResvId}/${currentRoomResvId}?ids=${UniqueId}`,
           data,
           ({ status, data }) => {
             this.loading = true

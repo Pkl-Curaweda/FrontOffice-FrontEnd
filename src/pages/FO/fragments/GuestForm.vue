@@ -90,7 +90,7 @@
           icon="o_badge"
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
-          @click="dialogpayment = true"
+          @click="getdataCard(true)"
           :disabled="!this.$ResvStore.currentRoomResvId"
         />
 
@@ -419,7 +419,6 @@
         <div class="text-bold">Res Status:</div>
         <div class="q-pa-md">
           <q-btn-dropdown
-            :disabled="this.$ResvStore.currentRoomResvId"
             color="primary"
             :label="resvStatus.label || resvStatus.description || 'Status'"
             outline
@@ -874,7 +873,7 @@ export default defineComponent({
         this.api.delete(`detail/reservation/${currentResvId}/${this.roomNo}/delete`)
         window.location.reload()
       } catch (error) {
-        console.log(error)
+        console.error(error)
       }
     },
     getResvProps() {
@@ -885,7 +884,7 @@ export default defineComponent({
           const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
           this.rows = formattedRoomRates
           this.resultRows = formattedRoomRates
-          // console.log(data)
+          console.log(data)
         }
       })
     },
@@ -909,7 +908,17 @@ export default defineComponent({
       this.$q.notify(
         {
           type: 'positive',
-          message: message || 'This is a "positive" type notification.',
+          message: message || 'Data Succesfully',
+          timeout: 1000
+        },
+        4000
+      )
+    },
+    triggerNegative(message) {
+      this.$q.notify(
+        {
+          type: 'negative',
+          message: message || 'No Data',
           timeout: 1000
         },
         4000
@@ -1057,7 +1066,7 @@ export default defineComponent({
       const rmt = []
       map.forEach((dt) => {
         const { id, rate } = dt
-        // console.log(dt)
+        console.log(dt)
         rmt.push({
           id,
           date: id.split('-')[0],
@@ -1065,7 +1074,7 @@ export default defineComponent({
           arrangement: id.split('-')[1]
         })
       })
-      // console.log(rmt)
+      console.log(rmt)
       return rmt
     },
     formattedStatus(map = []) {
@@ -1082,6 +1091,37 @@ export default defineComponent({
       })
       console.log(rms)
       return rms
+    },
+    checkCardIdselect(data){
+      if(data == 'KTP'){
+        this.KTPSelected()
+        this.isKtpSelected = true
+        this.isSimSelected = false
+      } else if (data == 'SIM'){
+        this.SIMSelected()
+        this.isKtpSelected = false
+        this.isSimSelected = true
+      }
+    },
+    getdataCard(condition){
+      const {currentResvId, currentRoomResvId} = this.$ResvStore
+      this.dialogpayment = condition
+      try{
+      this.api.get(`detail/reservation/${currentResvId}/idcard`, ({status, data}) => {
+        if(status === 200){
+          this.nameidcard = data.name,
+          this.CardIdselect = data.carIdentifier && this.checkCardIdselect(data.carIdentifier),
+          this.idcardnumber = data.cardId,
+          this.address = data.address
+          console.log(data)
+          if(this.nameidcard != ''){
+          this.triggerPositive('get data succesfully')}
+        }
+      }
+      )}
+      catch(error){
+        console.error('error' + error)
+      }
     },
     async createData() {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
@@ -1134,7 +1174,7 @@ export default defineComponent({
         arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
         departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
         reservationRemarks: this.resvRemark,
-        resvStatusId: parseInt(this.resvStatus.id)
+        resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id)
       }
 
       try {
@@ -1195,23 +1235,29 @@ export default defineComponent({
         cardId: this.idcardnumber,
         address: this.address
       }
+      if(this.nameidcard == '' && this.idcardnumber == '' && this.address == ''){
+        this.triggerNegative('data is missing')
+      }else{
       try {
         this.api.post(
           `detail/reservation/${currentResvId}/${currentRoomResvId}/add-idcard`,
           cardData,
           ({ status, data }) => {
             this.loading = false
-            this.triggerPositive('Data has been successfully')
             if (status === 200) {
               console.log('Data berhasil diperbarui:', data)
+              this.triggerPositive(this.CardIdselect + ' added successfully' || 'Card not selected')
+              this.dialogpayment = false
             } else {
               console.error('Gagal memperbarui data')
+              this.triggerNegative('data is missing')
             }
           }
         )
       } catch (error) {
         console.error('error:' + error)
       }
+    }
     },
     KTPSelected() {
       this.CardIdselect = 'KTP'

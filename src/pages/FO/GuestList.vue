@@ -765,10 +765,10 @@ export default defineComponent({
         this.loading = false
 
         if (status == 200) {
-          const { reservations } = data.reservation
+          // const { reservations } = data.reservation
           const roomBoys = this.getUniqueRoomBoys(data.roomBoys)
           this.filterColumns.RoomBoy.options = roomBoys
-          this.background = reservations.reservation.resvStatus.rowColor
+          // this.background = reservations.reservation.resvStatus.rowColor
           this.formatData(data.reservations)
           this.pagination = {
             page: data.meta?.currPage,
@@ -776,7 +776,7 @@ export default defineComponent({
             rowsPerPage: data.meta?.perPage
           }
         }
-        console.log(this.background)
+        // console.log(this.background)
       })
     },
     getUniqueRoomBoys(roomBoys) {

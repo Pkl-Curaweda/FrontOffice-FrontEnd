@@ -117,9 +117,9 @@
             <template v-slot:body="props">
               <q-tr :props="props">
                 <template v-for="(cell, key, i) in props.row" :key="i">
-                  <q-td :style="cell.style" @click="!cell.data.label ? triggerNegative('No Data') : triggerPositive()">
+                  <q-td :style="cell.style" @click="!cell.data.label ? '' : getDetailform(cell.data.resvId, cell.data.resvRoomId) && triggerPositive()">
                     {{ cell.data.label }}
-                    <q-popup-edit v-if="cell.data.label" v-model="props.row.name" title="" auto-save>
+                    <!-- <q-popup-edit v-if="cell.data.label" v-model="props.row.name" title="" auto-save>
                       <q-list style="align-content: flex-end; width: 100%">
                         <q-item
                           clickable
@@ -138,7 +138,7 @@
                           </q-item-section>
                         </q-item>
                       </q-list></q-popup-edit
-                    >
+                    > -->
                   </q-td>
                 </template>
               </q-tr>
@@ -264,12 +264,12 @@ export default defineComponent({
 
       let url = `roomavail?`
 
-      // const fromDate = this.datePicker.from.replace(/\//g, '-')
-      // const toDate = this.datePicker.to.replace(/\//g, '-')
+      const fromDate = this.datePicker.from.replace(/\//g, '-')
+      const toDate = this.datePicker.to.replace(/\//g, '-')
 
-      // if (fromDate !== '' && toDate !== '') {
-      //   url += `&date=${fromDate}+${toDate}`
-      // }
+      if (fromDate !== '' && toDate !== '') {
+        url += `&date=${fromDate}+${toDate}`
+      }
 
       // Adjust the condition here
       if (this.sortingDisplay !== null) {
@@ -304,19 +304,19 @@ export default defineComponent({
 
       list.push({
         Date: { data: { label: 'Room Average' }, style: {} },
-        satu: { data: this.formatAverage(avg.total_1) + '%', style: {} },
-        dua: { data: this.formatAverage(avg.total_2) + '%', style: {} },
-        tiga: { data: this.formatAverage(avg.total_3) + '%', style: {} },
-        empat: { data: this.formatAverage(avg.total_4) + '%', style: {} },
-        lima: { data: this.formatAverage(avg.total_5) + '%', style: {} },
-        enam: { data: this.formatAverage(avg.total_6) + '%', style: {} },
-        tujuh: { data: this.formatAverage(avg.total_7) + '%', style: {} },
-        delapan: { data: this.formatAverage(avg.total_8) + '%', style: {} },
-        sembilan: { data: this.formatAverage(avg.total_9) + '%', style: {} },
-        sepuluh: { data: this.formatAverage(avg.total_10) + '%', style: {} }
+        room_1: { data: { label: avg.total_1 + '%'}, style: {} },
+        room_2: { data: { label: avg.total_2+ '%'}, style: {} },
+        tiga: { data: { label: avg.total_3+ '%'}, style: {} },
+        empat: { data: { label: avg.total_4+ '%'}, style: {} },
+        lima: { data: { label: avg.total_5+ '%'}, style: {} },
+        enam: { data: { label: avg.total_6+ '%'}, style: {} },
+        tujuh: { data: { label: avg.total_7+ '%'}, style: {} },
+        delapan: { data: { label: avg.total_8+ '%'}, style: {} },
+        sembilan: { data: {label: avg.total_9+ '%'}, style: {} },
+        sepuluh: { data: {label: avg.total_10 + '%'}, style: {} }
       })
-      console.log('list data after pushing room average:', list)
       this.data = list
+      console.log('list data after pushing room average:', this.data)
     },
     triggerNegative (data) {
         this.$q.notify(

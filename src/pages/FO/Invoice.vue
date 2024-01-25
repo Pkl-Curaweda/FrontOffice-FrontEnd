@@ -255,48 +255,7 @@ const columns2 = [
   { name: 'qty', align: 'center', label: 'Qty', field: 'qty', sortable: true }
 ]
 
-const data2 = [
-  {
-    name: 101,
-    description: 'Extra Bed',
-    qty: 0
-  },
-  {
-    name: 102,
-    description: 'Extra Pillow',
-    qty: 0
-  },
-  {
-    name: 103,
-    description: 'Extra Bed Cover',
-    qty: 0
-  },
-  {
-    name: 113,
-    description: ' Bed Cover',
-    qty: 0
-  },
-  {
-    name: 100,
-    description: ' Bed ooCover',
-    qty: 0
-  },
-  {
-    name: 900,
-    description: ' Bed ooover',
-    qty: 0
-  },
-  {
-    name: 100,
-    description: ' Bed ooCover',
-    qty: 0
-  },
-  {
-    name: 900,
-    description: ' Bed ooover',
-    qty: 0
-  }
-]
+const data2 = ref() // Add this l
 
 export default defineComponent({
   name: 'InvoicePage',
@@ -307,6 +266,7 @@ export default defineComponent({
       columns2,
       selected,
       allObjectsInArray,
+      data2,
       searchInput: ref(''),
       loading: ref(false),
       datePicker: ref(),
@@ -331,7 +291,6 @@ export default defineComponent({
   data() {
     return {
       filterSortOrder: ref({ col: '', val: '' }),
-      data2,
       filterColumns: {
         Art: {
           data: '',
@@ -519,6 +478,13 @@ export default defineComponent({
           this.loading = false
 
           if (response.status === 200) {
+            const { artList } = response.data.data
+
+            this.data2.value = artList.map((al) => ({
+              name: al.id,
+              description: al.description,
+              qty: al.price
+            }))
             // this.uniqueId = response.data.data.invoices.uniqueId
             // console.log(this.uniqueId)
             // this.uniqueId = response.data.data.invoices.uniqueId

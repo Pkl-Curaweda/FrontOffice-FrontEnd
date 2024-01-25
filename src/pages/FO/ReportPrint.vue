@@ -200,7 +200,7 @@ export default defineComponent({
       pagination: {
         page: 1,
         rowsNumber: 0,
-        rowsPerPage: 20
+        rowsPerPage: 30
       },
       data: []
     }
@@ -227,7 +227,7 @@ export default defineComponent({
     getDataTable() {
       this.loading = true
 
-      let url = `report`
+      let url = `report?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
       this.url = url
       this.api.get(url, ({ status, data }) => {
         this.loading = false

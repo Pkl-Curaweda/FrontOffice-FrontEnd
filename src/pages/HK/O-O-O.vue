@@ -176,6 +176,11 @@ export default defineComponent({
   data() {
     return {
       api: new this.$Api('housekeeping')
+      // pagination: {
+      //   page: 1,
+      //   rowsNumber: 0,
+      //   rowsPerPage: 20
+      // }
     }
   },
   mounted() {

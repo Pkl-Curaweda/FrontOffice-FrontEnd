@@ -365,9 +365,7 @@ export default defineComponent({
       barO,
       pieO,
       tableCol,
-      roomTypeVal
-    }
-    return {
+      roomTypeVal,
       api: new this.$Api('housekeeping')
     }
   },
@@ -376,7 +374,18 @@ export default defineComponent({
   },
   watch: {},
   methods: {
-    fetchData() {}
+    fetchData() {
+      this.loading = true
+
+      let url = `roomocc`
+
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+        }
+      })
+    }
   }
 })
 </script>

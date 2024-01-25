@@ -17,7 +17,7 @@
     </q-drawer>
 
     <q-page-container>
-      <q-page class="q-pa-md" style="overflow-y: hidden; min-width: max-content">
+      <q-page class="q-pa-md" style="overflow-y: hidden">
         <div class="flex items-center justify-between">
           <div>
             <h4 class="q-ma-none text-bold">{{ currentClock }}</h4>
@@ -74,13 +74,15 @@
           </div>
         </div>
 
-        <div class="flex q-gutter-md no-wrap">
-          <div class="col-grow q-pa-md bg-white rounded shadow-3" style="max-width: 460px">
+        <div class="row q-gutter-md no-wrap">
+          <div
+            class="q-pa-md bg-white rounded shadow-3"
+            style="width: fit-content; max-width: 520px"
+          >
             <h5 class="text-bold q-ma-none">Recent Reservation Schedule</h5>
             <q-date
               v-model="recentReservationDate"
-              class="no-shadow q-pa-none"
-              style="width: 100%"
+              class="no-shadow q-pa-none full-width"
               minimal
             />
             <div class="my-table">
@@ -121,7 +123,7 @@
               </q-table>
             </div>
           </div>
-          <div class="col-grow">
+          <div>
             <div class="q-pa-md q-mb-md bg-white rounded shadow-3">
               <q-carousel
                 v-model="slide"
@@ -131,13 +133,13 @@
                 arrows
                 style="height: 100%"
               >
-                <q-carousel-slide name="style" class="column no-wrap">
+                <q-carousel-slide name="style" class="col-grow">
                   <h5 class="text-bold q-ma-none">Reservation Statistics</h5>
                   <div class="q-mt-md">
                     <ReservationChart />
                   </div>
                 </q-carousel-slide>
-                <q-carousel-slide name="tv" class="column no-wrap">
+                <q-carousel-slide name="tv" class="col-grow">
                   <h5 class="text-bold q-ma-none">Daily Room Usage</h5>
                   <div class="q-mt-md">
                     <UsageChart />
@@ -192,7 +194,7 @@
             <div class="q-pa-md bg-white rounded shadow-3">
               <h5 class="text-bold q-ma-none">Housekeeping</h5>
               <div class="q-mt-md">
-                <UsageChart />
+                <BarChart />
               </div>
             </div>
           </div>
@@ -215,6 +217,8 @@ const ReservationChart = defineAsyncComponent(() =>
 )
 
 const UsageChart = defineAsyncComponent(() => import('components/charts/UsageChart.vue'))
+
+const BarChart = defineAsyncComponent(() => import('components/charts/BarChart.vue'))
 
 export default {
   setup() {
@@ -265,7 +269,7 @@ export default {
   mounted() {
     this.getValueDashboard()
   },
-  components: { SideBar, ProfileFloat, MessengerFloat, ReservationChart, UsageChart },
+  components: { SideBar, ProfileFloat, MessengerFloat, ReservationChart, UsageChart, BarChart },
   created() {
     this.updateTime()
 

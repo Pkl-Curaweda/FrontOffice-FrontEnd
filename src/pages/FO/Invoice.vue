@@ -49,11 +49,67 @@
       </template>
       <template #right>
         <q-separator vertical />
-        <q-btn flat square color="primary" icon="o_add_home">
-          <q-popup-proxy>
-            <q-banner>
-              <TableAddInvoice />
-            </q-banner>
+        <q-btn flat square color="primary">
+          <q-icon>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="19"
+              height="20"
+              viewBox="0 0 19 20"
+              fill="none"
+            >
+              <path
+                d="M16 10.09V4C16 1.79 12.42 0 8 0C3.58 0 0 1.79 0 4V14C0 16.21 3.59 18 8 18C8.46 18 8.9 18 9.33 17.94C9.1129 17.3162 9.00137 16.6605 9 16V15.95C8.68 16 8.35 16 8 16C4.13 16 2 14.5 2 14V11.77C3.61 12.55 5.72 13 8 13C8.65 13 9.27 12.96 9.88 12.89C10.4127 12.0085 11.1638 11.2794 12.0607 10.7731C12.9577 10.2668 13.9701 10.0005 15 10C15.34 10 15.67 10.04 16 10.09ZM14 9.45C12.7 10.4 10.42 11 8 11C5.58 11 3.3 10.4 2 9.45V6.64C3.47 7.47 5.61 8 8 8C10.39 8 12.53 7.47 14 6.64V9.45ZM8 6C4.13 6 2 4.5 2 4C2 3.5 4.13 2 8 2C11.87 2 14 3.5 14 4C14 4.5 11.87 6 8 6ZM19 15V17H16V20H14V17H11V15H14V12H16V15H19Z"
+                fill="#008444"
+              />
+            </svg>
+          </q-icon>
+          <q-popup-proxy :offset="[10, 10]">
+            <q-card>
+              <div class="my-table" style="max-height: 400px; overflow: auto">
+                <q-table
+                  flat
+                  bordered
+                  :rows="data2"
+                  :columns="columns2"
+                  row-key="name"
+                  selection="multiple"
+                  v-model:selected="selected"
+                >
+                  <template #body-cell-qty="props">
+                    <q-td :props="props">
+                      <q-btn
+                        class="q-pa-xs bg-primary"
+                        style="height: 100%"
+                        text-color="white"
+                        size="sm"
+                        @click="decrementQty(props.row)"
+                        icon="remove"
+                        flat
+                      ></q-btn>
+                      <span
+                        class="q-ma-xs q-pa-sm"
+                        style="border: 1px solid gray; border-radius: 3px"
+                        >{{ props.value }}</span
+                      >
+                      <q-btn
+                        class="q-pa-xs bg-primary"
+                        style="height: 100%"
+                        text-color="white"
+                        size="sm"
+                        @click="incrementQty(props.row)"
+                        icon="add"
+                        flat
+                      ></q-btn>
+                    </q-td>
+                  </template>
+                </q-table>
+              </div>
+              <div class="q-pa-sm flex justify-end" style="gap: 5px; border-top: 1px solid green">
+                <q-btn size="sm" no-caps outline>Cancel</q-btn>
+                <q-btn size="sm" no-caps color="primary" text-color="white">Add</q-btn>
+              </div>
+            </q-card>
           </q-popup-proxy>
         </q-btn>
       </template>
@@ -115,7 +171,7 @@
             </template>
             <template v-slot:body="props">
               <q-tr :props="props">
-                <template v-for="(cell,key, i) in props.row" :key="i">
+                <template v-for="(cell, key, i) in props.row" :key="i">
                   <q-td v-if="!['uniqueId'].includes(key)" :style="cell.style">
                     {{ cell.data }}
                   </q-td>
@@ -173,21 +229,84 @@
 </template>
 
 <script>
-import { defineComponent, ref, defineAsyncComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import FOMenubar from 'src/components/FOMenubar.vue'
 import MultiPane from 'src/layouts/MultiPane.vue'
 import InvoiceForm from './fragments/InvoiceForm.vue'
 import { allObjectsInArray } from 'src/utils/datatype'
 
-const TableAddInvoice = defineAsyncComponent(() => import('components/charts/TableAddInvoice.vue'))
+const columns2 = [
+  {
+    name: 'art',
+    required: true,
+    label: 'Art',
+    align: 'left',
+    field: (row) => row.name,
+    format: (val) => `${val}`,
+    sortable: true
+  },
+  {
+    name: 'description',
+    align: 'center',
+    label: 'Description',
+    field: 'description',
+    sortable: true
+  },
+  { name: 'qty', align: 'center', label: 'Qty', field: 'qty', sortable: true }
+]
+
+const data2 = [
+  {
+    name: 101,
+    description: 'Extra Bed',
+    qty: 0
+  },
+  {
+    name: 102,
+    description: 'Extra Pillow',
+    qty: 0
+  },
+  {
+    name: 103,
+    description: 'Extra Bed Cover',
+    qty: 0
+  },
+  {
+    name: 113,
+    description: ' Bed Cover',
+    qty: 0
+  },
+  {
+    name: 100,
+    description: ' Bed ooCover',
+    qty: 0
+  },
+  {
+    name: 900,
+    description: ' Bed ooover',
+    qty: 0
+  },
+  {
+    name: 100,
+    description: ' Bed ooCover',
+    qty: 0
+  },
+  {
+    name: 900,
+    description: ' Bed ooover',
+    qty: 0
+  }
+]
 
 export default defineComponent({
   name: 'InvoicePage',
-  components: { FOMenubar, MultiPane, InvoiceForm, TableAddInvoice },
+  components: { FOMenubar, MultiPane, InvoiceForm },
   setup() {
+    const selected = ref([])
     return {
+      columns2,
+      selected,
       allObjectsInArray,
-      selected: ref([]),
       searchInput: ref(''),
       loading: ref(false),
       datePicker: ref(),
@@ -212,6 +331,7 @@ export default defineComponent({
   data() {
     return {
       filterSortOrder: ref({ col: '', val: '' }),
+      data2,
       filterColumns: {
         Art: {
           data: '',
@@ -353,6 +473,14 @@ export default defineComponent({
     },
     setSortOrder(val = '') {
       this.filterSortOrder = null
+    },
+    incrementQty(row) {
+      row.qty++
+    },
+    decrementQty(row) {
+      if (row.qty > 0) {
+        row.qty--
+      }
     },
     onPaginationChange(props) {
       this.pagination = props.pagination

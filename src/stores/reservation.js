@@ -9,7 +9,10 @@ export const resvStore = defineStore({
     dateBill: '0000-00-00',
     Artlb: '',
     fix: false,
-    UniqueId: 0
+    UniqueId: 0,
+    ds: false,
+    logc: false,
+    waitingnote: '',
   }),
   actions: {
     setCurrentResvId(id = 0) {
@@ -30,6 +33,15 @@ export const resvStore = defineStore({
     setfix(value) {
       this.fix = value
     },
+    setlogc(value) {
+      this.logc = value
+    },
+    setds(value){
+      this.ds = value
+    },
+    setwaitingnote(value){
+      this.waitingnote = value
+    },
     clearData() {
       const data = {
         currentResvId: 0,
@@ -37,7 +49,10 @@ export const resvStore = defineStore({
         dateBill: '',
         Artlb: '',
         UniqueId: 0,
-        fix: false
+        fix: false,
+        logc: false,
+        ds: false,
+        waitingnote: '',
       }
       this.$state = data
     }

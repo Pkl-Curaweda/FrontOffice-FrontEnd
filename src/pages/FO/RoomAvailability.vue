@@ -20,10 +20,10 @@
             <q-item clickable v-close-popup @click="setSortingDisplay('T_FAMILY')">
               <q-item-section>FAMILY</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup @click="asctable()">
               <q-item-section>101-110</q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup @click="desctable()">
               <q-item-section>110-101</q-item-section>
             </q-item>
             <q-item clickable v-close-popup @click="setSortingDisplay('B_TWIN')">
@@ -231,6 +231,40 @@ export default defineComponent({
     }
   },
   methods: {
+    asctable(){
+      this.sortingDisplay = 'R_ASC'
+      this.columns = [
+        { name: 'Date', label: 'Date', field: 'Date', align: 'left' },
+        { name: '101-DLX-K', label: '101-DLX-K', field: 'room_1', align: 'left' },
+        { name: '102-DLX-K', label: '102-DLX-K', field: 'room_2', align: 'left' },
+        { name: '103-DLX-K', label: '103-DLX-K', field: 'room_3', align: 'left' },
+        { name: '104-DLX-K', label: '104-DLX-K', field: 'room_4', align: 'left' },
+        { name: '105-STD-S', label: '105-FML-T', field: 'room_5', align: 'left' },
+        { name: '106-STD-S', label: '106-FML-T', field: 'room_6', align: 'left' },
+        { name: '107-STD-S', label: '107-FML-T', field: 'room_7', align: 'left' },
+        { name: '108-FML-T', label: '108-STD-S', field: 'room_8', align: 'left' },
+        { name: '109-FML-T', label: '109-STD-S', field: 'room_9', align: 'left' },
+        { name: '110-FML-T', label: '110-STD-S', field: 'room_10', align: 'left' }
+      ]
+      this.fetchData()
+    },
+    desctable(){
+      this.sortingDisplay = 'R_DESC'
+      this.columns = [
+        { name: 'Date', label: 'Date', field: 'Date', align: 'left' },
+        { name: '110-FML-T', label: '110-STD-S', field: 'room_10', align: 'left' },
+        { name: '109-FML-T', label: '109-STD-S', field: 'room_9', align: 'left' },
+        { name: '108-FML-T', label: '108-STD-S', field: 'room_8', align: 'left' },
+        { name: '107-STD-S', label: '107-FML-T', field: 'room_7', align: 'left' },
+        { name: '106-STD-S', label: '106-FML-T', field: 'room_6', align: 'left' },
+        { name: '105-STD-S', label: '105-FML-T', field: 'room_5', align: 'left' },
+        { name: '104-DLX-K', label: '104-DLX-K', field: 'room_4', align: 'left' },
+        { name: '103-DLX-K', label: '103-DLX-K', field: 'room_3', align: 'left' },
+        { name: '102-DLX-K', label: '102-DLX-K', field: 'room_2', align: 'left' },
+        { name: '101-DLX-K', label: '101-DLX-K', field: 'room_1', align: 'left' }
+      ]
+      this.fetchData()
+    },
     getDetailform(resvId, resvRoomId){
       this.$ResvStore.currentResvId = resvId
       this.$ResvStore.currentRoomResvId = resvRoomId

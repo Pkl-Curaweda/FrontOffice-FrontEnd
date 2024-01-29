@@ -182,6 +182,7 @@
         :outlined="!$ResvStore.fix"
         :borderless="$ResvStore.fix"
         :readonly="$ResvStore.fix"
+        :disable="$ResvStore.logc"
         v-model="guestName"
         :label="!$ResvStore.fix ? 'Guest Name/ No Handphone' : ''"
         class="q-mt-sm width-full"
@@ -209,6 +210,7 @@
             v-model="resvRecource"
             :options="resvRecourceOpts"
             :borderless="$ResvStore.fix"
+            :disable="$ResvStore.logc"
             :readonly="$ResvStore.fix"
             :dropdown-icon="!$ResvStore ? 'expand_more' : ''"
             :label="!$ResvStore.fix ? 'Reservation Resource' : ''"
@@ -277,6 +279,7 @@
         style="border: 1px #00000030 solid"
         :label="arrivalDepartLabel"
         icon="o_calendar_today"
+        :disable="$ResvStore.logc"
         :outlined="!$ResvStore.fix"
         :borderless="!$ResvStore.fix"
         :readonly="$ResvStore.fix"
@@ -291,6 +294,7 @@
         style="border: 1px #00000030 solid"
         :label="arrivalDepartLabel"
         icon="o_calendar_today"
+        :disable="$ResvStore.logc"
         outlined
       >
         <q-date v-model="arrivalDepart" range />
@@ -307,6 +311,7 @@
         style="border: 1px #00000030 solid"
         :label="guestsLabel"
         :readonly="$ResvStore.fix"
+        :disable="$ResvStore.logc"
         icon="meeting_room"
         dropdown-icon="o_expand_more"
       ></q-btn>
@@ -320,6 +325,7 @@
         :label="guestsLabel"
         icon="meeting_room"
         dropdown-icon="o_expand_more"
+        :disable="$ResvStore.logc"
       >
         <q-list style="width: 200px">
           <q-item>
@@ -420,6 +426,7 @@
         <div class="q-pa-md">
           <q-btn-dropdown
             color="primary"
+            :disable="$ResvStore.logc"
             :label="resvStatus.label || resvStatus.description || 'Status'"
             outline
           >
@@ -528,7 +535,7 @@
         class="padding-expansion"
       >
         <q-card>
-          <q-input v-model="resvRemark" label="Note..." dense outlined type="textarea" />
+          <q-input :disable="$ResvStore.logc" v-model="resvRemark" label="Note..." dense outlined type="textarea" />
         </q-card>
       </q-expansion-item>
 
@@ -751,7 +758,7 @@ export default defineComponent({
     // )
   },
   created() {
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 101; i <= 110; i++) {
       this.roomNoOpts.push(i)
     }
   },
@@ -1092,34 +1099,35 @@ export default defineComponent({
       console.log(rms)
       return rms
     },
-    checkCardIdselect(data){
-      if(data == 'KTP'){
+    checkCardIdselect(data) {
+      if (data == 'KTP') {
         this.KTPSelected()
         this.isKtpSelected = true
         this.isSimSelected = false
-      } else if (data == 'SIM'){
+      } else if (data == 'SIM') {
         this.SIMSelected()
         this.isKtpSelected = false
         this.isSimSelected = true
       }
     },
-    getdataCard(condition){
-      const {currentResvId, currentRoomResvId} = this.$ResvStore
+    getdataCard(condition) {
+      const { currentResvId, currentRoomResvId } = this.$ResvStore
       this.dialogpayment = condition
-      try{
-      this.api.get(`detail/reservation/${currentResvId}/idcard`, ({status, data}) => {
-        if(status === 200){
-          this.nameidcard = data.name,
-          this.CardIdselect = data.carIdentifier && this.checkCardIdselect(data.carIdentifier),
-          this.idcardnumber = data.cardId,
-          this.address = data.address
-          console.log(data)
-          if(this.nameidcard != ''){
-          this.triggerPositive('get data succesfully')}
-        }
-      }
-      )}
-      catch(error){
+      try {
+        this.api.get(`detail/reservation/${currentResvId}/idcard`, ({ status, data }) => {
+          if (status === 200) {
+            ;(this.nameidcard = data.name),
+              (this.CardIdselect =
+                data.carIdentifier && this.checkCardIdselect(data.carIdentifier)),
+              (this.idcardnumber = data.cardId),
+              (this.address = data.address)
+            console.log(data)
+            if (this.nameidcard != '') {
+              this.triggerPositive('get data succesfully')
+            }
+          }
+        })
+      } catch (error) {
         console.error('error' + error)
       }
     },
@@ -1161,7 +1169,7 @@ export default defineComponent({
       }
     },
     async updateData() {
-      const { currentResvId, currentRoomResvId } = this.$ResvStore
+      const { currentResvId, currentRoomResvId, waitingnote } = this.$ResvStore
       this.resvNo = currentResvId
       const dataToUpdate = {
         nameContact: this.guestName,
@@ -1174,9 +1182,39 @@ export default defineComponent({
         arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
         departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
         reservationRemarks: this.resvRemark,
-        resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id)
+        resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id),
       }
 
+      const datachangeroom = {
+        
+        roomId: this.roomNo,
+        arrangmentCodeId: this.selected.id,
+        note: waitingnote
+      }
+
+      if(this.$ResvStore.logc === true){
+        try {
+          await this.api.post(
+          `/detail/reservation/${currentResvId}/${currentRoomResvId}/change-room`,
+          datachangeroom,
+          ({ status, data,message }) => {
+            this.loading = false
+            console.log(this.resvStatus)
+
+            if (status === 200) {
+              this.triggerPositive('Update Successfully')
+              console.log('Data berhasil diperbarui:', data)
+            } else {
+              console.error('Gagal memperbarui data')
+              this.triggerNegative(   message)
+            }
+          }
+        )
+        // this.refresh()
+      } catch (error) {
+        console.error(error)
+      }
+      }else{
       try {
         await this.api.put(
           `detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
@@ -1196,7 +1234,7 @@ export default defineComponent({
         // this.refresh()
       } catch (error) {
         console.error(error)
-      }
+      }}
     },
     formatDate(date) {
       return new Date(date)
@@ -1235,29 +1273,31 @@ export default defineComponent({
         cardId: this.idcardnumber,
         address: this.address
       }
-      if(this.nameidcard == '' && this.idcardnumber == '' && this.address == ''){
+      if (this.nameidcard == '' && this.idcardnumber == '' && this.address == '') {
         this.triggerNegative('data is missing')
-      }else{
-      try {
-        this.api.post(
-          `detail/reservation/${currentResvId}/${currentRoomResvId}/add-idcard`,
-          cardData,
-          ({ status, data }) => {
-            this.loading = false
-            if (status === 200) {
-              console.log('Data berhasil diperbarui:', data)
-              this.triggerPositive(this.CardIdselect + ' added successfully' || 'Card not selected')
-              this.dialogpayment = false
-            } else {
-              console.error('Gagal memperbarui data')
-              this.triggerNegative('data is missing')
+      } else {
+        try {
+          this.api.post(
+            `detail/reservation/${currentResvId}/${currentRoomResvId}/add-idcard`,
+            cardData,
+            ({ status, data }) => {
+              this.loading = false
+              if (status === 200) {
+                console.log('Data berhasil diperbarui:', data)
+                this.triggerPositive(
+                  this.CardIdselect + ' added successfully' || 'Card not selected'
+                )
+                this.dialogpayment = false
+              } else {
+                console.error('Gagal memperbarui data')
+                this.triggerNegative('data is missing')
+              }
             }
-          }
-        )
-      } catch (error) {
-        console.error('error:' + error)
+          )
+        } catch (error) {
+          console.error('error:' + error)
+        }
       }
-    }
     },
     KTPSelected() {
       this.CardIdselect = 'KTP'

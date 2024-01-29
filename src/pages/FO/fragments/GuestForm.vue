@@ -962,11 +962,11 @@ export default defineComponent({
       this.resvNo = currentResvId
       this.api.get(
         `detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
-        ({ status, data }) => {
+        ({ status, data, message }) => {
           this.loading = false
           console.log('test')
           if (status == 200) {
-            this.triggerPositive('Data has been GET successfully')
+            this.triggerPositive(message)
             const { reservation, room, arrangment, balance } = data.reservation
             const { reservationStatus, arrangmentCode, availableRooms } = data.data
 
@@ -1126,7 +1126,7 @@ export default defineComponent({
       }
 
       const datachangeroom = {
-        
+
         roomId: this.roomNo,
         arrangmentCodeId: this.selected.id,
         note: waitingnote

@@ -75,6 +75,7 @@ export class Api {
   notif(err) {
     if (err.code == 'ERR_NETWORK') Helper.showNotif('Network Disconnected!', '', 'negative')
 
+
     const { response } = err
     if (!response) return
     const message = response.data.message

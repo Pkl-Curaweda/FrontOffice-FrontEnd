@@ -168,11 +168,11 @@
                         <q-item
                           clickable
                           v-close-popup
-                          @click="setRoomResv(props.row)"
+                          @click="dialog2 = true"
                           style="display: flex"
                         >
                           <q-item-section>
-                            <q-item-label class="font-bold" @click="waitinglist(props.row, false)"
+                            <q-item-label class="font-bold" @click="dialog2 = true"
                               >Waiting List</q-item-label
                             >
                           </q-item-section>
@@ -220,11 +220,11 @@
                             class="row items-center"
                             style="width: 100%; justify-content: space-between"
                           >
-                            <q-btn v-close-popup label="Cancle" outline color="primary" />
+                            <q-btn v-close-popup label="Cancel" outline color="primary" />
                             <q-btn
                               v-close-popup
                               label="accept"
-                              @click="setRoomResv(props.row)"
+                              @click="postwaiting(props.row)"
                               color="primary"
                             />
                           </div>
@@ -247,7 +247,7 @@
                         test
                       </div> -->
                     </div>
-                    <div>
+                    <div class="q-pa-md">
                       <q-btn auto-close flat round color="primary" icon="more_vert">
                         <q-menu>
                           <q-list style="align-content: flex-end; width: 100%">
@@ -369,7 +369,7 @@
                                 class="row items-center"
                                 style="width: 100%; justify-content: space-between"
                               >
-                                <q-btn v-close-popup label="Cancle" outline color="primary" />
+                                <q-btn v-close-popup label="Cancel" outline color="primary" />
                                 <q-btn
                                   v-close-popup
                                   label="accept"
@@ -654,6 +654,26 @@ export default defineComponent({
     }
   },
   methods: {
+    postwaiting(data) {
+      const resvId = data['ResNo'].data
+      const roomNo = data['ResRoomNo'].data
+
+      console.log(resvId, roomNo)
+      const note = {
+        request: this.waitingnote
+      }
+
+      try{
+        this.api.post(`/detail/reservation/${resvId}/${roomNo}/waiting-list`, note, ({ data, status, message }) => {
+        if (status === 200) {
+          console.log(data)
+          this.triggerPositive(message)
+          window.location.reload()
+        }
+      })}catch(error){
+        console.error(error)
+      }
+    },
     addnewextrabed(data) {
       const resvId = data['ResNo'].data
       const roomNo = data['ResRoomNo'].data
@@ -679,6 +699,8 @@ export default defineComponent({
             if (status === 200) {
               this.triggerPositive(message)
               console.log(data)
+            window.location.reload()
+
             }
           }
         )
@@ -723,12 +745,12 @@ export default defineComponent({
         const resvId = data['ResNo'].data
         const roomNo = data['ResRoomNo'].data
         console.log(roomNo)
-        this.api.put(`arrival?id=${resvId}-3`, null, ({ status, data }) => {
+        this.api.put(`arrival?id=${resvId}-3`, null, ({ status, data, message }) => {
           this.loading = false
           if (status === 200) {
-            this.triggerPositive('Create new reservation successfully')
+            this.triggerPositive(message)
             console.log('Data berhasil diperbarui:', data)
-            this.refresh()
+            window.location.reload()
           } else {
             console.error('Gagal memperbarui data')
           }
@@ -743,12 +765,12 @@ export default defineComponent({
         const resvId = data['ResNo'].data
         const roomNo = data['ResRoomNo'].data
         console.log(roomNo)
-        this.api.put(`arrival?id=${resvId}-1`, null, ({ status, data }) => {
+        this.api.put(`arrival?id=${resvId}-1`, null, ({ status, data, message }) => {
           this.loading = false
           if (status === 200) {
-            this.triggerPositive('Create new reservation successfully')
+            this.triggerPositive(message)
             console.log('Data berhasil diperbarui:', data)
-            this.refresh()
+            window.location.reload()
           } else {
             console.error('Gagal memperbarui data')
           }
@@ -763,12 +785,13 @@ export default defineComponent({
         const resvId = data['ResNo'].data
         const roomNo = data['ResRoomNo'].data
         console.log(roomNo)
-        this.api.put(`arrival?id=${resvId}-2`, null, ({ status, data }) => {
+        this.loading = true
+        this.api.put(`arrival?id=${resvId}-2`, null, ({ status, data, message }) => {
           this.loading = false
           if (status === 200) {
-            this.triggerPositive('Create new reservation successfully')
+            this.triggerPositive(message)
             console.log('Data berhasil diperbarui:', data)
-            this.refresh()
+            window.location.reload()
           } else {
             console.error('Gagal memperbarui data')
           }
@@ -909,7 +932,7 @@ export default defineComponent({
       this.$q.notify(
         {
           type: 'positive',
-          message: message || 'This is a "positive" type notification.',
+          message: message || 'Change Success',
           timeout: 1000
         },
         4000
@@ -920,15 +943,15 @@ export default defineComponent({
 
       raw.forEach((rsrv) => {
         rsrv.reservation.forEach((rr) => {
-          const [backgroundColor] =
+          const [backgroundColor, color] = [
             rr.reservation.resvStatus.rowColor === '#f10000'
               ? rr.reservation.resvStatus.rowColor
-              : '#ffffff'
-          const color =
-            rr.reservation.resvStatus.textColor === '#f10000' ||
-            rr.reservation.resvStatus.textColor === '#808080'
+              : '#ffffff',
+            rr.reservation.resvStatus.textColor === '#f10000'
               ? rr.reservation.resvStatus.textColor
               : '#000000'
+            // color: rr.reservation.resvStatus.textColor
+          ]
           const { id } = rr.arrangment
           console.log(rr.room.id)
           this.roomno = rr.room.id

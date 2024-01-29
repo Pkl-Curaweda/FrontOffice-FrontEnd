@@ -360,7 +360,7 @@ import FOMenubar from 'src/components/FOMenubar.vue'
 import MultiPane from 'src/layouts/MultiPane.vue'
 import GuestForm from 'src/pages/FO/fragments/GuestForm.vue'
 import { formatDate } from 'src/utils/time'
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { allObjectsInArray } from 'src/utils/datatype'
 
 export default defineComponent({
@@ -682,7 +682,6 @@ export default defineComponent({
       // Make an API call to search based on searchInput
       this.api.get(`arrival?name=${searchInput}`, ({ status, data }) => {
         if (status === 200) {
-          // Update the data with the search result
           this.formatData(data.reservations)
         } else {
           console.error('Error searching data')
@@ -701,8 +700,6 @@ export default defineComponent({
       console.log(this.$ResvStore.fix)
     },
     async deleteResv(data) {
-      // const resvId = data['ResNo']?.data
-      // const resRoomNo = data['ResRoomNo']?.data?.rr?.id
       try {
         const resvId = data['ResNo'].data
         const roomNo = data['ResRoomNo'].data
@@ -715,30 +712,6 @@ export default defineComponent({
         console.error('Terjadi kesalahan, mohon coba lagi')
       }
     },
-
-    // async deleteResv(data) {
-    //   try {
-    //     const resvId = data['ResNo'].data
-    //     const resRoomNo = data['ResRoomNo'].data
-    //     console.log(resvId, resRoomNo)
-    //     const response = await this.api.delete(
-    //       `/fo/detail/reservation/${resvId}/${resRoomNo}/delete`
-    //     )
-    //     if (response.status === 200) {
-    //       const index = this.data.findIndex(
-    //         (item) => item.ResNo.data === resvId && item.ResRoomNo.data === resRoomNo
-    //       )
-    //       if (index !== -1) {
-    //         this.data.splice(index, 1)
-    //         console.log('Data berhasil dihapus')
-    //       }
-    //     } else {
-    //       console.error('Gagal menghapus data')
-    //     }
-    //   } catch (error) {
-    //     console.error('Terjadi kesalahan:', error)
-    //   }
-    // },
     onPaginationChange(props) {
       this.pagination = props.pagination
       this.fetchData()

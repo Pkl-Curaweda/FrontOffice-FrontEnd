@@ -223,10 +223,10 @@ export default defineComponent({
       )
     },
     getDetailForm() {
-      const { currentResvId, currentRoomResvId, dateBill, Artlb, UniqueId } = this.$ResvStore
+      const { resvId, resvRoomId, dateBill, Artlb, UniqueId } = this.$route.params
       this.loading = true
       this.api.get(
-        `detail/invoice/${currentResvId}/${currentRoomResvId}/?ids=${UniqueId}`,
+        `detail/invoice/${resvId}/${resvRoomId}/?ids=${UniqueId}`,
         ({ status, data }) => {
           this.loading = false
 

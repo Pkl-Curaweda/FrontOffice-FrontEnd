@@ -9,7 +9,8 @@ const frontoffice_routes = [
     }
   },
   {
-    path: '/fo/guest-invoice',
+    name: 'guest-invoice',
+    path: '/fo/guest-invoice/:resvId/:resvRoomId',
     component: () => import('pages/FO/Invoice.vue'),
     meta: {
       title: 'Arrival Guest List - Invoice',

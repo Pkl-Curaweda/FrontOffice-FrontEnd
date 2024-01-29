@@ -107,7 +107,9 @@
               </div>
               <div class="q-pa-sm flex justify-end" style="gap: 5px; border-top: 1px solid green">
                 <q-btn size="sm" no-caps outline>Cancel</q-btn>
-                <q-btn size="sm" no-caps color="primary" text-color="white">Add</q-btn>
+                <q-btn size="sm" no-caps color="primary" text-color="white" @click="addArticles"
+                  >Add</q-btn
+                >
               </div>
             </q-card>
           </q-popup-proxy>
@@ -201,7 +203,7 @@
                     rounded
                     size="13px"
                     style="color: #269861"
-                    @click="deleteResv(props.row)"
+                    @click="removeInvoiceData(props.row)"
                     ><svg
                       width="19"
                       height="19"
@@ -255,15 +257,17 @@ const columns2 = [
   { name: 'qty', align: 'center', label: 'Qty', field: 'qty', sortable: true }
 ]
 
-const data2 = ref() // Add this l
+const data2 = ref([]) //
 
 export default defineComponent({
   name: 'InvoicePage',
   components: { FOMenubar, MultiPane, InvoiceForm },
   setup() {
+    const postedArticles = ref([])
     const selected = ref([])
     return {
       columns2,
+      postedArticles,
       selected,
       allObjectsInArray,
       data2,
@@ -371,12 +375,12 @@ export default defineComponent({
   },
   mounted() {
     this.fetchData()
-    // if (this.$ResvStore.currentRoomResvId) {
+    // if (this.$ResvStore.resvRoomId) {
     //   this.fetchData()
     // }
 
     // watch(
-    //   () => this.$ResvStore.currentRoomResvId,
+    //   () => this.$ResvStore.resvRoomId,
     //   () => {
     //     this.fetchData()
     //     this.getResvProps()
@@ -414,18 +418,108 @@ export default defineComponent({
     }
   },
   methods: {
+    addArticles() {
+      const { resvId, resvRoomId } = this.$route.params
+
+      if (resvId === 0 || resvRoomId === 0) {
+        this.loading = false
+        console.log(resvId)
+        return
+      }
+
+      // Mengumpulkan data yang harus dikirim ke API
+      const postData = this.data2
+        .filter((al) => al.qty > 0 && this.selected.includes(al)) // Include items with qty > 0 and are selected
+        .map((al) => ({
+          articleId: al.name,
+          qty: al.qty
+        }))
+
+      if (postData.length === 0) {
+        // No articles selected, handle it accordingly
+        console.warn('No articles selected for posting.')
+        return
+      }
+
+      // Melakukan POST ke API
+      this.api
+        .post(`invoice/${resvId}/${resvRoomId}/article`, postData, ({ status, data }) => {
+          if (status === 200) {
+            // Sukses, Update the reactive variable
+            this.postedArticles.value = [...this.postedArticles.value, ...postData]
+
+            this.$q.notify({
+              type: 'positive',
+              message: 'Articles added successfully.',
+              timeout: 1000
+            })
+          } else {
+            // Handle kesalahan jika diperlukan
+            console.error('Failed to add articles:', data)
+          }
+        })
+        .catch((error) => {
+          // Handle kesalahan yang lebih umum jika perlu
+          console.error('Error adding articles:', error)
+        })
+    },
+    removeInvoiceData(row) {
+      const uniqueId = row.uniqueId.data // Assuming the uniqueId is accessible in your row object
+      const { resvId, resvRoomId } = this.$route.params
+
+      if (resvId === 0 || resvRoomId === 0) {
+        this.loading = false
+        console.log(resvId)
+        return
+      }
+
+      // Make the DELETE request to the API endpoint
+      this.$api
+        .delete(`fo/detail/invoice/${resvId}/${resvRoomId}/delete?ids=${uniqueId}`)
+        .then((response) => {
+          if (response.status === 200 && response.data.success) {
+            // If deletion is successful, remove the row from the local data array
+            const index = this.data.findIndex((item) => item.uniqueId.data === uniqueId)
+            if (index !== -1) {
+              this.data.splice(index, 1)
+            }
+
+            this.$q.notify({
+              type: 'positive',
+              message: 'Row deleted successfully.',
+              timeout: 1000
+            })
+          } else {
+            console.error('Failed to delete row:', response.data.message)
+          }
+        })
+        .catch((error) => {
+          console.error('Error deleting row:', error)
+        })
+    },
     searchDesc(searchInput) {
+      const { resvId, resvRoomId } = this.$route.params
+
+      if (resvId === 0 || resvRoomId === 0) {
+        this.loading = false
+        console.log(resvId)
+        return
+      }
+
       console.log('test' + searchInput)
       if (searchInput != '' || searchInput != null) {
         // Make an API call to search based on searchInput
-        this.api.get(`invoice/1/1?search=${searchInput}`, ({ status, data }) => {
-          if (status === 200) {
-            // Update the data with the search result
-            this.formatData(data.invoices)
-          } else {
-            console.error('Error searching data')
+        this.api.get(
+          `invoice/${resvId}/${resvRoomId}?search=${searchInput}`,
+          ({ status, data }) => {
+            if (status === 200) {
+              // Update the data with the search result
+              this.formatData(data.invoices)
+            } else {
+              console.error('Error searching data')
+            }
           }
-        })
+        )
       } else {
         console.log('data kosong')
       }
@@ -448,15 +542,15 @@ export default defineComponent({
     fetchData() {
       this.loading = true
 
-      const { currentResvId, currentRoomResvId } = this.$ResvStore
+      const { resvId, resvRoomId } = this.$route.params
 
-      if (currentResvId === 0 || currentRoomResvId === 0) {
+      if (resvId === 0 || resvRoomId === 0) {
         this.loading = false
-        console.log(currentResvId)
+        console.log(resvId)
         return
       }
 
-      let url = `/fo/invoice/${currentResvId}/${currentRoomResvId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      let url = `fo/invoice/${resvId}/${resvRoomId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
 
       if (this.filterSortOrder.col !== '' && this.filterSortOrder.val !== '') {
         url += `&sort=${this.filterSortOrder.val}`
@@ -480,10 +574,10 @@ export default defineComponent({
           if (response.status === 200) {
             const { artList } = response.data.data
 
-            this.data2.value = artList.map((al) => ({
+            this.data2 = artList.map((al) => ({
               name: al.id,
               description: al.description,
-              qty: al.price
+              qty: 0
             }))
             // this.uniqueId = response.data.data.invoices.uniqueId
             // console.log(this.uniqueId)

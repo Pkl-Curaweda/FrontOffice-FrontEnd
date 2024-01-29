@@ -116,7 +116,14 @@
             <template v-slot:body="props">
               <q-tr :props="props">
                 <template v-for="(cell, key, i) in props.row" :key="i">
-                  <q-td :style="cell.style" @click="!cell.data.label ? '' : getDetailform(cell.data.resvId, cell.data.resvRoomId) && triggerPositive()">
+                  <q-td
+                    :style="cell.style"
+                    @click="
+                      !cell.data.label
+                        ? ''
+                        : getDetailform(cell.data.resvId, cell.data.resvRoomId) && triggerPositive()
+                    "
+                  >
                     {{ cell.data.label }}
                     <!-- <q-popup-edit v-if="cell.data.label" v-model="props.row.name" title="" auto-save>
                       <q-list style="align-content: flex-end; width: 100%">
@@ -231,7 +238,7 @@ export default defineComponent({
     }
   },
   methods: {
-    asctable(){
+    asctable() {
       this.sortingDisplay = 'R_ASC'
       this.columns = [
         { name: 'Date', label: 'Date', field: 'Date', align: 'left' },
@@ -248,7 +255,7 @@ export default defineComponent({
       ]
       this.fetchData()
     },
-    desctable(){
+    desctable() {
       this.sortingDisplay = 'R_DESC'
       this.columns = [
         { name: 'Date', label: 'Date', field: 'Date', align: 'left' },
@@ -265,7 +272,7 @@ export default defineComponent({
       ]
       this.fetchData()
     },
-    getDetailform(resvId, resvRoomId){
+    getDetailform(resvId, resvRoomId) {
       this.$ResvStore.currentResvId = resvId
       this.$ResvStore.currentRoomResvId = resvRoomId
       console.log(resvId, resvRoomId)
@@ -337,40 +344,40 @@ export default defineComponent({
 
       list.push({
         Date: { data: { label: 'Room Average' }, style: {} },
-        room_1: { data: { label: avg.total_1 + '%'}, style: {} },
-        room_2: { data: { label: avg.total_2+ '%'}, style: {} },
-        tiga: { data: { label: avg.total_3+ '%'}, style: {} },
-        empat: { data: { label: avg.total_4+ '%'}, style: {} },
-        lima: { data: { label: avg.total_5+ '%'}, style: {} },
-        enam: { data: { label: avg.total_6+ '%'}, style: {} },
-        tujuh: { data: { label: avg.total_7+ '%'}, style: {} },
-        delapan: { data: { label: avg.total_8+ '%'}, style: {} },
-        sembilan: { data: {label: avg.total_9+ '%'}, style: {} },
-        sepuluh: { data: {label: avg.total_10 + '%'}, style: {} }
+        room_1: { data: { label: avg.total_101 + '%' }, style: {} },
+        room_2: { data: { label: avg.total_102 + '%' }, style: {} },
+        tiga: { data: { label: avg.total_103 + '%' }, style: {} },
+        empat: { data: { label: avg.total_104 + '%' }, style: {} },
+        lima: { data: { label: avg.total_105 + '%' }, style: {} },
+        enam: { data: { label: avg.total_106 + '%' }, style: {} },
+        tujuh: { data: { label: avg.total_107 + '%' }, style: {} },
+        delapan: { data: { label: avg.total_108 + '%' }, style: {} },
+        sembilan: { data: { label: avg.total_109 + '%' }, style: {} },
+        sepuluh: { data: { label: avg.total_110 + '%' }, style: {} }
       })
       this.data = list
       console.log('list data after pushing room average:', this.data)
     },
-    triggerNegative (data) {
-        this.$q.notify(
-          {
+    triggerNegative(data) {
+      this.$q.notify(
+        {
           type: 'negative',
           message: data || 'error',
           timeout: 1000
         },
         4000
-        )
-      },
-      triggerPositive (data) {
-        this.$q.notify(
-          {
+      )
+    },
+    triggerPositive(data) {
+      this.$q.notify(
+        {
           type: 'positive',
           message: data || 'data has successfully',
           timeout: 1000
         },
         4000
-        )
-      },
+      )
+    }
   }
 })
 </script>

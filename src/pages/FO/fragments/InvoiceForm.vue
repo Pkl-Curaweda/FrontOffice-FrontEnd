@@ -99,7 +99,69 @@
             </q-card-section>
 
             <q-card-section>
-              <div>make table in here</div>
+              <div class="my-table">
+                <q-table
+                  class="no-shadow"
+                  v-model:pagination="pagination"
+                  @request="onPaginationChange"
+                  :rows="data"
+                  :loading="loading"
+                  :columns="columns"
+                  row-key="name"
+                >
+                  <template v-slot:header="props">
+                    <q-tr class="table-head" :props="props">
+                      <q-th
+                        v-for="(col, i) in props.cols"
+                        :key="i"
+                        style="padding-top: 0px; padding-bottom: 0px"
+                      >
+                        <q-select
+                          v-if="filterColumns.hasOwnProperty(col.name)"
+                          clearable
+                          borderless
+                          dark
+                          label-color="white"
+                          style="min-width: 90px"
+                          v-model="filterColumns[col.name].data"
+                          :options="filterColumns[col.name].options"
+                          @update:model-value="(val) => filterColumns[col.name].onOptionChange(val)"
+                          :label="col.label"
+                        >
+                          <template
+                            v-if="allObjectsInArray(filterColumns[col.name].options)"
+                            v-slot:option="scope"
+                          >
+                            <q-item v-bind="scope.itemProps">
+                              <q-item-section>
+                                <div class="flex">
+                                  <q-icon
+                                    size="20px"
+                                    v-for="(ic, k) in scope.opt.icons"
+                                    :key="k"
+                                    :name="ic"
+                                  />
+                                  <q-item-label class="q-ml-sm">{{ scope.opt.label }}</q-item-label>
+                                </div>
+                              </q-item-section>
+                            </q-item>
+                          </template>
+                        </q-select>
+                        <span v-else class="text-h6">{{ col.label }}</span>
+                      </q-th>
+                    </q-tr>
+                  </template>
+                  <template v-slot:body="props">
+                    <q-tr :props="props">
+                      <template v-for="(cell, key, i) in props.row" :key="i">
+                        <q-td v-if="!['uniqueId'].includes(key)" :style="cell.style">
+                          {{ cell.data }}
+                        </q-td>
+                      </template>
+                    </q-tr>
+                  </template>
+                </q-table>
+              </div>
             </q-card-section>
           </q-card>
         </q-dialog>
@@ -157,6 +219,7 @@
 <script>
 import { useQuasar } from 'quasar'
 import { defineComponent, ref } from 'vue'
+import { allObjectsInArray } from 'src/utils/datatype'
 
 export default defineComponent({
   name: 'InvoiceForm',
@@ -166,14 +229,101 @@ export default defineComponent({
       updateQty: ref(''),
       description: ref(''),
       billAdress: ref(''),
+      allObjectsInArray,
       comments: ref(''),
-      viewBill: ref(false)
+      viewBill: ref(false),
+      columns: [
+        { name: 'Art', label: 'Art', align: 'left', field: 'Art' },
+        { name: 'Qty', label: 'Qty', align: 'left', field: 'Qty' },
+        { name: 'Description', label: 'Description', align: 'left', field: 'Description' },
+        { name: 'Rate', label: 'Rate', align: 'left', field: 'Rate' },
+        { name: 'Amount', label: 'Amount', align: 'left', field: 'Amount' },
+        { name: 'RmNo', label: 'RmNo', align: 'left', field: 'RmNo' },
+        { name: 'RoomBoy', label: 'Room Boy', field: 'RoomBoy', align: 'left' },
+        { name: 'VoucherNumber', label: 'Voucher Number', align: 'left', field: 'VoucherNumber' },
+        { name: 'BillDate', label: 'BillDate', align: 'left', field: 'BillDate' }
+      ]
     }
   },
   data() {
     return {
       api: new this.$Api('frontoffice'),
-      data: []
+      pagination: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 20
+      },
+      data: [],
+      uniqueId: [],
+      filterSortOrder: ref({ col: '', val: '' }),
+      filterColumns: {
+        Art: {
+          data: '',
+          options: ['1-999', '999-1'],
+          onOptionChange: (val) => {
+            if (val == '1-999') this.filterSortOrder = { col: 'Art', val: 'art-asc' }
+            else if (val == '999-1') this.filterSortOrder = { col: 'Art', val: 'art-desc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
+        },
+        Qty: {
+          data: '',
+          options: ['1>', '1'],
+          onOptionChange: (val) => {
+            if (val == '1>') this.filterSortOrder = { col: 'Qty', val: 'qty-desc' }
+            else if (val == '1') this.filterSortOrder = { col: 'Qty', val: 'qty-asc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
+        },
+        Description: {
+          data: '',
+          options: ['A-Z', 'Z-A'],
+          onOptionChange: (val) => {
+            if (val == 'A-Z') this.filterSortOrder = { col: 'Description', val: 'desc-asc' }
+            else if (val == 'Z-A') this.filterSortOrder = { col: 'Description', val: 'desc-desc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
+        },
+        Rate: {
+          data: '',
+          options: ['High Price', 'Low Price'],
+          onOptionChange: (val) => {
+            if (val == 'High Price') this.filterSortOrder = { col: 'Rate', val: 'rate-desc' }
+            else if (val == 'Low Price') this.filterSortOrder = { col: 'Rate', val: 'rate-asc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
+        },
+        Amount: {
+          data: '',
+          options: ['High Price', 'Low Price'],
+          onOptionChange: (val) => {
+            if (val == 'High Price') this.filterSortOrder = { col: 'Amount', val: 'amount-desc' }
+            else if (val == 'Low Price') this.filterSortOrder = { col: 'Amount', val: 'amount-asc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
+        },
+        // RmNo: {
+        //   data: '',
+        //   options: ['', '']
+        // },
+        // RoomBoy: {
+        //   data: '',
+        //   options: ['ILYAS', 'RONI', 'YUTA', 'HERTIAMAN']
+        // },
+        // VoucherNumber: {
+        //   data: '',
+        //   options: ['', '']
+        // },
+        BillDate: {
+          data: '',
+          options: ['Newest', 'Oldest'],
+          onOptionChange: (val) => {
+            if (val == 'Newest') this.filterSortOrder = { col: 'BillDate', val: 'date-desc' }
+            else if (val == 'Oldest') this.filterSortOrder = { col: 'BillDate', val: 'date-asc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
+        }
+      }
     }
   },
   computed: {
@@ -193,6 +343,8 @@ export default defineComponent({
       this.getDetailForm()
     }
 
+    this.fetchData()
+
     // watch(
     //   () => this.$ResvStore.UniqueId,
     //   () => {
@@ -206,9 +358,24 @@ export default defineComponent({
     '$ResvStore.currentRoomResvId': 'getDetailForm',
     '$ResvStore.dateBill': 'getDetailForm',
     '$ResvStore.Artlb': 'getDetailForm',
-    '$ResvStore.UniqueId': 'getDetailForm'
+    '$ResvStore.UniqueId': 'getDetailForm',
+    filterSortOrder: {
+      handler(oldFilter, newFilter) {
+        Object.keys(this.filterColumns).forEach((key) => {
+          if (oldFilter['col'] != key) this.filterColumns[key].data = null
+        })
+        this.fetchData()
+      }
+    }
   },
   methods: {
+    setSortOrder(val = '') {
+      this.filterSortOrder = null
+    },
+    onPaginationChange(props) {
+      this.pagination = props.pagination
+      this.fetchData()
+    },
     formatCurrency(num = 0) {
       return num.toLocaleString()
     },
@@ -231,6 +398,7 @@ export default defineComponent({
           this.loading = false
 
           if (status == 200) {
+            this.formatData()
             const { detail } = data
 
             this.backgroundedTotal = this.formatCurrency(data.total)
@@ -247,6 +415,74 @@ export default defineComponent({
           this.triggerPositive('GET Data Successfully')
         }
       )
+    },
+    fetchData() {
+      this.loading = true
+
+      const { resvId, resvRoomId } = this.$route.params
+
+      if (resvId === 0 || resvRoomId === 0) {
+        this.loading = false
+        console.log(resvId)
+        return
+      }
+
+      let url = `fo/invoice/${resvId}/${resvRoomId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+
+      this.$api
+        .get(url)
+        .then((response) => {
+          this.loading = false
+
+          if (response.status === 200) {
+            const { artList } = response.data.data
+
+            this.data2 = artList.map((al) => ({
+              name: al.id,
+              description: al.description,
+              qty: 0
+            }))
+            // this.uniqueId = response.data.data.invoices.uniqueId
+            // console.log(this.uniqueId)
+            // this.uniqueId = response.data.data.invoices.uniqueId
+            // console.log(response.data.data.invoices.uniqueId)
+            this.formatData(response.data.data.invoices)
+            this.pagination = {
+              page: response.data.data.meta?.currPage,
+              rowsNumber: response.data.data.meta?.total,
+              rowsPerPage: response.data.data.meta?.perPage
+            }
+          }
+          this.triggerPositive('GET Data Successfully')
+        })
+        .catch((error) => {
+          this.loading = false
+          console.error('Error fetching data:', error)
+        })
+    },
+    formatData(raw = []) {
+      const list = []
+      const unique = []
+
+      raw.forEach((inv) => {
+        // uniqueId: { data: inv.uniqueId, style: {} }
+
+        list.push({
+          Art: { data: inv.art.label ? inv.art.label : inv.art, style: {} },
+          Qty: { data: inv.qty, style: {} },
+          Description: { data: inv.desc, style: {} },
+          Rate: { data: this.formatCurrency(inv.rate), style: {} },
+          Amount: { data: this.formatCurrency(inv.amount), style: {} },
+          RmNo: { data: 101, style: {} },
+          RoomBoy: { data: 'Asep', style: {} },
+          VoucherNumber: { data: 101111, style: {} },
+          BillDate: { data: inv.billDate, style: {} },
+          uniqueId: { data: inv.uniqueId, style: {} }
+        })
+      })
+      console.log(list)
+      this.data = list
+      // this.uniqueId = unique
     },
     async editDataInv() {
       const { currentResvId, currentRoomResvId, dateBill, UniqueId } = this.$ResvStore

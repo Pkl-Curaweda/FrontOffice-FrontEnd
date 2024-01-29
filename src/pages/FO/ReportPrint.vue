@@ -48,105 +48,92 @@
         <div class="column" style="gap: 10px">
           <div class="row justify-between" style="overflow: auto; min-width: 100%; max-width: 100%">
             <p class="q-my-auto" style="min-width: 60%; max-width: 60%">Page</p>
-            <p class="q-my-auto">2 Pages</p>
+            <p class="q-my-auto">{{ totalPages }} Pages</p>
           </div>
           <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%">
-            <p class="q-my-auto" style="min-width: 60%; max-width: 60%">Forecast</p>
-            <q-select
-              outlined
-              dense
-              v-model="forecast"
-              :options="forecastOpt"
-              label="Per-"
-              dropdown-icon="expand_more"
-              class="col-grow"
+            <p class="q-my-auto col-grow">Forecast</p>
+            <q-btn-dropdown
+              flat
+              square
+              style="border: 1px #00000030 solid"
+              class="text-capitalize rounded-borders"
+              :label="filterDisplayLabel"
               color="primary"
+              icon="event"
+              dropdown-icon="o_expand_more"
             >
-              <template v-slot:prepend>
-                <q-icon name="event" />
-              </template>
-            </q-select>
+              <q-list>
+                <q-item clickable v-close-popup @click="setFilterDisplay('day', 'Per-Day')">
+                  <q-item-section>Per-Day</q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup @click="setFilterDisplay('week', 'Per-Week')">
+                  <q-item-section>Per-Week</q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup @click="setFilterDisplay('month', 'Per-Month')">
+                  <q-item-section>Per-Month</q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup @click="setFilterDisplay('year', 'Per-Year')">
+                  <q-item-section>Per-Year</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
           </div>
           <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%">
-            <p class="q-my-auto" style="min-width: 60%; max-width: 60%">Destination</p>
-            <q-select
-              outlined
-              dense
-              v-model="destination"
-              :options="destinationOpt"
-              label="Save as"
-              dropdown-icon="expand_more"
-              class="col-grow"
+            <p class="q-my-auto col-grow">Pages</p>
+            <!-- Modify this part of your template -->
+            <q-btn-dropdown
+              flat
+              square
+              style="border: 1px #00000030 solid"
+              class="text-capitalize rounded-borders"
+              :label="filterDisplayLabelPages"
               color="primary"
+              icon="event"
+              dropdown-icon="o_expand_more"
+              v-model="pageOpt"
             >
-              <template v-slot:prepend>
-                <q-icon name="note" />
-              </template>
-            </q-select>
+              <q-list>
+                <!-- Use v-for to generate options dynamically -->
+                <q-item
+                  v-for="pageOpt in sumPagesOpt"
+                  :key="pageOpt"
+                  clickable
+                  v-close-popup
+                  @click="setFilterDisplayPages(pageOpt)"
+                >
+                  <q-item-section>Page {{ pageOpt }}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
           </div>
           <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%">
-            <p class="q-my-auto" style="min-width: 60%; max-width: 60%">Pages</p>
-            <q-select
-              outlined
-              dense
-              v-model="pages"
-              :options="pagesOpt"
-              label="Pages"
-              dropdown-icon="expand_more"
-              class="col-grow"
+            <p class="q-my-auto col-grow">Pages</p>
+            <!-- Modify this part of your template -->
+            <q-btn-dropdown
+              flat
+              square
+              style="border: 1px #00000030 solid"
+              class="text-capitalize rounded-borders"
+              :label="filterDisplayLabelPerPages"
               color="primary"
-            />
+              icon="event"
+              dropdown-icon="o_expand_more"
+              v-model="perPageOpt"
+            >
+              <q-list>
+                <!-- Use v-for to generate options dynamically -->
+                <q-item
+                  v-for="perPageOpt in sumPerPagesOpt"
+                  :key="perPageOpt"
+                  clickable
+                  v-close-popup
+                  @click="setFilterDisplayPerPages(perPageOpt)"
+                >
+                  <q-item-section>Per Page {{ perPageOpt }}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
           </div>
-          <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%">
-            <p class="q-my-auto" style="min-width: 60%; max-width: 60%">Pages per sheet</p>
-            <q-select
-              outlined
-              dense
-              v-model="pagesper"
-              :options="pagesperOpt"
-              label="Pages per sheet"
-              dropdown-icon="expand_more"
-              class="col-grow"
-              color="primary"
-            />
-          </div>
-          <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%">
-            <p class="q-my-auto" style="min-width: 60%; max-width: 60%">Margin</p>
-            <q-select
-              outlined
-              dense
-              v-model="margin"
-              :options="marginOpt"
-              label="Margin"
-              dropdown-icon="expand_more"
-              class="col-grow"
-              color="primary"
-            />
-          </div>
-        </div>
-        <div style="gap: 8px" class="q-mt-lg row no-wrap items-center justify-end">
-          <q-btn
-            label="Print"
-            @click="print"
-            unelevated
-            color="primary"
-            dense
-            class="text-capitalize q-px-md q-py-sm"
-          />
-          <q-btn
-            label="Save"
-            unelevated
-            color="primary"
-            dense
-            class="text-capitalize q-px-md q-py-sm"
-          />
-          <q-btn
-            label="Cancel"
-            outline
-            color="primary"
-            dense
-            class="text-capitalize q-px-md q-py-sm"
-          />
         </div>
       </div>
     </div>
@@ -162,21 +149,12 @@ export default defineComponent({
   name: 'Print',
   setup() {
     return {
-      forecast: ref(null),
-      forecastOpt: ['Per-Day', 'Per-Week', 'Per-Month'],
-      destination: ref(null),
-      destinationOpt: ['Save As PDF', 'Custom'],
-      pages: ref(null),
-      pagesOpt: ['All', 'Custom'],
-      pagesper: ref(null),
-      pagesperOpt: ['1', 'Custom'],
-      margin: ref(null),
-      marginOpt: ['Default', 'Custom'],
-      billNumber: ref(),
-      reservationResource: ref(),
-      guestName: ref(),
-      arrival: ref(),
-      departure: ref(),
+      filterDisplay: ref('day'),
+      filterDisplayLabel: ref('Per-Day'),
+      filterDisplayLabelPages: ref('Page 1'),
+      filterDisplayLabelPerPages: ref('Per Page 1'),
+      perPageOpt: ref(20),
+      pageOpt: ref(1),
       columns: [
         { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
         { name: 'RmAvailable', label: 'Room Available', align: 'left', field: 'RmAvailable' },
@@ -195,20 +173,62 @@ export default defineComponent({
   components: { FOMenubar },
   data() {
     return {
-      url: '',
       api: new this.$Api('frontoffice'),
-      pagination: {
-        page: 1,
-        rowsNumber: 0,
-        rowsPerPage: 30
-      },
+      sumPagesOpt: [],
+      sumPerPagesOpt: ref(),
       data: []
     }
   },
   mounted() {
     this.getDataTable()
   },
+  watch: {
+    filterDisplay(newOption) {
+      // Update the label based on the selected option
+      this.updateFilterDisplayLabel(newOption)
+    },
+    filterDisplay: {
+      handler(option) {
+        this.getDataTable()
+      }
+    }
+  },
   methods: {
+    setFilterDisplay(option, label) {
+      this.filterDisplay = option
+      this.updateFilterDisplayLabel(option)
+      this.getDataTable()
+    },
+    setFilterDisplayPages(option) {
+      this.pageOpt = option
+      this.filterDisplayLabelPages = `Page ${option}`
+      this.getDataTable()
+    },
+    setFilterDisplayPerPages(option) {
+      this.perPageOpt = option
+      this.filterDisplayLabelPerPages = `Page ${option}`
+      this.getDataTable()
+    },
+    updateFilterDisplayLabel(option) {
+      // Logic to update the label based on the selected option
+      switch (option) {
+        case 'day':
+          this.filterDisplayLabel = 'Per-Day'
+          break
+        case 'week':
+          this.filterDisplayLabel = 'Per-Week'
+          break
+        case 'month':
+          this.filterDisplayLabel = 'Per-Month'
+          break
+        case 'year':
+          this.filterDisplayLabel = 'Per-Year'
+          break
+        // Add other cases as needed
+        default:
+          this.filterDisplayLabel = 'Default Label'
+      }
+    },
     print() {
       const element = this.$refs.pdfContainer
 
@@ -220,26 +240,38 @@ export default defineComponent({
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
       })
     },
-    onPaginationChange(props) {
-      this.pagination = props.pagination
-      this.fetchData()
-    },
     getDataTable() {
       this.loading = true
 
-      let url = `report?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      let url = `report?`
+
+      if (this.filterDisplay !== null) {
+        url += `&disOpt=${this.filterDisplay}`
+      }
+
+      if (this.pageOpt !== null) {
+        url += `&page=${this.pageOpt}`
+      }
+
+      if (this.perPageOpt !== null) {
+        url += `&perPage=${this.perPageOpt}`
+      }
       this.url = url
       this.api.get(url, ({ status, data }) => {
         this.loading = false
 
         if (status == 200) {
-          this.formatData(data.reports)
+          const { meta } = data
 
-          this.billNumber = data.billNumber
-          this.reservationResource = data.resourceName
-          this.guestName = data.guestName
-          this.arrival = data.arrivalDate
-          this.departure = data.departureDate
+          this.totalPages = meta.lastPage
+
+          // Update sumPagesOpt based on lastPage value
+          this.sumPagesOpt = Array.from({ length: meta.lastPage }, (_, i) => i + 1).map(String)
+
+          // Update sumPerPagesOpt based on perPage value from meta
+          this.sumPerPagesOpt = { length: meta.perPage }
+
+          this.formatData(data.reports)
         }
       })
     },

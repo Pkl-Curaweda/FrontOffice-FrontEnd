@@ -242,7 +242,7 @@
                         test
                       </div> -->
                     </div>
-                    <div class="q-pa-md">
+                    <div class="q-px-md">
                       <q-btn auto-close flat round color="primary" icon="more_vert">
                         <q-menu>
                           <q-list style="align-content: flex-end; width: 100%">
@@ -654,14 +654,19 @@ export default defineComponent({
         request: this.waitingnote
       }
 
-      try{
-        this.api.post(`/detail/reservation/${resvId}/${roomNo}/waiting-list`, note, ({ data, status, message }) => {
-        if (status === 200) {
-          console.log(data)
-          this.triggerPositive(message)
-          window.location.reload()
-        }
-      })}catch(error){
+      try {
+        this.api.post(
+          `/detail/reservation/${resvId}/${roomNo}/waiting-list`,
+          note,
+          ({ data, status, message }) => {
+            if (status === 200) {
+              console.log(data)
+              this.triggerPositive(message)
+              window.location.reload()
+            }
+          }
+        )
+      } catch (error) {
         console.error(error)
       }
     },
@@ -690,8 +695,7 @@ export default defineComponent({
             if (status === 200) {
               this.triggerPositive(message)
               console.log(data)
-            window.location.reload()
-
+              window.location.reload()
             }
           }
         )

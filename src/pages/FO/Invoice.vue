@@ -33,19 +33,6 @@
             <q-date v-model="datePicker" />
           </div>
         </q-btn-dropdown>
-
-        <q-separator vertical />
-
-        <q-btn-dropdown
-          flat
-          square
-          class="text-capitalize text-black"
-          label="Display Option"
-          color="primary"
-          dropdown-icon="o_expand_more"
-        >
-          <q-option-group :options="filterDisplayOptions" type="radio" v-model="filterDisplay" />
-        </q-btn-dropdown>
       </template>
       <template #right>
         <q-separator vertical />

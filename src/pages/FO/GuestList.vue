@@ -55,8 +55,8 @@
       </template>
       <template #right>
         <q-separator vertical />
-        <q-btn flat square color="primary" icon="pending_actions">
-          <q-tooltip>Pending</q-tooltip>
+        <q-btn flat square color="primary" icon="pending_actions" @click="showhistory(!this.state)">
+          <q-tooltip>History</q-tooltip>
         </q-btn>
       </template>
     </FOMenubar>
@@ -242,7 +242,7 @@
                         test
                       </div> -->
                     </div>
-                    <div class="q-pa-md">
+                    <div>
                       <q-btn auto-close flat round color="primary" icon="more_vert">
                         <q-menu>
                           <q-list style="align-content: flex-end; width: 100%">
@@ -870,7 +870,7 @@ export default defineComponent({
     fetchData() {
       this.loading = true
 
-      let url = `arrival?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      let url = `arrival?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}&history=${this.state}`
 
       if (this.filterDisplay !== null) url += `&disOpt=${this.filterDisplay}`
 

@@ -506,8 +506,7 @@
           dense
           class="q-mt-sm text-capitalize q-px-sm"
           color="primary"
-          to="guest-invoice"
-          @click="kirimData()"
+          @click="redirectToInvoice"
           label="Invoice"
         />
       </q-expansion-item>
@@ -567,29 +566,11 @@
 <script>
 import { defineComponent, ref, watch, provide, inject } from 'vue'
 import { useQuasar } from 'quasar'
-// import { bus } from 'src/stores/EventBus.js'
 
-// Create an event bus
-// const eventBusSymbol = Symbol('eventBus')
-// const eventBus = {}
-
-// export const provideEventBus = () => {
-//   provide(eventBusSymbol, eventBus)
-// }
-
-// export const injectEventBus = () => {
-//   return inject(eventBusSymbol)
-// }
 export default defineComponent({
   name: 'GuestForm',
   setup() {
     const data = 'Ini adalah data yang akan dikirim'
-
-    // function kirimData() {
-    //   injectEventBus().$emit('dataDikirim', data)
-    //   console.log(data)
-    // }
-
     const isRbSelected = ref(false)
     const isRoSelected = ref(false)
     const isKtpSelected = ref(false)
@@ -743,12 +724,6 @@ export default defineComponent({
         this.getResvProps()
       }
     )
-    // watch(
-    //   () => [this.roomNo, this.roomBed, this.roomType],
-    //   () => {
-    //     this.isRoomExist()
-    //   }
-    // )
   },
   created() {
     for (let i = 1; i <= 10; i++) {
@@ -789,18 +764,14 @@ export default defineComponent({
     }
   },
   methods: {
-    kirimData() {
+    redirectToInvoice() {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
-      // const senddata = {
-      //   currentResvId,
-      //   currentRoomResvId
-      // }
-      // bus.$emit('dataDikirim', senddata)
-      // console.log(currentResvId)
-      // console.log(currentRoomResvId)
-      // this.$ResvStore.currentResvId = data
-      // this.$ResvStore.currentRoomResvId = rmno
+      this.$router.replace({
+        name: 'guest-invoice',
+        params: { resvId: currentResvId, resvRoomId: currentRoomResvId }
+      })
     },
+    kirimData() {},
     setRoww() {
       return {
         roomId: this.roomNo ? this.roomNo : 1,
@@ -809,16 +780,6 @@ export default defineComponent({
         arrangmentCode: this.selected && this.selected.id ? this.selected.id : ''
       }
     },
-    // isRoomExist() {
-    //   if (this.roomType == null || this.roomNo == null || this.roomBed == null) return
-
-    //   this.availRooms.filter(
-    //     (r) =>
-    //       r.roomType == this.roomType && r.id == this.roomNo && r.bedSetup == this.roomBed.value
-    //   ).length < 1
-    //     ? this.$Helper.showNotif('Room Unavailable', '', 'warning')
-    //     : this.$Helper.showNotif('Room Available', '', 'positive')
-    // },
     roomBedMapper(bed) {
       let obj = {
         label: bed,
@@ -831,17 +792,6 @@ export default defineComponent({
 
       return obj
     },
-    // formatAvailableRoom() {
-    //   function getUniqueValues(data, key) {
-    //     const uniqueValues = [...new Set(data.map((item) => item[key]))]
-    //     return uniqueValues
-    //   }
-
-    //   const room = this.availRooms
-    //   this.roomNoOpts = getUniqueValues(room, 'id')
-    //   this.roomTypeOpts = getUniqueValues(room, 'roomType')
-    //   this.roomBedOpts = getUniqueValues(room, 'bedSetup').map(this.roomBedMapper)
-    // },
     formatArrivalDepart() {
       if (this.arrivalDepart.from && this.arrivalDepart.to) {
         const fromDate = new Date(this.arrivalDepart.from)
@@ -925,16 +875,12 @@ export default defineComponent({
       )
     },
     calculateTax(subtotal) {
-      // this.subtotal = this.DPP + this.total
-      // console.log(this.subtotal)
       return subtotal * 0.1
     },
     async newResvroom() {
       // create get date time for new reservation room
       try {
         const { currentResvId, currentRoomResvId } = this.$ResvStore
-        // console.log(this.roomNo)
-        // console.log(currentRoomResvId)
         const data = {
           arrangmentCode: this.selected.id,
           roomId: this.roomNo
@@ -976,12 +922,6 @@ export default defineComponent({
             }
           }
         )
-        //   Dialog.create({
-        //   title: 'Success Checkin',
-        //   message: 'Success Checkin Reservation',
-        //   color: 'white',
-        //   ok: 'OK'
-        // })
       } catch (error) {
         console.error('error : ' + error)
       }
@@ -1092,34 +1032,35 @@ export default defineComponent({
       console.log(rms)
       return rms
     },
-    checkCardIdselect(data){
-      if(data == 'KTP'){
+    checkCardIdselect(data) {
+      if (data == 'KTP') {
         this.KTPSelected()
         this.isKtpSelected = true
         this.isSimSelected = false
-      } else if (data == 'SIM'){
+      } else if (data == 'SIM') {
         this.SIMSelected()
         this.isKtpSelected = false
         this.isSimSelected = true
       }
     },
-    getdataCard(condition){
-      const {currentResvId, currentRoomResvId} = this.$ResvStore
+    getdataCard(condition) {
+      const { currentResvId, currentRoomResvId } = this.$ResvStore
       this.dialogpayment = condition
-      try{
-      this.api.get(`detail/reservation/${currentResvId}/idcard`, ({status, data}) => {
-        if(status === 200){
-          this.nameidcard = data.name,
-          this.CardIdselect = data.carIdentifier && this.checkCardIdselect(data.carIdentifier),
-          this.idcardnumber = data.cardId,
-          this.address = data.address
-          console.log(data)
-          if(this.nameidcard != ''){
-          this.triggerPositive('get data succesfully')}
-        }
-      }
-      )}
-      catch(error){
+      try {
+        this.api.get(`detail/reservation/${currentResvId}/idcard`, ({ status, data }) => {
+          if (status === 200) {
+            ;(this.nameidcard = data.name),
+              (this.CardIdselect =
+                data.carIdentifier && this.checkCardIdselect(data.carIdentifier)),
+              (this.idcardnumber = data.cardId),
+              (this.address = data.address)
+            console.log(data)
+            if (this.nameidcard != '') {
+              this.triggerPositive('get data succesfully')
+            }
+          }
+        })
+      } catch (error) {
         console.error('error' + error)
       }
     },
@@ -1235,29 +1176,31 @@ export default defineComponent({
         cardId: this.idcardnumber,
         address: this.address
       }
-      if(this.nameidcard == '' && this.idcardnumber == '' && this.address == ''){
+      if (this.nameidcard == '' && this.idcardnumber == '' && this.address == '') {
         this.triggerNegative('data is missing')
-      }else{
-      try {
-        this.api.post(
-          `detail/reservation/${currentResvId}/${currentRoomResvId}/add-idcard`,
-          cardData,
-          ({ status, data }) => {
-            this.loading = false
-            if (status === 200) {
-              console.log('Data berhasil diperbarui:', data)
-              this.triggerPositive(this.CardIdselect + ' added successfully' || 'Card not selected')
-              this.dialogpayment = false
-            } else {
-              console.error('Gagal memperbarui data')
-              this.triggerNegative('data is missing')
+      } else {
+        try {
+          this.api.post(
+            `detail/reservation/${currentResvId}/${currentRoomResvId}/add-idcard`,
+            cardData,
+            ({ status, data }) => {
+              this.loading = false
+              if (status === 200) {
+                console.log('Data berhasil diperbarui:', data)
+                this.triggerPositive(
+                  this.CardIdselect + ' added successfully' || 'Card not selected'
+                )
+                this.dialogpayment = false
+              } else {
+                console.error('Gagal memperbarui data')
+                this.triggerNegative('data is missing')
+              }
             }
-          }
-        )
-      } catch (error) {
-        console.error('error:' + error)
+          )
+        } catch (error) {
+          console.error('error:' + error)
+        }
       }
-    }
     },
     KTPSelected() {
       this.CardIdselect = 'KTP'

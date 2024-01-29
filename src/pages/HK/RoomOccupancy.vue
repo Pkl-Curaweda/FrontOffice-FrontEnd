@@ -365,15 +365,28 @@ export default defineComponent({
       barO,
       pieO,
       tableCol,
-      roomTypeVal
+      roomTypeVal,
+      api: new this.$Api('housekeeping')
     }
   },
+  mounted() {
+    this.fetchData()
+  },
+  watch: {},
   methods: {
-    changeRoom(val) {
-      console.log(this.r_group)
+    fetchData() {
+      this.loading = true
+
+      let url = `roomocc`
+
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+        }
+      })
     }
-  },
-  watch: {}
+  }
 })
 </script>
 

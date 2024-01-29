@@ -7,7 +7,7 @@
     </FOMenubar>
 
     <div class="row q-ma-md no-wrap" style="gap: 15px">
-      <div style="width: 50%">
+      <div class="col-grow" ref="pdfContainer">
         <q-img
           src="../../assets/img/lingian-logo-colored.png"
           style="
@@ -172,7 +172,7 @@
         <div style="gap: 8px" class="q-mt-lg row no-wrap items-center justify-end">
           <q-btn
             label="Print"
-            @click="downloadDesign()"
+            @click="print"
             unelevated
             color="primary"
             dense
@@ -201,7 +201,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import FOMenubar from 'src/components/FOMenubar.vue'
-import { saveAs } from 'file-saver'
+import html2pdf from 'html2pdf.js'
 
 const columns = [
   { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
@@ -243,37 +243,21 @@ export default defineComponent({
     this.getDataTable()
   },
   methods: {
-    async downloadDesign() {
-      const url = 'invoice/1/1'
+    print() {
+      const element = this.$refs.pdfContainer
 
-      try {
-        // Make the API request to get the file
-        const blob = await this.api.post(`${url}/print`, null, async (response) => {
-          if (response && response.status == 200 && response.blob) {
-            const blob = await response.blob
-            return blob
-          } else {
-            console.error('Invalid response format:', response)
-            return null
-          }
-        })
-
-        // Check if blob is valid
-        if (blob) {
-          // Trigger the download using file-saver
-          saveAs(blob, 'invoicePdf.pdf')
-          console.log('Permintaan print telah dikirim.')
-        } else {
-          console.error('Invalid or null blob received.')
-        }
-      } catch (error) {
-        console.error('Error in print request:', error)
-      }
+      html2pdf(element, {
+        margin: 10,
+        filename: 'invoice.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      })
     },
     getDataTable() {
       this.loading = true
 
-      let url = `invoice/1/1`
+      let url = `invoice/1/1/print`
       this.url = url
       this.api.get(url, ({ status, data }) => {
         this.loading = false

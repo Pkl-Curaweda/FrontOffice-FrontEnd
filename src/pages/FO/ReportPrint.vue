@@ -1,14 +1,10 @@
 <template>
   <q-page style="overflow-y: scroll; height: 100%">
-    <FOMenubar>
-      <template #right>
-        <q-btn flat square color="primary" icon="o_print" />
-      </template>
-    </FOMenubar>
+    <FOMenubar />
 
     <div class="row q-ma-md no-wrap" style="gap: 15px">
       <div style="width: 50%">
-        <div class="my-table q-pb-md">
+        <div class="my-table q-pb-md" ref="pdfContainer">
           <q-table
             class="no-shadow"
             v-model:pagination="pagination"
@@ -131,7 +127,7 @@
         <div style="gap: 8px" class="q-mt-lg row no-wrap items-center justify-end">
           <q-btn
             label="Print"
-            @click="PrintInvoice()"
+            @click="print"
             unelevated
             color="primary"
             dense
@@ -160,6 +156,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import FOMenubar from 'src/components/FOMenubar.vue'
+import html2pdf from 'html2pdf.js'
 
 export default defineComponent({
   name: 'Print',
@@ -200,6 +197,11 @@ export default defineComponent({
     return {
       url: '',
       api: new this.$Api('frontoffice'),
+      pagination: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 30
+      },
       data: []
     }
   },
@@ -207,24 +209,25 @@ export default defineComponent({
     this.getDataTable()
   },
   methods: {
-    PrintInvoice() {
-      const reportType = 'day'
+    print() {
+      const element = this.$refs.pdfContainer
 
-      this.api
-        .get(`report/${reportType}/print`, () => {})
-        .then((response) => {
-          const printUrl = response.data.printUrl
-          window.open(printUrl, '_blank')
-        })
-        .catch((error) => {
-          console.error('Error while printing:', error)
-          // Handle the error, show a message, etc.
-        })
+      html2pdf(element, {
+        margin: 0,
+        filename: 'invoice.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+      })
+    },
+    onPaginationChange(props) {
+      this.pagination = props.pagination
+      this.fetchData()
     },
     getDataTable() {
       this.loading = true
 
-      let url = `report`
+      let url = `report?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
       this.url = url
       this.api.get(url, ({ status, data }) => {
         this.loading = false

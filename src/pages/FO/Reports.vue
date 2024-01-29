@@ -19,13 +19,7 @@
             </q-item>
           </q-list>
         </q-btn-dropdown>
-        <q-separator vertical />
 
-        <q-input v-model="searchInput" borderless label="Name" type="search">
-          <template v-slot:prepend>
-            <q-icon name="search" class="q-ml-sm" color="primary" />
-          </template>
-        </q-input>
         <q-separator vertical />
 
         <q-btn-dropdown
@@ -67,7 +61,7 @@
         </q-btn-dropdown>
       </template>
       <template #right>
-        <q-btn flat square color="primary" icon="o_print" to="/fo/report/print" />
+        <q-btn flat square color="primary" icon="o_print" to="/fo/reports/print" />
       </template>
     </FOMenubar>
 

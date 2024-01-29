@@ -586,7 +586,7 @@ export default defineComponent({
         this.loading = false
 
         if (status == 200) {
-          const { room, arrrival, departure } = data
+          const { room } = data
 
           const arrivalDate = data.arr // Gantilah 'arrival.arr' dengan properti yang benar
           if (arrivalDate) {
@@ -604,7 +604,7 @@ export default defineComponent({
           this.expectedNominal = data.main.ED
           this.outNominal = data.main.OO
           console.log(data)
-          this.rows = room.map((room) => ({
+          this.rows = room.foreach((room) => ({
             Roomno: room.roomNo,
             Roomstatus: room.roomStatus,
             Guestname: room.guestName,

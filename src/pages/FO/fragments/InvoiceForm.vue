@@ -32,7 +32,8 @@
           style="border: 1.5px #00000080 solid"
           class="text-bold q-py-xs q-px-sm rounded-borders"
         >
-          {{ qty || '-' }}
+          <!-- <q-input borderless :dense="dense" v-model="updatedQtyWithDefault" /> -->
+          {{ updatedQtyWithDefault }}
         </div>
       </div>
       <div class="row items-center">
@@ -75,7 +76,7 @@
           class="text-capitalize q-px-sm"
           color="primary"
           label="Invoice"
-          to="/fo/payment"
+          to="payment"
         />
         <q-btn
           flat
@@ -154,12 +155,15 @@
 </template>
 
 <script>
+import { useQuasar } from 'quasar'
 import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'InvoiceForm',
   setup() {
+    const $q = useQuasar()
     return {
+      updateQty: ref(''),
       description: ref(''),
       billAdress: ref(''),
       comments: ref(''),
@@ -172,33 +176,100 @@ export default defineComponent({
       data: []
     }
   },
+  computed: {
+    updatedQtyWithDefault: {
+      get() {
+        return this.updateQty || '-'
+      },
+      set(value) {
+        this.updateQty = value
+      }
+    }
+  },
   mounted() {
-    this.getDetailForm()
+    // this.getDetailForm()
+
+    if (this.$ResvStore.UniqueId) {
+      this.getDetailForm()
+    }
+
+    // watch(
+    //   () => this.$ResvStore.UniqueId,
+    //   () => {
+    //     this.getDetailForm()
+    //   }
+    // )
+  },
+  watch: {
+    // Watch for changes in specific properties and call the function when they change
+    '$ResvStore.currentResvId': 'getDetailForm',
+    '$ResvStore.currentRoomResvId': 'getDetailForm',
+    '$ResvStore.dateBill': 'getDetailForm',
+    '$ResvStore.Artlb': 'getDetailForm',
+    '$ResvStore.UniqueId': 'getDetailForm'
   },
   methods: {
     formatCurrency(num = 0) {
       return num.toLocaleString()
     },
+    triggerPositive(message) {
+      this.$q.notify(
+        {
+          type: 'positive',
+          message: message || 'This is a "positive" type notification.',
+          timeout: 1000
+        },
+        4000
+      )
+    },
     getDetailForm() {
+      const { resvId, resvRoomId, dateBill, Artlb, UniqueId } = this.$route.params
       this.loading = true
-      this.api.get(`detail/invoice/1/1`, ({ status, data }) => {
-        this.loading = false
+      this.api.get(
+        `detail/invoice/${resvId}/${resvRoomId}/?ids=${UniqueId}`,
+        ({ status, data }) => {
+          this.loading = false
 
-        if (status == 200) {
-          const { detail } = data
+          if (status == 200) {
+            const { detail } = data
 
-          this.backgroundedTotal = this.formatCurrency(data.total)
-          this.backgroundedBalance = this.formatCurrency(data.balance)
-          this.description = detail.desc
-          this.qty = detail.qty
-          this.rate = this.formatCurrency(detail.rate)
-          this.amount = this.formatCurrency(detail.amount)
-          this.balance = `Rp ${this.formatCurrency(data.balance)}`
-          this.billAddress = data.address
-          this.comments = data.comment
-          this.console.log('hallo')
+            this.backgroundedTotal = this.formatCurrency(data.total)
+            this.backgroundedBalance = this.formatCurrency(data.balance)
+            this.description = detail.desc
+            this.updateQty = detail.qty
+            this.rate = this.formatCurrency(detail.rate)
+            this.amount = this.formatCurrency(detail.amount)
+            this.balance = `Rp ${this.formatCurrency(data.balance)}`
+            this.billAddress = data.address
+            this.comments = data.comment
+            this.console.log('hallo')
+          }
+          this.triggerPositive('GET Data Successfully')
         }
-      })
+      )
+    },
+    async editDataInv() {
+      const { currentResvId, currentRoomResvId, dateBill, UniqueId } = this.$ResvStore
+      const data = {
+        qty: this.qty
+      }
+      try {
+        await this.api.put(
+          `detail/invoice/${currentResvId}/${currentRoomResvId}?ids=${UniqueId}`,
+          data,
+          ({ status, data }) => {
+            this.loading = true
+
+            if (status == 200) {
+              this.loading = false
+              console.log(data)
+              this.triggerPositive('Update Data Successfully')
+            }
+          }
+        )
+      } catch (error) {
+        console.log('Terjadi Kesalahan: ' + error)
+      }
     }
   }
 })

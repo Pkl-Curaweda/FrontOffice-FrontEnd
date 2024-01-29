@@ -163,11 +163,13 @@
                         <q-item
                           clickable
                           v-close-popup
-                          @click="setRoomResv(props.row)"
+                          @click="dialog2 = true"
                           style="display: flex"
                         >
                           <q-item-section>
-                            <q-item-label class="font-bold">Waiting List</q-item-label>
+                            <q-item-label class="font-bold" @click="dialog2 = true"
+                              >Waiting List</q-item-label
+                            >
                           </q-item-section>
                         </q-item>
                         <q-item
@@ -192,6 +194,38 @@
                         </q-item>
                       </q-list>
                     </q-popup-edit>
+                    <q-dialog v-model="dialog2">
+                      <q-card>
+                        <q-card-section>
+                          <div class="text-h6">Waiting List</div>
+                          <q-separator horizontal class="q-ma-xs" />
+                          <div class="q-mt-sm">
+                            Do you want to request something for room number {{ this.roomno
+                            }}<br />Please Give Us Your Request
+                          </div>
+                          <q-input
+                            v-model="waitingnote"
+                            class="q-my-md"
+                            label="Note..."
+                            dense
+                            outlined
+                            type="textarea"
+                          />
+                          <div
+                            class="row items-center"
+                            style="width: 100%; justify-content: space-between"
+                          >
+                            <q-btn v-close-popup label="Cancel" outline color="primary" />
+                            <q-btn
+                              v-close-popup
+                              label="accept"
+                              @click="postwaiting(props.row)"
+                              color="primary"
+                            />
+                          </div>
+                        </q-card-section>
+                      </q-card>
+                    </q-dialog>
                   </q-td>
                 </template>
                 <q-td key="" :props="props" style="width: 10px">
@@ -208,7 +242,7 @@
                         test
                       </div> -->
                     </div>
-                    <div class="q-px-md">
+                    <div class="q-pa-md">
                       <q-btn auto-close flat round color="primary" icon="more_vert">
                         <q-menu>
                           <q-list style="align-content: flex-end; width: 100%">
@@ -307,38 +341,40 @@
                                 <q-item-label>Edit Room</q-item-label>
                               </q-item-section>
                             </q-item>
-
-                            <q-dialog v-model="dialogeditroom" persistent>
-                              <q-card>
-                                <q-card-section class="row items-center">
-                                  <q-avatar
-                                    icon="signal_wifi_off"
-                                    color="primary"
-                                    text-color="white"
-                                  />
-                                  <span class="q-ml-sm"
-                                    >You are currently not connected to any network.</span
-                                  >
-                                </q-card-section>
-
-                                <q-card-section class="row items-center">
-                                  <q-toggle v-model="cancelEnabled" label="Cancel button enabled" />
-                                </q-card-section>
-
-                                <!-- Notice v-close-popup -->
-                                <q-card-actions align="right">
-                                  <q-btn
-                                    flat
-                                    label="Cancel"
-                                    color="primary"
-                                    v-close-popup="cancelEnabled"
-                                  />
-                                  <q-btn flat label="Turn on Wifi" color="primary" v-close-popup />
-                                </q-card-actions>
-                              </q-card>
-                            </q-dialog>
                           </q-list>
                         </q-menu>
+                        <q-dialog v-model="dialogeditroom" ref="editRoomDialog">
+                          <q-card>
+                            <q-card-section>
+                              <div class="text-h6">Change Room</div>
+                              <q-separator horizontal class="q-ma-xs" />
+                              <div class="q-mt-sm">
+                                Do you want to request something for room number {{ this.roomno
+                                }}<br />Please Give Us Your Request
+                              </div>
+                              <q-input
+                                v-model="waitingnote"
+                                class="q-my-md"
+                                label="Note..."
+                                dense
+                                outlined
+                                type="textarea"
+                              />
+                              <div
+                                class="row items-center"
+                                style="width: 100%; justify-content: space-between"
+                              >
+                                <q-btn v-close-popup label="Cancel" outline color="primary" />
+                                <q-btn
+                                  v-close-popup
+                                  label="accept"
+                                  @click="waitinglist(props.row, true)"
+                                  color="primary"
+                                />
+                              </div>
+                            </q-card-section>
+                          </q-card>
+                        </q-dialog>
                       </q-btn>
                     </div>
                   </div>
@@ -609,17 +645,103 @@ export default defineComponent({
     }
   },
   methods: {
+    postwaiting(data) {
+      const resvId = data['ResNo'].data
+      const roomNo = data['ResRoomNo'].data
+
+      console.log(resvId, roomNo)
+      const note = {
+        request: this.waitingnote
+      }
+
+      try{
+        this.api.post(`/detail/reservation/${resvId}/${roomNo}/waiting-list`, note, ({ data, status, message }) => {
+        if (status === 200) {
+          console.log(data)
+          this.triggerPositive(message)
+          window.location.reload()
+        }
+      })}catch(error){
+        console.error(error)
+      }
+    },
+    addnewextrabed(data) {
+      const resvId = data['ResNo'].data
+      const roomNo = data['ResRoomNo'].data
+      // const extra = {
+      //   articleId: 110,
+      //   qty: 1
+      // }
+      // const extra2 = {
+      //   articleId: 0,
+      //   qty: 1
+      // }
+      const articledata = [
+        {
+          articleId: 110,
+          qty: 1
+        }
+      ]
+      try {
+        this.api.post(
+          `/invoice/${resvId}/${roomNo}/article`,
+          articledata,
+          ({ status, data, message }) => {
+            if (status === 200) {
+              this.triggerPositive(message)
+              console.log(data)
+            window.location.reload()
+
+            }
+          }
+        )
+      } catch (error) {
+        console.error('error : ' + error)
+      }
+    },
+    showhistory(state) {
+      console.log(state)
+      this.state = state
+      this.fetchData()
+    },
+    waitinglist(data, log) {
+      const roomNo = data['RmNo'].data
+      console.log(roomNo)
+      this.roomno = roomNo
+      // this.dialogeditroom = true
+      // console.log(this.dialogeditroom)
+      this.$ResvStore.fix = false
+      this.$ResvStore.ds = false
+      this.$ResvStore.logc = true
+
+      if (log === true && this.waitingnote != null && this.waitingnote != '') {
+        // this.$refs.editRoomDialog.hide();
+        console.log(this.waitingnote)
+        this.$ResvStore.waitingnote = this.waitingnote
+        this.$ResvStore.currentResvId = data['ResNo'].data
+        this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
+      } else {
+        this.triggerNegative('note has not been filled in, data must be filled in')
+      }
+    },
+    editroom(data) {
+      this.$ResvStore.currentResvId = data['ResNo'].data
+      this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
+      this.$ResvStore.fix = false
+      this.$ResvStore.ds = true
+      this.$ResvStore.logc = false
+    },
     changereset(data) {
       try {
         const resvId = data['ResNo'].data
         const roomNo = data['ResRoomNo'].data
         console.log(roomNo)
-        this.api.put(`arrival?id=${resvId}-3`, null, ({ status, data }) => {
+        this.api.put(`arrival?id=${resvId}-3`, null, ({ status, data, message }) => {
           this.loading = false
           if (status === 200) {
-            this.triggerPositive('Create new reservation successfully')
+            this.triggerPositive(message)
             console.log('Data berhasil diperbarui:', data)
-            this.refresh()
+            window.location.reload()
           } else {
             console.error('Gagal memperbarui data')
           }
@@ -634,12 +756,12 @@ export default defineComponent({
         const resvId = data['ResNo'].data
         const roomNo = data['ResRoomNo'].data
         console.log(roomNo)
-        this.api.put(`arrival?id=${resvId}-1`, null, ({ status, data }) => {
+        this.api.put(`arrival?id=${resvId}-1`, null, ({ status, data, message }) => {
           this.loading = false
           if (status === 200) {
-            this.triggerPositive('Create new reservation successfully')
+            this.triggerPositive(message)
             console.log('Data berhasil diperbarui:', data)
-            this.refresh()
+            window.location.reload()
           } else {
             console.error('Gagal memperbarui data')
           }
@@ -654,12 +776,13 @@ export default defineComponent({
         const resvId = data['ResNo'].data
         const roomNo = data['ResRoomNo'].data
         console.log(roomNo)
-        this.api.put(`arrival?id=${resvId}-2`, null, ({ status, data }) => {
+        this.loading = true
+        this.api.put(`arrival?id=${resvId}-2`, null, ({ status, data, message }) => {
           this.loading = false
           if (status === 200) {
-            this.triggerPositive('Create new reservation successfully')
+            this.triggerPositive(message)
             console.log('Data berhasil diperbarui:', data)
-            this.refresh()
+            window.location.reload()
           } else {
             console.error('Gagal memperbarui data')
           }
@@ -759,7 +882,7 @@ export default defineComponent({
       this.$q.notify(
         {
           type: 'positive',
-          message: message || 'This is a "positive" type notification.',
+          message: message || 'Change Success',
           timeout: 1000
         },
         4000

@@ -116,14 +116,7 @@
             <template v-slot:body="props">
               <q-tr :props="props">
                 <template v-for="(cell, key, i) in props.row" :key="i">
-                  <q-td
-                    :style="cell.style"
-                    @click="
-                      !cell.data.label
-                        ? ''
-                        : getDetailform(cell.data.resvId, cell.data.resvRoomId) && triggerPositive()
-                    "
-                  >
+                  <q-td :style="cell.style" @click="!cell.data.resvId ? '' : getDetailform(cell.data.resvId, cell.data.resvRoomId) && triggerPositive()">
                     {{ cell.data.label }}
                     <!-- <q-popup-edit v-if="cell.data.label" v-model="props.row.name" title="" auto-save>
                       <q-list style="align-content: flex-end; width: 100%">
@@ -344,16 +337,16 @@ export default defineComponent({
 
       list.push({
         Date: { data: { label: 'Room Average' }, style: {} },
-        room_1: { data: { label: avg.total_101 + '%' }, style: {} },
-        room_2: { data: { label: avg.total_102 + '%' }, style: {} },
-        tiga: { data: { label: avg.total_103 + '%' }, style: {} },
-        empat: { data: { label: avg.total_104 + '%' }, style: {} },
-        lima: { data: { label: avg.total_105 + '%' }, style: {} },
-        enam: { data: { label: avg.total_106 + '%' }, style: {} },
-        tujuh: { data: { label: avg.total_107 + '%' }, style: {} },
-        delapan: { data: { label: avg.total_108 + '%' }, style: {} },
-        sembilan: { data: { label: avg.total_109 + '%' }, style: {} },
-        sepuluh: { data: { label: avg.total_110 + '%' }, style: {} }
+        room_1: { data: { label: avg.total_101 + '%'}, style: {} },
+        room_2: { data: { label: avg.total_102+ '%'}, style: {} },
+        tiga: { data: { label: avg.total_103+ '%'}, style: {} },
+        empat: { data: { label: avg.total_104+ '%'}, style: {} },
+        lima: { data: { label: avg.total_105+ '%'}, style: {} },
+        enam: { data: { label: avg.total_106+ '%'}, style: {} },
+        tujuh: { data: { label: avg.total_107+ '%'}, style: {} },
+        delapan: { data: { label: avg.total_108+ '%'}, style: {} },
+        sembilan: { data: {label: avg.total_109+ '%'}, style: {} },
+        sepuluh: { data: {label: avg.total_110 + '%'}, style: {} }
       })
       this.data = list
       console.log('list data after pushing room average:', this.data)

@@ -253,21 +253,22 @@ export default defineComponent({
       return num.toFixed(2)
     },
     formatData(raw = []) {
+      console.log
       const list = []
       raw.forEach((rp) => {
         list.push({
           Date: { data: rp.date, style: {} },
           RmAvailable: { data: rp.roomAvailable, style: {} },
           Occupied: { data: rp.occupied, style: {} },
-          Occ: { data: this.formatAverage(rp.occ) + '%', style: {} },
+          Occ: { data: rp.occ + '%', style: {} },
           RmRevenue: { data: this.formatCurrency(rp.roomRevenue), style: {} },
           Arr: { data: this.formatCurrency(rp.arr), style: {} },
           RmAvail: { data: rp.added.rm_avail, style: {} },
           Rno: { data: rp.added.rno, style: {} },
-          tdOcc: { data: this.formatAverage(rp.added.occ) + '%', style: {} },
+          tdOcc: { data: rp.added.occ + '%', style: {} },
           tdRmRevenue: { data: this.formatCurrency(rp.added.rev), style: {} },
           tdArr: { data: this.formatCurrency(rp.added.arr), style: {} },
-          taxSerive: { data: this.formatCurrency(rp.taxService.taxed) }
+          taxSerive: { data: this.formatCurrency(rp.taxService.taxed), style: {} }
         })
       })
       console.log(this.data, list)

@@ -231,7 +231,7 @@ export default defineComponent({
     }
   },
   methods: {
-    asctable(){
+    asctable() {
       this.sortingDisplay = 'R_ASC'
       this.columns = [
         { name: 'Date', label: 'Date', field: 'Date', align: 'left' },
@@ -248,7 +248,7 @@ export default defineComponent({
       ]
       this.fetchData()
     },
-    desctable(){
+    desctable() {
       this.sortingDisplay = 'R_DESC'
       this.columns = [
         { name: 'Date', label: 'Date', field: 'Date', align: 'left' },
@@ -265,7 +265,7 @@ export default defineComponent({
       ]
       this.fetchData()
     },
-    getDetailform(resvId, resvRoomId){
+    getDetailform(resvId, resvRoomId) {
       this.$ResvStore.currentResvId = resvId
       this.$ResvStore.currentRoomResvId = resvRoomId
       console.log(resvId, resvRoomId)
@@ -351,26 +351,26 @@ export default defineComponent({
       this.data = list
       console.log('list data after pushing room average:', this.data)
     },
-    triggerNegative (data) {
-        this.$q.notify(
-          {
+    triggerNegative(data) {
+      this.$q.notify(
+        {
           type: 'negative',
           message: data || 'error',
           timeout: 1000
         },
         4000
-        )
-      },
-      triggerPositive (data) {
-        this.$q.notify(
-          {
+      )
+    },
+    triggerPositive(data) {
+      this.$q.notify(
+        {
           type: 'positive',
           message: data || 'data has successfully',
           timeout: 1000
         },
         4000
-        )
-      },
+      )
+    }
   }
 })
 </script>

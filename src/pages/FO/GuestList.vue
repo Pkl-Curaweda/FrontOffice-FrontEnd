@@ -55,8 +55,8 @@
       </template>
       <template #right>
         <q-separator vertical />
-        <q-btn flat square color="primary" icon="pending_actions" @click="showhistory(!this.state)">
-          <q-tooltip>History</q-tooltip>
+        <q-btn flat square color="primary" icon="pending_actions">
+          <q-tooltip>Pending</q-tooltip>
         </q-btn>
       </template>
     </FOMenubar>
@@ -120,7 +120,7 @@
               <q-tr :props="props">
                 <template v-for="(cell, key, i) in props.row" :key="i">
                   <q-td
-                    v-if="!['ResRoomNo'].includes(key) && !['Roomno'].includes(key)"
+                    v-if="!['ResRoomNo'].includes(key)"
                     :style="
                       cell.style.bordercolor
                         ? 'color:' +
@@ -135,19 +135,14 @@
                     "
                   >
                     {{ cell.data }}
-                    <q-popup-edit
-                      v-model="props.row.name"
-                      title=""
-                      auto-save
-                      style="width: fit-content; padding: 0; margin: 0"
-                    >
-                      <q-list style="align-content: flex; width: 100%; padding: 5px">
+                    <q-popup-edit v-model="props.row.name" title="" auto-save>
+                      <q-list style="align-content: flex-end; width: 100%">
                         <q-item
                           clickable
                           v-close-popup
                           @click="changeinc(props.row)"
-                          style="display: flex; background-color: red"
-                          class="q-px-xs"
+                          class="q-px-xl"
+                          style="display: flex; background-color: red; border-radius: 30px"
                         >
                           <q-item-section>
                             <q-item-label style="color: black" class="font-bold"
@@ -180,7 +175,7 @@
                         <q-item
                           clickable
                           v-close-popup
-                          @click="addnewextrabed(props.row)"
+                          @click="setRoomResv(props.row)"
                           style="display: flex"
                         >
                           <q-item-section>
@@ -261,7 +256,7 @@
                                 flat
                                 rounded
                                 size="13px"
-                                @click="editroom(props.row)"
+                                @click="setRoomResv(props.row)"
                                 style="color: #008444"
                                 ><svg
                                   width="19"
@@ -343,7 +338,7 @@
                                 icon="edit_note"
                               />
                               <q-item-section>
-                                <q-item-label>Change Room</q-item-label>
+                                <q-item-label>Edit Room</q-item-label>
                               </q-item-section>
                             </q-item>
                           </q-list>
@@ -409,13 +404,9 @@ export default defineComponent({
   components: { FOMenubar, MultiPane, GuestForm },
   setup() {
     return {
-      state: ref(false),
-      waitingnote: ref(''),
-      dialog2: ref(false),
       dialogeditroom: ref(false),
       cancelEnabled: ref(true),
       iconName1: 'more_vert',
-      roomno: ref(),
       showDropdown: false,
       background: ref(),
       allObjectsInArray,
@@ -824,14 +815,13 @@ export default defineComponent({
     setRoomResv(data) {
       this.$ResvStore.currentResvId = data['ResNo'].data
       this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
+      this.$ResvStore.fix = false
     },
     fixDetail(data) {
       this.$ResvStore.currentResvId = data['ResNo'].data
       this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
       this.$ResvStore.fix = true
       console.log(this.$ResvStore.fix)
-      this.$ResvStore.ds = false
-      this.$ResvStore.logc = false
     },
     async deleteResv(data) {
       // const resvId = data['ResNo']?.data
@@ -841,8 +831,8 @@ export default defineComponent({
         const roomNo = data['ResRoomNo'].data
         console.log(roomNo)
         this.api.delete(`detail/reservation/${resvId}/${roomNo}/delete`, ({ data }) => {
+          // window.location.reload()
           this.triggerPositive(data.message)
-          window.location.reload()
         })
       } catch (error) {
         console.error('Terjadi kesalahan, mohon coba lagi')
@@ -880,13 +870,10 @@ export default defineComponent({
     fetchData() {
       this.loading = true
 
-      let url = `arrival?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}&history=${this.state}`
+      let url = `arrival?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
 
       if (this.filterDisplay !== null) url += `&disOpt=${this.filterDisplay}`
 
-      // if(this.state === true) url += `&history=${this.state}`
-
-      console.log(url)
       if (this.filterSortOrder['col'] != '' && this.filterSortOrder['val'] != '')
         url += `&sortOrder=${this.filterSortOrder['val']}`
 
@@ -918,16 +905,6 @@ export default defineComponent({
     getUniqueRoomBoys(roomBoys) {
       return roomBoys.map((boy) => boy.name)
     },
-    triggerNegative(data) {
-      this.$q.notify(
-        {
-          type: 'negative',
-          message: data || 'error',
-          timeout: 1000
-        },
-        4000
-      )
-    },
     triggerPositive(message) {
       this.$q.notify(
         {
@@ -953,8 +930,6 @@ export default defineComponent({
             // color: rr.reservation.resvStatus.textColor
           ]
           const { id } = rr.arrangment
-          console.log(rr.room.id)
-          this.roomno = rr.room.id
           list.push({
             ResNo: { data: rsrv.reservationId, style: { backgroundColor, color } },
             ResRoomNo: { data: rr.id, style: { backgroundColor } },
@@ -992,12 +967,8 @@ export default defineComponent({
             CreatedDate: {
               data: formatDate(rr.reservation.created_at),
               style: { backgroundColor, color }
-            },
-            Roomno: {
-              data: rr.room.id
             }
           })
-          console.log(list)
         })
       })
       this.data = list

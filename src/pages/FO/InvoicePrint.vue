@@ -235,7 +235,7 @@ const columns = [
 ]
 
 export default defineComponent({
-  name: 'Print',
+  name: 'PrintInvoice',
   setup() {
     return {
       forecast: ref(null),
@@ -282,7 +282,15 @@ export default defineComponent({
     getDataTable() {
       this.loading = true
 
-      let url = `invoice/1/1/print`
+      const { resvId, resvRoomId } = this.$route.params
+
+      if (resvId === 0 || resvRoomId === 0) {
+        this.loading = false
+        console.log(resvId)
+        return
+      }
+
+      let url = `invoice/${resvId}/${resvRoomId}/print`
       this.url = url
       this.api.get(url, ({ status, data }) => {
         this.loading = false

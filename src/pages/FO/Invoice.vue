@@ -94,7 +94,12 @@
               </div>
               <div class="q-pa-sm flex justify-end" style="gap: 5px; border-top: 1px solid green">
                 <q-btn size="sm" no-caps outline>Cancel</q-btn>
-                <q-btn size="sm" no-caps color="primary" text-color="white" @click="addArticles"
+                <q-btn
+                  size="sm"
+                  no-caps
+                  color="primary"
+                  text-color="white"
+                  @click="handleAddArticles"
                   >Add</q-btn
                 >
               </div>
@@ -409,6 +414,17 @@ export default defineComponent({
     }
   },
   methods: {
+    handleAddArticles() {
+      // Panggil fungsi untuk menambahkan artikel
+      this.addArticles()
+
+      // Panggil fungsi untuk menyegarkan data
+      this.refreshData()
+    },
+    refreshData() {
+      window.location.reload()
+    },
+    // Fungsi untuk menangani POST request
     addArticles() {
       const { resvId, resvRoomId } = this.$route.params
 
@@ -433,26 +449,19 @@ export default defineComponent({
       }
 
       // Melakukan POST ke API
-      this.api
-        .post(`invoice/${resvId}/${resvRoomId}/article`, postData, ({ status, data }) => {
-          if (status === 200) {
-            // Sukses, Update the reactive variable
-            this.postedArticles.value = [...this.postedArticles.value, ...postData]
+      this.api.post(`invoice/${resvId}/${resvRoomId}/article`, postData, ({ status, data }) => {
+        if (status === 200) {
+          // Sukses, Update the reactive variable
+          this.refreshData()
+          this.postedArticles.value = [...this.postedArticles.value, ...postData]
 
-            this.$q.notify({
-              type: 'positive',
-              message: 'Articles added successfully.',
-              timeout: 1000
-            })
-          } else {
-            // Handle kesalahan jika diperlukan
-            console.error('Failed to add articles:', data)
-          }
-        })
-        .catch((error) => {
-          // Handle kesalahan yang lebih umum jika perlu
-          console.error('Error adding articles:', error)
-        })
+          this.$q.notify({
+            type: 'positive',
+            message: 'Articles added successfully.',
+            timeout: 1000
+          })
+        }
+      })
     },
     removeInvoiceData(row) {
       const uniqueId = row.uniqueId.data // Assuming the uniqueId is accessible in your row object

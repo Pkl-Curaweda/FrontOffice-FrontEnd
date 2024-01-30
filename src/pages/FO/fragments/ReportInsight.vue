@@ -188,10 +188,14 @@ export default defineComponent({
     datePicker: {
       deep: true,
       handler(newDateRange) {
-        this.getDetailReport()
+        if (newDateRange) {
+          // Periksa apakah newDateRange terdefinisi
+          this.getDetailReport()
+        }
       }
     }
   },
+
   methods: {
     setFilterDisplay(option) {
       this.filterDisplay = option

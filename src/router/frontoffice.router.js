@@ -55,7 +55,8 @@ const frontoffice_routes = [
     }
   },
   {
-    path: '/fo/guest-invoice/print',
+    name: 'print-invoice',
+    path: '/fo/guest-invoice/:resvId/:resvRoomId/print',
     component: () => import('pages/FO/InvoicePrint.vue'),
     meta: {
       title: 'Print',

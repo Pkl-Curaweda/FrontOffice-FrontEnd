@@ -246,12 +246,6 @@ export default defineComponent({
         }
       })
     },
-    formatCurrency(num = 0) {
-      return num.toLocaleString()
-    },
-    formatAverage(num) {
-      return num.toFixed(2)
-    },
     formatData(raw = []) {
       console.log
       const list = []
@@ -261,14 +255,14 @@ export default defineComponent({
           RmAvailable: { data: rp.roomAvailable, style: {} },
           Occupied: { data: rp.occupied, style: {} },
           Occ: { data: rp.occ + '%', style: {} },
-          RmRevenue: { data: this.formatCurrency(rp.roomRevenue), style: {} },
-          Arr: { data: this.formatCurrency(rp.arr), style: {} },
+          RmRevenue: { data: rp.roomRevenue, style: {} },
+          Arr: { data: rp.arr, style: {} },
           RmAvail: { data: rp.added.rm_avail, style: {} },
           Rno: { data: rp.added.rno, style: {} },
           tdOcc: { data: rp.added.occ + '%', style: {} },
-          tdRmRevenue: { data: this.formatCurrency(rp.added.rev), style: {} },
-          tdArr: { data: this.formatCurrency(rp.added.arr), style: {} },
-          taxSerive: { data: this.formatCurrency(rp.taxService.taxed), style: {} }
+          tdRmRevenue: { data: rp.added.rev, style: {} },
+          tdArr: { data: rp.added.arr, style: {} },
+          taxSerive: { data: rp.taxService.taxed, style: {} }
         })
       })
       console.log(this.data, list)

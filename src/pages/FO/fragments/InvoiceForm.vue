@@ -90,7 +90,7 @@
 
         <!-- dialog view bill on form invoice -->
         <q-dialog v-model="viewBill">
-          <q-card>
+          <q-card style="width: 700px; max-width: 80vw">
             <q-card-section class="items-center q-pb-none">
               <div class="row items-center">
                 <q-space />
@@ -99,6 +99,39 @@
             </q-card-section>
 
             <q-card-section>
+              <q-img
+                src="../../../assets/img/lingian-logo-colored.png"
+                style="
+                  width: 10rem;
+                  height: 10rem;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                "
+                class="q-mx-auto"
+              />
+              <div class="q-pb-sm">
+                Bill Number: <span>{{ billNumber }}</span>
+              </div>
+              <div class="row q-pb-sm" style="justify-content: space-between">
+                <div>
+                  Reservation Resource: <span class="text-bold">{{ reservationResource }}</span>
+                </div>
+                <div>
+                  Guest Name: <span class="text-bold">{{ guestName }}</span>
+                </div>
+              </div>
+
+              <div style="background-color: #16a75c; height: 5px" class="col-grow"></div>
+
+              <div class="row q-py-sm" style="justify-content: space-between; max-width: 30%">
+                <div>Arrival:</div>
+                <div>{{ arrival }}</div>
+              </div>
+              <div class="row q-pb-sm" style="justify-content: space-between; max-width: 30%">
+                <div>Departure:</div>
+                <div>{{ departure }}</div>
+              </div>
               <div class="my-table">
                 <q-table
                   class="no-shadow"
@@ -116,38 +149,7 @@
                         :key="i"
                         style="padding-top: 0px; padding-bottom: 0px"
                       >
-                        <q-select
-                          v-if="filterColumns.hasOwnProperty(col.name)"
-                          clearable
-                          borderless
-                          dark
-                          label-color="white"
-                          style="min-width: 90px"
-                          v-model="filterColumns[col.name].data"
-                          :options="filterColumns[col.name].options"
-                          @update:model-value="(val) => filterColumns[col.name].onOptionChange(val)"
-                          :label="col.label"
-                        >
-                          <template
-                            v-if="allObjectsInArray(filterColumns[col.name].options)"
-                            v-slot:option="scope"
-                          >
-                            <q-item v-bind="scope.itemProps">
-                              <q-item-section>
-                                <div class="flex">
-                                  <q-icon
-                                    size="20px"
-                                    v-for="(ic, k) in scope.opt.icons"
-                                    :key="k"
-                                    :name="ic"
-                                  />
-                                  <q-item-label class="q-ml-sm">{{ scope.opt.label }}</q-item-label>
-                                </div>
-                              </q-item-section>
-                            </q-item>
-                          </template>
-                        </q-select>
-                        <span v-else class="text-h6">{{ col.label }}</span>
+                        <span class="text-h6">{{ col.label }}</span>
                       </q-th>
                     </q-tr>
                   </template>
@@ -162,6 +164,13 @@
                   </template>
                 </q-table>
               </div>
+              <div style="background-color: #16a75c; height: 5px" class="col-grow"></div>
+              <div class="q-py-md">
+                Gedung lingian, Universitas Telkom, Jl. <br />
+                telekomunikasi No.01, Terusan<br />
+                Buahbatu, Bandung, Jawa Barat 40257 ;<br />
+                Phone. +62 8112072999
+              </div>
             </q-card-section>
           </q-card>
         </q-dialog>
@@ -169,7 +178,7 @@
           flat
           square
           color="primary"
-          to="/fo/guest-invoice/print"
+          @click="redirectToInvoicePrint"
           icon="o_print"
           class="border-button rounded-borders"
           style="padding: 6px 3px"
@@ -229,19 +238,18 @@ export default defineComponent({
       updateQty: ref(''),
       description: ref(''),
       billAdress: ref(''),
+      billNumber: ref(),
+      reservationResource: ref(),
+      arrival: ref(),
+      departure: ref(),
+      guestName: ref(),
       allObjectsInArray,
       comments: ref(''),
       viewBill: ref(false),
       columns: [
-        { name: 'Art', label: 'Art', align: 'left', field: 'Art' },
-        { name: 'Qty', label: 'Qty', align: 'left', field: 'Qty' },
+        { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
         { name: 'Description', label: 'Description', align: 'left', field: 'Description' },
-        { name: 'Rate', label: 'Rate', align: 'left', field: 'Rate' },
-        { name: 'Amount', label: 'Amount', align: 'left', field: 'Amount' },
-        { name: 'RmNo', label: 'RmNo', align: 'left', field: 'RmNo' },
-        { name: 'RoomBoy', label: 'Room Boy', field: 'RoomBoy', align: 'left' },
-        { name: 'VoucherNumber', label: 'Voucher Number', align: 'left', field: 'VoucherNumber' },
-        { name: 'BillDate', label: 'BillDate', align: 'left', field: 'BillDate' }
+        { name: 'Amount', label: 'Amount', align: 'left', field: 'Amount' }
       ]
     }
   },
@@ -254,76 +262,7 @@ export default defineComponent({
         rowsPerPage: 20
       },
       data: [],
-      uniqueId: [],
-      filterSortOrder: ref({ col: '', val: '' }),
-      filterColumns: {
-        Art: {
-          data: '',
-          options: ['1-999', '999-1'],
-          onOptionChange: (val) => {
-            if (val == '1-999') this.filterSortOrder = { col: 'Art', val: 'art-asc' }
-            else if (val == '999-1') this.filterSortOrder = { col: 'Art', val: 'art-desc' }
-            else this.filterSortOrder = { col: '', val: '' }
-          }
-        },
-        Qty: {
-          data: '',
-          options: ['1>', '1'],
-          onOptionChange: (val) => {
-            if (val == '1>') this.filterSortOrder = { col: 'Qty', val: 'qty-desc' }
-            else if (val == '1') this.filterSortOrder = { col: 'Qty', val: 'qty-asc' }
-            else this.filterSortOrder = { col: '', val: '' }
-          }
-        },
-        Description: {
-          data: '',
-          options: ['A-Z', 'Z-A'],
-          onOptionChange: (val) => {
-            if (val == 'A-Z') this.filterSortOrder = { col: 'Description', val: 'desc-asc' }
-            else if (val == 'Z-A') this.filterSortOrder = { col: 'Description', val: 'desc-desc' }
-            else this.filterSortOrder = { col: '', val: '' }
-          }
-        },
-        Rate: {
-          data: '',
-          options: ['High Price', 'Low Price'],
-          onOptionChange: (val) => {
-            if (val == 'High Price') this.filterSortOrder = { col: 'Rate', val: 'rate-desc' }
-            else if (val == 'Low Price') this.filterSortOrder = { col: 'Rate', val: 'rate-asc' }
-            else this.filterSortOrder = { col: '', val: '' }
-          }
-        },
-        Amount: {
-          data: '',
-          options: ['High Price', 'Low Price'],
-          onOptionChange: (val) => {
-            if (val == 'High Price') this.filterSortOrder = { col: 'Amount', val: 'amount-desc' }
-            else if (val == 'Low Price') this.filterSortOrder = { col: 'Amount', val: 'amount-asc' }
-            else this.filterSortOrder = { col: '', val: '' }
-          }
-        },
-        // RmNo: {
-        //   data: '',
-        //   options: ['', '']
-        // },
-        // RoomBoy: {
-        //   data: '',
-        //   options: ['ILYAS', 'RONI', 'YUTA', 'HERTIAMAN']
-        // },
-        // VoucherNumber: {
-        //   data: '',
-        //   options: ['', '']
-        // },
-        BillDate: {
-          data: '',
-          options: ['Newest', 'Oldest'],
-          onOptionChange: (val) => {
-            if (val == 'Newest') this.filterSortOrder = { col: 'BillDate', val: 'date-desc' }
-            else if (val == 'Oldest') this.filterSortOrder = { col: 'BillDate', val: 'date-asc' }
-            else this.filterSortOrder = { col: '', val: '' }
-          }
-        }
-      }
+      uniqueId: []
     }
   },
   computed: {
@@ -342,6 +281,7 @@ export default defineComponent({
     }
 
     this.fetchData()
+    this.userView()
 
     // watch(
     //   () => this.$ResvStore.UniqueId,
@@ -367,6 +307,54 @@ export default defineComponent({
     }
   },
   methods: {
+    redirectToInvoicePrint() {
+      const { resvId, resvRoomId } = this.$route.params
+
+      this.$router.replace({
+        name: 'print-invoice',
+        params: { resvId, resvRoomId }
+      })
+    },
+    userView() {
+      this.loading = true
+
+      const { resvId, resvRoomId } = this.$route.params
+
+      if (resvId === 0 || resvRoomId === 0) {
+        this.loading = false
+        console.log(resvId)
+        return
+      }
+
+      let url = `invoice/${resvId}/${resvRoomId}/print`
+
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+          this.formatData(data.invoices)
+          this.billNumber = data.billNumber
+          this.reservationResource = data.resourceName
+          this.guestName = data.guestName
+          this.arrival = data.arrivalDate
+          this.departure = data.departureDate
+        }
+      })
+    },
+    formatData(raw = []) {
+      const list = []
+
+      raw.forEach((ip) => {
+        list.push({
+          Date: { data: ip.billDate, style: {} },
+          Description: { data: ip.desc, style: {} },
+          Amount: { data: ip.amount, style: {} }
+        })
+      })
+      console.log(this.data, list)
+      this.data = list
+      console.log(this.data)
+    },
     setSortOrder(val = '') {
       this.filterSortOrder = null
     },
@@ -459,30 +447,6 @@ export default defineComponent({
           this.loading = false
           console.error('Error fetching data:', error)
         })
-    },
-    formatData(raw = []) {
-      const list = []
-      const unique = []
-
-      raw.forEach((inv) => {
-        // uniqueId: { data: inv.uniqueId, style: {} }
-
-        list.push({
-          Art: { data: inv.art.label ? inv.art.label : inv.art, style: {} },
-          Qty: { data: inv.qty, style: {} },
-          Description: { data: inv.desc, style: {} },
-          Rate: { data: this.formatCurrency(inv.rate), style: {} },
-          Amount: { data: this.formatCurrency(inv.amount), style: {} },
-          RmNo: { data: 101, style: {} },
-          RoomBoy: { data: 'Asep', style: {} },
-          VoucherNumber: { data: 101111, style: {} },
-          BillDate: { data: inv.billDate, style: {} },
-          uniqueId: { data: inv.uniqueId, style: {} }
-        })
-      })
-      console.log(list)
-      this.data = list
-      // this.uniqueId = unique
     },
     async editDataInv(row) {
       const { currentResvId, currentRoomResvId, dateBill, uniqueId } = this.$ResvStore

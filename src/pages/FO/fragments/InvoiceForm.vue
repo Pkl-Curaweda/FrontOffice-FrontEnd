@@ -337,9 +337,7 @@ export default defineComponent({
     }
   },
   mounted() {
-    // this.getDetailForm()
-
-    if (this.$ResvStore.UniqueId) {
+    if (this.$ResvStore.uniqueId) {
       this.getDetailForm()
     }
 
@@ -390,10 +388,12 @@ export default defineComponent({
       )
     },
     getDetailForm() {
-      const { resvId, resvRoomId, dateBill, Artlb, UniqueId } = this.$route.params
+      const { resvId, resvRoomId } = this.$route.params
+      const uniqueId = this.$ResvStore.uniqueId
+      console.log(uniqueId)
       this.loading = true
       this.api.get(
-        `detail/invoice/${resvId}/${resvRoomId}/?ids=${UniqueId}`,
+        `detail/invoice/${resvId}/${resvRoomId}/?ids=${uniqueId}`,
         ({ status, data }) => {
           this.loading = false
 
@@ -484,14 +484,14 @@ export default defineComponent({
       this.data = list
       // this.uniqueId = unique
     },
-    async editDataInv() {
-      const { currentResvId, currentRoomResvId, dateBill, UniqueId } = this.$ResvStore
+    async editDataInv(row) {
+      const { currentResvId, currentRoomResvId, dateBill, uniqueId } = this.$ResvStore
       const data = {
         qty: this.qty
       }
       try {
         await this.api.put(
-          `detail/invoice/${currentResvId}/${currentRoomResvId}?ids=${UniqueId}`,
+          `detail/invoice/${currentResvId}/${currentRoomResvId}?ids=${uniqueId}`,
           data,
           ({ status, data }) => {
             this.loading = true
@@ -500,6 +500,8 @@ export default defineComponent({
               this.loading = false
               console.log(data)
               this.triggerPositive('Update Data Successfully')
+              // Call setRoomResv with uniqueId after updating data
+              this.setRoomResv(uniqueId)
             }
           }
         )

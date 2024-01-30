@@ -298,6 +298,42 @@
               </div>
             </div>
           </div>
+          <!-- Cash -->
+          <div style="width: 100%" class="shadowBox">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                cursor: pointer;
+                font-size: 18px;
+              "
+            >
+              <span class="centerComponent" style="width: 350px; font-weight: 600">Cash</span>
+
+              <div
+                style="display: flex; cursor: pointer; width: 100%; justify-content: end; gap: 2px"
+              >
+                <div style="width: 80px" class="q-px-sm"></div>
+                <q-icon
+                  :name="iconNameX"
+                  size="2rem"
+                  color="green"
+                  class="centerComponent"
+                  @click="toggleCash"
+                />
+              </div>
+            </div>
+
+            <div v-if="showCash" style="margin-top: 15px">
+              <input type="radio" id="option_cash" value="Cash" v-model="selectedOption" />
+              <label
+                for="option_cash"
+                style="font-weight: 600; margin-left: 10px"
+                class="centerComponent"
+                >Cash</label
+              >
+            </div>
+          </div>
         </div>
         <!-- row 1 col 2 -->
         <div
@@ -478,6 +514,8 @@ export default defineComponent({
       showEwallet: false,
       showDropdown: false,
       showDebit: false,
+      showCash: false,
+      iconNameX: 'expand_more',
       paymentDetail: true,
       paymentDetail2: false,
       bankOption: true,
@@ -601,6 +639,16 @@ export default defineComponent({
       this.showDebit = false
       this.showEwallet = false
       this.selectedMethod = this.showVirtual ? (find(3) ? 'Virtual Account' : '') : ''
+    },
+    toggleCash() {
+      this.showCash = !this.showCash
+      // Hide other dropdowns if needed
+      this.showDropdown = false
+      this.showDebit = false
+      this.showEwallet = false
+      this.showVirtual = false
+      // Set selected method for Cash
+      this.selectedMethod = this.showCash ? 'Cash' : ''
     },
     calculateTotal() {
       // Menggunakan metode reduce() untuk menjumlahkan nilai properti 'price'

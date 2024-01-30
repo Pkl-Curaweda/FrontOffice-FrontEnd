@@ -6,7 +6,7 @@
       </template>
     </FOMenubar>
 
-    <div class="row q-ma-md no-wrap" style="gap: 15px">
+    <div class="row no-wrap" style="gap: 15px; margin: 0 30vw">
       <div class="col-grow" ref="pdfContainer">
         <q-img
           src="../../assets/img/lingian-logo-colored.png"
@@ -42,7 +42,10 @@
           <div>Departure:</div>
           <div>{{ departure }}</div>
         </div>
-        <div class="my-table q-pb-md">
+        <div
+          class="my-table q-pb-md"
+          style="display: flex; justify-content: center; align-items: center"
+        >
           <q-table
             class="no-shadow"
             v-model:pagination="pagination"
@@ -52,6 +55,7 @@
             :loading="loading"
             :columns="columns"
             row-key="name"
+            style="width: 60vw"
           >
             <template>
               <q-tr class="table-head">
@@ -87,9 +91,30 @@
           Buahbatu, Bandung, Jawa Barat 40257 ;<br />
           Phone. +62 8112072999
         </div>
+
+        <div style="display: flex; justify-content: space-between">
+          <div></div>
+          <div style="gap: 10px">
+            <q-btn
+              label="Save"
+              unelevated
+              @click="print"
+              color="primary"
+              dense
+              class="text-capitalize q-px-md q-py-sm q-mx-md"
+            />
+            <q-btn
+              label="Cancel"
+              outline
+              color="primary"
+              dense
+              class="text-capitalize q-px-md q-py-sm"
+            />
+          </div>
+        </div>
       </div>
       <!-- <iframe src="src/assets/pdf/invoicePdf.pdf" frameborder="0"></iframe> -->
-      <div class="column justify-between" style="width: 50%; gap: 15px">
+      <!-- <div class="column justify-between" style="width: 50%; gap: 15px">
         <div class="column" style="gap: 10px">
           <div class="row justify-between" style="overflow: auto; min-width: 100%; max-width: 100%">
             <p class="q-my-auto" style="min-width: 60%; max-width: 60%">Page</p>
@@ -193,7 +218,7 @@
             class="text-capitalize q-px-md q-py-sm"
           />
         </div>
-      </div>
+      </div> -->
     </div>
   </q-page>
 </template>

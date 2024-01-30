@@ -1,50 +1,24 @@
 <template>
   <q-page style="overflow-y: scroll; height: 100%">
-    <FOMenubar />
-
-    <div class="row q-ma-md no-wrap" style="gap: 15px">
-      <div style="width: 50%">
-        <div class="my-table q-pb-md" ref="pdfContainer">
-          <q-table
-            class="no-shadow"
-            v-model:pagination="pagination"
-            @request="onPaginationChange"
-            :rows="data"
-            hide-bottom
-            :loading="loading"
-            :columns="columns"
-            row-key="name"
-          >
-            <template>
-              <q-tr class="table-head">
-                <q-th style="padding-top: 0px; padding-bottom: 0px">
-                  <template v-slot:header="props">
-                    <q-tr class="table-head" :props="props">
-                      <q-th
-                        v-for="(col, i) in props.cols"
-                        :key="i"
-                        style="padding-top: 0px; padding-bottom: 0px"
-                      >
-                      </q-th>
-                    </q-tr>
-                  </template>
-                </q-th>
-              </q-tr>
-            </template>
-            <template v-slot:body="props">
-              <q-tr :props="props">
-                <template v-for="(cell, key, i) in props.row" :key="i">
-                  <q-td :style="cell.style">
-                    {{ cell.data }}
-                  </q-td>
-                </template>
-              </q-tr>
-            </template>
-          </q-table>
+    <FOMenubar>
+      <template #right>
+        <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
+          <q-btn
+            label="Save"
+            @click="print"
+            unelevated
+            color="primary"
+            dense
+            class="text-capitalize q-px-lg"
+          />
+          <q-btn label="Cancel" dense outline color="primary" class="text-capitalize q-px-md" />
         </div>
-      </div>
+      </template>
+    </FOMenubar>
+
+    <div class="q-ma-md" style="gap: 15px">
       <!-- <iframe src="src/assets/pdf/invoicePdf.pdf" frameborder="0"></iframe> -->
-      <div class="column justify-between" style="width: 50%; gap: 15px">
+      <div class="q-mx-md">
         <div class="column" style="gap: 10px">
           <div class="row justify-between" style="overflow: auto; min-width: 100%; max-width: 100%">
             <p class="q-my-auto" style="min-width: 60%; max-width: 60%">Page</p>
@@ -136,6 +110,46 @@
           </div>
         </div>
       </div>
+      <div class="q-mt-lg" style="display: flex; justify-content: center; align-items: center">
+        <div class="my-table col-grow q-pb-md" ref="pdfContainer">
+          <q-table
+            class="no-shadow"
+            v-model:pagination="pagination"
+            @request="onPaginationChange"
+            :rows="data"
+            hide-bottom
+            :loading="loading"
+            :columns="columns"
+            row-key="name"
+          >
+            <template>
+              <q-tr>
+                <q-th>
+                  <template v-slot:header="props">
+                    <q-tr :props="props">
+                      <q-th
+                        v-for="(col, i) in props.cols"
+                        :key="i"
+                        style="padding-top: 0px; padding-bottom: 0px"
+                      >
+                      </q-th>
+                    </q-tr>
+                  </template>
+                </q-th>
+              </q-tr>
+            </template>
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <template v-for="(cell, key, i) in props.row" :key="i">
+                  <q-td :style="cell.style">
+                    {{ cell.data }}
+                  </q-td>
+                </template>
+              </q-tr>
+            </template>
+          </q-table>
+        </div>
+      </div>
     </div>
   </q-page>
 </template>
@@ -166,7 +180,8 @@ export default defineComponent({
         { name: 'Rno', label: `DTD RNO`, align: 'left', field: 'Rno' },
         { name: 'tdOcc', label: `DTD Occ %`, align: 'left', field: 'tdOcc' },
         { name: 'tdRmRevenue', label: `DTD Rm.Revenue`, align: 'left', field: 'tdRmRevenue' },
-        { name: 'tdArr', label: `DTD ARR`, align: 'left', field: 'tdArr' }
+        { name: 'tdArr', label: `DTD ARR`, align: 'left', field: 'tdArr' },
+        { name: 'TaxService', label: `Tax & Service`, align: 'left', field: 'taxService' }
       ]
     }
   },
@@ -237,13 +252,20 @@ export default defineComponent({
         filename: 'invoice.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'landscape',
+          putOnlyUsedFonts: true,
+          // Sesuaikan skala jika diperlukan
+          scale: 0.8
+        }
       })
     },
     getDataTable() {
       this.loading = true
 
-      let url = `report?`
+      let url = `report?perPage=20  `
 
       if (this.filterDisplay !== null) {
         url += `&disOpt=${this.filterDisplay}`
@@ -253,15 +275,36 @@ export default defineComponent({
         url += `&page=${this.pageOpt}`
       }
 
-      if (this.perPageOpt !== null) {
-        url += `&perPage=${this.perPageOpt}`
-      }
+      // if (this.perPageOpt !== null) {
+      //   url += `&perPage=${this.perPageOpt}`
+      // }
       this.url = url
       this.api.get(url, ({ status, data }) => {
         this.loading = false
 
         if (status == 200) {
           const { meta } = data
+
+          const identifier = data.ident
+          this.columns = [
+            { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
+            { name: 'RmAvailable', label: 'Room Available', align: 'left', field: 'RmAvailable' },
+            { name: 'Occupied', label: 'Occupied', align: 'left', field: 'Occupied' },
+            { name: 'Occ', label: 'Occ%', align: 'left', field: 'Occ' },
+            { name: 'RmRevenue', label: 'Room Revenue', align: 'left', field: 'RmRevenue' },
+            { name: 'Arr', label: 'Arr', align: 'left', field: 'Arr' },
+            { name: 'RmAvail', label: `${identifier} Rm.Avail`, align: 'left', field: 'RmAvail' },
+            { name: 'Rno', label: `${identifier} RNO`, align: 'left', field: 'Rno' },
+            { name: 'tdOcc', label: `${identifier} Occ %`, align: 'left', field: 'tdOcc' },
+            {
+              name: 'tdRmRevenue',
+              label: `${identifier} Rm.Revenue`,
+              align: 'left',
+              field: 'tdRmRevenue'
+            },
+            { name: 'tdArr', label: `${identifier} ARR`, align: 'left', field: 'tdArr' },
+            { name: 'TaxService', label: `Tax & Service`, align: 'left', field: 'taxService' }
+          ]
 
           this.totalPages = meta.lastPage
 
@@ -290,7 +333,8 @@ export default defineComponent({
           Rno: { data: rp.added.rno, style: {} },
           tdOcc: { data: rp.added.occ, style: {} },
           tdRmRevenue: { data: rp.added.rev, style: {} },
-          tdArr: { data: rp.added.arr, style: {} }
+          tdArr: { data: rp.added.arr, style: {} },
+          taxSerive: { data: rp.taxService.taxed, style: {} }
         })
       })
       console.log(this.data, list)

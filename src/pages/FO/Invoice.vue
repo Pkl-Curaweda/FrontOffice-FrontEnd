@@ -161,12 +161,16 @@
             <template v-slot:body="props">
               <q-tr :props="props">
                 <template v-for="(cell, key, i) in props.row" :key="i">
-                  <q-td v-if="!['uniqueId'].includes(key)" :style="cell.style">
+                  <q-td
+                    v-if="!['uniqueId'].includes(key)"
+                    :style="cell.style"
+                    @click="setRoomResv(props.row)"
+                  >
                     {{ cell.data }}
                   </q-td>
                 </template>
                 <q-td key="" :props="props" style="width: 10px">
-                  <q-btn
+                  <!-- <q-btn
                     flat
                     rounded
                     size="13px"
@@ -184,7 +188,7 @@
                         fill="#008444"
                       />
                     </svg>
-                  </q-btn>
+                  </q-btn> -->
                   <q-btn
                     flat
                     rounded
@@ -614,7 +618,7 @@ export default defineComponent({
     setRoomResv(data) {
       this.$ResvStore.dateBill = data['BillDate'].data
       this.$ResvStore.Artlb = data['Art'].data
-      this.$ResvStore.UniqueId = data['uniqueId'].data
+      this.$ResvStore.uniqueId = data.uniqueId.data
       console.log(data['BillDate'].data)
       console.log(this.$ResvStore.dateBill)
       console.log(this.$ResvStore.UniqueId)

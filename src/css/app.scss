@@ -96,7 +96,12 @@ i.q-icon.on-left {
   th {
     background-color: #069550;
     color: #ffffff;
+    padding: 0 4px;
   }
+}
+
+q-table.table-head {
+  padding: 0 8px;
 }
 
 .comp-sidebar {

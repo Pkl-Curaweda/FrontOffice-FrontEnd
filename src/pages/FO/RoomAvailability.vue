@@ -83,6 +83,7 @@
             :rows="data"
             :loading="loading"
             :columns="columns"
+            hide-bottom
             row-key="name"
           >
             <template>

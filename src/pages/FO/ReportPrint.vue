@@ -168,7 +168,7 @@ export default defineComponent({
       filterDisplayLabelPages: ref('Page 1'),
       filterDisplayLabelPerPages: ref('Per Page 1'),
       perPageOpt: ref(20),
-      pageOpt: ref(1),
+      pageOpt: 1,
       columns: [
         { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
         { name: 'RmAvailable', label: 'Room Available', align: 'left', field: 'RmAvailable' },
@@ -215,7 +215,7 @@ export default defineComponent({
       this.getDataTable()
     },
     setFilterDisplayPages(option) {
-      this.pageOpt = option
+      this.pageOpt = parseInt(option)
       this.filterDisplayLabelPages = `Page ${option}`
       this.getDataTable()
     },
@@ -265,13 +265,13 @@ export default defineComponent({
     getDataTable() {
       this.loading = true
 
-      let url = `report?perPage=20  `
+      let url = `report?perPage=20`
 
-      if (this.filterDisplay !== null) {
+      if (this.filterDisplay) {
         url += `&disOpt=${this.filterDisplay}`
       }
-
-      if (this.pageOpt !== null) {
+      if (this.pageOpt) {
+        console.log(this.sumPagesOpt, this.pageOpt)
         url += `&page=${this.pageOpt}`
       }
 
@@ -337,9 +337,9 @@ export default defineComponent({
           taxSerive: { data: rp.taxService.taxed, style: {} }
         })
       })
-      console.log(this.data, list)
+      // console.log(this.data, list)
       this.data = list
-      console.log(this.data)
+      // console.log(this.data)
     }
   }
 })

@@ -68,6 +68,7 @@
             class="no-shadow"
             v-model:pagination="pagination"
             @request="onPaginationChange"
+            :rows-per-page-options="[1, 5, 7, 10, 15, 20, 25, 30]"
             :rows="data"
             @row-click="setRoomResv()"
             :loading="loading"
@@ -438,7 +439,7 @@ export default defineComponent({
         { name: 'RoomBoy', label: 'RoomBoy', align: 'left', field: 'RoomBoy' },
         { name: 'RoomRate', label: 'RoomRate', align: 'left', field: 'RoomRate' },
         { name: 'CreatedDate', label: 'CreatedDate', align: 'left', field: 'CreatedDate' },
-        { name: '', label: '', align: 'center', field: '' }
+        { name: '', label: 'Action', align: 'center', field: '' }
       ]
     }
   },
@@ -840,6 +841,10 @@ export default defineComponent({
       }
     },
     onPaginationChange(props) {
+      props.pagination.rowsPerPage =
+        props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
+      console.log(props)
+      console.log(props.rowsPerPage)
       this.pagination = props.pagination
       this.fetchData()
     },

@@ -10,7 +10,13 @@
     <div class="col-grow">
       <div class="row q-gutter-xs">
         <!-- create new reservation  -->
-        <q-btn flat square color="primary" class="border-button rounded-borders" @click="refresh()">
+        <q-btn
+          flat
+          square
+          color="primary"
+          class="border-button rounded-borders"
+          @click="handleRefresh"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="19"
@@ -31,7 +37,7 @@
           square
           color="primary"
           class="border-button rounded-borders"
-          @click="updateData()"
+          @click="handleRefresh"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -49,7 +55,7 @@
 
         <!-- remove reservation  -->
         <q-btn
-          @click="removeRoomResv()"
+          @click="handleRefresh"
           flat
           square
           color="primary"
@@ -534,7 +540,14 @@
         class="padding-expansion"
       >
         <q-card>
-          <q-input :disable="$ResvStore.logc" v-model="resvRemark" label="Note..." dense outlined type="textarea" />
+          <q-input
+            :disable="$ResvStore.logc"
+            v-model="resvRemark"
+            label="Note..."
+            dense
+            outlined
+            type="textarea"
+          />
         </q-card>
       </q-expansion-item>
 
@@ -554,7 +567,7 @@
           dense
           :disabled="!this.$ResvStore.currentRoomResvId"
           class="text-capitalize col-grow"
-          @click="postcheckin()"
+          @click="handleRefresh"
         />
         <q-btn
           label="Check-Out"
@@ -563,7 +576,7 @@
           dense
           :disabled="!this.$ResvStore.currentRoomResvId"
           class="text-capitalize col-grow"
-          @click="postcheckout()"
+          @click="handleRefresh"
         />
       </div>
     </div>
@@ -771,6 +784,20 @@ export default defineComponent({
     }
   },
   methods: {
+    handleRefresh() {
+      // Panggil fungsi untuk menambahkan artikel
+      this.createData()
+      this.postcheckin()
+      this.postcheckout()
+      this.updateData()
+      this.removeRoomResv()
+
+      // Panggil fungsi untuk menyegarkan data
+      this.refreshData()
+    },
+    refreshData() {
+      window.location.reload()
+    },
     redirectToInvoice() {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
       this.$router.replace({
@@ -1122,59 +1149,59 @@ export default defineComponent({
         arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
         departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
         reservationRemarks: this.resvRemark,
-        resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id),
+        resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id)
       }
 
       const datachangeroom = {
-
         roomId: this.roomNo,
         arrangmentCodeId: this.selected.id,
         note: waitingnote
       }
 
-      if(this.$ResvStore.logc === true){
+      if (this.$ResvStore.logc === true) {
         try {
           await this.api.post(
-          `/detail/reservation/${currentResvId}/${currentRoomResvId}/change-room`,
-          datachangeroom,
-          ({ status, data,message }) => {
-            this.loading = false
-            console.log(this.resvStatus)
+            `/detail/reservation/${currentResvId}/${currentRoomResvId}/change-room`,
+            datachangeroom,
+            ({ status, data, message }) => {
+              this.loading = false
+              console.log(this.resvStatus)
 
-            if (status === 200) {
-              this.triggerPositive('Update Successfully')
-              console.log('Data berhasil diperbarui:', data)
-            } else {
-              console.error('Gagal memperbarui data')
-              this.triggerNegative(   message)
+              if (status === 200) {
+                this.triggerPositive('Update Successfully')
+                console.log('Data berhasil diperbarui:', data)
+              } else {
+                console.error('Gagal memperbarui data')
+                this.triggerNegative(message)
+              }
             }
-          }
-        )
-        // this.refresh()
-      } catch (error) {
-        console.error(error)
+          )
+          // this.refresh()
+        } catch (error) {
+          console.error(error)
+        }
+      } else {
+        try {
+          await this.api.put(
+            `detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
+            dataToUpdate,
+            ({ status, data }) => {
+              this.loading = false
+              console.log(this.resvStatus)
+
+              if (status === 200) {
+                this.triggerPositive('Update Successfully')
+                console.log('Data berhasil diperbarui:', data)
+              } else {
+                console.error('Gagal memperbarui data')
+              }
+            }
+          )
+          // this.refresh()
+        } catch (error) {
+          console.error(error)
+        }
       }
-      }else{
-      try {
-        await this.api.put(
-          `detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
-          dataToUpdate,
-          ({ status, data }) => {
-            this.loading = false
-            console.log(this.resvStatus)
-
-            if (status === 200) {
-              this.triggerPositive('Update Successfully')
-              console.log('Data berhasil diperbarui:', data)
-            } else {
-              console.error('Gagal memperbarui data')
-            }
-          }
-        )
-        // this.refresh()
-      } catch (error) {
-        console.error(error)
-      }}
     },
     formatDate(date) {
       return new Date(date)

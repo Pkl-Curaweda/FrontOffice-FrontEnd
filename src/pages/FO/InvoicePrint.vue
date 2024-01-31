@@ -2,7 +2,17 @@
   <q-page style="overflow-y: scroll; height: 100%">
     <FOMenubar>
       <template #right>
-        <q-btn flat square color="primary" icon="o_print" />
+        <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
+          <q-btn
+            label="Save"
+            @click="print"
+            unelevated
+            color="primary"
+            dense
+            class="text-capitalize q-px-lg"
+          />
+          <q-btn label="Cancel" dense outline color="primary" class="text-capitalize q-px-md" />
+        </div>
       </template>
     </FOMenubar>
 
@@ -90,27 +100,6 @@
           telekomunikasi No.01, Terusan<br />
           Buahbatu, Bandung, Jawa Barat 40257 ;<br />
           Phone. +62 8112072999
-        </div>
-
-        <div style="display: flex; justify-content: space-between">
-          <div></div>
-          <div style="gap: 10px">
-            <q-btn
-              label="Save"
-              unelevated
-              @click="print"
-              color="primary"
-              dense
-              class="text-capitalize q-px-md q-py-sm q-mx-md"
-            />
-            <q-btn
-              label="Cancel"
-              outline
-              color="primary"
-              dense
-              class="text-capitalize q-px-md q-py-sm"
-            />
-          </div>
         </div>
       </div>
       <!-- <iframe src="src/assets/pdf/invoicePdf.pdf" frameborder="0"></iframe> -->

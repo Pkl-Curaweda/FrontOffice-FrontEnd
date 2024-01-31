@@ -116,6 +116,7 @@
             class="no-shadow"
             v-model:pagination="pagination"
             @request="onPaginationChange"
+            :rows-per-page-options="[1, 5, 7, 10, 15, 20, 25, 30]"
             :rows="data"
             :loading="loading"
             :columns="columns"
@@ -284,7 +285,7 @@ export default defineComponent({
         { name: 'RoomBoy', label: 'Room Boy', field: 'RoomBoy', align: 'left' },
         { name: 'VoucherNumber', label: 'Voucher Number', align: 'left', field: 'VoucherNumber' },
         { name: 'BillDate', label: 'BillDate', align: 'left', field: 'BillDate' },
-        { name: '', label: '', align: 'center', field: '' }
+        { name: '', label: 'Action', align: 'center', field: '' }
       ]
     }
   },
@@ -514,7 +515,6 @@ export default defineComponent({
           ({ status, data }) => {
             if (status === 200) {
               // Update the data with the search result
-              this.formatData(data.invoices)
             } else {
               console.error('Error searching data')
             }
@@ -536,6 +536,10 @@ export default defineComponent({
       }
     },
     onPaginationChange(props) {
+      props.pagination.rowsPerPage =
+        props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
+      console.log(props)
+      console.log(props.rowsPerPage)
       this.pagination = props.pagination
       this.fetchData()
     },
@@ -556,10 +560,6 @@ export default defineComponent({
         url += `&sort=${this.filterSortOrder.val}`
       }
 
-      // if (this.filterDisplay !== null) {
-      //   url += `&disOpt=${this.filterDisplay}`
-      // }
-
       const formattedDate = this.datePicker?.replace(/\//g, '-')
 
       if (formattedDate) {
@@ -572,18 +572,15 @@ export default defineComponent({
           this.loading = false
 
           if (response.status === 200) {
-            const { artList } = response.data.data
+            const { added, invoices, artList } = response.data.data
 
-            this.data2 = artList.map((al) => ({
-              name: al.id,
-              description: al.description,
+            this.data2 = artList.map((inv) => ({
+              name: inv.id,
+              description: inv.description,
               qty: 0
             }))
-            // this.uniqueId = response.data.data.invoices.uniqueId
-            // console.log(this.uniqueId)
-            // this.uniqueId = response.data.data.invoices.uniqueId
-            // console.log(response.data.data.invoices.uniqueId)
-            this.formatData(response.data.data.invoices)
+
+            this.formatData({ added, invoices })
             this.pagination = {
               page: response.data.data.meta?.currPage,
               rowsNumber: response.data.data.meta?.total,
@@ -597,32 +594,27 @@ export default defineComponent({
           console.error('Error fetching data:', error)
         })
     },
-    formatCurrency(num = 0) {
-      return num.toLocaleString()
-    },
-    formatData(raw = []) {
+
+    formatData({ added, invoices }) {
       const list = []
-      const unique = []
 
-      raw.forEach((inv) => {
-        // uniqueId: { data: inv.uniqueId, style: {} }
-
+      invoices.forEach((inv) => {
         list.push({
           Art: { data: inv.art.label ? inv.art.label : inv.art, style: {} },
           Qty: { data: inv.qty, style: {} },
           Description: { data: inv.desc, style: {} },
-          Rate: { data: this.formatCurrency(inv.rate), style: {} },
-          Amount: { data: this.formatCurrency(inv.amount), style: {} },
-          RmNo: { data: 101, style: {} },
-          RoomBoy: { data: 'Asep', style: {} },
-          VoucherNumber: { data: 101111, style: {} },
+          Rate: { data: inv.rate, style: {} },
+          Amount: { data: inv.amount, style: {} },
+          RmNo: { data: added.roomNo, style: {} }, // Akses rmNo dari objek added
+          RoomBoy: { data: added.roomBoys, style: {} }, // Akses roomBoy dari objek added
+          VoucherNumber: { data: added.voucherNo, style: {} }, // Akses voucherNumber dari objek added
           BillDate: { data: inv.billDate, style: {} },
           uniqueId: { data: inv.uniqueId, style: {} }
         })
       })
+
       console.log(list)
       this.data = list
-      // this.uniqueId = unique
     },
     setRoomResv(data) {
       this.$ResvStore.dateBill = data['BillDate'].data

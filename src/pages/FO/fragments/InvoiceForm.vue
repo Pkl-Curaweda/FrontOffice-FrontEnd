@@ -139,6 +139,7 @@
                   @request="onPaginationChange"
                   :rows="data"
                   :loading="loading"
+                  hide-bottom
                   :columns="columns"
                   row-key="name"
                 >

@@ -42,7 +42,7 @@
                 <div v-for="(option, index) in dropdownOptions4" :key="index">
                   <div style="width: 80px" class="q-px-sm">
                     <q-img
-                      :src="'../../../public/images/' + option.imageUrl"
+                      :src="'./../assets/img/payment/' + option.imageUrl"
                       loading="lazy"
                       spinner-color="black"
                       style="max-width: 80px; margin: auto"
@@ -115,7 +115,7 @@
                 <div v-for="(option, index) in dropdownOptions" :key="index">
                   <div style="width: 80px" class="q-px-sm">
                     <q-img
-                      :src="'../../../public/images/' + option.imageUrl"
+                      :src="'./../assets/img/payment/' + option.imageUrl"
                       loading="lazy"
                       spinner-color="black"
                       style="max-width: 80px; margin: auto"
@@ -131,7 +131,6 @@
                 />
               </div>
             </div>
-
 
             <div v-if="showDropdown">
               <div v-for="(option, index) in dropdownOptions" :key="index">
@@ -153,7 +152,7 @@
                     </div>
                     <div style="width: 60px">
                       <q-img
-                        :src="'../../../public/images/' + option.imageUrl"
+                        :src="'./../assets/img/payment/' + option.imageUrl"
                         loading="lazy"
                         spinner-color="black"
                         style="max-width: 60px; margin: auto; justify-content: flex-end"
@@ -183,7 +182,7 @@
                 <div v-for="(option, index) in dropdownOptions2" :key="index">
                   <div style="width: 80px" class="q-px-sm">
                     <q-img
-                      :src="'../../../public/images/' + option.imageUrl"
+                      :src="'./../assets/img/payment/' + option.imageUrl"
                       loading="lazy"
                       spinner-color="black"
                       style="max-width: 80px; margin: auto"
@@ -219,7 +218,7 @@
                     </div>
                     <div style="width: 60px">
                       <q-img
-                        :src="'../../../public/images/' + option.imageUrl"
+                        :src="'./../assets/img/payment/' + option.imageUrl"
                         loading="lazy"
                         spinner-color="black"
                         style="max-width: 60px; margin: auto; justify-content: flex-end"
@@ -251,7 +250,7 @@
                 <div v-for="(option, index) in dropdownOptions3" :key="index">
                   <div style="width: 80px" class="q-px-sm">
                     <q-img
-                      :src="'../../../public/images/' + option.imageUrl"
+                      :src="'./../assets/img/payment/' + option.imageUrl"
                       loading="lazy"
                       spinner-color="black"
                       style="max-width: 80px; margin: auto"
@@ -287,7 +286,7 @@
                     </div>
                     <div style="width: 60px">
                       <q-img
-                        :src="'../../../public/images/' + option.imageUrl"
+                        :src="'../../assets/img/payment/' + option.imageUrl"
                         loading="lazy"
                         spinner-color="black"
                         style="max-width: 60px; margin: auto; justify-content: flex-end"
@@ -299,8 +298,8 @@
               </div>
             </div>
           </div>
-             <!-- cash -->
-             <div style="width: 100%" class="shadowBox">
+          <!-- cash -->
+          <div style="width: 100%" class="shadowBox">
             <div
               style="
                 display: flex;
@@ -309,9 +308,7 @@
                 font-size: 18px;
               "
             >
-              <span class="centerComponent" style="width: 350px; font-weight: 600"
-                >Cash</span
-              >
+              <span class="centerComponent" style="width: 350px; font-weight: 600">Cash</span>
 
               <div
                 style="display: flex; cursor: pointer; width: 100%; justify-content: end; gap: 2px"
@@ -319,7 +316,7 @@
                 <div v-for="(option, index) in dropdownOptions" :key="index">
                   <div style="width: 80px" class="q-px-sm">
                     <q-img
-                      :src="'../../../public/images/' + option.imageUrl"
+                      :src="'./../assets/img/payment/' + option.imageUrl"
                       loading="lazy"
                       spinner-color="black"
                       style="max-width: 80px; margin: auto"
@@ -355,7 +352,7 @@
                     </div>
                     <div style="width: 60px">
                       <q-img
-                        :src="'../../../public/images/' + option.imageUrl"
+                        :src="'./../assets/img/payment/' + option.imageUrl"
                         loading="lazy"
                         spinner-color="black"
                         style="max-width: 60px; margin: auto; justify-content: flex-end"
@@ -369,14 +366,8 @@
           </div>
         </div>
         <!-- row 1 col 2 -->
-        <div
-          v-if="paymentDetail == false || true"
-          :class="{ 'shadowBox q-pa-lg': paymentDetail == false }"
-        >
-          <div
-            style="display: flex; justify-content: space-between; width: 100%"
-            v-if="paymentDetail == false"
-          >
+        <div class="shadowBox q-pa-lg">
+          <div style="display: flex; justify-content: space-between; width: 100%">
             <div style="color: black; font-size: x-large; font-weight: 600" class="q-pa-sm">
               Total Pembayaran
             </div>
@@ -390,10 +381,7 @@
               >
             </div>
           </div>
-          <div
-            v-if="paymentDetail == false || true"
-            :class="!paymentDetail ? 'detailPayment' : 'shadowBox no-padding'"
-          >
+          <div :class="'shadowBox no-padding'">
             <div
               style="
                 display: block;
@@ -405,31 +393,28 @@
               <div
                 class="centerComponent"
                 style="font-weight: 600"
-                :style="paymentDetail2 ? { 'width :': '1000px;' } : { 'width :': '350px;' }"
+                :style="{ 'width :': '350px;' }"
               >
                 <div class="row q-px-md">
                   <div class="col-9">
                     <label for="noPesanan" style="color: grey; font-size: small">NO. PESANAN</label>
-                    <div style="padding: 5px">{{ noPesanan }}</div>
-                  </div>
-                  <div class="col" v-if="!paymentDetail">
-                    {{ selectedBank + '/ ' + selectedMethod }}
+                    <div style="padding: 5px">{{ this.user.billNumber }}</div>
                   </div>
                 </div>
                 <q-separator horizontal class="q-ma-md" />
                 <div style="background-color: #f1f5f9">
                   <div style="text-transform: uppercase; padding: 10px; margin: 10px">
-                    {{ namaUser + ', ' + namauserBank + ' - ' + telp }}
+                    {{
+                      selectedBank
+                        ? selectedBank + ' ' + this.user.guestName
+                        : selectedMethod + ' ' + this.user.guestName
+                    }}
                   </div>
                 </div>
               </div>
 
               <q-separator horizontal class="q-ma-md" />
-              <div
-                class="centerComponent"
-                style="font-weight: 600"
-                :style="paymentDetail2 ? { 'width :': '1000px;' } : { 'width :': '350px;' }"
-              >
+              <div class="centerComponent" style="width: 350px; font-weight: 600">
                 <label class="q-mx-md" style="color: grey; font-size: small">RINCIAN PESANAN</label>
                 <div class="col q-px-md" style="background-color: #f1f5f9; margin-top: 10px">
                   <div style="color: black; font-size: larger" class="q-pa-sm">Rincian Harga</div>
@@ -448,7 +433,7 @@
                             :for="'option_' + index"
                             style="font-weight: 600"
                             class="centerComponent textwrap"
-                            >{{ ' Transfer ' + option.label }}</label
+                            >{{ option.desc }}</label
                           >
                         </div>
                         <div>
@@ -456,7 +441,7 @@
                             :for="'option_' + index"
                             style="font-weight: 600"
                             class="centerComponent"
-                            >{{ formating(option.price) }}</label
+                            >{{ formating(option.amount) }}</label
                           >
                         </div>
                       </div>
@@ -488,7 +473,7 @@
                       :for="'option_' + index"
                       style="font-weight: 600"
                       class="centerComponent"
-                      >{{ DPP }}</label
+                      >{{ formating(DPP) }}</label
                     >
                   </div>
                   <q-separator horizontal />
@@ -507,26 +492,15 @@
                 </div>
               </div>
             </div>
-            <div :class="paymentDetail ? 'q-pa-lg' : 'q-pa-lg buttonPayment'">
-              <div style="display: flex; gap: 10px">
-                <q-btn
-                  v-if="paymentDetail == false"
-                  align="left"
-                  class="btn-fixed-width q-ma-auto"
-                  style="width: 100%"
-                  color="primary"
-                  label="OK"
-                />
-                <q-btn
-                  align="left"
-                  class="btn-fixed-width q-ma-auto"
-                  style="width: 100%"
-                  @click="moveDetail()"
-                  color="primary"
-                  :outline="!paymentDetail"
-                  :label="paymentDetail ? selectedMethod || 'Select Method Payment' : 'Cancel'"
-                />
-              </div>
+            <div class="q-pa-lg buttonPayment" style="display: flex; gap: 1px">
+              <q-btn
+                align="left"
+                class="btn-fixed-width q-ma-auto"
+                style="width: 100%"
+                @click="redirectdetailpayment"
+                color="primary"
+                :label="selectedMethod || 'Select Method Payment'"
+              />
             </div>
           </div>
         </div>
@@ -537,7 +511,7 @@
 
 <script>
 import FOMenubar from 'src/components/FOMenubar.vue'
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'payment',
@@ -547,8 +521,6 @@ export default defineComponent({
       showEwallet: false,
       showDropdown: false,
       showDebit: false,
-      paymentDetail: true,
-      paymentDetail2: false,
       bankOption: true,
       showVirtual: false,
       iconName1: 'expand_more',
@@ -558,20 +530,18 @@ export default defineComponent({
       arrowBottom: 'expand_less',
       arrowUp: 'expand_more',
       NameCard: '',
-      DPP: '10%',
+      DPP: ref(),
       includeTax: false,
       // from user
       noPesanan: '25513515',
       namaUser: 'Rono Rustan',
       namauserBank: 'Henry',
       telp: '08977663660',
-      priceBook: [
-        { label: 'Condotel Room', qty: '1', price: '5000000' },
-        { label: 'Nasi Goreng', qty: '1', price: '5000000' },
-        { label: 'Breakfast', qty: '1', price: '5000000' }
-      ],
-      total: 0,
-
+      // priceBook: [
+      //   { label: 'Condotel Room', qty: '1', price: '5000000' },
+      //   { label: 'Nasi Goreng', qty: '1', price: '5000000' },
+      //   { label: 'Breakfast', qty: '1', price: '5000000' }
+      // ],
       dropdownOptions: [
         { value: 'BCA', imageUrl: 'Bank_Central_Asia.svg.webp' },
         { value: 'Mandiri', imageUrl: '2560px-Bank_Mandiri_logo.svg.png' },
@@ -597,7 +567,12 @@ export default defineComponent({
       ],
       selectedBank: '',
       selectedOption: null,
-      selectedMethod: ''
+      selectedMethod: '',
+      api: new this.$Api('frontoffice'),
+      data: [],
+      total: 0,
+      priceBook: [],
+      user: ref({ billNumber: '', arrivalDate: '', departureDate: '', guestName: '' })
     }
   },
   watch: {
@@ -607,14 +582,14 @@ export default defineComponent({
       console.log('method payment ' + this.selectedMethod)
     },
     includeTax() {
-      this.calculateTotal() // Panggil method calculateTotal() saat status checkbox berubah
+      this.calculateTotal()
     }
   },
   created() {
-    this.calculateTotal() // Panggil method calculateTotal() saat komponen dibuat
+    this.calculateTotal()
   },
   mounted() {
-    console.log(this.NameCard)
+    this.fetchcart()
   },
   methods: {
     toggleDropdown() {
@@ -682,20 +657,54 @@ export default defineComponent({
       this.showEwallet = false
       this.selectedMethod = this.showVirtual ? (find(3) ? 'Virtual Account' : '') : ''
     },
+    redirectdetailpayment() {
+      if (this.selectedBank !== '' || this.selectedBank !== null) {
+        const { resvId, resvRoomId } = this.$route.params
+        this.$ResvStore.selectedbank = this.selectedBank
+        this.$ResvStore.selectedmethod = this.selectedMethod
+
+        this.$router.push({
+          name: 'detail-payment',
+          params: { resvId: resvId, resvRoomId: resvRoomId }
+        })
+      } else {
+        this.triggerNegative('select your method')
+      }
+    },
+    triggerPositive(data) {
+      this.$q.notify(
+        {
+          type: 'positive',
+          message: data || 'data has successfully',
+          timeout: 1000
+        },
+        4000
+      )
+    },
+    triggerNegative(data) {
+      this.$q.notify(
+        {
+          type: 'negative',
+          message: data || 'data has successfully',
+          timeout: 1000
+        },
+        4000
+      )
+    },
     calculateTotal() {
-      // Menggunakan metode reduce() untuk menjumlahkan nilai properti 'price'
       this.total = this.priceBook.reduce((accumulator, currentValue) => {
-        return accumulator + parseInt(currentValue.price) // Mengonversi ke integer sebelum penambahan
+        return accumulator + parseFloat(currentValue.amount) // Mengonversi ke float sebelum penambahan
       }, 0)
       console.log(this.total)
+
+      // Add tax if includeTax is true
       if (this.includeTax) {
-        this.total = this.total + this.calculateTax(this.total)
+        // this.total += this.calculateTax(this.total)
+        this.total += this.DPP
       }
     },
     calculateTax(subtotal) {
-      // this.subtotal = this.DPP + this.total
-      // console.log(this.subtotal)
-      return subtotal * 0.1
+      return subtotal + this.DPP // Assuming tax is 10%
     },
     moveDetail() {
       try {
@@ -715,9 +724,6 @@ export default defineComponent({
               protected: true
             }
           })
-          // this.paymentDetail = !this.paymentDetail
-          // this.bankOption = false
-          // paymentDetail2 = true
         }
       } catch (error) {
         console.error('Error: ' + error.massage)
@@ -732,19 +738,53 @@ export default defineComponent({
         return this.dropdownOptions3.find((option) => option.value === this.selectedBank)
       }
     },
-    // formatingPrice(){
-    //   this.priceBook.slice().sort((a, b) => a.price -b.price ).map(value => {
-    //     return  value.toLocaleString('id-ID',{
-    //       style: 'currency',
-    //       currency: 'IDR'
-    //     })
-    //   })
-    // },
     formating(value) {
       return parseFloat(value).toLocaleString('id-ID', {
         style: 'currency',
         currency: 'IDR'
       })
+    },
+    fetchcart() {
+      // const { currentResvId, currentRoomResvId } = this.$ResvStore
+      const { resvId, resvRoomId } = this.$route.params
+
+      try {
+        this.api.get(`invoice/payment/${resvId}/${resvRoomId}`, ({ status, message, data }) => {
+          if (status === 200) {
+            const { invoices, add } = data
+            this.user = { ...add }
+            this.priceBook = invoices
+            console.log(this.user)
+            this.DPP = data.tax
+            // this.user = data.add
+            this.calculateTotal()
+            this.data = invoices.rate
+            // this.formatData(data.invoices)
+          }
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    formatData(raw = []) {
+      const list = []
+
+      raw.forEach((inv) => {
+        list.push({
+          Art: { data: inv.art.label ? inv.art.label : inv.art, style: {} },
+          Qty: { data: inv.qty, style: {} },
+          Description: { data: inv.desc, style: {} },
+          Rate: { data: inv.rate, style: {} },
+          Amount: { data: inv.amount, style: {} },
+          RmNo: { data: 101, style: {} },
+          RoomBoy: { data: 'Asep', style: {} },
+          VoucherNumber: { data: 101111, style: {} },
+          BillDate: { data: inv.billDate, style: {} },
+          uniqueId: { data: inv.uniqueId, style: {} }
+        })
+      })
+      console.log(list)
+      this.data = list
     }
   }
 })
@@ -778,12 +818,8 @@ export default defineComponent({
   height: fit-content;
   padding: 20px;
 }
-.detailPayment {
-  width: 1130px;
-  height: fit-content;
-}
 .buttonPayment {
-  width: 40%;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
 }

@@ -4,9 +4,10 @@
   </FOMenubar>
   <!-- <div style="width:100%; height: 100%; background-color:black;"></div>
    -->
+
   <div
     style="width: fit-content; margin: auto"
-    :class="{ 'shadowBox q-pa-lg': paymentDetail == false }"
+    :class="{ 'shadowBox q-pa-lg': paymentDetail == true }"
   >
     <div style="display: flex; justify-content: space-between; width: 100%">
       <div style="color: black; font-size: x-large; font-weight: 600" class="q-pa-sm">
@@ -32,16 +33,16 @@
           <div class="row q-px-md">
             <div class="col-9">
               <label for="noPesanan" style="color: grey; font-size: small">NO. PESANAN</label>
-              <div style="padding: 5px">{{ noPesanan }}</div>
+              <div style="padding: 5px">{{ this.user.billNumber }}</div>
             </div>
             <div class="col">
-              {{ selectedBank + '/ ' + selectedMethod }}
+              {{ selectedBank ? selectedBank + '/ ' + selectedMethod : '' }}
             </div>
           </div>
           <q-separator horizontal class="q-ma-md" />
           <div style="background-color: #f1f5f9">
             <div style="text-transform: uppercase; padding: 10px; margin: 10px">
-              {{ namaUser + ', ' + namauserBank + ' - ' + telp }}
+              {{ this.user.guestName }}{{ selectedBank ? ', ' + selectedBank : '' }}
             </div>
           </div>
         </div>
@@ -70,7 +71,7 @@
                       :for="'option_' + index"
                       style="font-weight: 600"
                       class="centerComponent textwrap"
-                      >{{ ' Transfer ' + option.label }}</label
+                      >{{ option.desc }}</label
                     >
                   </div>
                   <div>
@@ -78,7 +79,7 @@
                       :for="'option_' + index"
                       style="font-weight: 600"
                       class="centerComponent"
-                      >{{ formating(option.price) }}</label
+                      >{{ formating(option.amount) }}</label
                     >
                   </div>
                 </div>
@@ -118,6 +119,7 @@
             align="left"
             class="btn-fixed-width q-ma-auto"
             style="width: 100%"
+            @click="paymentpost"
             color="primary"
             label="OK"
           />
@@ -125,10 +127,10 @@
             align="left"
             class="btn-fixed-width q-ma-auto"
             style="width: 100%"
-            @click="moveDetail()"
+            @click="backPayment"
             color="primary"
-            :outline="!paymentDetail"
-            :label="paymentDetail ? selectedMethod || 'Select Method Payment' : 'Cancel'"
+            :outline="paymentDetail"
+            label="Cancel"
           />
         </div>
       </div>
@@ -138,68 +140,203 @@
 
 <script>
 import FOMenubar from 'src/components/FOMenubar.vue'
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
-  name: 'DetailPayment',
-  props: ['selectedBank', 'selectedMethod'],
+  name: 'payment',
+  components: { FOMenubar },
   data() {
     return {
-      paymentDetail: false,
+      showEwallet: false,
+      showDropdown: false,
+      showDebit: false,
+      paymentDetail: true,
       paymentDetail2: false,
+      bankOption: true,
+      showVirtual: false,
+      iconName1: 'expand_more',
+      iconName2: 'expand_more',
+      iconName3: 'expand_more',
+      iconName4: 'expand_more',
+      arrowBottom: 'expand_less',
       arrowUp: 'expand_more',
       NameCard: '',
-      DPP: '10%',
+      DPP: ref(),
       includeTax: false,
-      bank: this.selectedBank,
-      metode: this.selectedMethod,
       // from user
       noPesanan: '25513515',
       namaUser: 'Rono Rustan',
       namauserBank: 'Henry',
       telp: '08977663660',
-      priceBook: [
-        { label: 'Condotel Room', qty: '1', price: '5000000' },
-        { label: 'Nasi Goreng', qty: '1', price: '5000000' },
-        { label: 'Breakfast', qty: '1', price: '5000000' }
+      // priceBook: [
+      //   { label: 'Condotel Room', qty: '1', price: '5000000' },
+      //   { label: 'Nasi Goreng', qty: '1', price: '5000000' },
+      //   { label: 'Breakfast', qty: '1', price: '5000000' }
+      // ],
+      dropdownOptions: [
+        { value: 'BCA', imageUrl: 'Bank_Central_Asia.svg.webp' },
+        { value: 'Mandiri', imageUrl: '2560px-Bank_Mandiri_logo.svg.png' },
+        { value: 'BRI', imageUrl: '1280px-BANK_BRI_logo.svg.webp' },
+        { value: 'BNI', imageUrl: '1200px-BNI_logo.svg.png' }
       ],
+      dropdownOptions2: [
+        {
+          value: 'Qris',
+          imageUrl: 'quick-response-code-indonesia-standard-qris-logo-F300D5EB32-seeklogo.com.png'
+        },
+        { value: 'Gopay', imageUrl: 'Gopay_logo.svg.png' },
+        { value: 'ShopeePay', imageUrl: 'logo-shopeepay.png' }
+      ],
+      dropdownOptions3: [
+        { value: 'BCA', imageUrl: 'Bank_Central_Asia.svg.webp' },
+        { value: 'BNI', imageUrl: '1200px-BNI_logo.svg.png' }
+      ],
+      dropdownOptions4: [
+        { value: 'Visa', imageUrl: 'Visa_Inc._logo.svg.png' },
+        { value: 'Master', imageUrl: 'mastercard-og-image.png' },
+        { value: 'JCB', imageUrl: 'JCB_logo.svg.png' }
+      ],
+      selectedBank: ref(''),
+      selectedOption: null,
+      selectedMethod: ref(''),
+      api: new this.$Api('frontoffice'),
+      data: [],
       total: 0,
-      selectedOption: null
+      priceBook: [],
+      user: ref({ billNumber: '', arrivalDate: '', departureDate: '', guestName: '' })
     }
   },
   watch: {
+    selectedOption(newVal) {
+      this.selectedBank = newVal
+      console.log('method payment ' + this.selectedBank)
+      console.log('method payment ' + this.selectedMethod)
+    },
     includeTax() {
-      this.calculateTotal() // Panggil method calculateTotal() saat status checkbox berubah
+      this.calculateTotal()
     }
   },
   created() {
-    this.calculateTotal() // Panggil method calculateTotal() saat komponen dibuat
+    this.calculateTotal()
   },
   mounted() {
-    console.log('Selected Bank:', this.selectedBank)
-    console.log('Selected Method:', this.selectedMethod)
+    this.fetchcart()
   },
   methods: {
+    async paymentpost() {
+      const { resvId, resvRoomId } = this.$route.params
+      const data = {
+        paymentMethod: this.selectedMethod,
+        orders: {
+          details: this.priceBook
+        },
+        total: this.total,
+        tax: this.DPP
+      }
+      try {
+        await this.api.post(`invoice/payment/${resvId}/${resvRoomId}`, data, ({ status, data }) => {
+          this.loading = false
+          if (status == 200) {
+            this.triggerPositive('Success')
+            console.log('Data berhasil diperbarui:', data)
+            this.backPayment()
+          } else {
+            console.error('Gagal memperbarui data')
+          }
+        })
+        // this.refresh()
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    redirectpayment() {
+      const { resvId, resvRoomId } = this.$route.params
+
+      this.$router.push(
+        {
+          name: 'guest-invoice',
+          params: { resvId: resvId, resvRoomId: resvRoomId }
+        })
+    },
     calculateTotal() {
-      // Menggunakan metode reduce() untuk menjumlahkan nilai properti 'price'
       this.total = this.priceBook.reduce((accumulator, currentValue) => {
-        return accumulator + parseInt(currentValue.price) // Mengonversi ke integer sebelum penambahan
+        return accumulator + parseFloat(currentValue.amount) // Mengonversi ke float sebelum penambahan
       }, 0)
       console.log(this.total)
+
+      // Add tax if includeTax is true
       if (this.includeTax) {
-        this.total = this.total + this.calculateTax(this.total)
+        // this.total += this.calculateTax(this.total)
+        this.total += this.DPP
       }
     },
     calculateTax(subtotal) {
-      // this.subtotal = this.DPP + this.total
-      // console.log(this.subtotal)
-      return subtotal * 0.1
+      return subtotal + this.DPP // Assuming tax is 10%
+    },
+    backPayment() {
+      this.$router.go(-1)
+    },
+    find(value) {
+      if (value == 1) {
+        return this.dropdownOptions.find((option) => option.value === this.selectedBank)
+      } else if (value == 2) {
+        return this.dropdownOptions2.find((option) => option.value === this.selectedBank)
+      } else if (value == 3) {
+        return this.dropdownOptions3.find((option) => option.value === this.selectedBank)
+      }
     },
     formating(value) {
       return parseFloat(value).toLocaleString('id-ID', {
         style: 'currency',
         currency: 'IDR'
       })
+    },
+    fetchcart() {
+      // const { currentResvId, currentRoomResvId } = this.$ResvStore
+      const { resvId, resvRoomId } = this.$route.params
+
+      const { selectedbank, selectedmethod } = this.$ResvStore
+      this.selectedBank = selectedbank
+      console.log(this.selectedBank)
+      this.selectedMethod = selectedmethod
+      try {
+        this.api.get(`invoice/payment/${resvId}/${resvRoomId}`, ({ status, message, data }) => {
+          if (status === 200) {
+            const { invoices, add } = data
+            this.user = { ...add }
+            this.priceBook = invoices
+
+            console.log(this.priceBook)
+            this.DPP = data.tax
+            // this.user = data.add
+            this.calculateTotal()
+            this.data = invoices.rate
+            // this.formatData(data.invoices)
+          }
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    formatData(raw = []) {
+      const list = []
+
+      raw.forEach((inv) => {
+        list.push({
+          Art: { data: inv.art.label ? inv.art.label : inv.art, style: {} },
+          Qty: { data: inv.qty, style: {} },
+          Description: { data: inv.desc, style: {} },
+          Rate: { data: inv.rate, style: {} },
+          Amount: { data: inv.amount, style: {} },
+          RmNo: { data: 101, style: {} },
+          RoomBoy: { data: 'Asep', style: {} },
+          VoucherNumber: { data: 101111, style: {} },
+          BillDate: { data: inv.billDate, style: {} },
+          uniqueId: { data: inv.uniqueId, style: {} }
+        })
+      })
+      console.log(list)
+      this.data = list
     }
   }
 })
@@ -231,6 +368,7 @@ export default defineComponent({
   border-radius: 10px;
   height: fit-content;
   padding: 20px;
+  width: 1000px;
 }
 .detailPayment {
   width: 1130px;

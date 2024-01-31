@@ -75,8 +75,8 @@
           dense
           class="text-capitalize q-px-sm"
           color="primary"
-          label="Invoice"
-          to="payment"
+          label="payment"
+          @click="redirectpayment"
         />
         <q-btn
           flat
@@ -209,6 +209,13 @@ export default defineComponent({
     '$ResvStore.UniqueId': 'getDetailForm'
   },
   methods: {
+    redirectpayment() {
+      const { resvId, resvRoomId } = this.$route.params
+      this.$router.push({
+        name: 'payment',
+        params: { resvId: resvId, resvRoomId: resvRoomId }
+      })
+    },
     formatCurrency(num = 0) {
       return num.toLocaleString()
     },

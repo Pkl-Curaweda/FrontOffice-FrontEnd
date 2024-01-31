@@ -10,7 +10,7 @@ const frontoffice_routes = [
   },
   {
     name: 'guest-invoice',
-    path: '/fo/guest-invoice/:resvId/:resvRoomId',
+  path: '/fo/guest-invoice/:resvId/:resvRoomId',
     component: () => import('pages/FO/Invoice.vue'),
     meta: {
       title: 'Arrival Guest List - Invoice',
@@ -46,7 +46,8 @@ const frontoffice_routes = [
     }
   },
   {
-    path: '/fo/payment',
+    name: 'payment',
+    path: '/fo/guest-invoice/:resvId/:resvRoomId/payment',
     component: () => import('pages/FO/payment.vue'),
     meta: {
       title: 'Payment',
@@ -73,13 +74,13 @@ const frontoffice_routes = [
     }
   },
   {
-    path: '/fo/payment/detail',
+    name: 'detail-payment',
+    path: '/fo/guest-invoice/:resvId/:resvRoomId/payment/detail',
     component: () => import('pages/FO/DetailPayment.vue'),
     meta: {
       title: 'detail',
       main_route: false,
-      protected: true,
-      props: true
+      protected: true
     }
   }
 ]

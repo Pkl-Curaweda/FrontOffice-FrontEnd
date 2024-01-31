@@ -800,7 +800,7 @@ export default defineComponent({
     },
     redirectToInvoice() {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
-      this.$router.replace({
+      this.$router.push({
         name: 'guest-invoice',
         params: { resvId: currentResvId, resvRoomId: currentRoomResvId }
       })

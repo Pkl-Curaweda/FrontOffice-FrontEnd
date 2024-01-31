@@ -637,3 +637,9 @@ export default defineComponent({
   }
 })
 </script>
+
+<style>
+.text-h6 {
+  font-size: 1rem;
+}
+</style>

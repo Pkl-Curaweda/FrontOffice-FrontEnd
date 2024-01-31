@@ -13,6 +13,7 @@ import { defineComponent, ref } from 'vue'
 export default defineComponent({
   name: 'usagechart',
   setup() {
+    const seriesData = ref([])
     const chartOptions = ref({
       chart: {
         type: 'bar'
@@ -49,7 +50,7 @@ export default defineComponent({
       }
     })
     return {
-      seriesData: [],
+      seriesData,
       chartOptions
     }
   },
@@ -68,6 +69,8 @@ export default defineComponent({
       this.api.get(url, ({ status, data }) => {
         if (status == 200) {
           const { hkChart } = data
+
+          console.log(hkChart)
 
           this.seriesData = [
             {

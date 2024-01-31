@@ -132,6 +132,7 @@
               </div>
             </div>
 
+
             <div v-if="showDropdown">
               <div v-for="(option, index) in dropdownOptions" :key="index">
                 <div style="display: flex" class="q-py-md">
@@ -268,6 +269,74 @@
             </div>
             <div v-if="showVirtual">
               <div v-for="(option, index) in dropdownOptions3" :key="index">
+                <div style="display: flex" class="q-py-md">
+                  <div style="display: flex; justify-content: space-between; width: 100%">
+                    <div>
+                      <input
+                        type="radio"
+                        :id="'option_' + index"
+                        :value="' Transfer ' + option.value"
+                        v-model="selectedOption"
+                      />
+                      <label
+                        :for="'option_' + index"
+                        style="font-weight: 600"
+                        class="centerComponent"
+                        >{{ ' Transfer ' + option.value }}</label
+                      >
+                    </div>
+                    <div style="width: 60px">
+                      <q-img
+                        :src="'../../../public/images/' + option.imageUrl"
+                        loading="lazy"
+                        spinner-color="black"
+                        style="max-width: 60px; margin: auto; justify-content: flex-end"
+                        :alt="'Image ' + index"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+             <!-- cash -->
+             <div style="width: 100%" class="shadowBox">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                cursor: pointer;
+                font-size: 18px;
+              "
+            >
+              <span class="centerComponent" style="width: 350px; font-weight: 600"
+                >Cash</span
+              >
+
+              <div
+                style="display: flex; cursor: pointer; width: 100%; justify-content: end; gap: 2px"
+              >
+                <div v-for="(option, index) in dropdownOptions" :key="index">
+                  <div style="width: 80px" class="q-px-sm">
+                    <q-img
+                      :src="'../../../public/images/' + option.imageUrl"
+                      loading="lazy"
+                      spinner-color="black"
+                      style="max-width: 80px; margin: auto"
+                    />
+                  </div>
+                </div>
+                <q-icon
+                  :name="iconName1"
+                  size="2rem"
+                  color="green"
+                  class="centerComponent"
+                  @click="togglecash = true"
+                />
+              </div>
+            </div>
+            <div v-if="showCase">
+              <div v-for="(option, index) in dropdownOptions4" :key="index">
                 <div style="display: flex" class="q-py-md">
                   <div style="display: flex; justify-content: space-between; width: 100%">
                     <div>
@@ -592,6 +661,17 @@ export default defineComponent({
       }
     },
     toggleVirtual() {
+      this.showVirtual = !this.showVirtual
+      this.iconName4 = this.showVirtual ? this.arrowBottom : this.arrowUp
+      this.iconName1 = this.showVirtual ? this.arrowUp : this.arrowUp
+      this.iconName2 = this.showVirtual ? this.arrowUp : this.arrowUp
+      this.iconName3 = this.showVirtual ? this.arrowUp : this.arrowUp
+      this.showDropdown = false
+      this.showDebit = false
+      this.showEwallet = false
+      this.selectedMethod = this.showVirtual ? (find(3) ? 'Virtual Account' : '') : ''
+    },
+    toggleCash() {
       this.showVirtual = !this.showVirtual
       this.iconName4 = this.showVirtual ? this.arrowBottom : this.arrowUp
       this.iconName1 = this.showVirtual ? this.arrowUp : this.arrowUp

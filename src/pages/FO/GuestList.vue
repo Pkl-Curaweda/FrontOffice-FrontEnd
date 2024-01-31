@@ -135,17 +135,23 @@
                     "
                   >
                     {{ cell.data }}
-                    <q-popup-edit v-model="props.row.name" title="" auto-save>
-                      <q-list style="align-content: flex-end; width: 100%">
+                    <q-popup-edit
+                      v-if="!cell.style.color.includes('#808080')"
+                      v-model="props.row.name"
+                      title=""
+                      style="width: fit-content; padding: 0; margin: 0"
+                      auto-save
+                    >
+                      <q-list style="align-content: flex-end; width: 100%; padding: 10px">
                         <q-item
                           clickable
                           v-close-popup
                           @click="changeinc(props.row)"
-                          class="q-px-xl"
-                          style="display: flex; background-color: red; border-radius: 30px"
+                          class="q-px-md"
+                          style="display: flex; background-color: red ; border-radius: 100px"
                         >
                           <q-item-section>
-                            <q-item-label style="color: black" class="font-bold"
+                            <q-item-label style="color: black; width:100%; font-weight:600; padding-left:auto; padding-right:auto;"
                               >INCOGNITO</q-item-label
                             >
                           </q-item-section>
@@ -162,8 +168,8 @@
                         </q-item>
                         <q-item
                           clickable
-                          v-close-popup
                           @click="dialog2 = true"
+                          v-close-popup
                           style="display: flex"
                         >
                           <q-item-section>
@@ -175,7 +181,7 @@
                         <q-item
                           clickable
                           v-close-popup
-                          @click="setRoomResv(props.row)"
+                          @click="addnewextrabed(props.row)"
                           style="display: flex"
                         >
                           <q-item-section>
@@ -228,7 +234,12 @@
                     </q-dialog>
                   </q-td>
                 </template>
-                <q-td key="" :props="props" style="width: 10px">
+                <q-td
+                  key=""
+                  :props="props"
+                  style="width: 10px; background-color: white;"
+
+                >
                   <div style="display: flex">
                     <div style="height: fit-content; width: fit-content">
                       <!-- <q-btn
@@ -243,9 +254,18 @@
                       </div> -->
                     </div>
                     <div>
-                      <q-btn auto-close flat round color="primary" icon="more_vert">
+                      <q-btn
+                        auto-close
+                        flat
+                        round
+                        :color="props.row.RmNo.style.color.includes('#808080') ? 'grey' : 'primary'"
+                        icon="more_vert"
+                      >
                         <q-menu>
-                          <q-list style="align-content: flex-end; width: 100%">
+                          <q-list
+                            v-if="!props.row.RmNo.style.color.includes('#808080')"
+                            style="align-content: flex-end; width: 100%"
+                          >
                             <q-item
                               clickable
                               v-close-popup
@@ -338,7 +358,7 @@
                                 icon="edit_note"
                               />
                               <q-item-section>
-                                <q-item-label>Edit Room</q-item-label>
+                                <q-item-label>Change Room</q-item-label>
                               </q-item-section>
                             </q-item>
                           </q-list>
@@ -405,10 +425,13 @@ export default defineComponent({
   setup() {
     return {
       dialogeditroom: ref(false),
+      dialog2: ref(false),
+      setcolor: ref(''),
       cancelEnabled: ref(true),
       iconName1: 'more_vert',
       showDropdown: false,
       background: ref(),
+      state: false,
       allObjectsInArray,
       arrowBottom: 'expand_less',
       arrowUp: 'expand_more',
@@ -654,14 +677,19 @@ export default defineComponent({
         request: this.waitingnote
       }
 
-      try{
-        this.api.post(`/detail/reservation/${resvId}/${roomNo}/waiting-list`, note, ({ data, status, message }) => {
-        if (status === 200) {
-          console.log(data)
-          this.triggerPositive(message)
-          window.location.reload()
-        }
-      })}catch(error){
+      try {
+        this.api.post(
+          `/detail/reservation/${resvId}/${roomNo}/waiting-list`,
+          note,
+          ({ data, status, message }) => {
+            if (status === 200) {
+              console.log(data)
+              this.triggerPositive(message)
+              window.location.reload()
+            }
+          }
+        )
+      } catch (error) {
         console.error(error)
       }
     },
@@ -690,8 +718,7 @@ export default defineComponent({
             if (status === 200) {
               this.triggerPositive(message)
               console.log(data)
-            window.location.reload()
-
+              window.location.reload()
             }
           }
         )
@@ -924,11 +951,16 @@ export default defineComponent({
             rr.reservation.resvStatus.rowColor === '#f10000'
               ? rr.reservation.resvStatus.rowColor
               : '#ffffff',
-            rr.reservation.resvStatus.textColor === '#f10000'
+            rr.reservation.resvStatus.textColor === '#f10000' ||
+            rr.reservation.resvStatus.textColor === '#808080'
               ? rr.reservation.resvStatus.textColor
               : '#000000'
             // color: rr.reservation.resvStatus.textColor
           ]
+          this.setcolor =
+            rr.reservation.resvStatus.textColor === '#808080'
+              ? rr.reservation.resvStatus.textColor
+              : 'primary'
           const { id } = rr.arrangment
           list.push({
             ResNo: { data: rsrv.reservationId, style: { backgroundColor, color } },

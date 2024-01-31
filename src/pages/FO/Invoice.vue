@@ -365,7 +365,7 @@ export default defineComponent({
       },
       api: new this.$Api('frontoffice'),
       pagination: {
-        page: 1,
+        page: 1,    
         rowsNumber: 0,
         rowsPerPage: 20
       },

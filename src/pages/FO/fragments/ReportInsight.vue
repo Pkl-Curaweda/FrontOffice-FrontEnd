@@ -44,7 +44,13 @@
     </div>
 
     <div class="row no-wrap q-my-lg" style="gap: 16px">
-      <apexchart type="donut" width="400" :options="chartOptions" :series="series"></apexchart>
+      <apexchart
+        ref="demoChart"
+        type="donut"
+        width="400"
+        :options="chartOptions"
+        :series="series"
+      ></apexchart>
       <div class="dashboard-box column">
         <div class="row q-py-sm q-mt-lg" style="gap: 10px">
           <div class="icon">
@@ -109,10 +115,11 @@ export default defineComponent({
       displayOption: ref('day'),
       filterDisplay: ref('day'),
       deluxeRoom: ref(),
+      seriesEntry: [],
       standardRoom: ref(),
       familyRoom: ref(),
       roomRes: ref(),
-      chartOptions: {
+      chart: {
         chart: {
           type: 'donut',
           height: 400,
@@ -171,9 +178,9 @@ export default defineComponent({
   },
   data() {
     return {
-      series: ref(),
-      api: new this.$Api('frontoffice'),
-      data: []
+      series: this.seriesEntry,
+      chartOptions: this.chart,
+      api: new this.$Api('frontoffice')
     }
   },
   mounted() {
@@ -182,16 +189,20 @@ export default defineComponent({
   watch: {
     filterDisplay: {
       handler(option) {
-        this.fetchData()
+        this.getDetailReport()
       }
     },
     datePicker: {
       deep: true,
       handler(newDateRange) {
-        this.getDetailReport()
+        if (newDateRange) {
+          // Periksa apakah newDateRange terdefinisi
+          this.getDetailReport()
+        }
       }
     }
   },
+
   methods: {
     setFilterDisplay(option) {
       this.filterDisplay = option
@@ -216,27 +227,29 @@ export default defineComponent({
       }
 
       this.api.get(url, ({ status, data }) => {
+        console.log(this.series)
         this.loading = false
         if (status == 200) {
-          this.formatData(data.detail)
-          const { total } = data
+          const { total, detail } = data
           console.log(total)
           this.deluxeRoom = total.DELUXE
           this.standardRoom = total.STANDARD
           this.familyRoom = total.FAMILY
           this.roomRes = total.RESERVATION
+
+          this.formatData(detail)
         }
       })
     },
-    formatData(raw = []) {
-      const list = []
+    formatData(raw = {}) {
+      const seriesData = []
 
-      raw = Object.values(raw)
-      raw.forEach((chrt) => {
-        console.log(chrt.percent)
-        list.push(chrt.percent) + '%'
+      // Iterate over the room details and extract the percent values
+      Object.values(raw).forEach((room) => {
+        seriesData.push(room.percent || 0) // Use 0 if percent is undefined
       })
-      this.series = list
+
+      this.$refs.demoChart.updateSeries(seriesData)
     }
   }
 })

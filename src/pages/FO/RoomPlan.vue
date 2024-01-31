@@ -18,56 +18,6 @@
       </template>
     </FOMenubar>
     <div class="flex q-mx-xl q-mt-lg page-padding">
-      <div class="flex" style="gap: 16px; margin-bottom: 24px">
-        <q-select
-          outlined
-          dense
-          v-model="floor"
-          :options="floorOptions"
-          style="width: fit-content"
-        />
-        <!-- <div v-for="(status, index) in roomStatus" :key="index" class="column" style="flex: 1 1 0%">
-          <div v-if="index === 3" class="column full-height justify-between">
-            <div
-              class="flex items-center justify-center"
-              v-for="statusItem in status"
-              :key="statusItem.status"
-              style="
-                width: 100%;
-                font-size: 14px;
-                line-height: 16px;
-                padding: 8px 24px;
-                border: 1px solid #ccc;
-                white-space: nowrap;
-              "
-              :style="`background-color: ${statusItem.bg_color}; color: ${statusItem.text_color};`"
-            >
-              {{ statusItem.status }}
-            </div>
-          </div>
-
-          <div
-            v-else
-            v-for="(statusItem, index) in status"
-            :key="index"
-            class="flex items-center justify-center"
-            style="
-              width: 50%;
-              font-size: 14px;
-              line-height: 16px;
-              padding: 8px 24px;
-              border: 1px solid #ccc;
-              white-space: nowrap;
-            "
-            :style="`background-color: ${statusItem.bg_color}; color: ${
-              statusItem.text_color
-            }; align-self: ${index % 2 === 0 ? '' : 'end'};`"
-          >
-            {{ statusItem.status }}
-          </div>
-        </div> -->
-      </div>
-
       <!-- ROOMS -->
       <div
         style="width: 100%; position: relative; overflow: hidden"
@@ -100,7 +50,6 @@
             label="107"
             :style="`background-color: ${roomData[6].bg_color}; color: ${roomData[6].text_color}`"
           >
-            <RoomPlanDropdown :room="107" @status="handleStatus" />
           </q-btn-dropdown>
           <q-btn-dropdown
             class="room-box"
@@ -114,7 +63,6 @@
             label="106"
             :style="`background-color: ${roomData[5].bg_color}; color: ${roomData[5].text_color}`"
           >
-            <RoomPlanDropdown :room="106" @status="handleStatus" />
           </q-btn-dropdown>
           <q-btn-dropdown
             class="room-box"
@@ -128,7 +76,6 @@
             label="105"
             :style="`background-color: ${roomData[4].bg_color}; color: ${roomData[4].text_color}`"
           >
-            <RoomPlanDropdown :room="105" @status="handleStatus" />
           </q-btn-dropdown>
         </div>
 
@@ -149,7 +96,6 @@
             label="108"
             :style="`background-color: ${roomData[7].bg_color}; color: ${roomData[7].text_color}`"
           >
-            <RoomPlanDropdown :room="108" @status="handleStatus" />
           </q-btn-dropdown>
           <q-btn-dropdown
             class="room-box"
@@ -163,7 +109,6 @@
             label="109"
             :style="`background-color: ${roomData[8].bg_color}; color: ${roomData[8].text_color}`"
           >
-            <RoomPlanDropdown :room="109" @status="handleStatus" />
           </q-btn-dropdown>
           <q-btn-dropdown
             class="room-box"
@@ -177,7 +122,6 @@
             label="110"
             :style="`background-color: ${roomData[9].bg_color}; color: ${roomData[9].text_color}`"
           >
-            <RoomPlanDropdown :room="110" @status="handleStatus" />
           </q-btn-dropdown>
         </div>
 
@@ -214,7 +158,6 @@
             label="104"
             :style="`background-color: ${roomData[3].bg_color}; color: ${roomData[3].text_color}`"
           >
-            <RoomPlanDropdown :room="104" @status="handleStatus" />
           </q-btn-dropdown>
           <q-btn-dropdown
             class="room-box"
@@ -228,7 +171,6 @@
             label="103"
             :style="`background-color: ${roomData[2].bg_color}; color: ${roomData[2].text_color}`"
           >
-            <RoomPlanDropdown :room="103" @status="handleStatus" />
           </q-btn-dropdown>
           <q-btn-dropdown
             class="room-box"
@@ -242,7 +184,6 @@
             label="102"
             :style="`background-color: ${roomData[1].bg_color}; color: ${roomData[1].text_color}`"
           >
-            <RoomPlanDropdown :room="102" @status="handleStatus" />
           </q-btn-dropdown>
           <q-btn-dropdown
             class="room-box"
@@ -256,7 +197,6 @@
             label="101"
             :style="`background-color: ${roomData[0].bg_color}; color: ${roomData[0].text_color}`"
           >
-            <RoomPlanDropdown :room="101" @status="handleStatus" />
           </q-btn-dropdown>
         </div>
       </div>
@@ -282,7 +222,6 @@
 </template>
 
 <script>
-import RoomPlanDropdown from 'src/components/RoomPlanDropdown.vue'
 import { roomStatus } from 'src/data/room-status.js'
 import { defineComponent, ref } from 'vue'
 import { subGroupingArray } from 'src/utils/arrays'
@@ -364,7 +303,7 @@ const statuses = [
 
 export default defineComponent({
   name: 'RoomPlanPage',
-  components: { FOMenubar, RoomPlanDropdown },
+  components: { FOMenubar },
   data() {
     return {
       api: new this.$Api('frontoffice'),

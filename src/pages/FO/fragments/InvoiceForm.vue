@@ -90,7 +90,7 @@
 
         <!-- dialog view bill on form invoice -->
         <q-dialog v-model="viewBill">
-          <q-card>
+          <q-card style="width: 700px; max-width: 80vw">
             <q-card-section class="items-center q-pb-none">
               <div class="row items-center">
                 <q-space />
@@ -99,7 +99,79 @@
             </q-card-section>
 
             <q-card-section>
-              <div>make table in here</div>
+              <q-img
+                src="../../../assets/img/lingian-logo-colored.png"
+                style="
+                  width: 10rem;
+                  height: 10rem;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                "
+                class="q-mx-auto"
+              />
+              <div class="q-pb-sm">
+                Bill Number: <span>{{ billNumber }}</span>
+              </div>
+              <div class="row q-pb-sm" style="justify-content: space-between">
+                <div>
+                  Reservation Resource: <span class="text-bold">{{ reservationResource }}</span>
+                </div>
+                <div>
+                  Guest Name: <span class="text-bold">{{ guestName }}</span>
+                </div>
+              </div>
+
+              <div style="background-color: #16a75c; height: 5px" class="col-grow"></div>
+
+              <div class="row q-py-sm" style="justify-content: space-between; max-width: 30%">
+                <div>Arrival:</div>
+                <div>{{ arrival }}</div>
+              </div>
+              <div class="row q-pb-sm" style="justify-content: space-between; max-width: 30%">
+                <div>Departure:</div>
+                <div>{{ departure }}</div>
+              </div>
+              <div class="my-table">
+                <q-table
+                  class="no-shadow"
+                  v-model:pagination="pagination"
+                  @request="onPaginationChange"
+                  :rows="data"
+                  :loading="loading"
+                  hide-bottom
+                  :columns="columns"
+                  row-key="name"
+                >
+                  <template v-slot:header="props">
+                    <q-tr class="table-head" :props="props">
+                      <q-th
+                        v-for="(col, i) in props.cols"
+                        :key="i"
+                        style="padding-top: 0px; padding-bottom: 0px"
+                      >
+                        <span class="text-h6">{{ col.label }}</span>
+                      </q-th>
+                    </q-tr>
+                  </template>
+                  <template v-slot:body="props">
+                    <q-tr :props="props">
+                      <template v-for="(cell, key, i) in props.row" :key="i">
+                        <q-td v-if="!['uniqueId'].includes(key)" :style="cell.style">
+                          {{ cell.data }}
+                        </q-td>
+                      </template>
+                    </q-tr>
+                  </template>
+                </q-table>
+              </div>
+              <div style="background-color: #16a75c; height: 5px" class="col-grow"></div>
+              <div class="q-py-md">
+                Gedung lingian, Universitas Telkom, Jl. <br />
+                telekomunikasi No.01, Terusan<br />
+                Buahbatu, Bandung, Jawa Barat 40257 ;<br />
+                Phone. +62 8112072999
+              </div>
             </q-card-section>
           </q-card>
         </q-dialog>
@@ -107,7 +179,7 @@
           flat
           square
           color="primary"
-          to="/fo/guest-invoice/print"
+          @click="redirectToInvoicePrint"
           icon="o_print"
           class="border-button rounded-borders"
           style="padding: 6px 3px"
@@ -157,6 +229,7 @@
 <script>
 import { useQuasar } from 'quasar'
 import { defineComponent, ref } from 'vue'
+import { allObjectsInArray } from 'src/utils/datatype'
 
 export default defineComponent({
   name: 'InvoiceForm',
@@ -166,14 +239,31 @@ export default defineComponent({
       updateQty: ref(''),
       description: ref(''),
       billAdress: ref(''),
+      billNumber: ref(),
+      reservationResource: ref(),
+      arrival: ref(),
+      departure: ref(),
+      guestName: ref(),
+      allObjectsInArray,
       comments: ref(''),
-      viewBill: ref(false)
+      viewBill: ref(false),
+      columns: [
+        { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
+        { name: 'Description', label: 'Description', align: 'left', field: 'Description' },
+        { name: 'Amount', label: 'Amount', align: 'left', field: 'Amount' }
+      ]
     }
   },
   data() {
     return {
       api: new this.$Api('frontoffice'),
-      data: []
+      pagination: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 20
+      },
+      data: [],
+      uniqueId: []
     }
   },
   computed: {
@@ -187,11 +277,12 @@ export default defineComponent({
     }
   },
   mounted() {
-    // this.getDetailForm()
-
-    if (this.$ResvStore.UniqueId) {
+    if (this.$ResvStore.uniqueId) {
       this.getDetailForm()
     }
+
+    this.fetchData()
+    this.userView()
 
     // watch(
     //   () => this.$ResvStore.UniqueId,
@@ -206,9 +297,72 @@ export default defineComponent({
     '$ResvStore.currentRoomResvId': 'getDetailForm',
     '$ResvStore.dateBill': 'getDetailForm',
     '$ResvStore.Artlb': 'getDetailForm',
-    '$ResvStore.UniqueId': 'getDetailForm'
+    '$ResvStore.UniqueId': 'getDetailForm',
+    filterSortOrder: {
+      handler(oldFilter, newFilter) {
+        Object.keys(this.filterColumns).forEach((key) => {
+          if (oldFilter['col'] != key) this.filterColumns[key].data = null
+        })
+        this.fetchData()
+      }
+    }
   },
   methods: {
+    redirectToInvoicePrint() {
+      const { resvId, resvRoomId } = this.$route.params
+
+      this.$router.replace({
+        name: 'print-invoice',
+        params: { resvId, resvRoomId }
+      })
+    },
+    userView() {
+      this.loading = true
+
+      const { resvId, resvRoomId } = this.$route.params
+
+      if (resvId === 0 || resvRoomId === 0) {
+        this.loading = false
+        console.log(resvId)
+        return
+      }
+
+      let url = `invoice/${resvId}/${resvRoomId}/print`
+
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+          this.formatData(data.invoices)
+          this.billNumber = data.billNumber
+          this.reservationResource = data.resourceName
+          this.guestName = data.guestName
+          this.arrival = data.arrivalDate
+          this.departure = data.departureDate
+        }
+      })
+    },
+    formatData(raw = []) {
+      const list = []
+
+      raw.forEach((ip) => {
+        list.push({
+          Date: { data: ip.billDate, style: {} },
+          Description: { data: ip.desc, style: {} },
+          Amount: { data: ip.amount, style: {} }
+        })
+      })
+      console.log(this.data, list)
+      this.data = list
+      console.log(this.data)
+    },
+    setSortOrder(val = '') {
+      this.filterSortOrder = null
+    },
+    onPaginationChange(props) {
+      this.pagination = props.pagination
+      this.fetchData()
+    },
     redirectpayment() {
       const { resvId, resvRoomId } = this.$route.params
       this.$router.push({
@@ -230,14 +384,17 @@ export default defineComponent({
       )
     },
     getDetailForm() {
-      const { resvId, resvRoomId, dateBill, Artlb, UniqueId } = this.$route.params
+      const { resvId, resvRoomId } = this.$route.params
+      const uniqueId = this.$ResvStore.uniqueId
+      console.log(uniqueId)
       this.loading = true
       this.api.get(
-        `detail/invoice/${resvId}/${resvRoomId}/?ids=${UniqueId}`,
+        `detail/invoice/${resvId}/${resvRoomId}/?ids=${uniqueId}`,
         ({ status, data }) => {
           this.loading = false
 
           if (status == 200) {
+            this.formatData()
             const { detail } = data
 
             this.backgroundedTotal = this.formatCurrency(data.total)
@@ -255,14 +412,58 @@ export default defineComponent({
         }
       )
     },
-    async editDataInv() {
-      const { currentResvId, currentRoomResvId, dateBill, UniqueId } = this.$ResvStore
+    fetchData() {
+      this.loading = true
+
+      const { resvId, resvRoomId } = this.$route.params
+
+      if (resvId === 0 || resvRoomId === 0) {
+        this.loading = false
+        console.log(resvId)
+        return
+      }
+
+      let url = `fo/invoice/${resvId}/${resvRoomId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+
+      this.$api
+        .get(url)
+        .then((response) => {
+          this.loading = false
+
+          if (response.status === 200) {
+            const { artList } = response.data.data
+
+            this.data2 = artList.map((al) => ({
+              name: al.id,
+              description: al.description,
+              qty: 0
+            }))
+            // this.uniqueId = response.data.data.invoices.uniqueId
+            // console.log(this.uniqueId)
+            // this.uniqueId = response.data.data.invoices.uniqueId
+            // console.log(response.data.data.invoices.uniqueId)
+            this.formatData(response.data.data.invoices)
+            this.pagination = {
+              page: response.data.data.meta?.currPage,
+              rowsNumber: response.data.data.meta?.total,
+              rowsPerPage: response.data.data.meta?.perPage
+            }
+          }
+          this.triggerPositive('GET Data Successfully')
+        })
+        .catch((error) => {
+          this.loading = false
+          console.error('Error fetching data:', error)
+        })
+    },
+    async editDataInv(row) {
+      const { currentResvId, currentRoomResvId, dateBill, uniqueId } = this.$ResvStore
       const data = {
         qty: this.qty
       }
       try {
         await this.api.put(
-          `detail/invoice/${currentResvId}/${currentRoomResvId}?ids=${UniqueId}`,
+          `detail/invoice/${currentResvId}/${currentRoomResvId}?ids=${uniqueId}`,
           data,
           ({ status, data }) => {
             this.loading = true
@@ -271,6 +472,8 @@ export default defineComponent({
               this.loading = false
               console.log(data)
               this.triggerPositive('Update Data Successfully')
+              // Call setRoomResv with uniqueId after updating data
+              this.setRoomResv(uniqueId)
             }
           }
         )

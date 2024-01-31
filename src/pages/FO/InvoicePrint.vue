@@ -2,11 +2,21 @@
   <q-page style="overflow-y: scroll; height: 100%">
     <FOMenubar>
       <template #right>
-        <q-btn flat square color="primary" icon="o_print" />
+        <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
+          <q-btn
+            label="Save"
+            @click="print"
+            unelevated
+            color="primary"
+            dense
+            class="text-capitalize q-px-lg"
+          />
+          <q-btn label="Cancel" dense outline color="primary" class="text-capitalize q-px-md" />
+        </div>
       </template>
     </FOMenubar>
 
-    <div class="row q-ma-md no-wrap" style="gap: 15px">
+    <div class="row no-wrap" style="gap: 15px; margin: 0 30vw">
       <div class="col-grow" ref="pdfContainer">
         <q-img
           src="../../assets/img/lingian-logo-colored.png"
@@ -42,7 +52,10 @@
           <div>Departure:</div>
           <div>{{ departure }}</div>
         </div>
-        <div class="my-table q-pb-md">
+        <div
+          class="my-table q-pb-md"
+          style="display: flex; justify-content: center; align-items: center"
+        >
           <q-table
             class="no-shadow"
             v-model:pagination="pagination"
@@ -52,6 +65,7 @@
             :loading="loading"
             :columns="columns"
             row-key="name"
+            style="width: 60vw"
           >
             <template>
               <q-tr class="table-head">
@@ -89,7 +103,7 @@
         </div>
       </div>
       <!-- <iframe src="src/assets/pdf/invoicePdf.pdf" frameborder="0"></iframe> -->
-      <div class="column justify-between" style="width: 50%; gap: 15px">
+      <!-- <div class="column justify-between" style="width: 50%; gap: 15px">
         <div class="column" style="gap: 10px">
           <div class="row justify-between" style="overflow: auto; min-width: 100%; max-width: 100%">
             <p class="q-my-auto" style="min-width: 60%; max-width: 60%">Page</p>
@@ -193,7 +207,7 @@
             class="text-capitalize q-px-md q-py-sm"
           />
         </div>
-      </div>
+      </div> -->
     </div>
   </q-page>
 </template>
@@ -210,7 +224,7 @@ const columns = [
 ]
 
 export default defineComponent({
-  name: 'Print',
+  name: 'PrintInvoice',
   setup() {
     return {
       forecast: ref(null),
@@ -257,7 +271,15 @@ export default defineComponent({
     getDataTable() {
       this.loading = true
 
-      let url = `invoice/1/1/print`
+      const { resvId, resvRoomId } = this.$route.params
+
+      if (resvId === 0 || resvRoomId === 0) {
+        this.loading = false
+        console.log(resvId)
+        return
+      }
+
+      let url = `invoice/${resvId}/${resvRoomId}/print`
       this.url = url
       this.api.get(url, ({ status, data }) => {
         this.loading = false

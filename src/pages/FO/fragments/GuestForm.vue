@@ -757,12 +757,51 @@ export default defineComponent({
     roomType: {
       handler(oldval, newval) {
         this.resultRows = this.rows.filter((r) => {
-          console.log(r)
-          console.log(newval)
-          console.log(oldval)
           return r.date == oldval
         })
+        let rmNos = [], rmBed
+        switch (oldval) {
+          case "FML":
+            [rmNos, rmBed] = [[104, 105, 106], [{ label: 'T', value: 'TWIN' }]]
+            this.roomNo = this.roomNo != null && rmNos.some((list) => this.roomNo === list ) ? this.roomNo : rmNos[0]
+            this.roomBed = this.roomBed != null && rmBed === this.roomBed ? this.roomBed :  rmBed[0] 
+            break;
+            case "STD":
+            [rmNos, rmBed] = [[107, 108, 109, 110], [{ label: 'S', value: 'SINGLE' }]]
+            this.roomNo = this.roomNo != null && rmNos.some((list) => this.roomNo === list) ? this.roomNo : rmNos[0];
+            this.roomBed =  this.roomBed != null && rmBed === this.roomBed ? this.roomBed :  rmBed[0]  
+              break;
+              case "DLX":
+              [rmNos, rmBed] = [[101, 102, 103], [{ label: 'K', value: 'KING' }]]
+                this.roomNo = this.roomNo != null && rmNos.some((list) => this.roomNo === list ) ? this.roomNo : rmNos[0]
+                this.roomBed =  this.roomBed != null &&  rmBed === this.roomBed ? this.roomBed :  rmBed[0]
+                break;
+                default:
+            break;
+        }
       }
+    },
+    roomNo: {
+      handler(newVal){
+        const roomTypeList = ['DLX', 'DLX', 'DLX', 'FML', 'FML', 'FML', 'STD', 'STD', 'STD', 'STD']
+        this.roomType = roomTypeList[newVal - 101]
+      }
+    },
+    roomBed: {
+      handler(newVal){
+        console.log(newVal)
+          switch(newVal.label){
+            case "T":
+              this.roomType = "FML"
+              break;
+              case "K":
+                this.roomType = "DLX"
+                break;
+                default:
+              this.roomType = "STD"
+              break;
+          }
+        }
     },
     'arrivalDepart.from': {
       immediate: true,

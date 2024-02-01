@@ -848,7 +848,7 @@ export default defineComponent({
         const roomNo = data['ResRoomNo'].data
         console.log(roomNo)
         this.api.delete(`detail/reservation/${resvId}/${roomNo}/delete`, ({ data, message }) => {
-          // window.location.reload()
+          this.refreshData()
           this.trigger('positive', message )
         })
       } catch (error) {
@@ -975,7 +975,10 @@ export default defineComponent({
       })
       this.data = list
       console.log(this.data)
-    }
+    },
+    refreshData() {
+      window.location.reload()
+    },
   }
 })
 </script>

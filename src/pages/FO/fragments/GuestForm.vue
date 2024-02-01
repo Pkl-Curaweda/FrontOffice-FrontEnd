@@ -526,7 +526,7 @@
 
       <div style="display: flex; justify-content: space-between" class="q-mt-sm">
         <p class="text-bold q-ma-none">Balance:</p>
-        <p class="text-bold q-ma-none">{{ selected.rate ? 'Rp ' + selected.rate : 'Rp 0' }}</p>
+        <p class="text-bold q-ma-none">{{ formating(balance) }}</p>
       </div>
 
       <q-separator class="q-mt-sm bg-grey" size="1px" />
@@ -762,17 +762,17 @@ export default defineComponent({
         let rmNos = [], rmBed
         switch (oldval) {
           case "FML":
-            [rmNos, rmBed] = [[104, 105, 106], [{ label: 'T', value: 'TWIN' }]]
+            [rmNos, rmBed] = [[105, 106, 107], [{ label: 'T', value: 'TWIN' }]]
             this.roomNo = this.roomNo != null && rmNos.some((list) => this.roomNo === list ) ? this.roomNo : rmNos[0]
-            this.roomBed = this.roomBed != null && rmBed === this.roomBed ? this.roomBed :  rmBed[0] 
+            this.roomBed = this.roomBed != null && rmBed === this.roomBed ? this.roomBed :  rmBed[0]
             break;
             case "STD":
-            [rmNos, rmBed] = [[107, 108, 109, 110], [{ label: 'S', value: 'SINGLE' }]]
+            [rmNos, rmBed] = [[108, 109, 110], [{ label: 'S', value: 'SINGLE' }]]
             this.roomNo = this.roomNo != null && rmNos.some((list) => this.roomNo === list) ? this.roomNo : rmNos[0];
-            this.roomBed =  this.roomBed != null && rmBed === this.roomBed ? this.roomBed :  rmBed[0]  
+            this.roomBed =  this.roomBed != null && rmBed === this.roomBed ? this.roomBed :  rmBed[0]
               break;
               case "DLX":
-              [rmNos, rmBed] = [[101, 102, 103], [{ label: 'K', value: 'KING' }]]
+              [rmNos, rmBed] = [[101, 102, 103, 104], [{ label: 'K', value: 'KING' }]]
                 this.roomNo = this.roomNo != null && rmNos.some((list) => this.roomNo === list ) ? this.roomNo : rmNos[0]
                 this.roomBed =  this.roomBed != null &&  rmBed === this.roomBed ? this.roomBed :  rmBed[0]
                 break;
@@ -783,7 +783,7 @@ export default defineComponent({
     },
     roomNo: {
       handler(newVal){
-        const roomTypeList = ['DLX', 'DLX', 'DLX', 'FML', 'FML', 'FML', 'STD', 'STD', 'STD', 'STD']
+        const roomTypeList = ['DLX', 'DLX', 'DLX', 'DLX', 'FML', 'FML', 'FML', 'STD', 'STD', 'STD']
         this.roomType = roomTypeList[newVal - 101]
       }
     },
@@ -865,6 +865,12 @@ export default defineComponent({
 
       return obj
     },
+    formating(value) {
+      return parseFloat(value).toLocaleString('id-ID', {
+        style: 'currency',
+        currency: 'IDR'
+      })
+    },
     formatArrivalDepart() {
       if (this.arrivalDepart.from && this.arrivalDepart.to) {
         const fromDate = new Date(this.arrivalDepart.from)
@@ -916,17 +922,17 @@ export default defineComponent({
       console.log(this.selected)
       this.calculateTotal()
     },
-    calculateTotal() {
-      if (this.selected) {
-        this.balance = this.selected.value
+    // calculateTotal() {
+    //   if (this.selected) {
+    //     this.balance = this.selected.value
 
-        if (this.includeTax) {
-          this.balance += this.calculateTax(this.balance)
-        }
+    //     if (this.includeTax) {
+    //       this.balance += this.calculateTax(this.balance)
+    //     }
 
-        console.log(this.balance)
-      }
-    },
+    //     console.log(this.balance)
+    //   }
+    // },
     trigger(type, txt) {
       this.$q.notify(
         {
@@ -1053,6 +1059,7 @@ export default defineComponent({
               ...this.availRooms,
               { id: room.id, roomType: room.roomType, bedSetup: room.bedSetup }
             ]
+            this.balance = balance.balance
             const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
             this.rows = formattedRoomRates
             this.resultRows = formattedRoomRates
@@ -1208,6 +1215,7 @@ export default defineComponent({
                 this.refreshData()
               } else {
                 console.error('Gagal memperbarui data')
+                this.trigger('negative', message)
               }
             }
           )
@@ -1226,6 +1234,7 @@ export default defineComponent({
               if (status === 200) {
                 this.trigger('positive', message)
                 console.log('Data berhasil diperbarui:', data)
+                this.refreshData()
               } else {
                 console.error('Gagal memperbarui data')
                 this.trigger('negative', message)

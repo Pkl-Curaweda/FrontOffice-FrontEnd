@@ -15,7 +15,7 @@
           square
           color="primary"
           class="border-button rounded-borders"
-          @click="handleRefresh"
+          @click="refreshData"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +37,7 @@
           square
           color="primary"
           class="border-button rounded-borders"
-          @click="handleRefresh"
+          @click="updateData"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -55,7 +55,7 @@
 
         <!-- remove reservation  -->
         <q-btn
-          @click="handleRefresh"
+          @click="removeRoomResv"
           flat
           square
           color="primary"
@@ -567,7 +567,7 @@
           dense
           :disabled="!this.$ResvStore.currentRoomResvId"
           class="text-capitalize col-grow"
-          @click="handleRefresh"
+          @click="postcheckin"
         />
         <q-btn
           label="Check-Out"
@@ -576,7 +576,7 @@
           dense
           :disabled="!this.$ResvStore.currentRoomResvId"
           class="text-capitalize col-grow"
-          @click="handleRefresh"
+          @click="postcheckout"
         />
       </div>
     </div>
@@ -784,17 +784,17 @@ export default defineComponent({
     }
   },
   methods: {
-    handleRefresh() {
-      // Panggil fungsi untuk menambahkan artikel
-      this.createData()
-      this.postcheckin()
-      this.postcheckout()
-      this.updateData()
-      this.removeRoomResv()
+    // handleRefresh() {
+    //   // Panggil fungsi untuk menambahkan artikel
+    //   this.createData()
+    //   this.postcheckin()
+    //   this.postcheckout()
+    //   this.updateData()
+    //   this.removeRoomResv()
 
-      // Panggil fungsi untuk menyegarkan data
-      this.refreshData()
-    },
+    //   // Panggil fungsi untuk menyegarkan data
+    //   this.refreshData()
+    // },
     refreshData() {
       window.location.reload()
     },
@@ -855,7 +855,7 @@ export default defineComponent({
       try {
         const { currentResvId, currentRoomResvId } = this.$ResvStore
         this.api.delete(`detail/reservation/${currentResvId}/${currentRoomResvId}/delete`)
-        window.location.reload()
+        this.refreshData()
       } catch (error) {
         console.error(error)
       }
@@ -945,8 +945,7 @@ export default defineComponent({
             if (status == 200) {
               this.trigger('positive', message)
               console.log(response.data)
-            } else {
-              this.trigger('negative', message)
+              this.refreshData()
             }
           }
         )
@@ -967,8 +966,7 @@ export default defineComponent({
             this.loading = false
             if (status == 200) {
               this.trigger('positive', message)
-            } else {
-              this.trigger('negative', message)
+              this.refreshData()
             }
           }
         )
@@ -1089,8 +1087,6 @@ export default defineComponent({
             if (this.nameidcard != '') {
               this.trigger('positive', message)
             }
-          } else {
-            this.trigger('warning', message)
           }
         })
       } catch (error) {
@@ -1123,7 +1119,7 @@ export default defineComponent({
             if (status === 200) {
               this.trigger('positive', message)
               console.log('Data berhasil diperbarui:', data)
-              this.refresh()
+              // this.refresh()
             } else {
               this.trigger('negative', message)
               console.error('Gagal memperbarui data')
@@ -1170,9 +1166,9 @@ export default defineComponent({
               if (status === 200) {
                 this.trigger('positive', message)
                 console.log('Data berhasil diperbarui:', data)
+                this.refreshData()
               } else {
                 console.error('Gagal memperbarui data')
-                this.trigger('negative', message)
               }
             }
           )

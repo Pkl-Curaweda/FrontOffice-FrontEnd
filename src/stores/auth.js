@@ -5,6 +5,7 @@ export const authStore = defineStore({
   id: 'auth',
   state: () => ({
     accessToken: '',
+    mainPath: '',
     user: {
       id: 0,
       username: '',
@@ -18,6 +19,10 @@ export const authStore = defineStore({
     }
   }),
   actions: {
+    getMainPath() {
+      this.path = func.getData(this.$id, 'mainPath', this.$state, 'local')
+      return this.path
+    },
     getAccessToken() {
       this.accessToken = func.getData(this.$id, 'accessToken', this.$state, 'local')
       return this.accessToken
@@ -29,6 +34,10 @@ export const authStore = defineStore({
     setAccessToken(accessToken = '') {
       func.saveData(this.$id, 'accessToken', this.$state, accessToken, 'local')
       this.accessToken = accessToken
+    },
+    setMainPath(path = ''){
+      func.saveData(this.$id, 'mainPath', this.$state, path, 'local')
+      this.path = path
     },
     setUser(data) {
       func.saveData(this.$id, 'user', this.$state, data, 'local')

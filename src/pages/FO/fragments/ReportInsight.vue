@@ -43,14 +43,8 @@
       </q-btn-dropdown>
     </div>
 
-    <div class="row no-wrap q-my-lg" style="gap: 16px">
-      <apexchart
-        ref="demoChart"
-        type="donut"
-        width="400"
-        :options="chartOptions"
-        :series="series"
-      ></apexchart>
+    <div class="no-wrap q-my-lg" style="gap: 16px; display: flex; justify-content: center; align-items: center;">
+      <apexchart type="donut" ref="demoChart" width="400" :options="chartOptions" :series="series" v-if="showChart"></apexchart>
       <div class="dashboard-box column">
         <div class="row q-py-sm q-mt-lg" style="gap: 10px">
           <div class="icon">
@@ -115,10 +109,11 @@ export default defineComponent({
       displayOption: ref('day'),
       filterDisplay: ref('day'),
       deluxeRoom: ref(),
-      seriesEntry: [],
       standardRoom: ref(),
       familyRoom: ref(),
       roomRes: ref(),
+      showChart: false,
+      seriesEntry: [],
       chart: {
         chart: {
           type: 'donut',
@@ -159,9 +154,7 @@ export default defineComponent({
         legend: {
           position: 'left',
           markers: {
-            fillColors: [
-              '#77CE7F',
-              '#00FFE0',
+            fillColors: ['#77CE7F','#00FFE0',
               '#2B8DFF',
               '#688CD3',
               '#A468D3',
@@ -173,14 +166,16 @@ export default defineComponent({
             ]
           }
         }
-      }
+      },
     }
   },
   data() {
     return {
+      api: new this.$Api('frontoffice'),
+      data: [],
+      startUp: true,
       series: this.seriesEntry,
-      chartOptions: this.chart,
-      api: new this.$Api('frontoffice')
+      chartOptions: this.chart
     }
   },
   mounted() {
@@ -195,10 +190,8 @@ export default defineComponent({
     datePicker: {
       deep: true,
       handler(newDateRange) {
-        if (newDateRange) {
-          // Periksa apakah newDateRange terdefinisi
-          this.getDetailReport()
-        }
+        this.setDatePicker()
+        this.getDetailReport()
       }
     }
   },
@@ -208,16 +201,26 @@ export default defineComponent({
       this.filterDisplay = option
       this.getDetailReport()
     },
+    setDatePicker(option){
+      this.getDetailReport()
+    },
     formatAverage(num) {
       return num.toFixed(1)
     },
     getDetailReport() {
       this.loading = true
-
+      console.log(this.$refs.demoChart)
+      if(this.startUp != false){
+        this.startUp = false
+        this.getDetailReport()
+      } 
+      
+      
+      //Handle Chart
+      if(this.$refs.demoChart != null || this.$refs.demoChart != undefined || this.series.length > 1) this.showChart = true
+      
       let url = `detail/report?`
-
       const Date = this.datePicker?.replace(/\//g, '-')
-
       if (Date !== undefined && Date !== '') {
         url += `&date=${Date}`
       }
@@ -231,7 +234,6 @@ export default defineComponent({
         this.loading = false
         if (status == 200) {
           const { total, detail } = data
-          console.log(total)
           this.deluxeRoom = total.DELUXE
           this.standardRoom = total.STANDARD
           this.familyRoom = total.FAMILY
@@ -241,14 +243,19 @@ export default defineComponent({
         }
       })
     },
-    formatData(raw = {}) {
+    formatData(raw= {}) {
       const seriesData = []
 
-      // Iterate over the room details and extract the percent values
       Object.values(raw).forEach((room) => {
-        seriesData.push(room.percent || 0) // Use 0 if percent is undefined
+        seriesData.push(room.percent || 0)
       })
-
+      this.seriesEntry = seriesData
+      
+      if (seriesData.length > 0) {
+        this.showChart = !seriesData.every((value) => value === 0);
+      } else {
+        this.showChart = false;
+      }
       this.$refs.demoChart.updateSeries(seriesData)
     }
   }

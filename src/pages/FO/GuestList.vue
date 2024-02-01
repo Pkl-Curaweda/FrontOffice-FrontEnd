@@ -685,7 +685,7 @@ export default defineComponent({
           ({ data, status, message }) => {
             if (status === 200) {
               console.log(data)
-              this.triggerPositive(message)
+              this.trigger('positive', message )
               window.location.reload()
             }
           }
@@ -697,14 +697,6 @@ export default defineComponent({
     addnewextrabed(data) {
       const resvId = data['ResNo'].data
       const roomNo = data['ResRoomNo'].data
-      // const extra = {
-      //   articleId: 110,
-      //   qty: 1
-      // }
-      // const extra2 = {
-      //   articleId: 0,
-      //   qty: 1
-      // }
       const articledata = [
         {
           articleId: 110,
@@ -749,7 +741,7 @@ export default defineComponent({
         this.$ResvStore.currentResvId = data['ResNo'].data
         this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
       } else {
-        this.triggerNegative('note has not been filled in, data must be filled in')
+        this.trigger('negative','note has not been filled in, data must be filled in')
       }
     },
     editroom(data) {
@@ -767,7 +759,7 @@ export default defineComponent({
         this.api.put(`arrival?id=${resvId}-3`, null, ({ status, data, message }) => {
           this.loading = false
           if (status === 200) {
-            this.triggerPositive(message)
+            this.trigger('positive', message )
             console.log('Data berhasil diperbarui:', data)
             window.location.reload()
           } else {
@@ -787,7 +779,7 @@ export default defineComponent({
         this.api.put(`arrival?id=${resvId}-1`, null, ({ status, data, message }) => {
           this.loading = false
           if (status === 200) {
-            this.triggerPositive(message)
+            this.trigger('positive', message )
             console.log('Data berhasil diperbarui:', data)
             window.location.reload()
           } else {
@@ -808,7 +800,7 @@ export default defineComponent({
         this.api.put(`arrival?id=${resvId}-2`, null, ({ status, data, message }) => {
           this.loading = false
           if (status === 200) {
-            this.triggerPositive(message)
+            this.trigger('positive', message )
             console.log('Data berhasil diperbarui:', data)
             window.location.reload()
           } else {
@@ -855,9 +847,9 @@ export default defineComponent({
         const resvId = data['ResNo'].data
         const roomNo = data['ResRoomNo'].data
         console.log(roomNo)
-        this.api.delete(`detail/reservation/${resvId}/${roomNo}/delete`, ({ data }) => {
+        this.api.delete(`detail/reservation/${resvId}/${roomNo}/delete`, ({ data, message }) => {
           // window.location.reload()
-          this.triggerPositive(data.message)
+          this.trigger('positive', message )
         })
       } catch (error) {
         console.error('Terjadi kesalahan, mohon coba lagi')
@@ -910,14 +902,14 @@ export default defineComponent({
     getUniqueRoomBoys(roomBoys) {
       return roomBoys.map((boy) => boy.name)
     },
-    triggerPositive(message) {
+    trigger(type, txt) {
       this.$q.notify(
         {
-          type: 'positive',
-          message: message || 'Change Success',
+          type: type,
+          message: txt || 'data not found',
           timeout: 1000
         },
-        4000
+        1000
       )
     },
     formatData(raw = []) {

@@ -1,5 +1,6 @@
 const frontoffice_routes = [
   {
+    name: 'guest-list',
     path: '/fo/guest-list',
     component: () => import('pages/FO/GuestList.vue'),
     meta: {

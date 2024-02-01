@@ -888,24 +888,14 @@ export default defineComponent({
         console.log(this.balance)
       }
     },
-    triggerPositive(message) {
+    trigger(type, txt) {
       this.$q.notify(
         {
-          type: 'positive',
-          message: message || 'Data Succesfully',
+          type: type,
+          message: txt || 'data not found',
           timeout: 1000
         },
-        4000
-      )
-    },
-    triggerNegative(message) {
-      this.$q.notify(
-        {
-          type: 'negative',
-          message: message || 'No Data',
-          timeout: 1000
-        },
-        4000
+        1000
       )
     },
     calculateTax(subtotal) {
@@ -924,13 +914,15 @@ export default defineComponent({
         await this.api.post(
           `detail/reservation/${currentResvId}/${currentRoomResvId}/add-room`,
           data,
-          ({ status, data }) => {
+          ({ status, data, message }) => {
             if (status == 200) {
               console.log(data)
               this.loading = false
-              this.triggerPositive('Create new room successfully')
+              this.trigger('positive', message)
+
               this.refresh()
             } else {
+              this.trigger('negative', message)
               console.error('Gagal mengirim data')
             }
           }
@@ -948,11 +940,13 @@ export default defineComponent({
         const response = await this.api.post(
           `detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkin`,
           null,
-          ({ status, data }) => {
+          ({ status, data, message }) => {
             this.loading = false
             if (status == 200) {
-              this.triggerPositive('Check-in Successfully')
+              this.trigger('positive', message)
               console.log(response.data)
+            } else {
+              this.trigger('negative', message)
             }
           }
         )
@@ -969,10 +963,12 @@ export default defineComponent({
         await this.api.post(
           `detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkout`,
           null,
-          ({ status, data }) => {
+          ({ status, data, message }) => {
             this.loading = false
             if (status == 200) {
-              this.triggerPositive('Check-out successfully')
+              this.trigger('positive', message)
+            } else {
+              this.trigger('negative', message)
             }
           }
         )
@@ -993,7 +989,8 @@ export default defineComponent({
           this.loading = false
           console.log('test')
           if (status == 200) {
-            this.triggerPositive(message)
+            this.trigger('positive', message)
+
             const { reservation, room, arrangment, balance } = data.reservation
             const { reservationStatus, arrangmentCode, availableRooms } = data.data
 
@@ -1081,7 +1078,7 @@ export default defineComponent({
       const { currentResvId, currentRoomResvId } = this.$ResvStore
       this.dialogpayment = condition
       try {
-        this.api.get(`detail/reservation/${currentResvId}/idcard`, ({ status, data }) => {
+        this.api.get(`detail/reservation/${currentResvId}/idcard`, ({ status, data, message }) => {
           if (status === 200) {
             ;(this.nameidcard = data.name),
               (this.CardIdselect =
@@ -1090,8 +1087,10 @@ export default defineComponent({
               (this.address = data.address)
             console.log(data)
             if (this.nameidcard != '') {
-              this.triggerPositive('get data succesfully')
+              this.trigger('positive', message)
             }
+          } else {
+            this.trigger('warning', message)
           }
         })
       } catch (error) {
@@ -1119,13 +1118,14 @@ export default defineComponent({
         await this.api.post(
           `detail/reservation/${currentResvId}/${currentRoomResvId}/create`,
           dataToUpdate,
-          ({ status, data }) => {
+          ({ status, data, message }) => {
             this.loading = false
             if (status === 200) {
-              this.triggerPositive('Create new reservation successfully')
+              this.trigger('positive', message)
               console.log('Data berhasil diperbarui:', data)
               this.refresh()
             } else {
+              this.trigger('negative', message)
               console.error('Gagal memperbarui data')
             }
           }
@@ -1168,11 +1168,11 @@ export default defineComponent({
               console.log(this.resvStatus)
 
               if (status === 200) {
-                this.triggerPositive('Update Successfully')
+                this.trigger('positive', message)
                 console.log('Data berhasil diperbarui:', data)
               } else {
                 console.error('Gagal memperbarui data')
-                this.triggerNegative(message)
+                this.trigger('negative', message)
               }
             }
           )
@@ -1185,15 +1185,15 @@ export default defineComponent({
           await this.api.put(
             `detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
             dataToUpdate,
-            ({ status, data }) => {
+            ({ status, data, message }) => {
               this.loading = false
               console.log(this.resvStatus)
-
               if (status === 200) {
-                this.triggerPositive('Update Successfully')
+                this.trigger('positive', message)
                 console.log('Data berhasil diperbarui:', data)
               } else {
                 console.error('Gagal memperbarui data')
+                this.trigger('negative', message)
               }
             }
           )
@@ -1241,23 +1241,24 @@ export default defineComponent({
         address: this.address
       }
       if (this.nameidcard == '' && this.idcardnumber == '' && this.address == '') {
-        this.triggerNegative('data is missing')
+        this.trigger('warning', 'data is missing')
       } else {
         try {
           this.api.post(
             `detail/reservation/${currentResvId}/${currentRoomResvId}/add-idcard`,
             cardData,
-            ({ status, data }) => {
+            ({ status, data, message }) => {
               this.loading = false
               if (status === 200) {
                 console.log('Data berhasil diperbarui:', data)
-                this.triggerPositive(
+                this.trigger(
+                  'positive',
                   this.CardIdselect + ' added successfully' || 'Card not selected'
                 )
                 this.dialogpayment = false
               } else {
                 console.error('Gagal memperbarui data')
-                this.triggerNegative('data is missing')
+                this.trigger('negative', message)
               }
             }
           )

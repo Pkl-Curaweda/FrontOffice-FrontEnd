@@ -1,5 +1,7 @@
 <template>
-  <router-view />
+  <div style="font-size: 10px">
+    <router-view />
+  </div>
 </template>
 
 <script>

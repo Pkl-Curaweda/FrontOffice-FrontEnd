@@ -1,203 +1,159 @@
 <template>
-  <FOMenubar>
-    <template #left></template>
-  </FOMenubar>
-  <!-- <div style="width:100%; height: 100%; background-color:black;"></div>
-   -->
-
-  <div
-    style="width: fit-content; margin: auto"
-    :class="{ 'shadowBox q-pa-lg': paymentDetail == true }"
-  >
-    <div style="display: flex; justify-content: space-between; width: 100%">
-      <div style="color: black; font-size: x-large; font-weight: 600" class="q-pa-sm">
-        Total Pembayaran
-      </div>
-      <div style="width: fit-content; margin: 10px">
-        <label
-          :for="'option_' + index"
-          style="font-weight: 600; font-size: large"
-          class="centerComponent"
-        >
-          {{ total }}</label
-        >
-      </div>
-    </div>
-    <div :class="!paymentDetail ? 'detailPayment' : 'shadowBox no-padding'">
-      <div style="display: block; justify-content: space-between; cursor: pointer; font-size: 16px">
-        <div
-          class="centerComponent"
-          style="font-weight: 600"
-          :style="paymentDetail2 ? { 'width :': '1000px;' } : { 'width :': '350px;' }"
-        >
-          <div class="row q-px-md">
-            <div class="col-9">
-              <label for="noPesanan" style="color: grey; font-size: small">NO. PESANAN</label>
-              <div style="padding: 5px">{{ this.user.billNumber }}</div>
-            </div>
-            <div class="col">
-              {{ selectedBank ? selectedBank + '/ ' + selectedMethod : '' }}
-            </div>
-          </div>
-          <q-separator horizontal class="q-ma-md" />
-          <div style="background-color: #f1f5f9">
-            <div style="text-transform: uppercase; padding: 10px; margin: 10px">
-              {{ this.user.guestName }}{{ selectedBank ? ', ' + selectedBank : '' }}
-            </div>
-          </div>
+  <q-page style="overflow-y: scroll; height: 100%">
+    <FOMenubar>
+      <template #left></template>
+    </FOMenubar>
+    <div
+      style="width: fit-content; margin: auto"
+      class="shadowBox q-pa-lg"
+    >
+      <div style="display: flex; justify-content: space-between; width: 100%">
+        <div style="color: black; font-size: x-large; font-weight: 600" class="q-pa-sm">
+          Total Pembayaran
         </div>
-
-        <q-separator horizontal class="q-ma-md" />
+        <div style="width: fit-content; margin: 10px">
+          <label
+            :for="'option_' + index"
+            style="font-weight: 600; font-size: large"
+            class="centerComponent"
+          >
+            {{ formating(total) }}</label
+          >
+        </div>
+      </div>
+      <div class="shadowBox no-padding">
         <div
-          class="centerComponent"
-          style="font-weight: 600"
-          :style="paymentDetail2 ? { 'width :': '1000px;' } : { 'width :': '350px;' }"
+          style="display: block; justify-content: space-between; cursor: pointer; font-size: 16px"
         >
-          <label class="q-mx-md" style="color: grey; font-size: small">RINCIAN PESANAN</label>
-          <div class="col q-px-md" style="background-color: #f1f5f9; margin-top: 10px">
-            <div style="color: black; font-size: larger" class="q-pa-sm">Rincian Harga</div>
-            <div v-for="(option, index) in priceBook" :key="index">
-              <div style="display: flex" class="q-py-md">
-                <div
-                  style="
-                    display: flex;
-                    justify-content: space-between;
-                    width: 100%;
-                    margin-right: 10px;
-                  "
-                >
-                  <div>
-                    <label
-                      :for="'option_' + index"
-                      style="font-weight: 600"
-                      class="centerComponent textwrap"
-                      >{{ option.desc }}</label
-                    >
-                  </div>
-                  <div>
-                    <label
-                      :for="'option_' + index"
-                      style="font-weight: 600"
-                      class="centerComponent"
-                      >{{ formating(option.amount) }}</label
-                    >
+          <div class="centerComponent" style="font-weight: 600; width 350px;">
+            <div class="row q-px-md">
+              <div class="col-9">
+                <label for="noPesanan" style="color: grey; font-size: small">NO. PESANAN</label>
+                <div style="padding: 5px">{{ this.user.billNumber }}</div>
+              </div>
+              <div class="col">
+                {{ selectedBank ? selectedBank + '/ ' + selectedMethod : '' }}
+              </div>
+            </div>
+            <q-separator horizontal class="q-ma-md" />
+            <div style="background-color: #f1f5f9">
+              <div style="text-transform: uppercase; padding: 10px; margin: 10px">
+                {{ this.user.guestName }}{{ selectedBank ? ', ' + selectedBank : '' }}
+              </div>
+            </div>
+          </div>
+
+          <q-separator horizontal class="q-ma-md" />
+          <div class="centerComponent" style="font-weight: 600; width: 100%">
+            <label class="q-mx-md" style="color: grey; font-size: small">RINCIAN PESANAN</label>
+            <div class="col q-px-md" style="background-color: #f1f5f9; margin-top: 10px">
+              <div style="color: black; font-size: larger" class="q-pa-sm">Rincian Harga</div>
+              <div v-for="(option, index) in priceBook" :key="index">
+                <div style="display: flex" class="q-py-md">
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      width: 100%;
+                      margin-right: 10px;
+                    "
+                  >
+                    <div>
+                      <label
+                        :for="'option_' + index"
+                        style="font-weight: 600"
+                        class="centerComponent textwrap"
+                        >{{ option.desc }}</label
+                      >
+                    </div>
+                    <div>
+                      <label
+                        :for="'option_' + index"
+                        style="font-weight: 600"
+                        class="centerComponent"
+                        >{{ formating(option.amount) }}</label
+                      >
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div
-              style="display: flex; justify-content: space-between; width: 100%; margin-right: 10px"
-            >
-              <div>
-                <input type="checkbox" :id="'option_' + index" :value="DPP" v-model="includeTax" />
-                <label
-                  :for="'option_' + index"
-                  style="font-weight: 600"
-                  class="centerComponent q-px-sm"
-                  >DPP</label
-                >
+              <div style="display: flex; justify-content: space-between; width: 100%">
+                <div>
+                  <input
+                    type="checkbox"
+                    :id="'option_' + index"
+                    :value="DPP"
+                    v-model="includeTax"
+                  />
+                  <label
+                    :for="'option_' + index"
+                    style="font-weight: 600"
+                    class="centerComponent q-px-sm"
+                    >Tax</label
+                  >
+                </div>
+                <div style="width: fit-content; margin: 10px">
+                  <label
+                    :for="'option_' + index"
+                    style="font-weight: 600"
+                    class="centerComponent"
+                    >{{ formating(DPP) }}</label
+                  >
+                </div>
               </div>
-              <label :for="'option_' + index" style="font-weight: 600" class="centerComponent">{{
-                DPP
-              }}</label>
-            </div>
-            <q-separator horizontal />
-            <div style="display: flex; justify-content: space-between; width: 100%">
-              <div style="color: black; font-size: large" class="q-pa-sm">Harga Total</div>
-              <div style="width: fit-content; margin: 10px">
-                <label :for="'option_' + index" style="font-weight: 600" class="centerComponent">
-                  {{ formating(total) }}</label
-                >
+              <q-separator horizontal />
+              <div style="display: flex; justify-content: space-between; width: 100%">
+                <div style="color: black; font-size: large" class="q-pa-sm">Harga Total</div>
+                <div style="width: fit-content; margin: 10px">
+                  <label :for="'option_' + index" style="font-weight: 600" class="centerComponent">
+                    {{ formating(total) }}</label
+                  >
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div :class="paymentDetail ? 'q-pa-lg' : 'q-pa-lg buttonPayment'">
-        <div style="display: flex; gap: 10px">
-          <q-btn
-            align="left"
-            class="btn-fixed-width q-ma-auto"
-            style="width: 100%"
-            @click="paymentpost"
-            color="primary"
-            label="OK"
-          />
-          <q-btn
-            align="left"
-            class="btn-fixed-width q-ma-auto"
-            style="width: 100%"
-            @click="backPayment"
-            color="primary"
-            :outline="paymentDetail"
-            label="Cancel"
-          />
+        <div class="q-pa-lg buttonPayment">
+          <div style="display: flex; gap: 10px">
+            <q-btn
+              align="left"
+              class="btn-fixed-width q-ma-auto"
+              style="width: 100%"
+              @click="paymentpost"
+              color="primary"
+              label="OK"
+            />
+            <q-btn
+              align="left"
+              class="btn-fixed-width q-ma-auto"
+              style="width: 100%"
+              @click="backPayment"
+              color="primary"
+              outlined
+              label="Cancel"
+            />
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </q-page>
 </template>
 
 <script>
+import { useQuasar } from 'quasar'
 import FOMenubar from 'src/components/FOMenubar.vue'
 import { defineComponent, ref } from 'vue'
+import { trigger } from '../../services/helper/notify'
 
 export default defineComponent({
   name: 'payment',
   components: { FOMenubar },
   data() {
     return {
-      showEwallet: false,
-      showDropdown: false,
-      showDebit: false,
-      paymentDetail: true,
-      paymentDetail2: false,
-      bankOption: true,
-      showVirtual: false,
-      iconName1: 'expand_more',
-      iconName2: 'expand_more',
-      iconName3: 'expand_more',
-      iconName4: 'expand_more',
-      arrowBottom: 'expand_less',
-      arrowUp: 'expand_more',
       NameCard: '',
       DPP: ref(),
       includeTax: false,
-      // from user
-      noPesanan: '25513515',
-      namaUser: 'Rono Rustan',
-      namauserBank: 'Henry',
-      telp: '08977663660',
-      // priceBook: [
-      //   { label: 'Condotel Room', qty: '1', price: '5000000' },
-      //   { label: 'Nasi Goreng', qty: '1', price: '5000000' },
-      //   { label: 'Breakfast', qty: '1', price: '5000000' }
-      // ],
-      dropdownOptions: [
-        { value: 'BCA', imageUrl: 'Bank_Central_Asia.svg.webp' },
-        { value: 'Mandiri', imageUrl: '2560px-Bank_Mandiri_logo.svg.png' },
-        { value: 'BRI', imageUrl: '1280px-BANK_BRI_logo.svg.webp' },
-        { value: 'BNI', imageUrl: '1200px-BNI_logo.svg.png' }
-      ],
-      dropdownOptions2: [
-        {
-          value: 'Qris',
-          imageUrl: 'quick-response-code-indonesia-standard-qris-logo-F300D5EB32-seeklogo.com.png'
-        },
-        { value: 'Gopay', imageUrl: 'Gopay_logo.svg.png' },
-        { value: 'ShopeePay', imageUrl: 'logo-shopeepay.png' }
-      ],
-      dropdownOptions3: [
-        { value: 'BCA', imageUrl: 'Bank_Central_Asia.svg.webp' },
-        { value: 'BNI', imageUrl: '1200px-BNI_logo.svg.png' }
-      ],
-      dropdownOptions4: [
-        { value: 'Visa', imageUrl: 'Visa_Inc._logo.svg.png' },
-        { value: 'Master', imageUrl: 'mastercard-og-image.png' },
-        { value: 'JCB', imageUrl: 'JCB_logo.svg.png' }
-      ],
       selectedBank: ref(''),
-      selectedOption: null,
       selectedMethod: ref(''),
       api: new this.$Api('frontoffice'),
       data: [],
@@ -234,48 +190,63 @@ export default defineComponent({
         tax: this.DPP
       }
       try {
-        await this.api.post(`invoice/payment/${resvId}/${resvRoomId}`, data, ({ status, data }) => {
-          this.loading = false
-          if (status == 200) {
-            this.triggerPositive('Success')
-            console.log('Data berhasil diperbarui:', data)
-            this.backPayment()
-          } else {
-            console.error('Gagal memperbarui data')
-          }
-        })
+        if (this.priceBook != null && this.selectedMethod != '') {
+          this.loading = true
+          this.api.post(`invoice/payment/${resvId}/${resvRoomId}`, data, ({ status, data }) => {
+            if (status === 200) {
+              this.loading = false
+              console.log(status)
+              this.trigger('positive', 'payment successful')
+              console.log('Data berhasil diperbarui:', data)
+              this.$nextTick(() => {
+                this.trigger('ongoing', 'loading')
+                this.redirectpayment(true)
+              })
+            } else {
+              this.trigger('warning', 'payment failed')
+            }
+          })
+        } else {
+          this.trigger('warning', 'data not found')
+        }
         // this.refresh()
       } catch (error) {
         console.error(error)
       }
     },
-    redirectpayment() {
+    redirectpayment(state) {
       const { resvId, resvRoomId } = this.$route.params
 
-      this.$router.push(
-        {
+      if (state === true) {
+        this.$router.push({
+          name: 'guest-list',
+        })
+      } else {
+        this.$router.push({
           name: 'guest-invoice',
           params: { resvId: resvId, resvRoomId: resvRoomId }
         })
+      }
+    },
+    backPayment() {
+      this.$router.go(-1)
+      this.$nextTick(() => {
+        this.trigger('ongoing', 'loading')
+      })
     },
     calculateTotal() {
       this.total = this.priceBook.reduce((accumulator, currentValue) => {
         return accumulator + parseFloat(currentValue.amount) // Mengonversi ke float sebelum penambahan
       }, 0)
       console.log(this.total)
-
-      // Add tax if includeTax is true
       if (this.includeTax) {
-        // this.total += this.calculateTax(this.total)
         this.total += this.DPP
       }
     },
     calculateTax(subtotal) {
-      return subtotal + this.DPP // Assuming tax is 10%
+      return subtotal + this.DPP
     },
-    backPayment() {
-      this.$router.go(-1)
-    },
+
     find(value) {
       if (value == 1) {
         return this.dropdownOptions.find((option) => option.value === this.selectedBank)
@@ -283,6 +254,8 @@ export default defineComponent({
         return this.dropdownOptions2.find((option) => option.value === this.selectedBank)
       } else if (value == 3) {
         return this.dropdownOptions3.find((option) => option.value === this.selectedBank)
+      } else if (value == 4) {
+        return this.dropdownOptions4.find((option) => option.value === this.selectedBank)
       }
     },
     formating(value) {
@@ -299,23 +272,24 @@ export default defineComponent({
       this.selectedBank = selectedbank
       console.log(this.selectedBank)
       this.selectedMethod = selectedmethod
-      try {
-        this.api.get(`invoice/payment/${resvId}/${resvRoomId}`, ({ status, message, data }) => {
-          if (status === 200) {
-            const { invoices, add } = data
-            this.user = { ...add }
-            this.priceBook = invoices
 
-            console.log(this.priceBook)
-            this.DPP = data.tax
-            // this.user = data.add
-            this.calculateTotal()
-            this.data = invoices.rate
-            // this.formatData(data.invoices)
-          }
-        })
-      } catch (error) {
-        console.error(error)
+      if (this.selectedBank != null && this.selectedBank != '') {
+        try {
+          this.api.get(`invoice/payment/${resvId}/${resvRoomId}`, ({ status, message, data }) => {
+            if (status === 200) {
+              const { invoices, add } = data
+              this.user = { ...add }
+              this.priceBook = invoices
+
+              console.log(this.priceBook)
+              this.DPP = data.tax
+              this.calculateTotal()
+              this.data = invoices.rate
+            }
+          })
+        } catch (error) {
+          console.error(error)
+        }
       }
     },
     formatData(raw = []) {
@@ -329,7 +303,7 @@ export default defineComponent({
           Rate: { data: inv.rate, style: {} },
           Amount: { data: inv.amount, style: {} },
           RmNo: { data: 101, style: {} },
-          RoomBoy: { data: 'Asep', style: {} },
+          RoomBoy: { data: '', style: {} },
           VoucherNumber: { data: 101111, style: {} },
           BillDate: { data: inv.billDate, style: {} },
           uniqueId: { data: inv.uniqueId, style: {} }
@@ -337,6 +311,16 @@ export default defineComponent({
       })
       console.log(list)
       this.data = list
+    },
+    trigger(type, txt) {
+      this.$q.notify(
+        {
+          type: type,
+          message: txt || 'data not found',
+          timeout: 1000
+        },
+        1000
+      )
     }
   }
 })

@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-md">
     <div class="q-pa-md">
-      <div class="row q-gutter-md flex-center q-pa-xl">
+      <div style="display: flex; gap: 15px">
         <HKCard
           card_class="q-col-xs-12 q-col-sm-6 q-col-md-4 q-col-lg-3"
           card_style="width:230px; height:330px;"
@@ -257,7 +257,7 @@
           </div>
         </HKCard>
       </div>
-      <div class="row q-px-md">
+      <div class="row col-grow q-py-md">
         <div class="row sorting" style="gap: 10px">
           <p class="text-weight-bold text-body1 q-mt-sm">Sorting :</p>
           <q-btn-dropdown
@@ -424,6 +424,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
+import { roomStatus } from 'src/data/room-status'
 
 const columns = [
   { name: 'Roomno', label: 'Room No', align: 'left', field: 'Roomno' },
@@ -435,7 +436,7 @@ const columns = [
   { name: 'Action', label: 'Action', align: 'center', field: 'Action' }
 ]
 
-const rows = []
+const rows = ref([])
 
 export default defineComponent({
   name: 'CleanDirtyPage',
@@ -443,7 +444,7 @@ export default defineComponent({
   setup() {
     return {
       columns,
-      rows: ref(),
+      rows,
       filterDisplay: ref('guestName+asc'),
       filterDisplayLabel: ref('Room Number'),
       vacantLabel: ref('Vacant Clean Checked'),
@@ -588,6 +589,8 @@ export default defineComponent({
         if (status == 200) {
           const { room } = data
 
+          console.log(room)
+
           const arrivalDate = data.arr // Gantilah 'arrival.arr' dengan properti yang benar
           if (arrivalDate) {
             this.datePickerArrival = arrivalDate
@@ -603,14 +606,14 @@ export default defineComponent({
           this.occupiedNominal = data.main.OC
           this.expectedNominal = data.main.ED
           this.outNominal = data.main.OO
-          console.log(data)
-          this.rows = room.foreach((room) => ({
-            Roomno: room.roomNo,
-            Roomstatus: room.roomStatus,
-            Guestname: room.guestName,
-            Arrival: room.arrival,
-            Departure: room.departure,
-            Personinchange: room.pic.user.name
+
+          this.rows = room.map((rm) => ({
+            Roomno: rm.roomNo,
+            Roomstatus: rm.roomStatus,
+            Guestname: rm.guestName,
+            Arrival: rm.arrival,
+            Departure: rm.departure,
+            Personinchange: rm.pic
           }))
         }
       })

@@ -8,7 +8,7 @@
       class="self-end"
     >
       <q-btn flat square color="primary" icon="o_print" style="justify-content: flex-end" />
-      <div class="justify-between row q-mb-sm " style="width: 100%">
+      <div class="justify-between row q-mb-sm" style="width: 100%">
         <!-- ==========Date=============== -->
         <div class="row" style="gap: 16px">
           <div class="flex items-center" style="gap: 8px">
@@ -32,6 +32,7 @@
             :options="sortingOptions"
             style="width: 12rem"
             class="input-border"
+            @input="onSortingChange"
           />
         </div>
       </div>
@@ -77,38 +78,7 @@ const tableColumns = [
   }
 ]
 
-const tableRows = [
-  {
-    date: '10/02/23',
-    room_no: '101',
-    used: '2',
-    remain: '8',
-  },
-  {
-    date: '10/02/23',
-    room_no: '101',
-    used: '2',
-    remain: '8',
-  },
-  {
-    date: '10/02/23',
-    room_no: '101',
-    used: '2',
-    remain: '8',
-  },
-  {
-    date: '10/02/23',
-    room_no: '101',
-    used: '2',
-    remain: '8',
-  },
-  {
-    date: '10/02/23',
-    room_no: '101',
-    used: '2',
-    remain: '8',
-  },
-]
+const tableRows = ref()
 
 export default defineComponent({
   name: 'ExtrabedPage',
@@ -119,6 +89,57 @@ export default defineComponent({
       sortingOptions: ['Extra Bed', 'Pillow', 'Blanket'],
       tableColumns,
       tableRows
+    }
+  },
+  data() {
+    return {
+      api: new this.$Api('housekeeping')
+    }
+  },
+  mounted() {
+    this.fetchData()
+  },
+  watch: {
+    sortingModel(newValue) {
+      this.fetchData(newValue)
+    }
+  },
+  methods: {
+    fetchData(selectedOption) {
+      this.loading = true
+
+      let url = `amenities`
+
+      switch (selectedOption) {
+        case 'Extra Bed':
+          url = 'amenities/110?'
+          break
+        case 'Pillow':
+          url = 'amenities/109?'
+          break
+        case 'Blanket':
+          url = 'amenities/108?'
+          break
+        default:
+          // Default to 'Extra Bed' if no match
+          url = 'amenities/110?'
+          break
+      }
+
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+          const { extra } = data
+
+          this.tableRows = extra.map((e) => ({
+            date: e.date,
+            room_no: e.roomNo,
+            used: e.used,
+            remain: e.remain
+          }))
+        }
+      })
     }
   }
 })

@@ -273,7 +273,7 @@
             <q-input
               outlined
               dense
-              v-model="searchModel"
+              v-model="searchInput"
               class="input-border"
               label="Search ResNo/NIK"
               style="width: fit-content"
@@ -404,7 +404,7 @@ const tableColumnsHistory = [
     required: true,
     label: 'ResNo',
     align: 'left',
-    field: (row) => row.name,
+    field: 'name',
     sortable: true
   },
   {
@@ -504,7 +504,7 @@ export default defineComponent({
       tableRows: ref(),
       tableRowsHistory: ref(),
       guestHistoryModel: ref(false),
-      searchModel: ref('')
+      searchInput: ref('')
     }
   },
   data() {
@@ -520,12 +520,21 @@ export default defineComponent({
   mounted() {
     this.fetchData()
   },
+  watch() {
+    searchName(this.searchInput)
+  },
   watch: {
     datePickerArrival: {
       deep: true,
       handler(newDate) {
         this.fetchData()
       }
+    },
+    searchInput: {
+      handler(newSearchInput) {
+        this.searchName(newSearchInput)
+      },
+      immediate: true
     },
     filterDisplay(newOption) {
       // Update the label based on the selected option
@@ -545,6 +554,29 @@ export default defineComponent({
   },
 
   methods: {
+    searchName(searchInput) {
+      // Make an API call to search based on searchInput
+      this.api.get(`arrival-departure?search=${searchInput}`, ({ status, data }) => {
+        if (status === 200) {
+          const { table } = data
+          this.tableRowsHistory = table.map((row) => ({
+            name: row.resNo,
+            res_resource: row.resResource,
+            rm_no: row.roomNo.id,
+            r_type: row.roomType,
+            b_type: row.bedType,
+            nik: row.nik,
+            guest_name: row.guestName,
+            arr: row.arrangment.split('-')[1],
+            arrival: row.arrival,
+            depart: row.departure,
+            night: row.night
+          }))
+        } else {
+          console.error('Error searching data')
+        }
+      })
+    },
     onPaginationChange(props) {
       this.pagination = props.pagination
       this.fetchData()
@@ -669,20 +701,6 @@ export default defineComponent({
             room_boy: row.roomBoy.user.name,
             room_stat: row.roomStatus.shortDescription,
             created_date: row.created
-          }))
-
-          this.tableRowsHistory = table.map((row) => ({
-            name: row.resNo,
-            res_resource: row.resResource,
-            rm_no: row.roomNo.id,
-            r_type: row.roomType,
-            b_type: row.bedType,
-            nik: row.nik,
-            guest_name: row.guestName,
-            arr: row.arrangment.split('-')[1],
-            arrival: row.arrival,
-            depart: row.departure,
-            night: row.night
           }))
         }
       })

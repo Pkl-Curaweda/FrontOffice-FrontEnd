@@ -328,6 +328,7 @@ export default {
           CreatedDate: { data: formatDate(res.created_at), style: {} }
         })
       })
+
       this.data = list
     }
   }

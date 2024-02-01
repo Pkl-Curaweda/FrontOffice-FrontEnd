@@ -58,7 +58,7 @@
         :class="` ${$q.screen.lt.md ? 'column q-gutter-lg' : 'row items-center'} justify-between`"
       >
         <div :class="` ${$q.screen.lt.md ? 'col-12' : 'col-7'} `" style="height: 300px">
-          <HKChart :series="barS" :options="barO" />
+          <HKChart ref="hkChart" :series="barS" :options="barO" />
         </div>
         <div class="relative-position" style="height: 250px">
           <HKChart :series="pieS" :options="pieO" />

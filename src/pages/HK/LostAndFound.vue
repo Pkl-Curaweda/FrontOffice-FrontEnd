@@ -468,7 +468,7 @@ export default defineComponent({
 
         if (status == 200) {
           const { graph, lostFounds } = data // Ambil objek graph dari respons
-          this.found = graph.found // Isi nilai found
+          this.found = graph.found // Isi nilai found50
           this.lost = graph.lost // Isi nilai lost
           this.chartSeries = [(this.lost = graph.lost), (this.found = graph.found)]
           this.rows = lostFounds.map((lostFound) => ({

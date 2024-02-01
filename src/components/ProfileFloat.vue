@@ -54,6 +54,8 @@ export default defineComponent({
           this.$Helper.showNotif('Logout Success', '', 'positive')
 
           this.$router.go('/auth/login')
+        }else{
+          this.$Helper.showNotif('Logout unsuccess', '', 'negative')
         }
 
         this.logout_loading = false

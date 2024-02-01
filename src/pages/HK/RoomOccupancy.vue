@@ -58,7 +58,7 @@
         :class="` ${$q.screen.lt.md ? 'column q-gutter-lg' : 'row items-center'} justify-between`"
       >
         <div :class="` ${$q.screen.lt.md ? 'col-12' : 'col-7'} `" style="height: 300px">
-          <HKChart :series="barS" :options="barO" />
+          <HKChart ref="hkChart" :series="barS" :options="barO" />
         </div>
         <div class="relative-position" style="height: 250px">
           <HKChart :series="pieS" :options="pieO" />
@@ -73,7 +73,7 @@
     </HKCard>
     <div class="row justify-between q-mt-md">
       <HKTable
-        :rows="roomTypeVal"
+        :rows="tableRow"
         :columns="tableCol"
         :class="`${$q.screen.lt.md ? 'col-12' : 'col-8 '}`"
       />
@@ -100,44 +100,7 @@ import HKCard from 'src/components/HK/Card/HKCard.vue'
 import HKChart from 'src/components/charts/HKChart.vue'
 import HKTable from 'src/components/HK/Table/HKTable.vue'
 
-const roomData = [
-  {
-    id: 1,
-    name: 'Occupied Room',
-    room: '01',
-    person: '02'
-  },
-  {
-    id: 2,
-    name: 'Complimentary Room',
-    room: '01',
-    person: '02'
-  },
-  {
-    id: 3,
-    name: 'House Use Room',
-    room: '01',
-    person: '02'
-  },
-  {
-    id: 4,
-    name: 'Out-Of-Order Room',
-    room: '01',
-    person: '02'
-  },
-  {
-    id: 5,
-    name: 'Off Market',
-    room: '01',
-    person: '02'
-  },
-  {
-    id: 6,
-    name: 'Estimated Occupied',
-    room: '01',
-    person: '02'
-  }
-]
+const roomData = ref()
 
 const responsiveChart = [
   {
@@ -160,18 +123,17 @@ const responsiveChart = [
     }
   }
 ]
-
+const barS = ref([
+  {
+    name: 'Room',
+    data: [5, 0, 4, 13, 4, 14]
+  },
+  {
+    name: 'Person',
+    data: [10, 0, 5, 0, 0, 19]
+  }
+])
 const handleChart = {
-  barSeries: [
-    {
-      name: 'Est Occupancy',
-      data: [5, 0, 4, 13, 4, 14]
-    },
-    {
-      name: 'Occupancy',
-      data: [10, 0, 5, 0, 0, 19]
-    }
-  ],
   pieSeries: [85, 15],
   barOpt: {
     chart: {
@@ -205,7 +167,7 @@ const handleChart = {
       strokeDashArray: 7
     },
     xaxis: {
-      categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+      categories: ['Oc.Room', 'Com.Room', 'HU.Room', 'Est Oc.Room', 'OOO.Room', 'Off Market. Room'],
       axisBorder: {
         show: true,
         color: '#000000',
@@ -274,62 +236,7 @@ const tableCol = [
   { name: 'status', label: 'status', field: 'status', sortable: true }
 ]
 
-const tableRow = {
-  standard: [
-    {
-      name: '101',
-      r_type: 'Standard',
-      status: 'Occupied Room'
-    },
-    {
-      name: '103',
-      r_type: 'Standard',
-      status: 'Family Room'
-    },
-    {
-      name: '104',
-      r_type: 'Standard',
-      status: 'Occupied Room'
-    },
-    {
-      name: '105',
-      r_type: 'Standard',
-      status: 'Occupied Room'
-    },
-    {
-      name: '106',
-      r_type: 'Standard',
-      status: 'Occupied Room'
-    }
-  ],
-  deluxe: [
-    {
-      name: '102',
-      r_type: 'Deluxe',
-      status: 'Complimentary Room'
-    },
-    {
-      name: '103',
-      r_type: 'Deluxe',
-      status: 'Family Room'
-    },
-    {
-      name: '104',
-      r_type: 'Deluxe',
-      status: 'Occupied Room'
-    },
-    {
-      name: '105',
-      r_type: 'Deluxe',
-      status: 'Occupied Room'
-    },
-    {
-      name: '106',
-      r_type: 'Deluxe',
-      status: 'Occupied Room'
-    }
-  ]
-}
+const tableRow = ref([])
 
 const radio_opt = [
   { label: 'Standard Room', value: 'standard' },
@@ -347,25 +254,22 @@ export default defineComponent({
       r_group: ref(null),
       model: ref(null),
       options: selectOption,
+      barS,
       roomData,
+      tableCol,
+      tableRow,
       radio_opt
     }
   },
   data() {
-    const barS = handleChart.barSeries
     const pieS = handleChart.pieSeries
     const barO = handleChart.barOpt
     const pieO = handleChart.pieOpt
 
-    let roomTypeVal = tableRow.standard
-    let roomVal
     return {
-      barS,
       pieS,
       barO,
       pieO,
-      tableCol,
-      roomTypeVal,
       api: new this.$Api('housekeeping')
     }
   },
@@ -383,6 +287,69 @@ export default defineComponent({
         this.loading = false
 
         if (status == 200) {
+          this.loading = false
+          const { currData, roomStatus, percData } = data
+
+          const room = percData.roomPerc
+          const person = percData.personPerc
+
+          console.log(room, person)
+          this.barS.value = [
+            {
+              name: 'Room',
+              data: room
+            },
+            {
+              name: 'Person',
+              data: person
+            }
+          ]
+
+          console.log(this.barS)
+          this.roomData = [
+            {
+              id: 1,
+              name: 'Occupied Room',
+              room: currData.occ.room,
+              person: currData.occ.person
+            },
+            {
+              id: 2,
+              name: 'Complimentary Room',
+              room: currData.comp.room,
+              person: currData.comp.person
+            },
+            {
+              id: 3,
+              name: 'House Use Room',
+              room: currData.houseUse.room,
+              person: currData.houseUse.person
+            },
+            {
+              id: 4,
+              name: 'Out-Of-Order Room',
+              room: currData.ooo.room,
+              person: currData.ooo.person
+            },
+            {
+              id: 5,
+              name: 'Off Market',
+              room: currData.om.room,
+              person: currData.om.person
+            },
+            {
+              id: 6,
+              name: 'Estimated Occupied',
+              room: currData.estOcc.room,
+              person: currData.estOcc.person
+            }
+          ]
+
+          this.tableRow = roomStatus.map((rs) => ({
+            name: rs.id,
+            r_type: rs.roomType,
+            status: rs.roomStatus.longDescription
+          }))
         }
       })
     }

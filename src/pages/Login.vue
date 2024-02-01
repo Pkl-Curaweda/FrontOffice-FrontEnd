@@ -82,9 +82,11 @@ export default defineComponent({
         },
         ({ status, data }) => {
           if (status == 200) {
+            console.log(data)
             this.$AuthStore.setUser(data['user'])
             this.$AuthStore.setAccessToken(data['accessToken'])
-            this.$router.go('/')
+            this.$AuthStore.setMainPath(data['path'])
+            this.$router.go(data['path'])
           }
 
           this.loading = false

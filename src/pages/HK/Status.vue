@@ -1,10 +1,10 @@
 <template>
-  <q-page class="q-pa-lg">
-    <div class="q-gutter">
-      <div class="row q-gutter-lg flex-center flex">
+  <q-page>
+    <div>
+      <div style="display: flex; gap: 20px">
         <div class="row">
-          <HKCard card_class="ambasing" radius="10px">
-            <div class="column">
+          <HKCard style="height: fit-content" class="col-grow">
+            <div class="col-grow">
               <div
                 class="q-px-md q-pt-sm q-gutter-x-md"
                 style="min-width: 200px; display: flex; flex-wrap: wrap; align-items: center"
@@ -99,11 +99,7 @@
         </div>
         <div class="column" style="margin-bottom: auto">
           <div>
-            <HKCard
-              card_class="column ambasing"
-              card_style="flex-grow:1; height: fit-content;"
-              radius="20px"
-            >
+            <HKCard class="col-grow">
               <div class="row q-pa-xl justify-between q-gutter-md">
                 <div class="column">
                   <div class="text-weight-bold">Change Status to :</div>

@@ -22,6 +22,11 @@ const isAuthenticated = () => {
   return token != ''
 }
 
+const redirectTo = () => {
+  const path = authStore().getMainPath()
+  return path
+}
+
 export default route(function (/* { store, ssrContext } */) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
@@ -40,10 +45,11 @@ export default route(function (/* { store, ssrContext } */) {
   })
 
   Router.beforeEach((to, from, next) => {
+    console.log(isAuthenticated())
     if (to.meta.protected && !isAuthenticated()) {
       next('/auth/login')
     } else if (to.path === '/auth/login' && isAuthenticated()) {
-      next('/')
+      next(redirectTo())
     } else {
       next()
     }

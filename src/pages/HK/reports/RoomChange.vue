@@ -23,10 +23,9 @@ import { defineComponent, ref } from 'vue'
 const columns = [
   {
     name: 'change-date',
-    required: true,
     label: 'Change Date',
     align: 'left',
-    field: (row) => row.changeDate,
+    field: 'changeDate',
     sortable: true
   },
   {
@@ -77,89 +76,65 @@ const columns = [
     align: 'left'
   },
   {
-    name: 'geust name',
+    name: 'guest name',
     label: 'Guest Name',
     field: 'guestName',
     align: 'left'
   }
 ]
 
-const rows = [
-  {
-    changeDate: '12/02/23',
-    arrival: '12/02/23',
-    depart: '12/02/23',
-    time: '12:48',
-    rmNo: '101',
-    moveTo: '110',
-    reason: 'Kamar ada serangga',
-    resNo: '18086',
-    guestName: 'RONO RUSTAN'
-  },
-  {
-    changeDate: '12/02/23',
-    arrival: '12/02/23',
-    depart: '12/02/23',
-    time: '12:48',
-    rmNo: '101',
-    moveTo: '110',
-    reason: 'Kamar ada serangga',
-    resNo: '18086',
-    guestName: 'RONO RUSTAN'
-  },
-  {
-    changeDate: '12/02/23',
-    arrival: '12/02/23',
-    depart: '12/02/23',
-    time: '12:48',
-    rmNo: '101',
-    moveTo: '110',
-    reason: 'Kamar ada serangga',
-    resNo: '18086',
-    guestName: 'RONO RUSTAN'
-  },
-  {
-    changeDate: '12/02/23',
-    arrival: '12/02/23',
-    depart: '12/02/23',
-    time: '12:48',
-    rmNo: '101',
-    moveTo: '110',
-    reason: 'Kamar ada serangga',
-    resNo: '18086',
-    guestName: 'RONO RUSTAN'
-  },
-  {
-    changeDate: '12/02/23',
-    arrival: '12/02/23',
-    depart: '12/02/23',
-    time: '12:48',
-    rmNo: '101',
-    moveTo: '110',
-    reason: 'Kamar ada serangga',
-    resNo: '18086',
-    guestName: 'RONO RUSTAN'
-  }
-]
+const rows = ref()
 
 export default defineComponent({
   name: 'RoomChangePage',
   components: { HKCard, HKTable, FormDate },
-  data() {
-    return {
-      columns,
-      rows
-    }
-  },
   setup() {
     return {
       roomInput: ref(''),
       toRoomInput: ref(''),
       locationInput: ref(''),
-
+      columns,
+      rows,
       allRoomsCheck: ref(false),
       oddRoomsCheck: ref(false),
       evenRoomsCheck: ref(false)
+    }
+  },
+  data() {
+    return {
+      api: new this.$Api('housekeeping')
+    }
+  },
+  mounted() {
+    this.fetchData()
+  },
+  methods: {
+    fetchData() {
+      this.loading = true
+
+      let url = `roomchange`
+
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+          const { roomChangeData } = data
+
+          this.rows = roomChangeData.map((rcd) => ({
+            changeDate: rcd.changeDate,
+            arrival: rcd.arrival,
+            depart: rcd.departure,
+            time: rcd.time,
+            rmNo: rcd.roomNo,
+            moveTo: rcd.moveTo,
+            reason: rcd.reason,
+            resNo: rcd.resvNo,
+            guestName: rcd.guestName
+          }))
+
+          console.log(this.rows)
+        }
+      })
     }
   }
 })

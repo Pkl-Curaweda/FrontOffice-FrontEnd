@@ -341,7 +341,7 @@ const chartOptions = {
     enabled: false
   },
 
-  colors: ['#364E30', '#54854C', '#8BAA84'],
+  colors: ['#364E30', '#8BAA84'],
   labels: ['Lost', 'Found'],
   legend: {
     offsetY: 55,

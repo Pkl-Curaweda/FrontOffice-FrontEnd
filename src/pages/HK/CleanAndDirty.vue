@@ -455,8 +455,8 @@ export default defineComponent({
       expectedNominal: ref(),
       outLabel: ref('Out of Order'),
       outNominal: ref(),
-      datePickerArrival: ref(),
-      datePickerDeparture: ref(),
+      datePickerArrival: ref('Date'),
+      datePickerDeparture: ref('Date'),
       formattedArrivalDate: ref(), // Tambahkan variabel formattedArrivalDate
       formattedDepartureDate: ref(),
       mainData: {},
@@ -535,7 +535,7 @@ export default defineComponent({
           this.vacantLabel = 'Vacant Clean Unchecked'
           this.vacantNominal = this.mainData[label]
           break
-        case 'CD':
+        case 'VD':
           this.vacantLabel = 'Vacant Dirty'
           this.vacantNominal = this.mainData[label]
           break

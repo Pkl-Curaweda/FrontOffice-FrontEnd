@@ -58,15 +58,21 @@
         :class="` ${$q.screen.lt.md ? 'column q-gutter-lg' : 'row items-center'} justify-between`"
       >
         <div :class="` ${$q.screen.lt.md ? 'col-12' : 'col-7'} `" style="height: 300px">
-          <HKChart :series="barS" :options="barO" />
+          <!-- bar chart -->
+          <apexchart
+            style="padding: 0 20px"
+            type="bar"
+            :options="chartOptionsBar"
+            :series="seriesBar"
+          />
         </div>
-        <div class="relative-position" style="height: 250px">
-          <HKChart :series="pieS" :options="pieO" />
-          <img
-            src="../../assets/svg/user_group.svg"
-            alt=""
-            class="absolute-center"
-            style="translate: 2px -10px"
+        <div style="height: 300px">
+          <!-- pie chart -->
+          <apexchart
+            style="padding: 0 20px"
+            type="donut"
+            :options="chartOptionsDonut"
+            :series="seriesDonut"
           />
         </div>
       </q-card-section>
@@ -97,10 +103,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
-import HKChart from 'src/components/charts/HKChart.vue'
 import HKTable from 'src/components/HK/Table/HKTable.vue'
-
-const roomData = ref()
 
 const responsiveChart = [
   {
@@ -123,104 +126,110 @@ const responsiveChart = [
     }
   }
 ]
-const barS = ref([
-  {
-    name: 'Room',
-    data: [5, 0, 4, 13, 4, 14]
+
+const seriesBar = []
+// { name: 'Room', data: [1, 2, 3, 4, 5, 6, 8] },
+// { name: 'Person', data: [1, 2, 3, 4, 5, 6, 8] }
+
+const chartOptionsBar = ref({
+  chart: {
+    type: 'bar'
   },
-  {
-    name: 'Person',
-    data: [10, 0, 5, 0, 0, 19]
+  responsive: [
+    {
+      breakpoint: 80
+    }
+  ],
+  plotOptions: {
+    bar: {
+      horizontal: false,
+      columnWidth: '25%',
+      endingShape: 'rounded'
+    }
+  },
+  dataLabels: {
+    enabled: false
+  },
+  stroke: {
+    show: true,
+    width: 2,
+    colors: ['transparent']
+  },
+  xaxis: {
+    categories: ['Oc.Room', 'Com.Room', 'HU.Room', 'Est. Oc.Room', 'OOO.Room', 'Off Market Room']
+  },
+  fill: {
+    colors: ['#A468D3', '#77CE7F']
+  },
+  legend: {
+    markers: {
+      fillColors: ['#A468D3', '#77CE7F']
+    }
   }
-])
-const handleChart = {
-  pieSeries: [85, 15],
-  barOpt: {
-    chart: {
-      type: 'bar',
-      toolbar: {
-        show: false
-      }
-    },
-    plotOptions: {
-      bar: {
-        horizontal: false,
-        columnWidth: '15px',
-        endingShape: 'rounded'
-      }
-    },
-    dataLabels: {
-      enabled: false
-    },
-    stroke: {
-      show: true,
-      width: 8,
-      colors: ['transparent']
-    },
-    grid: {
-      yaxis: {
-        lines: {
-          show: true
-        }
-      },
-      borderColor: '#A4A4A4',
-      strokeDashArray: 7
-    },
-    xaxis: {
-      categories: ['Oc.Room', 'Com.Room', 'HU.Room', 'Est Oc.Room', 'OOO.Room', 'Off Market. Room'],
-      axisBorder: {
-        show: true,
-        color: '#000000',
-        offsetX: 0,
-        offsetY: 0
-      }
-    },
-    yaxis: {
-      axisBorder: {
-        show: true,
-        color: '#000000',
-        offsetX: 0,
-        offsetY: 0
-      }
-    },
-    fill: {
-      opacity: 1
-    },
-    tooltip: {
-      y: {
-        formatter: function (val) {
-          return +val + '%'
-        }
-      }
-    },
-    colors: ['#A468D3', '#77CE7F'],
-    responsive: responsiveChart
+})
+
+const seriesDonut = [1, 2]
+const chartOptionsDonut = {
+  chart: {
+    type: 'donut',
+    height: 400,
+    width: 400
   },
-  pieOpt: {
-    chart: {
-      type: 'donut'
-    },
-    stroke: {
-      width: 0,
-      colors: 'transparent'
-    },
-    plotOptions: {
-      pie: {
-        donut: {
-          size: '80%'
-        }
-      }
-    },
-    dataLabels: {
-      enabled: false
-    },
-    colors: ['#A468D3', '#77CE7F'],
-    legend: {
-      show: false
-    },
-    responsive: responsiveChart
+  responsive: [
+    {
+      breakpoint: 480
+    }
+  ],
+  dataLabels: {
+    enabled: false
+  },
+  fill: {
+    colors: [
+      '#77CE7F',
+      '#00FFE0',
+      '#2B8DFF',
+      '#688CD3',
+      '#A468D3',
+      '#FFE500',
+      '#FFA800',
+      '#FE0001',
+      '#B9B9B9',
+      '#000000'
+    ]
+  },
+  labels: [
+    '101 - DLX - K',
+    '102 - DLX - K',
+    '103 - DLX - K',
+    '104 - DLX - K',
+    '105 - FML - T',
+    '106 - FML - T',
+    '107 - FML - T',
+    '108 - STD - S',
+    '109 - STD - S',
+    '110 - STD - S'
+  ],
+  legend: {
+    position: 'left',
+    show: false,
+    markers: {
+      fillColors: [
+        '#77CE7F',
+        '#00FFE0',
+        '#2B8DFF',
+        '#688CD3',
+        '#A468D3',
+        '#FFE500',
+        '#FFA800',
+        '#FE0001',
+        '#B9B9B9',
+        '#000000'
+      ]
+    }
   }
 }
+
+const roomData = ref()
 
 const tableCol = [
   {
@@ -248,36 +257,49 @@ const selectOption = ['Show by Week', 'Show by Month', 'Show by Year']
 
 export default defineComponent({
   name: 'RoomOccupancyPage',
-  components: { HKCard, HKChart, HKTable },
+  components: { HKCard, HKTable },
   setup() {
     return {
       r_group: ref(null),
       model: ref(null),
       options: selectOption,
-      barS,
       roomData,
       tableCol,
       tableRow,
-      radio_opt
+      radio_opt,
+      seriesBar,
+      chartOptionsBar,
+      seriesDonut,
+      chartOptionsDonut
     }
   },
   data() {
-    const pieS = handleChart.pieSeries
-    const barO = handleChart.barOpt
-    const pieO = handleChart.pieOpt
-
     return {
-      pieS,
-      barO,
-      pieO,
       api: new this.$Api('housekeeping')
     }
   },
   mounted() {
     this.fetchData()
+    this.dataChart()
   },
   watch: {},
   methods: {
+    dataChart() {
+      let url = `roomocc`
+
+      this.api.get(url, ({ status, data }) => {
+        if (status == 200) {
+          const { percData } = data
+          const room = percData.roomPerc
+          const person = percData.personPerc
+
+          this.seriesBar = [
+            { name: 'Room', data: room },
+            { name: 'Person', data: person }
+          ]
+        }
+      })
+    },
     fetchData() {
       this.loading = true
 
@@ -293,19 +315,13 @@ export default defineComponent({
           const room = percData.roomPerc
           const person = percData.personPerc
 
-          console.log(room, person)
-          this.barS.value = [
-            {
-              name: 'Room',
-              data: room
-            },
-            {
-              name: 'Person',
-              data: person
-            }
+          this.seriesBar = [
+            { name: 'Room', data: room },
+            { name: 'Person', data: person }
           ]
 
-          console.log(this.barS)
+          console.log(this.seriesBar)
+
           this.roomData = [
             {
               id: 1,

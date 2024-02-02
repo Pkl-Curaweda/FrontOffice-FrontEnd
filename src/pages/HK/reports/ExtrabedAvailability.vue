@@ -3,9 +3,7 @@
     <HKCard
       title="Extrabed Availibility"
       radius="25px"
-      card_class="full-width q-px-lg flex"
-      style="max-height: 719px"
-      class="self-end"
+      card_class="full-width q-px-lg flex q-mt-xl"
     >
       <q-btn flat square color="primary" icon="o_print" style="justify-content: flex-end" />
       <div class="justify-between row q-mb-sm" style="width: 100%">

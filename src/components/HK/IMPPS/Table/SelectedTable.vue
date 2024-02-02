@@ -15,7 +15,6 @@
         "
       />
     </div>
-
     <q-table
       v-if="isSelect && selectMode"
       :rows="rows"
@@ -30,14 +29,7 @@
       no-data-label="Oops! There is no data"
       selection="single"
       v-model:selected="selected"
-    >
-      <template v-slot:body-cell="props">
-        <td :style="props.col.style" :class="{ 'q-table__bottom-item': props.isLast }">
-          {{ props.col.field(props.row) }}
-        </td>
-      </template>
-    </q-table>
-
+    />
     <q-table
       v-else
       :rows="rows"
@@ -50,85 +42,8 @@
       :dense="$q.screen.lt.md"
       :title="title"
       no-data-label="Oops! There is no data"
-    >
-      <template v-slot:body-cell="props">
-        <td
-          :style="props.col.style"
-          :class="{ 'q-table__bottom-item': props.isLast }"
-          @click="showPopuptest"
-        >
-        {{ props.col.field(props.row) }}
-        <q-popup v-if="selected.length > 0" ref="popup" v-model="showPopup">
-          <div class="q-pa-md">
-            <!-- Display additional details for the selected row here -->
-            <div>Room No: {{ selected[0].roomNo }}</div>
-            <div>Room Type: {{ selected[0].roomType }}</div>
-            <!-- Add more details as needed -->
-          </div>
-        </q-popup>
-        </td>
-      </template>
-    </q-table>
+    />
   </div>
-
-  <!-- <q-popup-edit v-if="cell.data.label" v-model="props.row.name" title="" auto-save>
-                      <q-list style="align-content: flex-end; width: 100%">
-                        <q-item
-                          clickable
-                          v-close-popup
-                          @click="getDetailform(cell.data.resvId, cell.data.resvRoomId)"
-                          style="
-                            display: flex;
-                            padding: 5px;
-                            border-radius: 30px;
-                          "
-                        >
-                          <q-item-section>
-                            <q-item-label style="color: black" class="font-bold"
-                              >{{ cell.data.label? cell.data.label : ''   }}</q-item-label
-                            >
-                          </q-item-section>
-                        </q-item>
-                      </q-list></q-popup-edit
-                    > -->
-  <!-- <div class="my-table">
-    <q-table
-      class="no-shadow"
-      v-model:pagination="pagination"
-      @request="onPaginationChange"
-      :rows-per-page-options="[1, 5, 7, 10, 15, 20, 25, 30]"
-      :rows="data"
-      :loading="loading"
-      :columns="columns"
-      row-key="name"
-    >
-      <template>
-        <q-tr class="table-head">
-          <q-th style="padding-top: 0px; padding-bottom: 0px">
-            <template v-slot:header="props">
-              <q-tr class="table-head" :props="props">
-                <q-th
-                  v-for="(col, i) in props.cols"
-                  :key="i"
-                  style="padding-top: 0px; padding-bottom: 0px"
-                >
-                </q-th>
-              </q-tr>
-            </template>
-          </q-th>
-        </q-tr>
-      </template>
-      <template v-slot:body="props">
-        <q-tr :props="props">
-          <template v-for="(cell, key, i) in props.row" :key="i">
-            <q-td :style="cell.style">
-              {{ cell.data }}
-            </q-td>
-          </template>
-        </q-tr>
-      </template>
-    </q-table>
-  </div> -->
 </template>
 
 <script>
@@ -140,14 +55,12 @@ export default defineComponent({
   setup() {
     return {
       selected: ref([]),
-      selectMode: ref(false),
-      showPopup: ref(false)
+      selectMode: ref(false)
     }
   },
   props: {
     columns: Array,
     rows: Array,
-    style: String,
     hidePagination: Boolean,
     title: String,
     isSelect: Boolean,
@@ -156,11 +69,6 @@ export default defineComponent({
   watch: {
     selected() {
       this.$emit('getTableData', this.selected)
-    }
-  },
-  methods: {
-    showPopuptest() {
-      this.showPopup = !this.showPopup
     }
   }
 })
@@ -206,7 +114,7 @@ export default defineComponent({
   opacity: 0;
 }
 
-.selected-table .q-table__card .q-table__top {
+.selected-table .q-table_card .q-table_top {
   justify-content: center;
   background-color: #069550;
   color: white;

@@ -1,17 +1,18 @@
 <template>
-  <q-page>
+  <q-page
+    class="column"
+    style="overflow-y: hidden; width: fit-content; min-height: calc(100vh - 51.25px)"
+  >
     <div>
-      <div style="display: flex; gap: 20px">
-        <div class="row">
+      <div style="display: flex">
+        <div>
           <HKCard style="height: fit-content" class="col-grow">
-            <div class="col-grow">
+            <div>
               <div
-                class="q-px-md q-pt-sm q-gutter-x-md"
-                style="min-width: 200px; display: flex; flex-wrap: wrap; align-items: center"
+                class="q-pt-sm q-gutter-x-md"
+                style="display: flex; flex-wrap: wrap; align-items: center"
               >
-                <label for="display" class="q-mt-md text-weight-bold text-body2" style="width: 10%"
-                  >Sorting</label
-                >
+                <label for="display" class="q-mt-md text-weight-bold text-body2">Sorting</label>
                 <div class="ambatukam">
                   <q-btn-dropdown
                     flat
@@ -53,13 +54,13 @@
                 </div>
               </div>
 
-              <div class="tableComp q-mt-sm flex flex-center full-width">
+              <div class="tableComp">
                 <q-table
                   :rows="dataRows"
                   :columns="dataColumns"
                   row-key="name"
                   square
-                  class="q-pa-md full-width"
+                  class="q-pa-md"
                   :table-header-style="{
                     backgroundColor: '#069550',
                     color: '#ffffff',
@@ -72,23 +73,21 @@
                 >
                   <template v-slot:body="props">
                     <q-tr :props="props" class="q-d-xs q-d-sm q-d-md">
-                      <q-td key="room-no" :props="props">
+                      <q-td key="room-no" :props="props" @click="handleClick(props.row.roomno)">
                         {{ props.row.roomno }}
                       </q-td>
-                      <q-td key="roomtype" :props="props">
+                      <q-td key="roomtype" :props="props" @click="handleClick(props.row.roomno)">
                         {{ props.row.roomtype }}
                       </q-td>
-                      <q-td key="btype" :props="props">
+                      <q-td key="btype" :props="props" @click="handleClick(props.row.roomno)">
                         {{ props.row.btype }}
                       </q-td>
-                      <q-td key="statusdescription" :props="props">
+                      <q-td
+                        key="statusdescription"
+                        :props="props"
+                        @click="handleClick(props.row.roomno)"
+                      >
                         {{ props.row.statusdescription }}
-                      </q-td>
-                      <q-td key="st" :props="props">
-                        {{ props.row.st }}
-                      </q-td>
-                      <q-td key="statusdesc" :props="props">
-                        {{ props.row.statusdesc }}
                       </q-td>
                     </q-tr>
                   </template>
@@ -99,8 +98,8 @@
         </div>
         <div class="column" style="margin-bottom: auto">
           <div>
-            <HKCard class="col-grow">
-              <div class="row q-pa-xl justify-between q-gutter-md">
+            <HKCard style="width: fit-content">
+              <div class="row q-py-xl justify-between">
                 <div class="column">
                   <div class="text-weight-bold">Change Status to :</div>
                   <q-radio
@@ -115,24 +114,30 @@
                     :class="option.class"
                   />
                 </div>
-                <div class="column flex items-center" style="margin-top: 10%">
-                  <div class="row">
-                    <p class="text-weight-bold text-body1 q-mt-sm">Room No</p>
-                    <div class="" style="width: 60px; height: 30px; background-color: white">
-                      <q-btn-dropdown
-                        dropdown-icon="n"
-                        label=""
-                        class="q-mx-md text-weight-bold flex items-center"
-                        style="width: 100%"
-                        push
-                      ></q-btn-dropdown>
+                <div style="align-items: center">
+                  <div
+                    style="display: flex; justify-content: center; align-items: center; gap: 10px"
+                  >
+                    <div class="text-weight-bold text-body1">Room No:</div>
+                    <div
+                      class="col-grow"
+                      style="
+                        height: 30px;
+                        background-color: white;
+                        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                      "
+                    >
+                      <div>{{ idRoom }}</div>
                     </div>
                   </div>
                   <q-btn
                     label="Change Status"
                     style="border-radius: 10px; width: 160px; background-color: #81bb78"
-                    color=""
-                    class="text-weight-bold"
+                    @click="handleRefresh"
+                    class="text-weight-bold q-mt-lg"
                     push
                     no-caps
                     text-color="black"
@@ -145,7 +150,7 @@
             <div class="row">
               <div class="text-weight-bold col-4 rstatus">Room Status</div>
               <div
-                class="col text-center flex flex-center text-weight-bold"
+                class="text-center flex flex-center text-weight-bold"
                 style="
                   background-color: #81bb78;
                   border-right: 1px solid black;
@@ -154,10 +159,10 @@
                   border-bottom-left-radius: 5px;
                 "
               >
-                03
+                {{ statusRoomNo || 0 }}
               </div>
               <div
-                class="col-7 text-center flex flex-center text-weight-bold"
+                class="text-center flex flex-center text-weight-bold"
                 style="
                   background-color: #81bb78;
                   height: 40px;
@@ -165,18 +170,15 @@
                   border-bottom-right-radius: 5px;
                 "
               >
-                Occupied Dirty
+                {{ statusRoom }}
               </div>
             </div>
           </div>
           <div class="ambasing">
-            <div class="row">
-              <div
-                style="background-color: #069550"
-                class="text-weight-bold flex flex-center col-12"
-              >
+            <div>
+              <div style="background-color: #069550" class="text-weight-bold flex flex-center">
                 <div class="flex flex-center text-white col q-ml-xl">Queuing Rooms</div>
-                <q-btn label="" flat round size="" class="q-ml-auto"
+                <q-btn flat round class="q-ml-auto"
                   ><svg
                     width="32"
                     height="31"
@@ -202,15 +204,13 @@
                 :rows="dataRows2"
                 :columns="dataColumns2"
                 row-key="name"
-                style="margin-top: 2px"
+                style="margin-top: 2px; width: fit-content"
                 square
-                class="full-width"
                 :table-header-style="{
                   backgroundColor: '#069550',
                   color: '#ffffff',
                   padding: '10px'
                 }"
-                :card-style="{ boxShadow: 'none' }"
                 rows-per-page-label="Show"
                 v-model:pagination="paginationTask"
                 @request="onPaginationChangeTask"
@@ -242,7 +242,6 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
-import HKTable from 'src/components/HK/Table/HKTable.vue'
 import HKPrintModal from 'src/components/HK/Modal/HKPrintModal.vue'
 
 const dataColumns = [
@@ -305,10 +304,12 @@ export default defineComponent({
   name: 'StatusPage',
   components: { HKCard, HKPrintModal },
   setup() {
-    const status = ref('cleanChecked')
     return {
+      statusRoom: ref(),
+      statusRoomNo: ref(),
       dataColumns,
       dataColumns2,
+      idRoom: ref(),
       filterDisplay: ref('roomNum'),
       filterDisplayLabel: ref('Room Number'),
       dataRows2: ref(),
@@ -324,35 +325,39 @@ export default defineComponent({
       status: '',
       options: [
         {
-          val: 'cleanChecked',
-          label: 'Clean Checked',
+          val: 'VC',
+          label: 'Vacant Clean',
           color: '#069550',
           size: 'xs',
           class: 'q-pt-md'
         },
         {
-          val: 'cleanUnchecked',
-          label: 'Clean Unchecked',
+          val: 'VCU',
+          label: 'Vacant Clean Unchecked',
           color: '#069550',
           size: 'xs',
           class: 'q-pt-sm'
         },
-        { val: 'dirty', label: 'Dirty', color: '#069550', size: 'xs', class: 'q-pt-sm' },
+        { val: 'VD', label: 'Vacant Dirty', color: '#069550', size: 'xs', class: 'q-pt-sm' },
         {
-          val: 'doNotDisturb',
-          label: 'Do not Disturb',
+          val: 'OD',
+          label: 'Occupied Dirty',
           color: '#069550',
           size: 'xs',
           class: 'q-pt-sm'
         },
         {
-          val: 'outOfOrder',
-          label: 'Out of Order',
+          val: 'OC',
+          label: 'Occupied Clean',
           color: '#069550',
           size: 'xs',
           class: 'q-pt-sm'
         },
-        { val: 'offMarket', label: 'Off Market', color: '#069550', size: 'xs', class: 'q-pt-sm' }
+        { val: 'ED', label: 'Expected Departure', color: '#069550', size: 'xs', class: 'q-pt-sm' },
+        { val: 'DnD', label: 'Do not Disturb', color: '#069550', size: 'xs', class: 'q-pt-sm' },
+        { val: 'OOO', label: 'Out of Order', color: '#069550', size: 'xs', class: 'q-pt-sm' },
+        { val: 'OM', label: 'Out of Market', color: '#069550', size: 'xs', class: 'q-pt-sm' },
+        { val: 'HU', label: 'House Use', color: '#069550', size: 'xs', class: 'q-pt-sm' }
       ],
       api: new this.$Api('housekeeping'),
       paginationRoom: {
@@ -377,6 +382,36 @@ export default defineComponent({
     }
   },
   methods: {
+    handleRefresh() {
+      this.refreshData()
+
+      this.postStatus()
+    },
+    postStatus() {
+      let url = `status/${this.idRoom}/${this.status}`
+      this.api.post(url, null, ({ status }) => {
+        if (status == 200) {
+          this.refreshData()
+
+          this.$q.notify({
+            type: 'positive',
+            message: 'Update successfully.',
+            timeout: 1000
+          })
+        }
+      })
+    },
+    refreshData() {
+      window.location.reload()
+    },
+    handleClick(id) {
+      this.idRoom = id
+      this.$q.notify({
+        type: 'positive',
+        message: 'Get data successfully.',
+        timeout: 1000
+      })
+    },
     setFilterDisplay(option, label) {
       this.filterDisplay = option
       this.updateFilterDisplayLabel(option)
@@ -423,7 +458,12 @@ export default defineComponent({
         this.loading = false
 
         if (status == 200) {
-          const { roomStatus, taskData } = data
+          const { roomStatus, taskData, latestChange } = data
+
+          this.statusRoom = latestChange.roomStatus.longDescription
+          this.statusRoomNo = latestChange.id
+
+          console.log(this.statusRoomNo)
 
           this.dataRows = roomStatus.map((rs) => ({
             roomno: rs.id,
@@ -454,7 +494,6 @@ export default defineComponent({
   justify-content: space-between;
   align-items: end;
   column-gap: 16px;
-  width: 80%;
 }
 .rstatus {
   margin-top: 5px;

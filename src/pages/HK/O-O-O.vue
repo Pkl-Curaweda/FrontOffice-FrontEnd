@@ -41,17 +41,20 @@
               >
                 <q-item-section>Room Number</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup @click="setFilterDisplay('department', 'Off Market')">
-                <q-item-section>Off Market</q-item-section>
-              </q-item>
               <q-item clickable v-close-popup @click="setFilterDisplay('department', 'Department')">
                 <q-item-section>Department</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup @click="setFilterDisplay(null, 'All')">
-                <q-item-section>All</q-item-section>
+              <q-item clickable v-close-popup @click="setFilterDisplay('reason', 'Reason')">
+                <q-item-section>Reason</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="setFilterDisplay('pic', 'Guest Name')">
+                <q-item-section>Guest Name</q-item-section>
               </q-item>
             </q-list>
           </q-btn-dropdown>
+
+          <span>{{ labelSorting }}:</span>
+          <q-toggle v-model="value" />
         </div>
 
         <div class="flex" style="gap: 8px 16px">
@@ -62,7 +65,7 @@
               square
               style="border: 1px #00000030 solid"
               class="text-capitalize date-btn text-black rounded-borders"
-              :label="datePickerArrival?.replace(/\//g, '-')"
+              :label="datePickerArrival?.replace(/\//g, '-') || 'Date'"
               icon="o_event"
               color="primary"
               dropdown-icon="o_expand_more"
@@ -79,7 +82,7 @@
               square
               style="border: 1px #00000030 solid"
               class="text-capitalize date-btn text-black rounded-borders"
-              :label="datePickerDeparture?.replace(/\//g, '-')"
+              :label="datePickerDeparture?.replace(/\//g, '-') || 'Date'"
               icon="o_event"
               color="primary"
               dropdown-icon="o_expand_more"
@@ -161,14 +164,16 @@ export default defineComponent({
   components: { HKCard, HKTable, HKPrintModal },
   setup() {
     return {
+      value: ref(false),
       tableColumns,
       tableRows: ref(),
+      labelSorting: ref(),
       filterDisplay: ref('roomNumber'),
       filterDisplayLabel: ref('Room Number'),
       datePickerArrival: ref(),
       datePickerDeparture: ref(),
-      formattedArrivalDate: ref(), // Tambahkan variabel formattedArrivalDate
-      formattedDepartureDate: ref(''),
+      formattedArrivalDate: ref('Date'), // Tambahkan variabel formattedArrivalDate
+      formattedDepartureDate: ref(),
       sortingModel: ref('Room Number'),
       sortingOptions: ['O-O-O', 'Off Market', 'Department', 'Person In Charge', 'All']
     }
@@ -202,6 +207,9 @@ export default defineComponent({
       handler(newDate) {
         this.fetchData()
       }
+    },
+    value(newVal) {
+      this.fetchData()
     }
   },
   methods: {
@@ -213,17 +221,17 @@ export default defineComponent({
     updateFilterDisplayLabel(option) {
       // Logic to update the label based on the selected option
       switch (option) {
-        case 'roomNumbwe':
+        case 'roomNumber':
           this.filterDisplayLabel = 'Room Number'
-          break
-        case 'department':
-          this.filterDisplayLabel = 'Off Market'
           break
         case 'department':
           this.filterDisplayLabel = 'Department'
           break
-        case null:
-          this.filterDisplayLabel = 'All'
+        case 'reason':
+          this.filterDisplayLabel = 'Reason'
+          break
+        case 'pic':
+          this.filterDisplayLabel = 'Guest Name'
           break
         // Add other cases as needed
         default:
@@ -248,10 +256,14 @@ export default defineComponent({
         url += `&sortOrder=${this.filterDisplay}`
       }
 
+      if (this.value) {
+        url = `ooo-rooms?type=OM`
+      }
+
       this.api.get(url, ({ status, data }) => {
         this.loading = false
         if (status == 200) {
-          const { OOORoom, arrival, departure } = data
+          const { OOORoom, ident } = data
 
           const arrivalDate = data.arr // Gantilah 'arrival.arr' dengan properti yang benar
           if (arrivalDate) {
@@ -262,6 +274,61 @@ export default defineComponent({
           if (departureDate) {
             this.datePickerDeparture = departureDate
           }
+
+          this.labelSorting = ident
+
+          this.tableColumns = [
+            {
+              name: 'room-no',
+              label: 'Room No.',
+              field: (row) => row.name,
+              align: 'left',
+              required: true,
+              sortable: true
+            },
+            {
+              name: 'reason_room',
+              label: `Reason Room ${ident}`,
+              field: 'reason_room',
+              align: 'left',
+              sortable: true
+            },
+            {
+              name: 'from',
+              label: `${ident} From`,
+              field: 'from',
+              align: 'left',
+              sortable: true
+            },
+            {
+              name: 'until',
+              label: `${ident} Until`,
+              field: 'until',
+              align: 'left',
+              sortable: true
+            },
+            {
+              name: 'created_by',
+              label: 'Created By',
+              field: 'created_by',
+              align: 'left',
+              sortable: true
+            },
+            {
+              name: 'dept',
+              label: 'Dept',
+              field: 'dept',
+              sortable: true,
+              align: 'left'
+            },
+            {
+              name: 'room_type',
+              label: 'Room Type',
+              field: 'room_type',
+              sortable: true,
+              align: 'left'
+            }
+          ]
           this.tableRows = OOORoom.map((ooo) => ({
             name: ooo.roomNo,
             reason_room: ooo.reason,

@@ -81,6 +81,7 @@
 <script>
 import UserGreet from 'src/components/HK/IMPPS/General/UserGreet.vue'
 import IMPPSSelectedTable from 'src/components/HK/IMPPS/Table/SelectedTable.vue'
+import { defineComponent, ref } from 'vue'
 
 const columns = [
   {
@@ -101,78 +102,109 @@ const columns = [
   { name: 'Comments', label: 'Comments', align: 'center', field: 'Comments' }
 ]
 
-const rows = [
-  {
-    roomNo: '101',
-    RoomType: 'DLX',
-    Schedule: '07.00 - 07.40',
-    Standard: '40 Minute',
-    Actual: '45 Minute',
-    Remarks: 'Kamar berantakan',
-    Status: 'Re-clean',
-    Comments: 'Sprei masih kotor'
-  },
-  {
-    roomNo: '102',
-    RoomType: 'DLX',
-    Schedule: '07.45 - 08.00',
-    Standard: '40 Minute',
-    Actual: '45 Minute',
-    Remarks: '-',
-    Status: 'clean',
-    Comments: 'Sprei masih kotor'
-  },
-  {
-    roomNo: '103',
-    RoomType: 'DLX',
-    Schedule: '07.00 - 07.40',
-    Standard: '40 Minute',
-    Actual: '45 Minute',
-    Remarks: 'Kamar berantakan',
-    Status: 'Re-clean',
-    Comments: 'Sprei masih kotor'
-  },
-  {
-    roomNo: '104',
-    RoomType: 'DLX',
-    Schedule: '07.00 - 07.40',
-    Standard: '40 Minute',
-    Actual: '45 Minute',
-    Remarks: 'Kamar berantakan',
-    Status: 'Re-clean',
-    Comments: 'Sprei masih kotor'
-  },
-  {
-    roomNo: '105',
-    RoomType: 'DLX',
-    Schedule: '07.00 - 07.40',
-    Standard: '40 Minute',
-    Actual: '45 Minute',
-    Remarks: 'Kamar berantakan',
-    Status: 'Re-clean',
-    Comments: 'Sprei masih kotor'
-  }
-]
+const rows = ref([
+  // {
+  //   roomNo: '101',
+  //   RoomType: 'DLX',
+  //   Schedule: '07.00 - 07.40',
+  //   Standard: '40 Minute',
+  //   Actual: '45 Minute',
+  //   Remarks: 'Kamar berantakan',
+  //   Status: 'Re-clean',
+  //   Comments: 'Sprei masih kotor'
+  // },
+  // {
+  //   roomNo: '102',
+  //   RoomType: 'DLX',
+  //   Schedule: '07.45 - 08.00',
+  //   Standard: '40 Minute',
+  //   Actual: '45 Minute',
+  //   Remarks: '-',
+  //   Status: 'clean',
+  //   Comments: 'Sprei masih kotor'
+  // },
+  // {
+  //   roomNo: '103',
+  //   RoomType: 'DLX',
+  //   Schedule: '07.00 - 07.40',
+  //   Standard: '40 Minute',
+  //   Actual: '45 Minute',
+  //   Remarks: 'Kamar berantakan',
+  //   Status: 'Re-clean',
+  //   Comments: 'Sprei masih kotor'
+  // },
+  // {
+  //   roomNo: '104',
+  //   RoomType: 'DLX',
+  //   Schedule: '07.00 - 07.40',
+  //   Standard: '40 Minute',
+  //   Actual: '45 Minute',
+  //   Remarks: 'Kamar berantakan',
+  //   Status: 'Re-clean',
+  //   Comments: 'Sprei masih kotor'
+  // },
+  // {
+  //   roomNo: '105',
+  //   RoomType: 'DLX',
+  //   Schedule: '07.00 - 07.40',
+  //   Standard: '40 Minute',
+  //   Actual: '45 Minute',
+  //   Remarks: 'Kamar berantakan',
+  //   Status: 'Re-clean',
+  //   Comments: 'Sprei masih kotor'
+  // }
+])
 
-export default {
+export default defineComponent({
   name: 'DashboardRBPage',
   components: {
     UserGreet,
     IMPPSSelectedTable
   },
-  data() {
+  setup() {
     return {
       rows,
       columns,
       selected: []
     }
   },
+  data() {
+    return {
+      api: new this.$Api('impps')
+    }
+  },
+  mounted() {
+    this.fetchData()
+  },
   methods: {
     getTableData(data) {
       this.selected = data
+    },
+    fetchData() {
+      this.loading = true
+
+      let url = `impps/roomboy/3`
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+
+        if (status == 200) {
+          const { listTask } = data
+
+          this.rows = listTask.map((lt) => ({
+            roomNo: lt.roomNo,
+            RoomType: lt.roomType,
+            Schedule: lt.schedule,
+            Standard: lt.standard,
+            Actual: lt.actual,
+            Remarks: lt.remarks,
+            Status: lt.status,
+            Comments: lt.comments
+          }))
+        }
+      })
     }
   }
-}
+})
 </script>
 
 <style>

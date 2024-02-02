@@ -105,31 +105,32 @@ import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
 import HKTable from 'src/components/HK/Table/HKTable.vue'
 
-const responsiveChart = [
-  {
-    breakpoint: 1180,
-    options: {
-      legend: {
-        position: 'bottom',
-        offsetY: 0,
-        fontSize: '16px',
-        fontWeight: 400,
-        markers: {
-          width: '20px',
-          height: '20px',
-          offsetX: -5
-        },
-        itemMargin: {
-          horizontal: 10
-        }
-      }
-    }
-  }
-]
+// const responsiveChart = [
+//   {
+//     breakpoint: 1180,
+//     options: {
+//       legend: {
+//         position: 'bottom',
+//         offsetY: 0,
+//         fontSize: '16px',
+//         fontWeight: 400,
+//         markers: {
+//           width: '20px',
+//           height: '20px',
+//           offsetX: -5
+//         },
+//         itemMargin: {
+//           horizontal: 10
+//         }
+//       }
+//     }
+//   }
+// ]
 
-const seriesBar = []
-// { name: 'Room', data: [1, 2, 3, 4, 5, 6, 8] },
-// { name: 'Person', data: [1, 2, 3, 4, 5, 6, 8] }
+const seriesBar = [
+  { name: 'Room', data: [1, 2, 3, 4, 5, 6, 8] },
+  { name: 'Person', data: [1, 2, 3, 4, 5, 6, 8] }
+]
 
 const chartOptionsBar = ref({
   chart: {
@@ -280,26 +281,9 @@ export default defineComponent({
   },
   mounted() {
     this.fetchData()
-    this.dataChart()
   },
   watch: {},
   methods: {
-    dataChart() {
-      let url = `roomocc`
-
-      this.api.get(url, ({ status, data }) => {
-        if (status == 200) {
-          const { percData } = data
-          const room = percData.roomPerc
-          const person = percData.personPerc
-
-          this.seriesBar = [
-            { name: 'Room', data: room },
-            { name: 'Person', data: person }
-          ]
-        }
-      })
-    },
     fetchData() {
       this.loading = true
 
@@ -310,15 +294,15 @@ export default defineComponent({
 
         if (status == 200) {
           this.loading = false
-          const { currData, roomStatus, percData } = data
+          const { currData, roomStatus } = data
 
-          const room = percData.roomPerc
-          const person = percData.personPerc
+          // const room = percData.roomPerc
+          // const person = percData.personPerc
 
-          this.seriesBar = [
-            { name: 'Room', data: room },
-            { name: 'Person', data: person }
-          ]
+          // this.seriesBar = [
+          //   { name: 'Room', data: room },
+          //   { name: 'Person', data: person }
+          // ]
 
           console.log(this.seriesBar)
 
@@ -326,38 +310,38 @@ export default defineComponent({
             {
               id: 1,
               name: 'Occupied Room',
-              room: currData.occ.room,
-              person: currData.occ.person
+              room: currData.occ.room || 0,
+              person: currData.occ.person || 0
             },
             {
               id: 2,
               name: 'Complimentary Room',
-              room: currData.comp.room,
-              person: currData.comp.person
+              room: currData.comp.room || 0,
+              person: currData.comp.person || 0
             },
             {
               id: 3,
               name: 'House Use Room',
-              room: currData.houseUse.room,
-              person: currData.houseUse.person
+              room: currData.houseUse.room || 0,
+              person: currData.houseUse.person || 0
             },
             {
               id: 4,
               name: 'Out-Of-Order Room',
-              room: currData.ooo.room,
-              person: currData.ooo.person
+              room: currData.ooo.room || 0,
+              person: currData.ooo.person || 0
             },
             {
               id: 5,
               name: 'Off Market',
-              room: currData.om.room,
-              person: currData.om.person
+              room: currData.om.room || 0,
+              person: currData.om.person || 0
             },
             {
               id: 6,
               name: 'Estimated Occupied',
-              room: currData.estOcc.room,
-              person: currData.estOcc.person
+              room: currData.estOcc.room || 0,
+              person: currData.estOcc.person || 0
             }
           ]
 

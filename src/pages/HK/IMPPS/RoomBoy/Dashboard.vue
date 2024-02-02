@@ -2,7 +2,7 @@
   <div class="rb full-width">
     <UserGreet class="q-mt-md q-px-md" name="Aldi Rahadian" role="Room Boy" />
     <div class="q-mt-md q-pl-md">
-      <IMPPSSelectedTable
+      <!-- <IMPPSSelectedTable
         :rows="rows"
         :columns="columns"
         title="Task Queue"
@@ -10,7 +10,45 @@
         isSelect
         btnEdit
         hidePagination
-      />
+      /> -->
+      <div class="my-table">
+        <q-table
+          class="no-shadow"
+          v-model:pagination="pagination"
+          @request="onPaginationChange"
+          :rows="data"
+          :loading="loading"
+          :columns="columns"
+          hide-bottom
+          row-key="name"
+        >
+          <template>
+            <q-tr class="table-head">
+              <q-th style="padding-top: 0px; padding-bottom: 0px">
+                <template v-slot:header="props">
+                  <q-tr class="table-head" :props="props">
+                    <q-th
+                      v-for="(col, i) in props.cols"
+                      :key="i"
+                      style="padding-top: 0px; padding-bottom: 0px"
+                    >
+                    </q-th>
+                  </q-tr>
+                </template>
+              </q-th>
+            </q-tr>
+          </template>
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <template v-for="(cell, key, i) in props.row" :key="i">
+                <q-td :style="cell.style">
+                  {{ cell.data }}
+                </q-td>
+              </template>
+            </q-tr>
+          </template>
+        </q-table>
+      </div>
     </div>
     <q-form class="q-mt-lg q-mx-auto" style="width: 242px; min-width: 200px">
       <div class="row items-center justify-between full-width">
@@ -80,27 +118,23 @@
 
 <script>
 import UserGreet from 'src/components/HK/IMPPS/General/UserGreet.vue'
-import IMPPSSelectedTable from 'src/components/HK/IMPPS/Table/SelectedTable.vue'
 import { defineComponent, ref } from 'vue'
 
-const columns = [
-  {
-    name: 'roomNo',
-    required: true,
-    label: 'Room No',
-    align: 'left',
-    field: (row) => row.roomNo,
-    format: (val) => `${val}`,
-    sortable: true
-  },
-  { name: 'RoomType', label: 'Room Type', align: 'left', field: 'RoomType' },
-  { name: 'Schedule', label: 'Schedule', align: 'left', field: 'Schedule' },
-  { name: 'Standard', label: 'Standard', align: 'left', field: 'Standard' },
-  { name: 'Actual', label: 'Actual', align: 'left', field: 'Actual' },
-  { name: 'Remarks', label: 'Remarks', align: 'left', field: 'Remarks' },
-  { name: 'Status', label: 'Status', align: 'center', field: 'Status' },
-  { name: 'Comments', label: 'Comments', align: 'center', field: 'Comments' }
-]
+// const columns = [
+//   {
+//     name: 'roomNo',
+//     label: 'Room No',
+//     align: 'left',
+//     field: 'roomNo'
+//   },
+//   { name: 'RoomType', label: 'Room Type', align: 'left', field: 'RoomType' },
+//   { name: 'Schedule', label: 'Schedule', align: 'left', field: 'Schedule' },
+//   { name: 'Standard', label: 'Standard', align: 'left', field: 'Standard' },
+//   { name: 'Actual', label: 'Actual', align: 'left', field: 'Actual' },
+//   { name: 'Remarks', label: 'Remarks', align: 'left', field: 'Remarks' },
+//   { name: 'Status', label: 'Status', align: 'center', field: 'Status' },
+//   { name: 'Comments', label: 'Comments', align: 'center', field: 'Comments' }
+// ]
 
 const rows = ref([
   // {
@@ -158,13 +192,26 @@ const rows = ref([
 export default defineComponent({
   name: 'DashboardRBPage',
   components: {
-    UserGreet,
-    IMPPSSelectedTable
+    UserGreet
   },
   setup() {
     return {
-      rows,
-      columns,
+      data: ref([]),
+      columns: [
+        {
+          name: 'roomNo',
+          label: 'Room No',
+          align: 'left',
+          field: 'roomNo'
+        },
+        { name: 'RoomType', label: 'Room Type', align: 'left', field: 'RoomType' },
+        { name: 'Schedule', label: 'Schedule', align: 'left', field: 'Schedule' },
+        { name: 'Standard', label: 'Standard', align: 'left', field: 'Standard' },
+        { name: 'Actual', label: 'Actual', align: 'left', field: 'Actual' },
+        { name: 'Remarks', label: 'Remarks', align: 'left', field: 'Remarks' },
+        { name: 'Status', label: 'Status', align: 'center', field: 'Status' },
+        { name: 'Comments', label: 'Comments', align: 'center', field: 'Comments' }
+      ],
       selected: []
     }
   },
@@ -189,20 +236,51 @@ export default defineComponent({
 
         if (status == 200) {
           const { listTask } = data
-
-          this.rows = listTask.map((lt) => ({
-            roomNo: lt.roomNo,
-            RoomType: lt.roomType,
-            Schedule: lt.schedule,
-            Standard: lt.standard,
-            Actual: lt.actual,
-            Remarks: lt.remarks,
-            Status: lt.status,
-            Comments: lt.comments
+          console.log(listTask)
+          this.data = listTask.map((lt) => ({
+            roomNo: { data: lt.roomNo, style: {} },
+            RoomType: { data: lt.roomType, style: {} },
+            Schedule: { data: lt.schedule, style: {} },
+            Standard: { data: lt.standard, style: {} },
+            Actual: { data: lt.actual, style: {} },
+            Remarks: { data: lt.remarks, style: {} },
+            Status: { data: lt.status, style: {} },
+            Comments: { data: lt.comments, style: {} }
           }))
+          console.log(this.data)
+          // this.rows = listTask.map((lt) => ({
+          //   roomNo: lt.roomNo,
+          //   RoomType: lt.roomType,
+          //   Schedule: lt.schedule,
+          //   Standard: lt.standard,
+          //   Actual: lt.actual,
+          //   Remarks: lt.remarks,
+          //   Status: lt.status,
+          //   Comments: lt.comments
+          // }))
         }
       })
     }
+    // formatData(raw = []) {
+    //   console.log(raw)
+    //   const list = []
+    //   console.log(list)
+
+    //   raw.foreach((lt) => {
+    //     list.push({
+    //       roomNo: { data: lt.roomNo, style: {} },
+    //       RoomType: { data: lt.roomType, style: {} },
+    //       Schedule: { data: lt.schedule, style: {} },
+    //       Standard: { data: lt.standard, style: {} },
+    //       Actual: { data: lt.actual, style: {} },
+    //       Remarks: { data: lt.remarks, style: {} },
+    //       Status: { data: lt.status, style: {} },
+    //       Comments: { data: lt.comments, style: {} }
+    //     })
+    //   })
+    //   this.data = list
+    //   console.log(this.data)
+    // }
   }
 })
 </script>

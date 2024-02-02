@@ -11,7 +11,14 @@
             dense
             class="text-capitalize q-px-lg"
           />
-          <q-btn label="Cancel" dense outline color="primary" class="text-capitalize q-px-md" />
+          <q-btn
+            label="Cancel"
+            dense
+            outline
+            color="primary"
+            @click="pageref"
+            class="text-capitalize q-px-md"
+          />
         </div>
       </template>
     </FOMenubar>
@@ -340,6 +347,12 @@ export default defineComponent({
       // console.log(this.data, list)
       this.data = list
       // console.log(this.data)
+    },
+    pageref() {
+      this.$router.push({
+          name: 'reports',
+        }
+      )
     }
   }
 })

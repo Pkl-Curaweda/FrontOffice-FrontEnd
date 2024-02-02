@@ -38,6 +38,7 @@ const frontoffice_routes = [
     }
   },
   {
+    name:'reports',
     path: '/fo/reports',
     component: () => import('pages/FO/Reports.vue'),
     meta: {

@@ -281,7 +281,7 @@ export default defineComponent({
       this.getDetailForm()
     }
 
-    this.fetchData()
+    // this.fetchData()
     this.userView()
 
     // watch(
@@ -373,14 +373,14 @@ export default defineComponent({
     formatCurrency(num = 0) {
       return num.toLocaleString()
     },
-    triggerPositive(message) {
+    trigger(type, txt) {
       this.$q.notify(
         {
-          type: 'positive',
-          message: message || 'This is a "positive" type notification.',
+          type: type,
+          message: txt || 'data not found',
           timeout: 1000
         },
-        4000
+        1000
       )
     },
     getDetailForm() {
@@ -390,10 +390,11 @@ export default defineComponent({
       this.loading = true
       this.api.get(
         `detail/invoice/${resvId}/${resvRoomId}/?ids=${uniqueId}`,
-        ({ status, data }) => {
+        ({ status, data, response, message }) => {
           this.loading = false
 
-          if (status == 200) {
+          if (status === 200) {
+            this.trigger('positive',message)
             this.formatData()
             const { detail } = data
 
@@ -406,9 +407,7 @@ export default defineComponent({
             this.balance = `Rp ${this.formatCurrency(data.balance)}`
             this.billAddress = data.address
             this.comments = data.comment
-            this.console.log('hallo')
           }
-          this.triggerPositive('GET Data Successfully')
         }
       )
     },
@@ -427,10 +426,11 @@ export default defineComponent({
 
       this.$api
         .get(url)
-        .then((response) => {
+        .then((response, message) => {
           this.loading = false
 
           if (response.status === 200) {
+            this.trigger('positive',message)
             const { artList } = response.data.data
 
             this.data2 = artList.map((al) => ({
@@ -449,7 +449,6 @@ export default defineComponent({
               rowsPerPage: response.data.data.meta?.perPage
             }
           }
-          this.triggerPositive('GET Data Successfully')
         })
         .catch((error) => {
           this.loading = false
@@ -465,13 +464,13 @@ export default defineComponent({
         await this.api.put(
           `detail/invoice/${currentResvId}/${currentRoomResvId}?ids=${uniqueId}`,
           data,
-          ({ status, data }) => {
+          ({ status, data, message }) => {
             this.loading = true
 
             if (status == 200) {
               this.loading = false
               console.log(data)
-              this.triggerPositive('Update Data Successfully')
+              this.trigger('positive',message)
               // Call setRoomResv with uniqueId after updating data
               this.setRoomResv(uniqueId)
             }

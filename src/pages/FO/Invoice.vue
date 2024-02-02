@@ -362,7 +362,7 @@ export default defineComponent({
       },
       api: new this.$Api('frontoffice'),
       pagination: {
-        page: 1,    
+        page: 1,
         rowsNumber: 0,
         rowsPerPage: 20
       },
@@ -537,7 +537,7 @@ export default defineComponent({
     },
     onPaginationChange(props) {
       props.pagination.rowsPerPage =
-        props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
+      props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
       console.log(props)
       console.log(props.rowsPerPage)
       this.pagination = props.pagination
@@ -579,7 +579,7 @@ export default defineComponent({
               description: inv.description,
               qty: 0
             }))
-
+            this.trigger('positive',response.data.message)
             this.formatData({ added, invoices })
             this.pagination = {
               page: response.data.data.meta?.currPage,
@@ -587,7 +587,6 @@ export default defineComponent({
               rowsPerPage: response.data.data.meta?.perPage
             }
           }
-          this.triggerPositive('GET Data Successfully')
         })
         .catch((error) => {
           this.loading = false
@@ -624,14 +623,14 @@ export default defineComponent({
       console.log(this.$ResvStore.dateBill)
       console.log(this.$ResvStore.UniqueId)
     },
-    triggerPositive(message) {
+    trigger(type, txt) {
       this.$q.notify(
         {
-          type: 'positive',
-          message: message || 'This is a "positive" type notification.',
+          type: type,
+          message: txt || 'data not found',
           timeout: 1000
         },
-        4000
+        1000
       )
     }
   }

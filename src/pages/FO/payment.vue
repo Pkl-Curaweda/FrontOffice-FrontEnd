@@ -589,29 +589,10 @@ export default defineComponent({
           params: { resvId: resvId, resvRoomId: resvRoomId }
         })
       } else {
-        this.triggerNegative('select your method')
+        this.trigger('warning','select your method')
       }
     },
-    triggerPositive(data) {
-      this.$q.notify(
-        {
-          type: 'positive',
-          message: data || 'data has successfully',
-          timeout: 1000
-        },
-        4000
-      )
-    },
-    triggerNegative(data) {
-      this.$q.notify(
-        {
-          type: 'negative',
-          message: data || 'data has successfully',
-          timeout: 1000
-        },
-        4000
-      )
-    },
+
     calculateTotal() {
       this.total = this.priceBook.reduce((accumulator, currentValue) => {
         return accumulator + parseFloat(currentValue.amount) // Mengonversi ke float sebelum penambahan
@@ -641,6 +622,16 @@ export default defineComponent({
         style: 'currency',
         currency: 'IDR'
       })
+    },
+    trigger(type, txt) {
+      this.$q.notify(
+        {
+          type: type,
+          message: txt || 'data not found',
+          timeout: 1000
+        },
+        1000
+      )
     },
     fetchcart() {
       // const { currentResvId, currentRoomResvId } = this.$ResvStore

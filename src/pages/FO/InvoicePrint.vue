@@ -11,7 +11,7 @@
             dense
             class="text-capitalize q-px-lg"
           />
-          <q-btn label="Cancel" dense outline color="primary" class="text-capitalize q-px-md" />
+          <q-btn label="Cancel" dense outline color="primary" @click="pageref" class="text-capitalize q-px-md" />
         </div>
       </template>
     </FOMenubar>
@@ -256,6 +256,7 @@ export default defineComponent({
   mounted() {
     this.getDataTable()
   },
+
   methods: {
     print() {
       const element = this.$refs.pdfContainer
@@ -267,6 +268,12 @@ export default defineComponent({
         html2canvas: { scale: 2 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       })
+    },
+    pageref() {
+      this.$router.push({
+          name: 'guest-invoice',
+        }
+      )
     },
     getDataTable() {
       this.loading = true

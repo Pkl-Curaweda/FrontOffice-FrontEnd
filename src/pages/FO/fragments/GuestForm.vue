@@ -751,9 +751,9 @@ export default defineComponent({
     }
   },
   watch: {
-    includeTax() {
-      this.calculateTotal() // Panggil method calculateTotal() saat status checkbox berubah
-    },
+    // includeTax() {
+    //   this.calculateTotal() // Panggil method calculateTotal() saat status checkbox berubah
+    // },
     roomType: {
       handler(oldval, newval) {
         this.resultRows = this.rows.filter((r) => {
@@ -920,7 +920,7 @@ export default defineComponent({
     selectRow(row) {
       this.selected = row
       console.log(this.selected)
-      this.calculateTotal()
+      // this.calculateTotal()
     },
     // calculateTotal() {
     //   if (this.selected) {

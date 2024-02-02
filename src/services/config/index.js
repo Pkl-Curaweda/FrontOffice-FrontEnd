@@ -26,7 +26,9 @@ export const Config = {
     } else if (module == 'root') {
       url = 'http://localhost:3000/'
       if (hostname === 'localhost') url = 'http://localhost:3000/'
-    } else {
+    } else if (module == 'impps') {
+      url = 'http://localhost:3000/impps/'
+      if (hostname === 'localhost') url = 'http://localhost:3000/impps/'}else {
       // default: frontoffice
       url = 'http://localhost:3000/fo/' // production
       if (hostname === 'localhost') url = 'http://localhost:3000/fo/' // development

@@ -1,16 +1,78 @@
 <template>
   <div class="rb full-width">
     <UserGreet class="q-mt-md q-px-md" name="Aldi Rahadian" role="Room Boy" />
-    <div class="q-mt-md q-pl-md">
+    <div class="q-mt-md q-pa-md">
+      <!-- <div class="my-table" style="max-height: fit-content; overflow: auto">
+        <q-table class="no-shadow" :rows="data" :columns="columns" row-key="name" hidePagination>
+          <template>
+            <q-tr class="table-head">
+              <q-th style="padding-top: 0px; padding-bottom: 0px">
+                <template v-slot:header="props">
+                  <q-tr class="table-head" :props="props">
+                    <q-th
+                      v-for="(col, i) in props.cols.label"
+                      :key="i"
+                      style="padding-top: 0px; padding-bottom: 0px"
+                    >
+                    </q-th>
+                  </q-tr>
+                </template>
+              </q-th>
+            </q-tr>
+          </template>
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <template v-for="(cell, key, i) in props.row" :key="i">
+                <q-td :style="cell.style">
+                  {{ cell.data.data }}
+                  <q-popup-edit v-if="cell.data.data" v-model="props.row.name" title="" auto-save>
+                    <q-list style="align-content: flex-end; width: 100%">
+                      <q-item
+                        clickable
+                        v-close-popup
+                        @click="getDetailform(cell.data.resvId, cell.data.resvRoomId)"
+                        style="display: flex; padding: 5px; border-radius: 30px"
+                      >
+                        <q-item-section>
+                          <q-item-label style="color: black" class="font-bold">{{
+                            cell.data.data ? cell.data.data : ''
+                          }}</q-item-label>
+                        </q-item-section>
+                      </q-item>
+                    </q-list></q-popup-edit
+                  >
+                </q-td>
+              </template>
+            </q-tr>
+          </template>
+        </q-table>
+      </div> -->
       <IMPPSSelectedTable
-        :rows="rows"
+        :rows="data"
         :columns="columns"
         title="Task Queue"
         @getTableData="getTableData"
         isSelect
-        btnEdit
+        :btnEdit="false"
         hidePagination
-      />
+      >
+        <q-popup-edit v-if="cell.data.label" v-model="props.row.name" title="" auto-save>
+          <q-list style="align-content: flex-end; width: 100%">
+            <q-item
+              clickable
+              v-close-popup
+              @click="getDetailform(cell.data.resvId, cell.data.resvRoomId)"
+              style="display: flex; padding: 5px; border-radius: 30px"
+            >
+              <q-item-section>
+                <q-item-label style="color: black" class="font-bold">{{
+                  cell.data.label ? cell.data.label : ''
+                }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list></q-popup-edit
+        >
+      </IMPPSSelectedTable>
     </div>
     <q-form class="q-mt-lg q-mx-auto" style="width: 242px; min-width: 200px">
       <div class="row items-center justify-between full-width">
@@ -92,13 +154,56 @@ const columns = [
     format: (val) => `${val}`,
     sortable: true
   },
-  { name: 'RoomType', label: 'Room Type', align: 'left', field: 'RoomType' },
-  { name: 'Schedule', label: 'Schedule', align: 'left', field: 'Schedule' },
-  { name: 'Standard', label: 'Standard', align: 'left', field: 'Standard' },
-  { name: 'Actual', label: 'Actual', align: 'left', field: 'Actual' },
-  { name: 'Remarks', label: 'Remarks', align: 'left', field: 'Remarks' },
-  { name: 'Status', label: 'Status', align: 'center', field: 'Status' },
-  { name: 'Comments', label: 'Comments', align: 'center', field: 'Comments' }
+  {
+    name: 'RoomType',
+    required: true,
+    label: 'Room Type',
+    align: 'left',
+    format: (val) => `${val}`,
+    field: (row) => row.roomType
+  },
+  {
+    name: 'Schedule',
+    label: 'Schedule',
+    align: 'left',
+    field: (row) => row.schedule,
+    style: (row) => row.rowColor
+  },
+  {
+    name: 'Standard',
+    label: 'Standard',
+    align: 'left',
+    field: (row) => row.standard,
+    style: (row) => row.rowColor
+  },
+  {
+    name: 'Actual',
+    label: 'Actual',
+    align: 'left',
+    field: (row) => row.actual,
+    style: (row) => row.rowColor
+  },
+  {
+    name: 'Remarks',
+    label: 'Remarks',
+    align: 'left',
+    field: (row) => row.remarks,
+    style: (row) => row.rowColor
+  },
+  {
+    name: 'Status',
+    label: 'Status',
+    align: 'left',
+    field: (row) => row.status,
+    style: (row) => row.rowColor
+  },
+  {
+    name: 'Comments',
+    label: 'Comments',
+    align: 'left',
+    field: (row) => row.comments,
+    style: (row) => row.rowColor
+  }
 ]
 
 const rows = [
@@ -153,7 +258,7 @@ const rows = [
     Comments: 'Sprei masih kotor'
   }
 ]
-
+const data = []
 export default {
   name: 'DashboardRBPage',
   components: {
@@ -164,12 +269,66 @@ export default {
     return {
       rows,
       columns,
-      selected: []
+      selected: [],
+      data,
+      api: new this.$Api('impps')
     }
+  },
+  mounted() {
+    this.fetchData()
   },
   methods: {
     getTableData(data) {
       this.selected = data
+    },
+    fetchData() {
+      try {
+        this.api.get(`roomboy/3`, ({ data, status, message }) => {
+          if (status === 200) {
+            const { listTask } = data
+            this.trigger('positive', message)
+            // this.formatData(data.listTask)
+            console.log(listTask)
+            this.data = listTask
+          } else {
+            this.trigger('waring', message)
+          }
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    trigger(type, txt) {
+      this.$q.notify(
+        {
+          type: type,
+          message: txt || 'data not found',
+          timeout: 1000
+        },
+        1000
+      )
+    },
+    formatData(raw = []) {
+      const list = []
+
+      raw.forEach((lt) => {
+        console.log(lt)
+        list.push({
+          taskId: { data: lt.taskId, style: {} },
+          roomNo: { data: lt.roomNo, style: {} },
+          roomType: { data: lt.roomType, style: {} },
+          standard: { data: lt.standard, style: {} },
+          actual: { data: lt.actual, style: {} },
+          remarks: { data: lt.remarks, style: {} },
+          status: { data: lt.status, style: {} },
+          comments: { data: lt.comments, style: {} }
+        })
+      })
+      this.data = list
+      console.log(this.data)
+    },
+    refreshData() {
+      window.location.reload()
     }
   }
 }

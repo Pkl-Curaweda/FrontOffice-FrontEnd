@@ -1,6 +1,5 @@
 <template>
   <q-page
-    class="column"
     style="
       overflow-y: hidden;
       width: 100%;
@@ -149,10 +148,17 @@
                           v-close-popup
                           @click="changeinc(props.row)"
                           class="q-px-md"
-                          style="display: flex; background-color: red ; border-radius: 100px"
+                          style="display: flex; background-color: red; border-radius: 100px"
                         >
                           <q-item-section>
-                            <q-item-label style="color: black; width:100%; font-weight:600; padding-left:auto; padding-right:auto;"
+                            <q-item-label
+                              style="
+                                color: black;
+                                width: 100%;
+                                font-weight: 600;
+                                padding-left: auto;
+                                padding-right: auto;
+                              "
                               >INCOGNITO</q-item-label
                             >
                           </q-item-section>
@@ -235,12 +241,7 @@
                     </q-dialog>
                   </q-td>
                 </template>
-                <q-td
-                  key=""
-                  :props="props"
-                  style="width: 10px; background-color: white;"
-
-                >
+                <q-td key="" :props="props" style="width: 10px; background-color: white">
                   <div style="display: flex">
                     <div style="height: fit-content; width: fit-content">
                       <!-- <q-btn

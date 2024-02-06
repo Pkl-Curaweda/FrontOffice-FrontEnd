@@ -1,6 +1,5 @@
 <template>
   <q-page
-    class="column"
     style="
       overflow-y: hidden;
       width: 100%;
@@ -338,10 +337,15 @@ export default defineComponent({
             else this.filterSortOrder = { col: '', val: '' }
           }
         },
-        // RmNo: {
-        //   data: '',
-        //   options: ['', '']
-        // },
+        RmNo: {
+          data: '',
+          options: ['101-110', '110-101'],
+          onOptionChange: (val) => {
+            if (val == '101-110') this.filterSortOrder = { col: 'RmNo', val: 'room-asc' }
+            else if (val == '110-101') this.filterSortOrder = { col: 'RmNo', val: 'room-desc' }
+            else this.filterSortOrder = { col: '', val: '' }
+          }
+        },
         // RoomBoy: {
         //   data: '',
         //   options: ['ILYAS', 'RONI', 'YUTA', 'HERTIAMAN']
@@ -599,15 +603,18 @@ export default defineComponent({
 
       invoices.forEach((inv) => {
         list.push({
-          Art: { data: inv.art.label ? inv.art.label : inv.art, style: {} },
-          Qty: { data: inv.qty, style: {} },
-          Description: { data: inv.desc, style: {} },
-          Rate: { data: inv.rate, style: {} },
-          Amount: { data: inv.amount, style: {} },
-          RmNo: { data: added.roomNo, style: {} }, // Akses rmNo dari objek added
-          RoomBoy: { data: added.roomBoys, style: {} }, // Akses roomBoy dari objek added
-          VoucherNumber: { data: added.voucherNo, style: {} }, // Akses voucherNumber dari objek added
-          BillDate: { data: inv.billDate, style: {} },
+          Art: {
+            data: inv.art.label ? inv.art.label : inv.art,
+            style: { backgroundColor: inv.rowColor }
+          },
+          Qty: { data: inv.qty, style: { backgroundColor: inv.rowColor } },
+          Description: { data: inv.desc, style: { backgroundColor: inv.rowColor } },
+          Rate: { data: inv.rate, style: { backgroundColor: inv.rowColor } },
+          Amount: { data: inv.amount, style: { backgroundColor: inv.rowColor } },
+          RmNo: { data: inv.roomNo, style: { backgroundColor: inv.rowColor } }, // Akses rmNo dari objek added
+          RoomBoy: { data: added.roomBoys, style: { backgroundColor: inv.rowColor } }, // Akses roomBoy dari objek added
+          VoucherNumber: { data: added.voucherNo, style: { backgroundColor: inv.rowColor } }, // Akses voucherNumber dari objek added
+          BillDate: { data: inv.billDate, style: { backgroundColor: inv.rowColor } },
           uniqueId: { data: inv.uniqueId, style: {} }
         })
       })

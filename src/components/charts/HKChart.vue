@@ -18,7 +18,7 @@ export default defineComponent({
   },
   data() {
     return {
-      defaultSeries: [50, 50, 50],
+      defaultSeries: [50, 50],
       defaultOptions: {
         chart: {
           type: 'donut'
@@ -26,8 +26,8 @@ export default defineComponent({
         dataLabels: {
           enabled: false
         },
-        colors: ['#364E30', '#54854C', '#8BAA84'],
-        labels: ['One', 'Two', 'Three'],
+        colors: ['#364E30', '#54854C'],
+        labels: ['One', 'Two'],
         legend: {
           offsetY: 40,
           fontSize: '20px',

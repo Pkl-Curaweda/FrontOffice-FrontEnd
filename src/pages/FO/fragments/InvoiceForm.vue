@@ -56,7 +56,7 @@
       </div>
       <div class="items-center col-grow">
         <div class="text-bold row" style="justify-content: space-between">
-          <div>Payment</div>
+          <div>Total</div>
           <div>Rp 0.00</div>
         </div>
         <q-separator class="" style="background: rgba(0, 0, 0, 0.5)" size="1.5px" />
@@ -398,8 +398,8 @@ export default defineComponent({
             this.formatData()
             const { detail } = data
 
-            this.backgroundedTotal = this.formatCurrency(data.total)
-            this.backgroundedBalance = this.formatCurrency(data.balance)
+            this.backgroundedTotal = this.formatCurrency(data.totalInvoice)
+            this.backgroundedBalance = this.formatCurrency(data.totalPaid)
             this.description = detail.desc
             this.updateQty = detail.qty
             this.rate = this.formatCurrency(detail.rate)

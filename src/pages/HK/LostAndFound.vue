@@ -9,14 +9,15 @@
       <!-- Pie Chart (Mobile) -->
       <HKChart
         v-if="$q.screen.lt.md"
-        :series="chartSeries"
+        ref="hkChartMobile"
+        :series="series"
         :options="chartOptions"
         class="mobileChart"
       />
 
       <!-- Pie Chart (Desktop) -->
-      <div v-else style="flex: 1 1 0%">
-        <HKChart :series="chartSeries" :options="chartOptions" />
+      <div style="flex: 1 1 0%">
+        <HKChart ref="hkChartDesktop" :series="series" :options="chartOptions" />
       </div>
 
       <!-- Found & Lost -->
@@ -332,7 +333,6 @@ const columns = [
     align: 'center'
   }
 ]
-const chartSeries = []
 const chartOptions = {
   chart: {
     type: 'donut'
@@ -395,10 +395,10 @@ export default defineComponent({
       sortingModel: ref('Room Number'),
       sortingOptions: ['Room Number', 'Reservation Number', 'Room Type', 'Guest Name'],
       searchModel: ref(''),
+      seriesEntry: ref([]),
       found: ref(),
       lost: ref(),
       rows: ref(),
-      chartSeries
     }
   },
   data() {
@@ -406,11 +406,13 @@ export default defineComponent({
       api: new this.$Api('housekeeping'),
       chartOptions,
       columns,
+      startUp: true,
       pagination: {
         page: 1,
         rowsNumber: 0,
         rowsPerPage: 20
-      }
+      },
+      series: this.seriesEntry
     }
   },
   mounted() {
@@ -457,20 +459,22 @@ export default defineComponent({
     },
     fetchData() {
       this.loading = true
-
-      let url = `lostfound?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
-
-      if (this.filterDisplay !== null) {
-        url += `&sortOrder=${this.filterDisplay}`
+      if(this.startUp != false){
+        this.startUp = false
+        this.fetchData()
       }
+      
+      let url = `lostfound?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      if (this.filterDisplay !== null) url += `&sortOrder=${this.filterDisplay}`
+
       this.api.get(url, ({ status, data }) => {
         this.loading = false
-
         if (status == 200) {
+          console.log(this.series)
           const { graph, lostFounds } = data // Ambil objek graph dari respons
-          this.found = graph.found // Isi nilai found50
-          this.lost = graph.lost // Isi nilai lost
-          this.chartSeries = [(this.lost = graph.lost), (this.found = graph.found)]
+          this.found = graph.found
+          this.lost = graph.lost
+          this.graph(this.found, this.lost)
           this.rows = lostFounds.map((lostFound) => ({
             name: lostFound.roomId,
             date: new Date(lostFound.created_at).toLocaleDateString(),
@@ -488,6 +492,13 @@ export default defineComponent({
           }))
         }
       })
+    },
+    graph(found = 0, lost = 0) {
+      const data = [found, lost]
+      this.seriesEntry = data
+      console.log(this.chartSeries)
+      this.$refs.hkChartDesktop.updateSeries(data)
+      this.$refs.hkChartMobile.updateSeries(data)
     }
   }
 })

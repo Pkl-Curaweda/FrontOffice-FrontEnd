@@ -908,7 +908,7 @@ export default defineComponent({
         // console.log(this.background)
       })
     },
-    
+
     getUniqueRoomBoys(roomBoys) {
       return roomBoys.map((boy) => boy.name)
     },

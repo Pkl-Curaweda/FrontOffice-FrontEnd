@@ -534,6 +534,7 @@
       </div>
 
       <q-separator class="q-mt-sm bg-grey" size="1px" />
+      <q-input dense outlined v-model="voucher" label="Voucher" class="q-mt-sm" />
     </div>
 
     <div class="col-grow">
@@ -710,6 +711,7 @@ export default defineComponent({
       nameidcard: ref(''),
       idcardnumber: ref(''),
       address: ref(''),
+      voucher: ref(''),
       resultStatus: ref(''),
       showDropdown: false,
       dropdownOptions: [
@@ -855,6 +857,7 @@ export default defineComponent({
         roomId: this.roomNo ? this.roomNo : 1,
         roomType: this.roomType,
         roomBed: this.roomBed.label,
+        voucher: this.voucher,
         arrangmentCode: this.selected && this.selected.id ? this.selected.id : ''
       }
     },
@@ -1152,7 +1155,7 @@ export default defineComponent({
       const dataToUpdate = {
         nameContact: this.guestName,
         resourceName: this.resvRecource,
-        room: this.setRoww(this.roomNo, this.selected.id), //row
+        room: this.setRoww(this.roomNo, this.selected.id, this.voucher), //row
         manyAdult: this.guests.adult,
         manyChild: this.guests.child,
         manyBaby: this.guests.baby,
@@ -1197,6 +1200,7 @@ export default defineComponent({
         arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
         departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
         reservationRemarks: this.resvRemark,
+        voucher: this.voucher,
         resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id)
       }
 
@@ -1240,7 +1244,6 @@ export default defineComponent({
               if (status === 200) {
                 this.trigger('positive', message)
                 console.log('Data berhasil diperbarui:', data)
-                this.refreshData()
               } else {
                 console.error('Gagal memperbarui data')
                 this.trigger('negative', message)

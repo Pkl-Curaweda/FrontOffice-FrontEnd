@@ -84,17 +84,30 @@ export const hkroomboy_routes = [
   {
     name: 'DashboardRBPage',
     path: '/hk/rb/dashboard',
-    component: () => import('pages/HK/IMPPS/RoomBoy/Dashboard.vue')
+    component: () => import('pages/HK/IMPPS/RoomBoy/Dashboard.vue'),
+    meta: {
+      title: 'Dashboard Room Boy',
+      protected: true
+    }
   },
   {
     path: '/hk/rb/lostfound',
-    component: () => import('pages/HK/IMPPS/RoomBoy/LostFound.vue')
+    component: () => import('pages/HK/IMPPS/RoomBoy/LostFound.vue'),
+      meta: {
+      title: 'Lost Found Room Boy',
+      protected: true
+    }
   }
 ]
 
 export const hksupervisor_routes = [
   {
+    name: 'DashboardSPVPage',
     path: '/hk/spv/dashboard',
-    component: () => import('pages/HK/IMPPS/Supervisor/Dashboard.vue')
+    component: () => import('pages/HK/IMPPS/Supervisor/Dashboard.vue'),
+    meta: {
+      title: 'Dashboard Supervisor',
+      protected: true
+    }
   }
 ]

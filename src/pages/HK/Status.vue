@@ -174,7 +174,40 @@
               </div>
             </div>
           </div>
-          <div class="ambasing">
+          <div>
+            <q-table
+              :rows="dataRows2"
+              :columns="dataColumns2"
+              row-key="name"
+              square
+              :table-header-style="{
+                backgroundColor: '#069550',
+                color: '#ffffff',
+                padding: '10px'
+              }"
+              rows-per-page-label="Show"
+              v-model:pagination="paginationTask"
+              @request="onPaginationChangeTask"
+            >
+              <template v-slot:body="props">
+                <q-tr :props="props" class="q-d-xs q-d-sm q-d-md">
+                  <q-td key="roomno" :props="props">
+                    {{ props.row.roomno }}
+                  </q-td>
+                  <q-td key="Request" :props="props" class="ellipsis-cell"
+                    >{{ props.row.Request }}
+                  </q-td>
+                  <q-td key="PIC" :props="props">
+                    {{ props.row.PIC }}
+                  </q-td>
+                  <q-td key="Status" :props="props">
+                    {{ props.row.Status }}
+                  </q-td>
+                </q-tr>
+              </template>
+            </q-table>
+          </div>
+          <!-- <div class="ambasing">
             <div>
               <div style="background-color: #069550" class="text-weight-bold flex flex-center">
                 <div class="flex flex-center text-white col q-ml-xl">Queuing Rooms</div>
@@ -233,7 +266,7 @@
                 </template>
               </q-table>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -517,5 +550,11 @@ export default defineComponent({
     font-size: 15px;
     margin-top: 10px;
   }
+}
+
+.ellipsis-cell {
+  white-space: nowrap;
+  overflow-x: auto;
+  max-width: 200px; /* Adjust the max-width as needed */
 }
 </style>

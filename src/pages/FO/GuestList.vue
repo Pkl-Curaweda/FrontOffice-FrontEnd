@@ -733,6 +733,7 @@ export default defineComponent({
       this.$ResvStore.fix = false
       this.$ResvStore.ds = false
       this.$ResvStore.logc = true
+      this.$ResvStore.detail = false
 
       if (log === true && this.waitingnote != null && this.waitingnote != '') {
         // this.$refs.editRoomDialog.hide();
@@ -750,6 +751,7 @@ export default defineComponent({
       this.$ResvStore.fix = false
       this.$ResvStore.ds = true
       this.$ResvStore.logc = false
+      this.$ResvStore.detail = false
     },
     changereset(data) {
       try {
@@ -835,11 +837,17 @@ export default defineComponent({
       this.$ResvStore.currentResvId = data['ResNo'].data
       this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
       this.$ResvStore.fix = false
+      this.$ResvStore.ds = false
+      this.$ResvStore.logc = false
+      this.$ResvStore.detail = true
     },
     fixDetail(data) {
       this.$ResvStore.currentResvId = data['ResNo'].data
       this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
       this.$ResvStore.fix = true
+      this.$ResvStore.detail = false
+      this.$ResvStore.ds = false
+      this.$ResvStore.logc = false
       console.log(this.$ResvStore.fix)
     },
     async deleteResv(data) {

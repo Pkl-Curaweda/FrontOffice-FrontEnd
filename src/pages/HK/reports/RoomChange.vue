@@ -6,8 +6,52 @@
       card_class="full-width q-px-lg"
       style="max-height: 719px"
     >
-      <FormDate />
-
+      <div>
+        <div class="row q-ml-auto">
+          <div class="row q-pr-lg q-gutter-sm arrival">
+            <div>
+              <p class="text-weight-bold text-body1 q-mt-sm">From Date :</p>
+            </div>
+            <div>
+              <q-btn-dropdown
+                flat
+                square
+                style="border: 1px #00000030 solid"
+                class="text-capitalize date-btn text-black rounded-borders"
+                :label="datePickerArrival?.replace(/\//g, '-')"
+                icon="o_event"
+                color="primary"
+                dropdown-icon="o_expand_more"
+              >
+                <div>
+                  <q-date v-model="datePickerArrival" color="green" today-btn />
+                </div>
+              </q-btn-dropdown>
+            </div>
+          </div>
+          <div class="row q-gutter-sm">
+            <div>
+              <p class="text-weight-bold text-body1 q-mt-sm">To Date :</p>
+            </div>
+            <div>
+              <q-btn-dropdown
+                flat
+                square
+                style="border: 1px #00000030 solid"
+                class="text-capitalize date-btn text-black rounded-borders"
+                :label="datePickerDeparture?.replace(/\//g, '-')"
+                icon="o_event"
+                color="primary"
+                dropdown-icon="o_expand_more"
+              >
+                <div>
+                  <q-date v-model="datePickerDeparture" color="green" today-btn />
+                </div>
+              </q-btn-dropdown>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- Table -->
       <HKTable :columns="columns" :rows="rows" class="q-mt-md" />
     </HKCard>
@@ -17,7 +61,6 @@
 <script>
 import HKCard from 'src/components/HK/Card/HKCard.vue'
 import HKTable from 'src/components/HK/Table/HKTable.vue'
-import FormDate from 'src/components/general/Date.vue'
 import { defineComponent, ref } from 'vue'
 
 const columns = [
@@ -87,7 +130,7 @@ const rows = ref()
 
 export default defineComponent({
   name: 'RoomChangePage',
-  components: { HKCard, HKTable, FormDate },
+  components: { HKCard, HKTable },
   setup() {
     return {
       roomInput: ref(''),
@@ -97,7 +140,11 @@ export default defineComponent({
       rows,
       allRoomsCheck: ref(false),
       oddRoomsCheck: ref(false),
-      evenRoomsCheck: ref(false)
+      evenRoomsCheck: ref(false),
+      datePickerArrival: ref('Date'),
+      datePickerDeparture: ref('Date'),
+      formattedArrivalDate: ref(), // Tambahkan variabel formattedArrivalDate
+      formattedDepartureDate: ref()
     }
   },
   data() {
@@ -108,11 +155,35 @@ export default defineComponent({
   mounted() {
     this.fetchData()
   },
+  watch: {
+    datePickerArrival: {
+      deep: true,
+      handler(newDate) {
+        this.fetchData()
+      }
+    },
+    datePickerDeparture: {
+      deep: true,
+      handler(newDate) {
+        this.fetchData()
+      }
+    }
+  },
   methods: {
     fetchData() {
       this.loading = true
 
-      let url = `roomchange`
+      let url = `roomchange?`
+
+      const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
+      if (DateArrival !== undefined && DateArrival !== '') {
+        url += `&from=${DateArrival}`
+      }
+
+      const DateDeparture = this.datePickerDeparture?.replace(/\//g, '-')
+      if (DateDeparture !== undefined && DateDeparture !== '') {
+        url += `&to=${DateDeparture}` // Ganti 'arrival' dengan 'departure'
+      }
 
       this.api.get(url, ({ status, data }) => {
         this.loading = false

@@ -63,6 +63,7 @@
               style="border-radius: 10px"
               icon="logout"
               label="Logout"
+              @click="logout"
             />
           </div>
         </q-toolbar-title>
@@ -78,10 +79,37 @@
 <script>
 export default {
   name: 'immpsLayout',
+  data() {
+    return {
+      api: new this.$Api('root'),
+      user: this.$AuthStore.getUser(),
+      logout_loading: false
+    }
+  },
+  watch: {
+    
+  },
   methods: {
     goBack() {
       this.$router.go(-1)
-    }
+    },
+    logout() {
+      this.logout_loading = true
+
+      this.api.useToken(false).post('auth/user/logout', {}, ({ status }) => {
+        if (status == 200) {
+          this.$Config.logout()
+          this.$AuthStore.clearData()
+          this.$Helper.showNotif('Logout Success', '', 'positive')
+
+          this.$router.go('/auth/login')
+        }else{
+          this.$Helper.showNotif('Logout unsuccess', '', 'negative')
+        }
+
+        this.logout_loading = false
+      })
+    },
   }
 }
 </script>

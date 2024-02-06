@@ -424,7 +424,7 @@ export default defineComponent({
       this.addArticles()
 
       // Panggil fungsi untuk menyegarkan data
-      this.refreshData()
+      // this.refreshData()
     },
     refreshData() {
       window.location.reload()
@@ -457,7 +457,7 @@ export default defineComponent({
       this.api.post(`invoice/${resvId}/${resvRoomId}/article`, postData, ({ status, data }) => {
         if (status === 200) {
           // Sukses, Update the reactive variable
-          this.refreshData()
+          // this.refreshData()
           this.postedArticles.value = [...this.postedArticles.value, ...postData]
 
           this.$q.notify({

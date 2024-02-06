@@ -57,7 +57,7 @@
       <div class="items-center col-grow">
         <div class="text-bold row" style="justify-content: space-between">
           <div>Total</div>
-          <div>Rp 0.00</div>
+          <div>{{ total || `Rp.0.00` }}</div>
         </div>
         <q-separator class="" style="background: rgba(0, 0, 0, 0.5)" size="1.5px" />
       </div>
@@ -404,6 +404,7 @@ export default defineComponent({
             this.updateQty = detail.qty
             this.rate = this.formatCurrency(detail.rate)
             this.amount = this.formatCurrency(detail.amount)
+            this.total = `Rp ${this.formatCurrency(data.total)}`
             this.balance = `Rp ${this.formatCurrency(data.balance)}`
             this.billAddress = data.address
             this.comments = data.comment

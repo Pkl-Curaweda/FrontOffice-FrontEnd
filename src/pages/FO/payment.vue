@@ -379,16 +379,16 @@
                 </div>
                 <div style="display: flex; justify-content: space-between; width: 100%">
                   <div>
-                    <input
+                    <!-- <input
                       type="checkbox"
                       :id="'option_' + index"
                       :value="DPP"
                       v-model="includeTax"
-                    />
+                    /> -->
                     <label
                       :for="'option_' + index"
-                      style="font-weight: 600"
-                      class="centerComponent q-px-sm"
+                      style="font-weight: 600;"
+                      class="centerComponent textwrap"
                       >Tax</label
                     >
                   </div>
@@ -498,13 +498,13 @@ export default defineComponent({
       console.log('method payment ' + this.selectedBank)
       console.log('method payment ' + this.selectedMethod)
     },
-    includeTax() {
-      this.calculateTotal()
-    }
+    // includeTax() {
+    //   this.calculateTotal()
+    // }
   },
-  created() {
-    this.calculateTotal()
-  },
+  // created() {
+  //   this.calculateTotal()
+  // },
   mounted() {
     this.fetchcart()
   },
@@ -593,21 +593,21 @@ export default defineComponent({
       }
     },
 
-    calculateTotal() {
-      this.total = this.priceBook.reduce((accumulator, currentValue) => {
-        return accumulator + parseFloat(currentValue.amount) // Mengonversi ke float sebelum penambahan
-      }, 0)
-      console.log(this.total)
+    // calculateTotal() {
+    //   this.total = this.priceBook.reduce((accumulator, currentValue) => {
+    //     return accumulator + parseFloat(currentValue.amount) // Mengonversi ke float sebelum penambahan
+    //   }, 0)
+    //   console.log(this.total)
 
-      // Add tax if includeTax is true
-      if (this.includeTax) {
-        // this.total += this.calculateTax(this.total)
-        this.total += this.DPP
-      }
-    },
-    calculateTax(subtotal) {
-      return subtotal + this.DPP // Assuming tax is 10%
-    },
+    //   // Add tax if includeTax is true
+    //   if (this.includeTax) {
+    //     // this.total += this.calculateTax(this.total)
+    //     this.total += this.DPP
+    //   }
+    // },
+    // calculateTax(subtotal) {
+    //   return subtotal + this.DPP // Assuming tax is 10%
+    // },
     find(value) {
       if (value == 1) {
         return this.dropdownOptions.find((option) => option.value === this.selectedBank)
@@ -640,11 +640,12 @@ export default defineComponent({
       try {
         this.api.get(`invoice/payment/${resvId}/${resvRoomId}`, ({ status, message, data }) => {
           if (status === 200) {
-            const { invoices, add } = data
+            const { invoices, add, total, tax } = data
             this.user = { ...add }
             this.priceBook = invoices
             console.log(this.user)
             this.DPP = data.tax
+            this.total = total
             // this.user = data.add
             this.calculateTotal()
             this.data = invoices.rate

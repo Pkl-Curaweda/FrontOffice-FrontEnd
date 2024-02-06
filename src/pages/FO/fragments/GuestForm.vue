@@ -245,6 +245,7 @@
           :outlined="!$ResvStore.fix"
           :borderless="$ResvStore.fix"
           :readonly="$ResvStore.fix"
+          :disable= "$ResvStore.detail"
           :options="roomTypeOpts"
           label="RmType"
           dropdown-icon="expand_more"
@@ -256,6 +257,7 @@
           dense
           v-model="roomNo"
           :options="roomNoOpts"
+          :disable= "$ResvStore.detail"
           label="Room No"
           dropdown-icon="expand_more"
           class="full-width"
@@ -265,6 +267,7 @@
           dense
           v-model="roomBed"
           :options="roomBedOpts"
+          :disable= "$ResvStore.detail"
           dropdown-icon="expand_more"
           class="full-width"
           option-label="value"
@@ -521,6 +524,7 @@
           color="primary"
           @click="redirectToInvoice"
           label="Invoice"
+          :disable="!resvNo"
         />
       </q-expansion-item>
 
@@ -674,6 +678,7 @@ export default defineComponent({
       //
       roomNo: ref(null),
       roomType: ref(null),
+      detail: ref(),
       roomBed: ref(null),
       roomNoOpts: [],
       //
@@ -1020,10 +1025,11 @@ export default defineComponent({
       }
     },
     getDetailResvRoom() {
-      const { currentResvId, currentRoomResvId, fix } = this.$ResvStore
+      const { currentResvId, currentRoomResvId, fix, detail } = this.$ResvStore
 
       if (currentResvId == 0 || currentRoomResvId == 0) return
       this.fix = true ? (this.fix = fix) : false
+      this.detail = true ? (this.detail = detail) : false
       this.loading = true
       this.resvNo = currentResvId
       this.api.get(
@@ -1165,7 +1171,7 @@ export default defineComponent({
             if (status === 200) {
               this.trigger('positive', message)
               console.log('Data berhasil diperbarui:', data)
-              // this.refresh()
+              this.refreshData()
             } else {
               this.trigger('negative', message)
               console.error('Gagal memperbarui data')

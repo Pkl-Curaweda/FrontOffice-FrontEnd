@@ -1,7 +1,7 @@
 <template>
   <div class="rb full-width">
-    <UserGreet class="q-mt-md q-px-md" name="Aldi Rahadian" role="Room Boy" />
-    <div class="q-mt-md q-pl-md">
+    <UserGreet class="q-mt-md q-px-xs" :name="user.name" role="Room Boy" />
+    <div class="q-mt-md q-px-xs">
       <!-- <IMPPSSelectedTable
         :rows="rows"
         :columns="columns"
@@ -12,6 +12,7 @@
         :btnEdit="false"
         hidePagination
       /> -->
+      <q-btn flat square color="primary" icon="pending_actions" @click="showhistory(!this.state)" />
       <div class="my-table">
         <q-table
           class="no-shadow"
@@ -42,7 +43,11 @@
           <template v-slot:body="props">
             <q-tr :props="props">
               <template v-for="(cell, key, i) in props.row" :key="i">
-                <q-td :style="cell.style">
+                <q-td
+                  :style="cell.style"
+                  @click="dialogalert(props.row)"
+                  v-if="!['taskId'].includes(key)"
+                >
                   {{ cell.data }}
                 </q-td>
               </template>
@@ -57,6 +62,7 @@
           dense
           noCaps
           label="Start"
+          @click="Start"
           class="rb-btn rb-drop-shadow q-py-none text-body1"
           style="border-radius: 8px"
           color="primary"
@@ -65,6 +71,7 @@
           dense
           noCaps
           label="End"
+          @click="Stop"
           class="rb-btn rb-drop-shadow q-py-none text-body1"
           style="border-radius: 8px"
           color="negative"
@@ -72,19 +79,26 @@
       </div>
       <div class="q-mt-lg row items-center justify-center">
         <div>
-          <div>Remarks</div>
-          <q-input filled dense placeholder="Notes..." class="rb-input" type="textarea" />
+          <div>Comments</div>
+          <q-input
+            filled
+            dense
+            placeholder="Notes..."
+            class="rb-input"
+            type="textarea"
+            v-model="comments"
+          />
         </div>
       </div>
       <div class="row items-center justify-end q-mt-sm">
         <q-btn
           dense
-          class="text-body1 q-px-md q-py-none"
-          label="Submit"
-          type="submit"
-          color="primary"
           noCaps
+          class="rb-btn rb-drop-shadow q-py-none text-body1"
           style="border-radius: 8px"
+          label="Submit"
+          color="primary"
+          @click="SubmitData"
         />
       </div>
       <div class="q-mt-lg">
@@ -93,9 +107,9 @@
           label="Lost and Found Report"
           icon="sym_o_nest_found_savings"
           color="primary"
+          to="/hk/rb/lostfound"
           noCaps
           style="border-radius: 8px; height: 55px"
-          to="/hk/rb/lostfound"
         />
       </div>
     </q-form>
@@ -106,13 +120,11 @@
         </div>
         <div class="text-black text-h6 text-weight-bold q-pl-sm">Performance</div>
       </div>
-      <div class="row items-center justify-center q-mt-xs q-gutter-md">
-        <q-icon name="star" color="yellow-7" size="50px" />
-        <q-icon name="star" color="yellow-7" size="50px" />
-        <q-icon name="star" color="yellow-7" size="50px" />
-        <q-icon name="star" color="yellow-7" size="50px" />
-        <q-icon name="star" color="yellow-7" size="50px" />
-      </div>
+      <div style="display: flex" class="row items-center justify-center q-mt-xs q-gutter-md">
+        <template v-for="(data, i) in ratingcolor" :key="i">
+          <q-icon name="star" :color="data.color" size="50px" />
+        </template>
+    </div>
     </div>
   </div>
 </template>
@@ -121,58 +133,7 @@
 import UserGreet from 'src/components/HK/IMPPS/General/UserGreet.vue'
 import { defineComponent, ref } from 'vue'
 
-const rows = ref([
-  // {
-  //   roomNo: '101',
-  //   RoomType: 'DLX',
-  //   Schedule: '07.00 - 07.40',
-  //   Standard: '40 Minute',
-  //   Actual: '45 Minute',
-  //   Remarks: 'Kamar berantakan',
-  //   Status: 'Re-clean',
-  //   Comments: 'Sprei masih kotor'
-  // },
-  // {
-  //   roomNo: '102',
-  //   RoomType: 'DLX',
-  //   Schedule: '07.45 - 08.00',
-  //   Standard: '40 Minute',
-  //   Actual: '45 Minute',
-  //   Remarks: '-',
-  //   Status: 'clean',
-  //   Comments: 'Sprei masih kotor'
-  // },
-  // {
-  //   roomNo: '103',
-  //   RoomType: 'DLX',
-  //   Schedule: '07.00 - 07.40',
-  //   Standard: '40 Minute',
-  //   Actual: '45 Minute',
-  //   Remarks: 'Kamar berantakan',
-  //   Status: 'Re-clean',
-  //   Comments: 'Sprei masih kotor'
-  // },
-  // {
-  //   roomNo: '104',
-  //   RoomType: 'DLX',
-  //   Schedule: '07.00 - 07.40',
-  //   Standard: '40 Minute',
-  //   Actual: '45 Minute',
-  //   Remarks: 'Kamar berantakan',
-  //   Status: 'Re-clean',
-  //   Comments: 'Sprei masih kotor'
-  // },
-  // {
-  //   roomNo: '105',
-  //   RoomType: 'DLX',
-  //   Schedule: '07.00 - 07.40',
-  //   Standard: '40 Minute',
-  //   Actual: '45 Minute',
-  //   Remarks: 'Kamar berantakan',
-  //   Status: 'Re-clean',
-  //   Comments: 'Sprei masih kotor'
-  // }
-])
+const rows = ref([])
 
 export default defineComponent({
   name: 'DashboardRBPage',
@@ -182,6 +143,17 @@ export default defineComponent({
   setup() {
     return {
       data: ref([]),
+      roomNo: ref(''),
+      roomId: ref(),
+      comments: ref(''),
+      state: ref(false),
+      ratingcolor: ref([
+        { color: 'yellow-7' },
+        { color: 'yellow-7' },
+        { color: 'yellow-7' },
+        { color: 'yellow-7' },
+        { color: 'yellow-7' }
+      ]),
       columns: [
         {
           name: 'roomNo',
@@ -202,70 +174,112 @@ export default defineComponent({
   },
   data() {
     return {
-      api: new this.$Api('impps')
+      api: new this.$Api('impps'),
+      user: this.$AuthStore.getUser(),
     }
   },
   mounted() {
     this.fetchData()
   },
   methods: {
+    showhistory(state) {
+      console.log(state)
+      this.state = state
+      this.fetchData()
+    },
+    dialogalert(roomNo) {
+      this.roomNo = roomNo['roomNo'].data
+      this.roomId = roomNo['taskId'].data
+      this.comments = roomNo['Comments'].data
+    },
     getTableData(data) {
       this.selected = data
+    },
+    SubmitData() {
+      const comment = {
+        comment: this.comments
+      }
+      this.api.put(`roomboy/${this.roomId}`, comment, ({ status, message }) => {
+        if (status == 200) {
+          this.trigger('positive', message)
+          this.fetchData()
+        } else {
+          this.trigger('negative', message)
+        }
+      })
+    },
+    Start() {
+      this.api.post(`roomboy/${this.roomId}/start-task`, null, ({ status, message }) => {
+        if (status == 200) {
+          this.trigger('positive', message)
+          this.fetchData()
+        } else {
+          this.trigger('negative', message)
+        }
+      })
+    },
+    Stop() {
+      this.api.post(`roomboy/${this.roomId}/end-task`, null, ({ status, message }) => {
+        if (status == 200) {
+          this.trigger('positive', message)
+          this.fetchData()
+        } else {
+          this.trigger('negative', message)
+        }
+      })
     },
     fetchData() {
       this.loading = true
 
-      let url = `impps/roomboy/3`
-      this.api.get(url, ({ status, data }) => {
+      this.api.get(`roomboy?history=${this.state}`, ({ status, data, message }) => {
         this.loading = false
 
         if (status == 200) {
-          const { listTask } = data
+          this.trigger('positive', message)
+          const { listTask, performance } = data
           console.log(listTask)
           this.data = listTask.map((lt) => ({
-            roomNo: { data: lt.roomNo, style: {} },
-            RoomType: { data: lt.roomType, style: {} },
-            Schedule: { data: lt.schedule, style: {} },
-            Standard: { data: lt.standard, style: {} },
-            Actual: { data: lt.actual, style: {} },
-            Remarks: { data: lt.remarks, style: {} },
-            Status: { data: lt.status, style: {} },
-            Comments: { data: lt.comments, style: {} }
+            roomNo: { data: lt.roomNo, style: { backgroundColor: lt.rowColor } },
+            RoomType: { data: lt.roomType, style: { backgroundColor: lt.rowColor } },
+            Schedule: { data: lt.schedule, style: { backgroundColor: lt.rowColor } },
+            Standard: { data: lt.standard, style: { backgroundColor: lt.rowColor } },
+            Actual: { data: lt.actual, style: { backgroundColor: lt.rowColor } },
+            Remarks: { data: lt.remarks, style: { backgroundColor: lt.rowColor } },
+            Status: { data: lt.status, style: { backgroundColor: lt.rowColor } },
+            Comments: { data: lt.comments, style: { backgroundColor: lt.rowColor } },
+            taskId: { data: lt.taskId, style: { backgroundColor: lt.rowColor } }
           }))
-          console.log(this.data)
-          // this.rows = listTask.map((lt) => ({
-          //   roomNo: lt.roomNo,
-          //   RoomType: lt.roomType,
-          //   Schedule: lt.schedule,
-          //   Standard: lt.standard,
-          //   Actual: lt.actual,
-          //   Remarks: lt.remarks,
-          //   Status: lt.status,
-          //   Comments: lt.comments
-          // }))
+          this.ratingcheck(performance)
+          // const roomNo = this.data.map((item) => item.roomNo.data)
+          // this.roomNo = roomNo
+        } else {
+          this.trigger('warning', message)
         }
       })
+    },
+    ratingcheck(i) {
+      // console.log(ratingcolor)
+      console.log(i)
+      let listRating = []
+      for (let rating = 1; rating <= 5; rating++) {
+        listRating.push({
+          color: rating <= i ? 'yellow-7' : 'light-green-3'
+        })
+        console.log(listRating)
+      }
+      this.ratingcolor = listRating
+      this.currentRating = i
+    },
+    trigger(type, txt) {
+      this.$q.notify(
+        {
+          type: type,
+          message: txt || 'data not found',
+          timeout: 1000
+        },
+        1000
+      )
     }
-    // formatData(raw = []) {
-    //   console.log(raw)
-    //   const list = []
-    //   console.log(list)
-
-    //   raw.foreach((lt) => {
-    //     list.push({
-    //       roomNo: { data: lt.roomNo, style: {} },
-    //       RoomType: { data: lt.roomType, style: {} },
-    //       Schedule: { data: lt.schedule, style: {} },
-    //       Standard: { data: lt.standard, style: {} },
-    //       Actual: { data: lt.actual, style: {} },
-    //       Remarks: { data: lt.remarks, style: {} },
-    //       Status: { data: lt.status, style: {} },
-    //       Comments: { data: lt.comments, style: {} }
-    //     })
-    //   })
-    //   this.data = list
-    //   console.log(this.data)
-    // }
   }
 })
 </script>

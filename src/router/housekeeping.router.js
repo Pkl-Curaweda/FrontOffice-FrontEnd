@@ -91,6 +91,7 @@ export const hkroomboy_routes = [
     }
   },
   {
+    name: 'LostFound',
     path: '/hk/rb/lostfound',
     component: () => import('pages/HK/IMPPS/RoomBoy/LostFound.vue'),
       meta: {

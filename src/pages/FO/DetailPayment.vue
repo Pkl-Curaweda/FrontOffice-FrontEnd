@@ -79,16 +79,16 @@
               </div>
               <div style="display: flex; justify-content: space-between; width: 100%">
                 <div>
-                  <input
+                  <!-- <input
                     type="checkbox"
                     :id="'option_' + index"
                     :value="DPP"
                     v-model="includeTax"
-                  />
+                  /> -->
                   <label
                     :for="'option_' + index"
                     style="font-weight: 600"
-                    class="centerComponent q-px-sm"
+                    class="centerComponent textwrap"
                     >Tax</label
                   >
                 </div>
@@ -168,13 +168,13 @@ export default defineComponent({
       console.log('method payment ' + this.selectedBank)
       console.log('method payment ' + this.selectedMethod)
     },
-    includeTax() {
-      this.calculateTotal()
-    }
+  //   includeTax() {
+  //     this.calculateTotal()
+  //   }
   },
-  created() {
-    this.calculateTotal()
-  },
+  // created() {
+  //   this.calculateTotal()
+  // },
   mounted() {
     this.fetchcart()
   },
@@ -234,18 +234,18 @@ export default defineComponent({
         this.trigger('ongoing', 'loading')
       })
     },
-    calculateTotal() {
-      this.total = this.priceBook.reduce((accumulator, currentValue) => {
-        return accumulator + parseFloat(currentValue.amount) // Mengonversi ke float sebelum penambahan
-      }, 0)
-      console.log(this.total)
-      if (this.includeTax) {
-        this.total += this.DPP
-      }
-    },
-    calculateTax(subtotal) {
-      return subtotal + this.DPP
-    },
+    // calculateTotal() {
+    //   this.total = this.priceBook.reduce((accumulator, currentValue) => {
+    //     return accumulator + parseFloat(currentValue.amount) // Mengonversi ke float sebelum penambahan
+    //   }, 0)
+    //   console.log(this.total)
+    //   if (this.includeTax) {
+    //     this.total += this.DPP
+    //   }
+    // },
+    // calculateTax(subtotal) {
+    //   return subtotal + this.DPP
+    // },
 
     find(value) {
       if (value == 1) {
@@ -277,10 +277,11 @@ export default defineComponent({
         try {
           this.api.get(`invoice/payment/${resvId}/${resvRoomId}`, ({ status, message, data }) => {
             if (status === 200) {
-              const { invoices, add } = data
+              const { invoices, add, total, tax } = data
               this.user = { ...add }
               this.priceBook = invoices
 
+              this.total = total
               console.log(this.priceBook)
               this.DPP = data.tax
               this.calculateTotal()

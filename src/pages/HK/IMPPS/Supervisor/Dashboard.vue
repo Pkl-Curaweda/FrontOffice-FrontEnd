@@ -1,8 +1,8 @@
 <template>
   <div class="spv full-width">
-    <div class="q-mt-lg q-px-md">
-      <UserGreet class="q-mt-md q-px-md" name="Aldi Rahadian" role="Room Boy" />
-      <div class="q-mt-md q-px-md">
+    <div class="q-mt-lg q-px-xs">
+      <UserGreet class="q-mt-md q-px-xs" :name="user.name" role="Supervisor" />
+      <div class="q-mt-md q-px-xs">
         <!-- <IMPPSSelectedTable
         :rows="rows"
         :columns="columns"
@@ -54,7 +54,12 @@
               <q-option-group :options="options" type="radio" size="sm" v-model="group" />
             </div>
             <q-card-actions align="right">
-              <q-btn @click="changestatus" label="Change Status" color="primary" v-close-popup="this.roomNoSelect != null" />
+              <q-btn
+                @click="changestatus"
+                label="Change Status"
+                color="primary"
+                v-close-popup="this.roomNoSelect != null"
+              />
             </q-card-actions>
           </q-card>
         </q-dialog>
@@ -89,7 +94,7 @@
               <q-tr :props="props">
                 <template v-for="(cell, key, i) in props.row" :key="i">
                   <q-td
-                  :style="'background-color: #' + cell.style.backgroundColor"
+                    :style="'background-color: #' + cell.style.backgroundColor"
                     @click="
                       !cell.style.backgroundColor.includes('BBE2EC') ? dialogalert(props.row) : ''
                     "
@@ -158,7 +163,28 @@
             />
           </div>
         </div>
-        <div class="q-pa-md q-mx-auto" style="width: fit-content">
+        <div class="performance q-my-xl">
+          <div class="row items-center justify-center">
+            <div class="bg-black q-pa-sm" style="border-radius: 5px">
+              <q-icon name="sym_o_earthquake" color="white" size="20px" />
+            </div>
+            <div class="text-black text-h6 text-weight-bold q-pl-sm">Performance</div>
+          </div>
+
+          <div style="display: flex" class="row items-center justify-center q-mt-xs q-gutter-md">
+            <template v-for="(data, i) in ratingcolor" :key="i">
+              <q-icon name="star" @click="ratingcheck(i + 1)" :color="data.color" size="30px" />
+            </template>
+            <!-- <q-rating
+              v-model="ratingModel"
+              style="width: 200px"
+              max="5"
+              color="yellow-7"
+              :size="'50px'"
+            /> -->
+          </div>
+        </div>
+        <!-- <div class="q-pa-md q-mx-auto" style="width: fit-content">
           <div class="rating q-mt-lg q-px-md">
             <div class="row items-center q-gutter-sm">
               <div class="text-body1 text-weight-bold">Give rating for room boy!</div>
@@ -167,20 +193,11 @@
               <div class="q-pa-sm" style="background-color: #ffebc0; border-radius: 4px">
                 <div class="text-body2" style="color: #98690c">Feedback</div>
               </div>
-              <q-rating v-model="ratingModel" style="width: 200px" :max="5" color="primary" />
-              <!-- <q-rating
-                v-model="ratingModel"
-                :max="5"
-                color="yellow"
-                size="lg"
-                icon="star_border"
-                icon-selected="star"
-                icon-half="star_half"
-                no-dimming
-              /> -->
+              <q-rating  v-model="ratingModel" style="width: 200px; "  max="5" color="primary" />
+
             </div>
           </div>
-        </div>
+        </div> -->
       </q-form>
     </div>
   </div>
@@ -201,28 +218,37 @@ export default defineComponent({
     return {
       data: ref([]),
       state: ref(false),
-
       roomNo: ref(''),
       shape: ref('line'),
+      currentRating: ref(5),
+      ratingDefault: ref('gray'),
       roomId: ref(),
       ratingModel: ref(2),
       group: ref(null),
       roomNoSelect: ref(),
+      ratingcolor: ref([
+        { color: 'yellow-7' },
+        { color: 'yellow-7' },
+        { color: 'yellow-7' },
+        { color: 'yellow-7' },
+        { color: 'yellow-7' }
+      ]),
       // optionsRoom: [
       //   'Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'
       // ],
       optionsRoom: [],
-      options: [
-        { label: 'Vacant Clean Checked', value: 'VC' },
-        { label: 'Vacant Clean Unchecked', value: 'VCU' },
-        { label: 'Vacant Dirty', value: 'VD' },
-        { label: 'Occupied Cleaned', value: 'OC' },
-        { label: 'Occupied Dirty', value: 'OD' },
-        { label: 'Expected Departure', value: 'ED' },
-        { label: 'Do Not Disturb', value: 'DnD' },
-        { label: 'Out Of Order', value: 'OOO' },
-        { label: 'Off Market', value: 'OM' }
-      ],
+      // options: [
+      //   { label: 'Vacant Clean Checked', value: 'VC' },
+      //   { label: 'Vacant Clean Unchecked', value: 'VCU' },
+      //   { label: 'Vacant Dirty', value: 'VD' },
+      //   { label: 'Occupied Cleaned', value: 'OC' },
+      //   { label: 'Occupied Dirty', value: 'OD' },
+      //   { label: 'Expected Departure', value: 'ED' },
+      //   { label: 'Do Not Disturb', value: 'DnD' },
+      //   { label: 'Out Of Order', value: 'OOO' },
+      //   { label: 'Off Market', value: 'OM' }
+      // ],
+      options: ref([]),
       comments: ref(''),
       dialog: ref(false),
       dialog2: ref(false),
@@ -247,13 +273,29 @@ export default defineComponent({
   },
   data() {
     return {
-      api: new this.$Api('impps')
+      api: new this.$Api('impps'),
+      user: this.$AuthStore.getUser(),
     }
   },
   mounted() {
     this.fetchData()
   },
+  watch: {
+  },
   methods: {
+    ratingcheck(i) {
+      // console.log(ratingcolor)
+      console.log(i)
+      let listRating = []
+      for(let rating = 1; rating <= 5; rating++){
+        listRating.push({
+          color: rating <= i ? "yellow-7" : "light-green-3"
+        })
+      console.log(listRating)
+      }
+      this.ratingcolor = listRating
+      this.currentRating = i
+    },
     showhistory(state) {
       console.log(state)
       this.state = state
@@ -273,7 +315,7 @@ export default defineComponent({
             }
           }
         )
-      } else{
+      } else {
         this.trigger('warning')
       }
     },
@@ -301,7 +343,7 @@ export default defineComponent({
     },
     postOk() {
       const data = {
-        performance: this.ratingModel,
+        performance: this.currentRating,
         comment: this.comments
       }
       this.api.post(`spv/${this.roomId}/ok`, data, ({ status, message }) => {
@@ -330,8 +372,12 @@ export default defineComponent({
         this.loading = false
 
         if (status == 200) {
-          const { listTask } = data
+          const { listTask, listStatus } = data
           console.log(listTask)
+          this.options = listStatus.map((data) => ({
+            label: data.longDescription,
+            value: data.shortDescription
+          }))
           this.data = listTask.map((lt) => ({
             roomNo: { data: lt.roomNo, style: { backgroundColor: lt.rowColor } },
             RoomType: { data: lt.roomType, style: { backgroundColor: lt.rowColor } },
@@ -345,8 +391,10 @@ export default defineComponent({
             taskId: { data: lt.taskId, style: { backgroundColor: lt.rowColor } }
           }))
           this.optionsRoom = this.data.map((item) => item.roomNo.data)
-          console.log(this.data)
+          // console.log(this.option)
           console.log(this.optionsRoom)
+
+          // this.optionsRoom = forEach(1)
           // const roomNo = this.data.map((item) => item.roomNo.data)
           // this.roomNo = roomNo
         } else {
@@ -379,5 +427,15 @@ export default defineComponent({
   border-radius: 8px;
   background: white;
   box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.25);
+}
+.performance {
+  width: fit-content;
+  min-width: 242px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 50px;
+  padding: 16px;
+  border: 1px solid black;
+  border-radius: 8px;
 }
 </style>

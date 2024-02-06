@@ -1,7 +1,7 @@
 <template>
   <div class="rb full-width">
-    <UserGreet class="q-mt-md q-px-md" name="Aldi Rahadian" role="Room Boy" />
-    <div class="q-mt-md q-pl-md">
+    <UserGreet class="q-mt-md q-px-xs" :name="user.name" role="Room Boy" />
+    <div class="q-mt-md q-px-xs">
       <!-- <IMPPSSelectedTable
         :rows="rows"
         :columns="columns"
@@ -12,6 +12,7 @@
         :btnEdit="false"
         hidePagination
       /> -->
+      <q-btn flat square color="primary" icon="pending_actions" @click="showhistory(!this.state)" />
       <div class="my-table">
         <q-table
           class="no-shadow"
@@ -53,14 +54,6 @@
             </q-tr>
           </template>
         </q-table>
-        <q-dialog v-model="dialog" persistent>
-          <q-card>
-            <div align="center" class="q-pa-sm">{{ this.roomNo }}</div>
-            <q-card-actions align="right">
-              <q-btn flat label="Ok" color="primary" v-close-popup />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
       </div>
     </div>
     <q-form class="q-mt-lg q-mx-auto" style="width: 242px; min-width: 200px">
@@ -127,13 +120,11 @@
         </div>
         <div class="text-black text-h6 text-weight-bold q-pl-sm">Performance</div>
       </div>
-      <div class="row items-center justify-center q-mt-xs q-gutter-md">
-        <q-icon name="star" color="yellow-7" size="50px" />
-        <q-icon name="star" color="yellow-7" size="50px" />
-        <q-icon name="star" color="yellow-7" size="50px" />
-        <q-icon name="star" color="yellow-7" size="50px" />
-        <q-icon name="star" color="yellow-7" size="50px" />
-      </div>
+      <div style="display: flex" class="row items-center justify-center q-mt-xs q-gutter-md">
+        <template v-for="(data, i) in ratingcolor" :key="i">
+          <q-icon name="star" :color="data.color" size="50px" />
+        </template>
+    </div>
     </div>
   </div>
 </template>
@@ -155,7 +146,14 @@ export default defineComponent({
       roomNo: ref(''),
       roomId: ref(),
       comments: ref(''),
-      dialog: ref(false),
+      state: ref(false),
+      ratingcolor: ref([
+        { color: 'yellow-7' },
+        { color: 'yellow-7' },
+        { color: 'yellow-7' },
+        { color: 'yellow-7' },
+        { color: 'yellow-7' }
+      ]),
       columns: [
         {
           name: 'roomNo',
@@ -176,15 +174,20 @@ export default defineComponent({
   },
   data() {
     return {
-      api: new this.$Api('impps')
+      api: new this.$Api('impps'),
+      user: this.$AuthStore.getUser(),
     }
   },
   mounted() {
     this.fetchData()
   },
   methods: {
+    showhistory(state) {
+      console.log(state)
+      this.state = state
+      this.fetchData()
+    },
     dialogalert(roomNo) {
-      this.dialog = true
       this.roomNo = roomNo['roomNo'].data
       this.roomId = roomNo['taskId'].data
       this.comments = roomNo['Comments'].data
@@ -228,12 +231,12 @@ export default defineComponent({
     fetchData() {
       this.loading = true
 
-      this.api.get(`roomboy`, ({ status, data, message }) => {
+      this.api.get(`roomboy?history=${this.state}`, ({ status, data, message }) => {
         this.loading = false
 
         if (status == 200) {
           this.trigger('positive', message)
-          const { listTask } = data
+          const { listTask, performance } = data
           console.log(listTask)
           this.data = listTask.map((lt) => ({
             roomNo: { data: lt.roomNo, style: { backgroundColor: lt.rowColor } },
@@ -246,14 +249,26 @@ export default defineComponent({
             Comments: { data: lt.comments, style: { backgroundColor: lt.rowColor } },
             taskId: { data: lt.taskId, style: { backgroundColor: lt.rowColor } }
           }))
-
-          console.log(this.data)
+          this.ratingcheck(performance)
           // const roomNo = this.data.map((item) => item.roomNo.data)
           // this.roomNo = roomNo
         } else {
           this.trigger('warning', message)
         }
       })
+    },
+    ratingcheck(i) {
+      // console.log(ratingcolor)
+      console.log(i)
+      let listRating = []
+      for (let rating = 1; rating <= 5; rating++) {
+        listRating.push({
+          color: rating <= i ? 'yellow-7' : 'light-green-3'
+        })
+        console.log(listRating)
+      }
+      this.ratingcolor = listRating
+      this.currentRating = i
     },
     trigger(type, txt) {
       this.$q.notify(

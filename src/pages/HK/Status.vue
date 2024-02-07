@@ -1,18 +1,15 @@
 <template>
-  <q-page
-    class="column"
-    style="overflow-y: hidden; width: fit-content; min-height: calc(100vh - 51.25px)"
-  >
+  <q-page class="column" style="overflow-y: hidden; min-height: calc(100vh - 51.25px)">
     <div style="width: 100%">
-      <div class="row col-grow" style="width: 100%">
+      <div class="row q-ma-lg" style="gap: 10px">
         <div class="col-grow">
-          <HKCard style="height: fit-content" class="col-grow">
-            <div class="col-grow">
+          <HKCard style="height: fit-content">
+            <div>
               <div
                 class="q-pt-sm q-gutter-x-md col-grow"
                 style="display: flex; flex-wrap: wrap; align-items: center"
               >
-                <label for="display" class="q-mt-md text-weight-bold text-body2">Sorting</label>
+                <label for="display" class="text-weight-bold text-body2">Sorting</label>
                 <div class="ambatukam">
                   <q-btn-dropdown
                     flat
@@ -96,9 +93,9 @@
             </div>
           </HKCard>
         </div>
-        <div style="margin-bottom: auto">
+        <div style="margin-bottom: auto" class="col-grow">
           <div>
-            <HKCard style="width: fit-content">
+            <HKCard style="width: ">
               <div class="row q-py-xl justify-between">
                 <div class="column">
                   <div class="text-weight-bold">Change Status to :</div>
@@ -157,12 +154,13 @@
                   height: 40px;
                   border-top-left-radius: 5px;
                   border-bottom-left-radius: 5px;
+                  width: 60px;
                 "
               >
                 {{ statusRoomNo || 0 }}
               </div>
               <div
-                class="text-center flex flex-center text-weight-bold"
+                class="text-center flex flex-center text-weight-bold col-grow"
                 style="
                   background-color: #81bb78;
                   height: 40px;
@@ -175,7 +173,7 @@
             </div>
           </div>
           <div>
-            <div>
+            <div class="q-mt-md">
               <div style="background-color: #069550" class="text-weight-bold flex flex-center">
                 <div class="flex flex-center text-white col q-ml-xl">Queuing Rooms</div>
                 <q-btn flat round class="q-ml-auto"

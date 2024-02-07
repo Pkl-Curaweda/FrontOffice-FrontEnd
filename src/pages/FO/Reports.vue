@@ -207,8 +207,8 @@ export default defineComponent({
         url += `&disOpt=${this.filterDisplay}`
       }
 
-      const fromDate = this.datePicker.from.replace(/\//g, '-')
-      const toDate = this.datePicker.to.replace(/\//g, '-')
+      const fromDate = this.datePicker != null ? this.datePicker.from.replace(/\//g, '-') : ''
+      const toDate = this.datePicker != null ? this.datePicker.to.replace(/\//g, '-') : ''
 
       if (fromDate !== '' && toDate !== '') {
         url += `&date=${fromDate}+${toDate}`

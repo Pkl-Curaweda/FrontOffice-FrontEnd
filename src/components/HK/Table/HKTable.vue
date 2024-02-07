@@ -14,8 +14,6 @@
       rows-per-page-label="Show"
       :dense="$q.screen.lt.md"
       :title="title"
-      selection="single"
-      v-model:selected="selected"
     />
   </div>
 </template>
@@ -28,8 +26,7 @@ export default defineComponent({
 
   setup() {
     return {
-      gapColorClass: ref('gapWhite'),
-      selected: ref([])
+      gapColorClass: ref('gapWhite')
     }
   },
   props: {

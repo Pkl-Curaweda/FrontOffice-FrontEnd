@@ -9,46 +9,6 @@
         align="left"
         style="width: 124px; height: fit-content; padding-inline: 8px; color: #757575"
       />
-      <!-- <div v-for="(status, index) in roomStatus" :key="index" class="column" style="flex: 1 1 0%">
-        <div v-if="index === 3" class="column full-height justify-between">
-          <div
-            class="flex items-center justify-center"
-            v-for="statusItem in status"
-            :key="statusItem.status"
-            style="
-              width: 100%;
-              font-size: 14px;
-              line-height: 16px;
-              padding: 8px 24px;
-              border: 1px solid #ccc;
-              white-space: nowrap;
-            "
-            :style="`background-color: ${statusItem.bg_color}; color: ${statusItem.text_color};`"
-          >
-            {{ statusItem.status }}
-          </div>
-        </div>
-
-        <div
-          v-else
-          v-for="(statusItem, index) in status"
-          :key="index"
-          class="flex items-center justify-center"
-          style="
-            width: 50%;
-            font-size: 14px;
-            line-height: 16px;
-            padding: 8px 24px;
-            border: 1px solid #ccc;
-            white-space: nowrap;
-          "
-          :style="`background-color: ${statusItem.bg_color}; color: ${
-            statusItem.text_color
-          }; align-self: ${index % 2 === 0 ? '' : 'end'};`"
-        >
-          {{ statusItem.status }}
-        </div>
-      </div> -->
     </div>
 
     <!-- ROOMS -->
@@ -270,6 +230,7 @@ export default defineComponent({
   components: { RoomPlanDropdown },
   data() {
     return {
+      api: new this.$Api('frontoffice'),
       roomStatus,
       roomData: [
         { room: 101, status: '', bg_color: '', text_color: '' },
@@ -285,6 +246,9 @@ export default defineComponent({
       ]
     }
   },
+  mounted() {
+    this.fetchData()
+  },
   methods: {
     handleStatus(data) {
       const index = this.roomData.findIndex((room) => room.room === data.room)
@@ -294,6 +258,26 @@ export default defineComponent({
       } else {
         this.roomData.push({ ...data, room: data.room })
       }
+    },
+    fetchData() {
+      let url = `floorplan`
+
+      this.api.get(url, ({ status, data }) => {
+        if (status == 200) {
+          this.formatData(data)
+        }
+      })
+    },
+    formatData(raw = []) {
+      const list = []
+      raw.forEach((fp) => {
+        console.log(fp)
+        list.push({
+          bg_color: fp.roomStatus.rowColor,
+          text_color: fp.roomStatus.textColor
+        })
+      })
+      this.roomData = list
     }
   }
 })

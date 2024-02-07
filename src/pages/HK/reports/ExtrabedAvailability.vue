@@ -11,12 +11,38 @@
         <div class="row" style="gap: 16px">
           <div class="flex items-center" style="gap: 8px">
             <span style="font-size: 14px; font-weight: 500">From Date :</span>
-            <HKDateInput />
+            <q-btn-dropdown
+              flat
+              square
+              style="border: 1px #00000030 solid"
+              class="text-capitalize date-btn text-black rounded-borders"
+              :label="datePickerArrival?.replace(/\//g, '-')"
+              icon="o_event"
+              color="primary"
+              dropdown-icon="o_expand_more"
+            >
+              <div>
+                <q-date v-model="datePickerArrival" color="green" today-btn />
+              </div>
+            </q-btn-dropdown>
           </div>
 
           <div class="flex items-center" style="gap: 8px">
             <span style="font-size: 14px; font-weight: 500">To Date :</span>
-            <HKDateInput />
+            <q-btn-dropdown
+              flat
+              square
+              style="border: 1px #00000030 solid"
+              class="text-capitalize date-btn text-black rounded-borders"
+              :label="datePickerDeparture?.replace(/\//g, '-')"
+              icon="o_event"
+              color="primary"
+              dropdown-icon="o_expand_more"
+            >
+              <div>
+                <q-date v-model="datePickerDeparture" color="green" today-btn />
+              </div>
+            </q-btn-dropdown>
           </div>
         </div>
         <!-- ====== -->
@@ -42,7 +68,6 @@
 import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
 import HKTable from 'src/components/HK/Table/HKTable.vue'
-import HKDateInput from 'src/components/HK/Form/HKDateInput.vue'
 
 const tableColumns = [
   {
@@ -80,12 +105,17 @@ const tableRows = ref()
 
 export default defineComponent({
   name: 'ExtrabedPage',
-  components: { HKCard, HKDateInput, HKTable },
+  components: { HKCard, HKTable },
   setup() {
     return {
+      datePickerArrival: ref(),
+      datePickerDeparture: ref(),
+      formattedArrivalDate: ref(), // Tambahkan variabel formattedArrivalDate
+      formattedDepartureDate: ref(),
       sortingModel: ref('Extra Bed'),
       sortingOptions: ['Extra Bed', 'Pillow', 'Blanket'],
       tableColumns,
+      latestArt: ref(110),
       tableRows
     }
   },
@@ -98,37 +128,68 @@ export default defineComponent({
     this.fetchData()
   },
   watch: {
-    sortingModel(newValue) {
-      this.fetchData(newValue)
+    datePickerArrival: {
+      deep: true,
+      handler(newDate) {
+        this.fetchData()
+      }
+    },
+    datePickerDeparture: {
+      deep: true,
+      handler(newDate) {
+        this.fetchData()
+      }
     }
   },
   methods: {
-    fetchData(selectedOption) {
+    fetchData() {
       this.loading = true
 
-      let url = `amenities`
-
-      switch (selectedOption) {
+      switch (this.sortingModel) {
         case 'Extra Bed':
-          url = 'amenities/110?'
+          this.latestArt = 110
           break
         case 'Pillow':
-          url = 'amenities/109?'
+          this.latestArt = 109
           break
         case 'Blanket':
-          url = 'amenities/108?'
+          this.latestArt = 108
           break
         default:
           // Default to 'Extra Bed' if no match
-          url = 'amenities/110?'
+          this.latestArt = this.defaultLatestArt
           break
       }
+
+      let url = `amenities/${this.latestArt}?`
+
+      const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
+      if (DateArrival !== undefined && DateArrival !== '') {
+        url += `&from=${DateArrival}`
+      }
+
+      const DateDeparture = this.datePickerDeparture?.replace(/\//g, '-')
+      if (DateDeparture !== undefined && DateDeparture !== '') {
+        url += `&to=${DateDeparture}` // Ganti 'arrival' dengan 'departure'
+      }
+
+      console.log(this.sortingModel)
 
       this.api.get(url, ({ status, data }) => {
         this.loading = false
 
         if (status == 200) {
           const { extra } = data
+
+          const arrivalDate = data.from // Gantilah 'arrival.arr' dengan properti yang benar
+          if (arrivalDate) {
+            this.datePickerArrival = arrivalDate
+          }
+
+          const departureDate = data.to // Gantilah 'data.dep' dengan properti yang benar
+          if (departureDate) {
+            this.datePickerDeparture = departureDate
+          }
 
           this.tableRows = extra.map((e) => ({
             date: e.date,

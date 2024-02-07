@@ -1,6 +1,5 @@
 <template>
   <q-page
-    class="column"
     style="
       overflow-y: hidden;
       width: 100%;

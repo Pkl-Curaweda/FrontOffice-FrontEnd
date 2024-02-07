@@ -141,8 +141,8 @@ export default defineComponent({
       allRoomsCheck: ref(false),
       oddRoomsCheck: ref(false),
       evenRoomsCheck: ref(false),
-      datePickerArrival: ref('Date'),
-      datePickerDeparture: ref('Date'),
+      datePickerArrival: ref(),
+      datePickerDeparture: ref(),
       formattedArrivalDate: ref(), // Tambahkan variabel formattedArrivalDate
       formattedDepartureDate: ref()
     }
@@ -190,6 +190,16 @@ export default defineComponent({
 
         if (status == 200) {
           const { roomChangeData } = data
+
+          const fromArrival = data.from
+          if (fromArrival) {
+            this.datePickerArrival = fromArrival
+          }
+
+          const toArrival = data.to
+          if (toArrival) {
+            this.datePickerDeparture = toArrival
+          }
 
           this.rows = roomChangeData.map((rcd) => ({
             changeDate: rcd.changeDate,

@@ -96,7 +96,7 @@
       </div>
 
       <!-- Table -->
-      <HKTable :columns="tableColumns" :rows="tableRows" />
+      <HKTable :columns="tableColumns" :rows="tableRows" :showInput="false" />
     </HKCard>
   </q-page>
 </template>

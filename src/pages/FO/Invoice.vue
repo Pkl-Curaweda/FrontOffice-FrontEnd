@@ -541,7 +541,7 @@ export default defineComponent({
     },
     onPaginationChange(props) {
       props.pagination.rowsPerPage =
-      props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
+        props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
       console.log(props)
       console.log(props.rowsPerPage)
       this.pagination = props.pagination
@@ -553,50 +553,56 @@ export default defineComponent({
       const { resvId, resvRoomId } = this.$route.params
 
       if (resvId === 0 || resvRoomId === 0) {
-        this.loading = false
         console.log(resvId)
         return
       }
 
-      let url = `fo/invoice/${resvId}/${resvRoomId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      let url = `invoice/${resvId}/${resvRoomId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
 
       if (this.filterSortOrder.col !== '' && this.filterSortOrder.val !== '') {
         url += `&sort=${this.filterSortOrder.val}`
       }
 
-      const formattedDate = this.datePicker?.replace(/\//g, '-')
+      const formattedDate = this.datePicker != null ? this.datePicker?.replace(/\//g, '-') : ''
 
       if (formattedDate) {
         url += `&date=${formattedDate}T${formattedDate}`
       }
 
-      this.$api
-        .get(url)
-        .then((response) => {
+      this.api.get(url, ({ status, data, message }) => {
+        if (status == 200) {
           this.loading = false
+          const { added, invoices, artList } = data
 
-          if (response.status === 200) {
-            const { added, invoices, artList } = response.data.data
-
-            this.data2 = artList.map((inv) => ({
-              name: inv.id,
-              description: inv.description,
-              qty: 0
-            }))
-            this.trigger('positive',response.data.message)
-            this.formatData({ added, invoices })
-            this.pagination = {
-              page: response.data.data.meta?.currPage,
-              rowsNumber: response.data.data.meta?.total,
-              rowsPerPage: response.data.data.meta?.perPage
-            }
+          this.data2 = artList.map((inv) => ({
+            name: inv.id,
+            description: inv.description,
+            qty: 0
+          }))
+          this.trigger('positive', message)
+          this.formatData({ added, invoices })
+          this.pagination = {
+            page: data.meta?.currPage,
+            rowsNumber: data.meta?.total,
+            rowsPerPage: data.meta?.perPage
           }
-        })
-        .catch((error) => {
-          this.loading = false
-          console.error('Error fetching data:', error)
-        })
+        }
+      })
     },
+
+    //   this.api
+    //     .get(url)
+    //     .then((response) => {
+    //       this.loading = false
+
+    //       if (response.status === 200) {
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       this.loading = false
+    //       console.error('Error fetching data:', error)
+    //     })
+    // },
 
     formatData({ added, invoices }) {
       const list = []

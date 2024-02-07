@@ -412,7 +412,7 @@ export default defineComponent({
       datePickerArrival: ref(),
       formattedArrivalDate: ref(),
       columns,
-      chartSeries
+      chartSeries: ref()
     }
   },
   data() {
@@ -519,11 +519,11 @@ export default defineComponent({
     // },
     fetchData() {
       this.loading = true
-      if(this.startUp != false){
+      if (this.startUp != false) {
         this.startUp = false
         this.fetchData()
       }
-      
+
       let url = `lostfound?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
       if (this.filterDisplay !== null) url += `&sortOrder=${this.filterDisplay}`
 

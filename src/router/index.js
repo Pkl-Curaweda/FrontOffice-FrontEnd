@@ -45,7 +45,6 @@ export default route(function (/* { store, ssrContext } */) {
   })
 
   Router.beforeEach((to, from, next) => {
-    console.log(isAuthenticated())
     if (to.meta.protected && !isAuthenticated()) {
       next('/auth/login')
     } else if (to.path === '/auth/login' && isAuthenticated()) {

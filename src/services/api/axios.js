@@ -1,13 +1,19 @@
 import axios from 'axios'
 import { refreshToken } from './refresh_token'
+import { authStore } from 'src/stores/auth'
 
 const myAxios = axios.create()
 
-myAxios.interceptors.response.use(
+myAxios.interceptors.response.use( 
   (res) => res,
   async (err) => {
     const { response } = err
-
+    
+    if (response.status == 403){
+      const mainPath = authStore().getMainPath()
+      window.location.replace(mainPath)
+    }
+    
     if (response.status == 401) {
       if (!err.config.sent) {
         err.config.sent = true
@@ -24,6 +30,7 @@ myAxios.interceptors.response.use(
         return axios(err.config)
       }
     }
+
 
     throw err
   }

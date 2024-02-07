@@ -349,6 +349,25 @@
                             <q-item
                               clickable
                               v-close-popup
+                              @click="waitinglist(props.row, false, true)"
+                              style="display: flex"
+                            >
+                              <q-btn
+                                flat
+                                rounded
+                                size="13px"
+                                @click="waitinglist(props.row, false, true)"
+                                style="color: #008444"
+                                icon="o_add_home"
+                              />
+                              <q-item-section>
+                                <q-item-label>Add Room</q-item-label>
+                              </q-item-section>
+                            </q-item>
+
+                            <q-item
+                              clickable
+                              v-close-popup
                               @click="dialogeditroom = true"
                               style="display: flex"
                             >
@@ -388,7 +407,7 @@
                               >
                                 <q-btn v-close-popup label="Cancel" outline color="primary" />
                                 <q-btn
-                                  v-close-popup
+                                  v-close-popup="this.waitingnote != null"
                                   label="accept"
                                   @click="waitinglist(props.row, true)"
                                   color="primary"
@@ -432,6 +451,7 @@ export default defineComponent({
       cancelEnabled: ref(true),
       iconName1: 'more_vert',
       showDropdown: false,
+      waitingnote: ref(),
       background: ref(),
       state: false,
       allObjectsInArray,
@@ -725,7 +745,7 @@ export default defineComponent({
       this.state = state
       this.fetchData()
     },
-    waitinglist(data, log) {
+    waitinglist(data, log, state) {
       const roomNo = data['RmNo'].data
       console.log(roomNo)
       this.roomno = roomNo
@@ -736,14 +756,23 @@ export default defineComponent({
       this.$ResvStore.logc = true
       this.$ResvStore.detail = false
 
-      if (log === true && this.waitingnote != null && this.waitingnote != '') {
-        // this.$refs.editRoomDialog.hide();
-        console.log(this.waitingnote)
-        this.$ResvStore.waitingnote = this.waitingnote
+      if (state === true) {
+        const statedata = true
+        this.$ResvStore.addroom = statedata
         this.$ResvStore.currentResvId = data['ResNo'].data
+
         this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
       } else {
-        this.trigger('negative', 'note has not been filled in, data must be filled in')
+        if (log === true && this.waitingnote != null && this.waitingnote != '') {
+          // this.$refs.editRoomDialog.hide();
+          console.log(this.waitingnote)
+          this.$ResvStore.addroom = false
+          this.$ResvStore.waitingnote = this.waitingnote
+          this.$ResvStore.currentResvId = data['ResNo'].data
+          this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
+        } else {
+          this.trigger('negative', 'note has not been filled in, data must be filled in')
+        }
       }
     },
     editroom(data) {
@@ -753,6 +782,7 @@ export default defineComponent({
       this.$ResvStore.ds = true
       this.$ResvStore.logc = false
       this.$ResvStore.detail = false
+      this.$ResvStore.addroom = false
     },
     changereset(data) {
       const resvId = data['ResNo'].data
@@ -832,6 +862,8 @@ export default defineComponent({
       this.$ResvStore.fix = false
       this.$ResvStore.ds = false
       this.$ResvStore.logc = false
+          this.$ResvStore.addroom = false
+
       this.$ResvStore.detail = true
     },
     fixDetail(data) {
@@ -840,6 +872,8 @@ export default defineComponent({
       this.$ResvStore.fix = true
       this.$ResvStore.detail = false
       this.$ResvStore.ds = false
+      this.$ResvStore.addroom = false
+
       this.$ResvStore.logc = false
       console.log(this.$ResvStore.fix)
     },
@@ -929,7 +963,7 @@ export default defineComponent({
               : '#000000'
           ]
           this.setcolor =
-          rr.reservation.resvStatus.textColor === '#808080'
+            rr.reservation.resvStatus.textColor === '#808080'
               ? rr.reservation.resvStatus.textColor
               : 'primary'
           const { id } = rr.arrangment

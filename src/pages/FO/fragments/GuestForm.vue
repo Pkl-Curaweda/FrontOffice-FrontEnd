@@ -54,7 +54,7 @@
         </q-btn>
 
         <!-- remove reservation  -->
-        <q-btn
+        <!-- <q-btn
           @click="removeRoomResv"
           flat
           square
@@ -73,7 +73,7 @@
               fill="#008444"
             />
           </svg>
-        </q-btn>
+        </q-btn> -->
 
         <q-space />
 
@@ -85,7 +85,7 @@
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
           @click="newResvroom()"
-          :disabled="!this.$ResvStore.currentRoomResvId"
+          :disabled="!this.$ResvStore.currentRoomResvId || !this.$ResvStore.addroom"
         />
 
         <!-- show modal to create card's credential: KTP, SIM, address  -->
@@ -911,15 +911,15 @@ export default defineComponent({
     updateGuestsCountLabel() {
       this.guestsLabel = `${this.guests['adult']} Adult, ${this.guests['child']} Child, ${this.guests['baby']} Baby`
     },
-    removeRoomResv() {
-      try {
-        const { currentResvId, currentRoomResvId } = this.$ResvStore
-        this.api.delete(`detail/reservation/${currentResvId}/${currentRoomResvId}/delete`)
-        this.refreshData()
-      } catch (error) {
-        console.error(error)
-      }
-    },
+    // removeRoomResv() {
+    //   try {
+    //     const { currentResvId, currentRoomResvId } = this.$ResvStore
+    //     this.api.delete(`detail/reservation/${currentResvId}/${currentRoomResvId}/delete`)
+    //     this.refreshData()
+    //   } catch (error) {
+    //     console.error(error)
+    //   }
+    // },
     getResvProps() {
       this.api.get(`detail/reservation/1/1/create`, ({ status, data }) => {
         this.loading = false
@@ -1006,6 +1006,8 @@ export default defineComponent({
               this.trigger('positive', message)
               console.log(response.data)
               this.refreshData()
+            }else{
+              this.trigger('negative', message)
             }
           }
         )
@@ -1027,6 +1029,8 @@ export default defineComponent({
             if (status == 200) {
               this.trigger('positive', message)
               this.refreshData()
+            } else{
+              this.trigger('negative', message)
             }
           }
         )
@@ -1205,10 +1209,10 @@ export default defineComponent({
         manyChild: this.guests.child,
         manyBaby: this.guests.baby,
         inHouseIndicator: true,
-        arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
-        departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
+        arrivalDate: this.arrivalDepart.from.split('T')[0],
+        departureDate: this.arrivalDepart.to.split('T')[0],
         reservationRemarks: this.resvRemark,
-        voucher: this.voucherId,
+        voucher: this.voucherId || '',
         resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id)
       }
 
@@ -1252,6 +1256,7 @@ export default defineComponent({
               if (status === 200) {
                 this.trigger('positive', message)
                 console.log('Data berhasil diperbarui:', data)
+                this.refreshData()
               } else {
                 console.error('Gagal memperbarui data')
                 this.trigger('negative', message)

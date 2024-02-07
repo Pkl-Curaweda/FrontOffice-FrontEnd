@@ -3,10 +3,7 @@
     <FOMenubar>
       <template #left></template>
     </FOMenubar>
-    <div
-      style="width: fit-content; margin: auto"
-      class="shadowBox q-pa-lg"
-    >
+    <div style="width: fit-content; margin: auto" class="shadowBox q-pa-lg">
       <div style="display: flex; justify-content: space-between; width: 100%">
         <div style="color: black; font-size: x-large; font-weight: 600" class="q-pa-sm">
           Total Pembayaran
@@ -79,12 +76,12 @@
               </div>
               <div style="display: flex; justify-content: space-between; width: 100%">
                 <div>
-                  <!-- <input
+                  <input
                     type="checkbox"
                     :id="'option_' + index"
                     :value="DPP"
                     v-model="includeTax"
-                  /> -->
+                  />
                   <label
                     :for="'option_' + index"
                     style="font-weight: 600"
@@ -168,13 +165,13 @@ export default defineComponent({
       console.log('method payment ' + this.selectedBank)
       console.log('method payment ' + this.selectedMethod)
     },
-  //   includeTax() {
-  //     this.calculateTotal()
-  //   }
+    includeTax() {
+      this.calculateTotal()
+    }
   },
-  // created() {
-  //   this.calculateTotal()
-  // },
+  created() {
+    this.calculateTotal()
+  },
   mounted() {
     this.fetchcart()
   },
@@ -183,11 +180,9 @@ export default defineComponent({
       const { resvId, resvRoomId } = this.$route.params
       const data = {
         paymentMethod: this.selectedMethod,
-        orders: {
-          details: this.priceBook
-        },
-        total: this.total,
-        tax: this.DPP
+        invoices: this.priceBook,
+        paidAmount: this.total,
+        useTax: this.DPP
       }
       try {
         if (this.priceBook != null && this.selectedMethod != '') {
@@ -209,7 +204,6 @@ export default defineComponent({
         } else {
           this.trigger('warning', 'data not found')
         }
-        // this.refresh()
       } catch (error) {
         console.error(error)
       }
@@ -219,7 +213,7 @@ export default defineComponent({
 
       if (state === true) {
         this.$router.push({
-          name: 'guest-list',
+          name: 'guest-list'
         })
       } else {
         this.$router.push({
@@ -234,18 +228,18 @@ export default defineComponent({
         this.trigger('ongoing', 'loading')
       })
     },
-    // calculateTotal() {
-    //   this.total = this.priceBook.reduce((accumulator, currentValue) => {
-    //     return accumulator + parseFloat(currentValue.amount) // Mengonversi ke float sebelum penambahan
-    //   }, 0)
-    //   console.log(this.total)
-    //   if (this.includeTax) {
-    //     this.total += this.DPP
-    //   }
-    // },
-    // calculateTax(subtotal) {
-    //   return subtotal + this.DPP
-    // },
+    calculateTotal() {
+      this.total = this.priceBook.reduce((accumulator, currentValue) => {
+        return accumulator + parseFloat(currentValue.amount) // Mengonversi ke float sebelum penambahan
+      }, 0)
+      console.log(this.total)
+      if (this.includeTax) {
+        this.total += this.DPP
+      }
+    },
+    calculateTax(subtotal) {
+      return subtotal + this.DPP
+    },
 
     find(value) {
       if (value == 1) {

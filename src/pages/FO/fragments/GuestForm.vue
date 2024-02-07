@@ -515,17 +515,21 @@
               <div>{{ row.id.split('-')[1] }}</div>
             </div>
           </div>
-          <q-separator horizontal class="q-ma-xs" />
         </div>
-        <q-btn
-          unelevated
-          dense
-          class="q-mt-sm text-capitalize q-px-sm"
-          color="primary"
-          @click="redirectToInvoice"
-          label="Invoice"
-          :disable="!resvNo"
-        />
+        <q-separator horizontal class="q-ma-xs"/>
+        <div style="display: flex;" class="row">
+            <q-btn
+            unelevated
+            dense
+            class="q-mt-sm text-capitalize q-px-sm q-mx-sm"
+            color="primary"
+            @click="redirectToInvoice"
+            label="Invoice"
+            v-if="resvNo"
+            :disable="!resvNo"
+            />
+          <q-input dense outlined v-model="voucherId" label="Voucher" class="q-mt-sm col-grow" :style="!resvNo ? 'width: 100%;': 'width: 50%;'"/>
+        </div>
       </q-expansion-item>
 
       <div style="display: flex; justify-content: space-between" class="q-mt-sm">
@@ -534,7 +538,6 @@
       </div>
 
       <q-separator class="q-mt-sm bg-grey" size="1px" />
-      <q-input dense outlined v-model="voucher" label="Voucher" class="q-mt-sm" />
     </div>
 
     <div class="col-grow">
@@ -676,20 +679,17 @@ export default defineComponent({
       resvStatusOpts: ref([['DLX', 'FML', 'STD']]),
       balance: ref(0),
       resvRemark: ref(''),
-      //
       roomNo: ref(null),
       roomType: ref(null),
       detail: ref(),
       roomBed: ref(null),
       roomNoOpts: [],
-      //
       roomTypeOpts: ref(['DLX', 'FML', 'STD']),
       roomBedOpts: [
         { label: 'K', value: 'KING' },
         { label: 'T', value: 'TWIN' },
         { label: 'S', value: 'SINGLE' }
       ],
-      // roomBedOpts: [],
       loading: ref(false),
       isRbSelected,
       isRoSelected,
@@ -711,7 +711,6 @@ export default defineComponent({
       nameidcard: ref(''),
       idcardnumber: ref(''),
       address: ref(''),
-      voucher: ref(''),
       resultStatus: ref(''),
       showDropdown: false,
       dropdownOptions: [
@@ -728,7 +727,8 @@ export default defineComponent({
       selectedstatus: ref(),
       resvStatus: ref([]),
       descSelect: ref(''),
-      arrangmentValue: ref([])
+      arrangmentValue: ref([]),
+      voucherId: ref(''),
     }
   },
   data() {
@@ -758,9 +758,6 @@ export default defineComponent({
     }
   },
   watch: {
-    // includeTax() {
-    //   this.calculateTotal() // Panggil method calculateTotal() saat status checkbox berubah
-    // },
     roomType: {
       handler(oldval, newval) {
         this.resultRows = this.rows.filter((r) => {
@@ -830,17 +827,6 @@ export default defineComponent({
     }
   },
   methods: {
-    // handleRefresh() {
-    //   // Panggil fungsi untuk menambahkan artikel
-    //   this.createData()
-    //   this.postcheckin()
-    //   this.postcheckout()
-    //   this.updateData()
-    //   this.removeRoomResv()
-
-    //   // Panggil fungsi untuk menyegarkan data
-    //   this.refreshData()
-    // },
     refreshData() {
       window.location.reload()
     },
@@ -857,7 +843,7 @@ export default defineComponent({
         roomId: this.roomNo ? this.roomNo : 1,
         roomType: this.roomType,
         roomBed: this.roomBed.label,
-        voucher: this.voucher,
+        voucher: this.voucherId,
         arrangmentCode: this.selected && this.selected.id ? this.selected.id : ''
       }
     },
@@ -1043,7 +1029,7 @@ export default defineComponent({
           if (status == 200) {
             this.trigger('positive', message)
 
-            const { reservation, room, arrangment, balance } = data.reservation
+            const { reservation, room, arrangment, balance, voucherId } = data.reservation
             const { reservationStatus, arrangmentCode, availableRooms } = data.data
 
             this.guestName = `${reservation.reserver.guest.name}/${reservation.reserver.guest.contact}`
@@ -1068,12 +1054,13 @@ export default defineComponent({
               ...this.availRooms,
               { id: room.id, roomType: room.roomType, bedSetup: room.bedSetup }
             ]
+            this.voucherId = voucherId
             this.balance = balance.balance
-            const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
-            this.rows = formattedRoomRates
-            this.resultRows = formattedRoomRates
-            const formattedStatus = this.formatedStatus(reservationStatus)
-            this.status = formattedStatus
+            // const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
+            // this.rows = formattedRoomRates
+            // this.resultRows = formattedRoomRates
+            // const formattedStatus = this.formatedStatus(reservationStatus)
+            // this.status = formattedStatus
 
             // this.resultStatus = this.checkData(reservation.description)
             // this.arrangmentCode = { id: arrangment.id, rate: arrangment.rate }
@@ -1155,7 +1142,7 @@ export default defineComponent({
       const dataToUpdate = {
         nameContact: this.guestName,
         resourceName: this.resvRecource,
-        room: this.setRoww(this.roomNo, this.selected.id, this.voucher), //row
+        room: this.setRoww(this.roomNo, this.selected.id, this.voucherId), //row
         manyAdult: this.guests.adult,
         manyChild: this.guests.child,
         manyBaby: this.guests.baby,
@@ -1200,7 +1187,7 @@ export default defineComponent({
         arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
         departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
         reservationRemarks: this.resvRemark,
-        voucher: this.voucher,
+        voucher: this.voucherId,
         resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id)
       }
 

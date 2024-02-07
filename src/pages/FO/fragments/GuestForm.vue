@@ -515,17 +515,21 @@
               <div>{{ row.id.split('-')[1] }}</div>
             </div>
           </div>
-          <q-separator horizontal class="q-ma-xs" />
         </div>
-        <q-btn
-          unelevated
-          dense
-          class="q-mt-sm text-capitalize q-px-sm"
-          color="primary"
-          @click="redirectToInvoice"
-          label="Invoice"
-          :disable="!resvNo"
-        />
+        <q-separator horizontal class="q-ma-xs"/>
+        <div style="display: flex;" class="row">
+            <q-btn
+            unelevated
+            dense
+            class="q-mt-sm text-capitalize q-px-sm q-mx-sm"
+            color="primary"
+            @click="redirectToInvoice"
+            label="Invoice"
+            v-if="resvNo"
+            :disable="!resvNo"
+            />
+          <q-input dense outlined v-model="voucherId" label="Voucher" class="q-mt-sm" :style="!resvNo ? 'width: 100%;': 'width: 50%;'"/>
+        </div>
       </q-expansion-item>
 
       <div style="display: flex; justify-content: space-between" class="q-mt-sm">
@@ -534,7 +538,6 @@
       </div>
 
       <q-separator class="q-mt-sm bg-grey" size="1px" />
-      <q-input dense outlined v-model="voucherId" label="Voucher" class="q-mt-sm" />
     </div>
 
     <div class="col-grow">

@@ -149,10 +149,17 @@
                           v-close-popup
                           @click="changeinc(props.row)"
                           class="q-px-md"
-                          style="display: flex; background-color: red ; border-radius: 100px"
+                          style="display: flex; background-color: red; border-radius: 100px"
                         >
                           <q-item-section>
-                            <q-item-label style="color: black; width:100%; font-weight:600; padding-left:auto; padding-right:auto;"
+                            <q-item-label
+                              style="
+                                color: black;
+                                width: 100%;
+                                font-weight: 600;
+                                padding-left: auto;
+                                padding-right: auto;
+                              "
                               >INCOGNITO</q-item-label
                             >
                           </q-item-section>
@@ -235,12 +242,7 @@
                     </q-dialog>
                   </q-td>
                 </template>
-                <q-td
-                  key=""
-                  :props="props"
-                  style="width: 10px; background-color: white;"
-
-                >
+                <q-td key="" :props="props" style="width: 10px; background-color: white">
                   <div style="display: flex">
                     <div style="height: fit-content; width: fit-content">
                       <!-- <q-btn
@@ -685,8 +687,8 @@ export default defineComponent({
           ({ data, status, message }) => {
             if (status === 200) {
               console.log(data)
-              this.trigger('positive', message )
-              window.location.reload()
+              this.trigger('positive', message)
+              this.fetchData()
             }
           }
         )
@@ -711,7 +713,7 @@ export default defineComponent({
             if (status === 200) {
               this.triggerPositive(message)
               console.log(data)
-              window.location.reload()
+              this.fetchData()
             }
           }
         )
@@ -742,7 +744,7 @@ export default defineComponent({
         this.$ResvStore.currentResvId = data['ResNo'].data
         this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
       } else {
-        this.trigger('negative','note has not been filled in, data must be filled in')
+        this.trigger('negative', 'note has not been filled in, data must be filled in')
       }
     },
     editroom(data) {
@@ -754,24 +756,17 @@ export default defineComponent({
       this.$ResvStore.detail = false
     },
     changereset(data) {
-      try {
-        const resvId = data['ResNo'].data
-        const roomNo = data['ResRoomNo'].data
-        console.log(roomNo)
-        this.api.put(`arrival?id=${resvId}-3`, null, ({ status, data, message }) => {
-          this.loading = false
-          if (status === 200) {
-            this.trigger('positive', message )
-            console.log('Data berhasil diperbarui:', data)
-            window.location.reload()
-          } else {
-            console.error('Gagal memperbarui data')
-          }
-        })
-        this.refresh()
-      } catch (error) {
-        console.error('Terjadi kesalahan, mohon coba lagi')
-      }
+      const resvId = data['ResNo'].data
+      const roomNo = data['ResRoomNo'].data
+      console.log(roomNo)
+      this.api.put(`arrival?id=${resvId}-3`, null, ({ status, data, message }) => {
+        this.loading = false
+        if (status === 200) {
+          this.trigger('positive', message)
+          console.log('Data berhasil diperbarui:', data)
+          this.fetchData()
+        }
+      })
     },
     changevip(data) {
       try {
@@ -781,14 +776,13 @@ export default defineComponent({
         this.api.put(`arrival?id=${resvId}-1`, null, ({ status, data, message }) => {
           this.loading = false
           if (status === 200) {
-            this.trigger('positive', message )
+            this.trigger('positive', message)
             console.log('Data berhasil diperbarui:', data)
-            window.location.reload()
+            this.fetchData()
           } else {
             console.error('Gagal memperbarui data')
           }
         })
-        this.refresh()
       } catch (error) {
         console.error('Terjadi kesalahan, mohon coba lagi')
       }
@@ -802,14 +796,14 @@ export default defineComponent({
         this.api.put(`arrival?id=${resvId}-2`, null, ({ status, data, message }) => {
           this.loading = false
           if (status === 200) {
-            this.trigger('positive', message )
+            this.trigger('positive', message)
             console.log('Data berhasil diperbarui:', data)
-            window.location.reload()
+            this.fetchData()
           } else {
             console.error('Gagal memperbarui data')
           }
         })
-        this.refresh()
+        this.fetchData()
       } catch (error) {
         console.error('Terjadi kesalahan, mohon coba lagi')
       }
@@ -856,8 +850,8 @@ export default defineComponent({
         const roomNo = data['ResRoomNo'].data
         console.log(roomNo)
         this.api.delete(`detail/reservation/${resvId}/${roomNo}/delete`, ({ data, message }) => {
-          this.refreshData()
-          this.trigger('positive', message )
+          this.fetchData()
+          this.trigger('positive', message)
         })
       } catch (error) {
         console.error('Terjadi kesalahan, mohon coba lagi')
@@ -934,10 +928,9 @@ export default defineComponent({
             rr.reservation.resvStatus.textColor === '#808080'
               ? rr.reservation.resvStatus.textColor
               : '#000000'
-            // color: rr.reservation.resvStatus.textColor
           ]
           this.setcolor =
-            rr.reservation.resvStatus.textColor === '#808080'
+          rr.reservation.resvStatus.textColor === '#808080'
               ? rr.reservation.resvStatus.textColor
               : 'primary'
           const { id } = rr.arrangment
@@ -952,7 +945,7 @@ export default defineComponent({
               data: rr.room.id,
               style: {
                 backgroundColor: rr.reservation.resvStatus.rowColor,
-                color: rr.reservation.resvStatus.textColor,
+                color: color,
                 bordercolor: rr.reservation.borderColor,
                 borderwidth: '4px'
               }
@@ -984,10 +977,7 @@ export default defineComponent({
       })
       this.data = list
       console.log(this.data)
-    },
-    refreshData() {
-      window.location.reload()
-    },
+    }
   }
 })
 </script>

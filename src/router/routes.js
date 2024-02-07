@@ -11,7 +11,7 @@ const routes = [
     path: '/',
     component: () => import('pages/IndexPage.vue'),
     meta: {
-      title: 'Login',
+      title: 'Dashboard',
       protected: true
     }
   },

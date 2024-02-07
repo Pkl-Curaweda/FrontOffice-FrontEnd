@@ -3,13 +3,13 @@
     class="column"
     style="overflow-y: hidden; width: fit-content; min-height: calc(100vh - 51.25px)"
   >
-    <div>
-      <div style="display: flex">
-        <div>
+    <div style="width: 100%">
+      <div class="row col-grow" style="width: 100%">
+        <div class="col-grow">
           <HKCard style="height: fit-content" class="col-grow">
-            <div>
+            <div class="col-grow">
               <div
-                class="q-pt-sm q-gutter-x-md"
+                class="q-pt-sm q-gutter-x-md col-grow"
                 style="display: flex; flex-wrap: wrap; align-items: center"
               >
                 <label for="display" class="q-mt-md text-weight-bold text-body2">Sorting</label>
@@ -96,7 +96,7 @@
             </div>
           </HKCard>
         </div>
-        <div class="column" style="margin-bottom: auto">
+        <div style="margin-bottom: auto">
           <div>
             <HKCard style="width: fit-content">
               <div class="row q-py-xl justify-between">
@@ -175,6 +175,32 @@
             </div>
           </div>
           <div>
+            <div>
+              <div style="background-color: #069550" class="text-weight-bold flex flex-center">
+                <div class="flex flex-center text-white col q-ml-xl">Queuing Rooms</div>
+                <q-btn flat round class="q-ml-auto"
+                  ><svg
+                    width="32"
+                    height="31"
+                    viewBox="0 0 32 31"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M19.8829 12.6548L24.9615 17.5852L29.9017 12.5166"
+                      stroke="white"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M20.6486 22.7229C18.9907 23.709 17.0531 24.1215 15.1364 23.8965C13.2196 23.6715 11.4308 22.8215 10.0474 21.4785C8.66399 20.1354 7.76327 18.3743 7.48495 16.4683C7.20663 14.5622 7.56625 12.6178 8.50805 10.9365C9.44985 9.25525 10.9212 7.93112 12.6939 7.16949C14.4665 6.40785 16.4415 6.25129 18.3124 6.72406C20.1834 7.19684 21.8457 8.27254 23.0416 9.78433C24.2376 11.2961 24.9003 13.1595 24.9269 15.0855"
+                      stroke="white"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </q-btn>
+              </div>
+            </div>
             <q-table
               :rows="dataRows2"
               :columns="dataColumns2"

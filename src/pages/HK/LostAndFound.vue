@@ -9,14 +9,15 @@
       <!-- Pie Chart (Mobile) -->
       <HKChart
         v-if="$q.screen.lt.md"
-        :series="chartSeries"
+        ref="hkChartMobile"
+        :series="series"
         :options="chartOptions"
         class="mobileChart"
       />
 
       <!-- Pie Chart (Desktop) -->
-      <div v-else style="flex: 1 1 0%">
-        <HKChart :series="chartSeries" :options="chartOptions" />
+      <div style="flex: 1 1 0%">
+        <HKChart ref="hkChartDesktop" :series="series" :options="chartOptions" />
       </div>
 
       <!-- Found & Lost -->
@@ -102,11 +103,8 @@
                 >
                   <q-item-section>Reported By</q-item-section>
                 </q-item>
-                <q-item clickable v-close-popup @click="setFilterDisplay('', 'Guest Name')">
-                  <q-item-section>Guest Name</q-item-section>
-                </q-item>
-                <q-item clickable v-close-popup @click="setFilterDisplay('', 'Location')">
-                  <q-item-section>Location</q-item-section>
+                <q-item clickable v-close-popup @click="setFilterDisplay('date', 'By Date')">
+                  <q-item-section>By Date</q-item-section>
                 </q-item>
               </q-list>
             </q-btn-dropdown>
@@ -114,7 +112,25 @@
 
           <div class="flex items-center" style="gap: 8px">
             <span style="font-size: 16px; font-weight: 500">Date :</span>
-            <HKDateInput />
+            <q-btn-dropdown
+              flat
+              square
+              style="border: 1px #00000030 solid"
+              class="text-capitalize date-btn text-black rounded-borders"
+              :label="datePickerArrival"
+              icon="o_event"
+              color="primary"
+              dropdown-icon="o_expand_more"
+            >
+              <div>
+                <q-date
+                  @click="date(this.datePickerArrival)"
+                  v-model="datePickerArrival"
+                  color="green"
+                  today-btn
+                />
+              </div>
+            </q-btn-dropdown>
           </div>
         </div>
 
@@ -122,7 +138,7 @@
           <q-input
             outlined
             dense
-            v-model="searchModel"
+            v-model="searchInput"
             class="input-border"
             label="Item Description"
             style="width: fit-content"
@@ -250,8 +266,6 @@
 
 <script>
 import HKCard from 'src/components/HK/Card/HKCard.vue'
-import HKDateInput from 'src/components/HK/Form/HKDateInput.vue'
-import HKChart from 'src/components/charts/HKChart.vue'
 import { defineComponent, ref } from 'vue'
 
 const columns = [
@@ -332,7 +346,6 @@ const columns = [
     align: 'center'
   }
 ]
-const chartSeries = []
 const chartOptions = {
   chart: {
     type: 'donut'
@@ -379,13 +392,11 @@ const chartOptions = {
     }
   ]
 }
-
+const rows = ref([])
 export default defineComponent({
   name: 'LostAndFoundPage',
   components: {
-    HKChart,
-    HKCard,
-    HKDateInput
+    HKCard
   },
   setup() {
     return {
@@ -394,10 +405,13 @@ export default defineComponent({
       filterDisplayLabel: ref('Room Number'),
       sortingModel: ref('Room Number'),
       sortingOptions: ['Room Number', 'Reservation Number', 'Room Type', 'Guest Name'],
-      searchModel: ref(''),
+      searchInput: ref(''),
       found: ref(),
       lost: ref(),
-      rows: ref(),
+      rows,
+      datePickerArrival: ref(),
+      formattedArrivalDate: ref(),
+      columns,
       chartSeries
     }
   },
@@ -405,22 +419,44 @@ export default defineComponent({
     return {
       api: new this.$Api('housekeeping'),
       chartOptions,
-      columns,
+      // rows: [],
       pagination: {
         page: 1,
         rowsNumber: 0,
         rowsPerPage: 20
-      }
+      },
+      series: this.seriesEntry
     }
   },
   mounted() {
     this.fetchData()
   },
   watch: {
+    datePickerArrival: {
+      deep: true,
+      handler(newDate) {
+        this.fetchData()
+        console.log(newDate)
+      }
+    },
     filterDisplay(newOption) {
       // Update the label based on the selected option
       this.updateFilterDisplayLabel(newOption)
+    },
+    searchInput: {
+      handler(newSearchInput) {
+        this.searchName(newSearchInput)
+      },
+      immediate: true
+    },
+    filterDisplay: {
+      handler(option) {
+        this.fetchData()
+      }
     }
+  },
+  watch() {
+    searchName(this.searchInput)
   },
   methods: {
     updateFilterDisplayLabel(option) {
@@ -435,16 +471,19 @@ export default defineComponent({
         case 'reported':
           this.filterDisplayLabel = 'Reported By'
           break
-        case '':
-          this.filterDisplayLabel = 'Guest Name'
+        case 'date':
+          this.filterDisplayLabel = 'By Date'
           break
-        case '':
-          this.filterDisplayLabel = 'Location'
-          break
-        // Add other cases as needed
         default:
           this.filterDisplayLabel = 'Default Label'
       }
+    },
+    date(date) {
+      this.datePickerArrival = date.replace(/\//g, '-')
+      console.log(this.datePickerArrival)
+
+      this.fetchData()
+      this.searchName()
     },
     setFilterDisplay(option, label) {
       this.filterDisplay = option
@@ -455,40 +494,101 @@ export default defineComponent({
       this.pagination = props.pagination
       this.fetchData()
     },
+    // searchName(searchInput) {
+    //   this.api.get(`lostfound?search${searchInput}`, ({ status, data }) => {
+    //     if (status === 200) {
+    //       const { lostFounds } = data
+    //       this.rows = lostFounds.map((lostFound) => ({
+    //         date: lostFound.date,
+    //         time: lostFound.time,
+    //         room_no: lostFound.roomNo,
+    //         pic: lostFound.pic,
+    //         item_desc: lostFound.desc,
+    //         reported_by: lostFound.reportedBy,
+    //         phone_no: lostFound.phoneNumber,
+    //         reported_date: lostFound.reportedDate,
+    //         location: lostFound.location,
+    //         image: lostFound.image,
+    //         action: ['edit', 'delete'],
+    //         dialogActive: false
+    //       }))
+    //     } else {
+    //       console.error('Error searching data')
+    //     }
+    //   })
+    // },
     fetchData() {
       this.loading = true
-
+      if(this.startUp != false){
+        this.startUp = false
+        this.fetchData()
+      }
+      
       let url = `lostfound?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      if (this.filterDisplay !== null) url += `&sortOrder=${this.filterDisplay}`
 
+      const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
+      if (DateArrival !== undefined && DateArrival !== '') {
+        url += `&searchDate=${DateArrival}`
+      }
+      console.log(this.datePickerArrival)
       if (this.filterDisplay !== null) {
         url += `&sortOrder=${this.filterDisplay}`
       }
       this.api.get(url, ({ status, data }) => {
         this.loading = false
-
         if (status == 200) {
+          console.log(this.series)
           const { graph, lostFounds } = data // Ambil objek graph dari respons
+          // this.formatData(lostFounds)
           this.found = graph.found // Isi nilai found50
           this.lost = graph.lost // Isi nilai lost
           this.chartSeries = [(this.lost = graph.lost), (this.found = graph.found)]
+          console.log(this.searchInput)
+          const arrivalDate = data.searchDate // Gantilah 'arrival.arr' dengan properti yang benar
+          if (arrivalDate) {
+            this.datePickerArrival = arrivalDate
+          }
           this.rows = lostFounds.map((lostFound) => ({
-            name: lostFound.roomId,
-            date: new Date(lostFound.created_at).toLocaleDateString(),
+            date: lostFound.date,
             time: lostFound.time,
-            room_no: lostFound.roomId,
-            pic: lostFound.pic.name,
-            item_desc: lostFound.description,
-            reported_by: lostFound.user.name,
-            phone_no: lostFound.user.phone,
-            reported_date: new Date(lostFound.reportedDate).toLocaleDateString(),
+            room_no: lostFound.roomNo,
+            pic: lostFound.pic,
+            item_desc: lostFound.desc,
+            reported_by: lostFound.reportedBy,
+            phone_no: lostFound.phoneNumber,
+            reported_date: lostFound.reportedDate,
             location: lostFound.location,
             image: lostFound.image,
             action: ['edit', 'delete'],
             dialogActive: false
           }))
+          console.log(this.rows)
         }
       })
     }
+    // formatData(raw = []) {
+    //   const list = []
+
+    //   raw.forEach((lostFound) => {
+    //     list.push({
+    //       date: lostFound.date,
+    //       time: lostFound.time,
+    //       room_no: lostFound.roomNo,
+    //       pic: lostFound.pic,
+    //       item_desc: lostFound.desc,
+    //       reported_by: lostFound.reportedBy,
+    //       phone_no: lostFound.phoneNumber,
+    //       reported_date: lostFound.reportedDate,
+    //       location: lostFound.location,
+    //       image: lostFound.image,
+    //       action: ['edit', 'delete'],
+    //       dialogActive: false
+    //     })
+    //   })
+
+    //   this.rows = list
+    // }
   }
 })
 </script>

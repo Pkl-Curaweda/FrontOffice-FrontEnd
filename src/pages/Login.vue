@@ -80,13 +80,15 @@ export default defineComponent({
           email: this.dataModel.email,
           password: this.dataModel.password
         },
-        ({ status, data }) => {
+        ({ status, data, message }) => {
           if (status == 200) {
             console.log(data)
             this.$AuthStore.setUser(data['user'])
             this.$AuthStore.setAccessToken(data['accessToken'])
             this.$AuthStore.setMainPath(data['path'])
             this.$router.go(data['path'])
+          }else{
+            this.$Helper.showNotif(message, '', 'negative')
           }
 
           this.loading = false

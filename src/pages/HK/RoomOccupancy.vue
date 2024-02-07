@@ -249,9 +249,9 @@ const tableCol = [
 const tableRow = ref([])
 
 const radio_opt = [
-  { label: 'Standard Room', value: 'standard' },
-  { label: 'Deluxe Room', value: 'delux' },
-  { label: 'Family Room', value: 'family' }
+  { label: 'Standard Room', value: 'STANDARD' },
+  { label: 'Deluxe Room', value: 'DELUXE' },
+  { label: 'Family Room', value: 'FAMILY' }
 ]
 
 const selectOption = ['Show by Week', 'Show by Month', 'Show by Year']
@@ -261,7 +261,7 @@ export default defineComponent({
   components: { HKCard, HKTable },
   setup() {
     return {
-      r_group: ref(null),
+      r_group: ref('STANDARD'),
       model: ref(null),
       options: selectOption,
       roomData,
@@ -282,12 +282,20 @@ export default defineComponent({
   mounted() {
     this.fetchData()
   },
-  watch: {},
+  watch: {
+    r_group: {
+      handler(option) {
+        this.fetchData()
+      }
+    }
+  },
   methods: {
     fetchData() {
       this.loading = true
 
-      let url = `roomocc`
+      let url = `roomocc?`
+
+      if (this.r_group !== null) url += `filt=${this.r_group}`
 
       this.api.get(url, ({ status, data }) => {
         this.loading = false

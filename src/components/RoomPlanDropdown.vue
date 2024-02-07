@@ -72,10 +72,28 @@ export default defineComponent({
       }
     }
   },
+  data() {
+    return {
+      api: new this.$Api('frontoffice')
+    }
+  },
   methods: {
     selectStatus(status) {
       this.selectedStatus = { ...status }
       this.$emit('status', { ...this.selectedStatus, room: this.room })
+      console.log(this.selectedStatus)
+
+      let url = `floorplan/detail/${this.room}/${this.selectedStatus.status}`
+
+      console.log(this.selectedStatus.status)
+
+      if (this.selectedStatus.status !== '') {
+        this.api.post(url, null, ({ status }) => {
+          if (status == 200) {
+            window.location.reload()
+          }
+        })
+      }
     }
   }
 })

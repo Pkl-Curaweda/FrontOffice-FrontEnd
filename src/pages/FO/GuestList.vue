@@ -1,6 +1,5 @@
 <template>
   <q-page
-    class="column"
     style="
       overflow-y: hidden;
       width: 100%;
@@ -875,7 +874,7 @@ export default defineComponent({
 
       if (this.filterSortOrder['col'] != '' && this.filterSortOrder['val'] != '')
         url += `&sortOrder=${this.filterSortOrder['val']}`
-
+      console.log(this.datePicker)
       const fromDate = this.datePicker.from.replace(/\//g, '-')
       const toDate = this.datePicker.to.replace(/\//g, '-')
 

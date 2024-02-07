@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column" style="overflow-y: hidden; min-width: max-content">
+  <q-page style="overflow-y: hidden; min-width: max-content">
     <FOMenubar>
       <template #left>
         <q-btn-dropdown

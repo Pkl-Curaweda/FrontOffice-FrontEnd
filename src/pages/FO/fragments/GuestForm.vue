@@ -245,7 +245,7 @@
           :outlined="!$ResvStore.fix"
           :borderless="$ResvStore.fix"
           :readonly="$ResvStore.fix"
-          :disable= "$ResvStore.detail"
+          :disable="$ResvStore.detail"
           :options="roomTypeOpts"
           label="RmType"
           dropdown-icon="expand_more"
@@ -257,7 +257,7 @@
           dense
           v-model="roomNo"
           :options="roomNoOpts"
-          :disable= "$ResvStore.detail"
+          :disable="$ResvStore.detail"
           label="Room No"
           dropdown-icon="expand_more"
           class="full-width"
@@ -267,7 +267,7 @@
           dense
           v-model="roomBed"
           :options="roomBedOpts"
-          :disable= "$ResvStore.detail"
+          :disable="$ResvStore.detail"
           dropdown-icon="expand_more"
           class="full-width"
           option-label="value"
@@ -505,30 +505,41 @@
         dense
         style="font-weight: bold"
       >
-        <div v-for="row in resultRows" :key="row.id" clickable @click="selectRow(row)">
-          <div style="display: flex; width: 100%">
-            <q-radio selection="single" v-model="selected" :val="row" @click="checked(row.id)" />
+        <div v-if="$ResvStore.logc || !resvNo">
+          <div v-for="row in resultRows" :key="row.id" clickable @click="selectRow(row)">
+            <div style="display: flex; width: 100%">
+              <q-radio selection="single" v-model="selected" :val="row" @click="checked(row.id)" />
 
-            <div style="display: flex; justify-content: space-around; margin: auto; width: 100%">
-              <div>{{ row.id.split('-')[0] }}</div>
-              <div>{{ row.rate }}</div>
-              <div>{{ row.id.split('-')[1] }}</div>
+              <div style="display: flex; justify-content: space-around; margin: auto; width: 100%">
+                <div>{{ row.id.split('-')[0] }}</div>
+                <div>{{ row.rate }}</div>
+                <div>{{ row.id.split('-')[1] }}</div>
+              </div>
             </div>
           </div>
+          <q-separator horizontal class="q-ma-xs" />
         </div>
-        <q-separator horizontal class="q-ma-xs"/>
-        <div style="display: flex;" class="row">
-            <q-btn
+        <div style="display: flex" class="row">
+          <q-btn
             unelevated
             dense
             class="q-mt-sm text-capitalize q-px-sm q-mx-sm"
             color="primary"
             @click="redirectToInvoice"
             label="Invoice"
-            v-if="resvNo"
+            v-if="resvNo && !$ResvStore.fix"
             :disable="!resvNo"
-            />
-          <q-input dense outlined v-model="voucherId" label="Voucher" class="q-mt-sm col-grow" :style="!resvNo ? 'width: 100%;': 'width: 50%;'"/>
+          />
+          <q-input
+            dense
+            :outlined="!$ResvStore.fix"
+            v-model="voucherId"
+            label="Voucher"
+            class="q-mt-sm col-grow"
+            :readonly="$ResvStore.fix"
+            :borderless="$ResvStore.fix"
+            :style="!resvNo ? 'width: 100%;' : 'width: 20%;'"
+          />
         </div>
       </q-expansion-item>
 
@@ -728,7 +739,7 @@ export default defineComponent({
       resvStatus: ref([]),
       descSelect: ref(''),
       arrangmentValue: ref([]),
-      voucherId: ref(''),
+      voucherId: ref('')
     }
   },
   data() {
@@ -763,49 +774,59 @@ export default defineComponent({
         this.resultRows = this.rows.filter((r) => {
           return r.date == oldval
         })
-        let rmNos = [], rmBed
+        let rmNos = [],
+          rmBed
         switch (oldval) {
-          case "FML":
-            [rmNos, rmBed] = [[105, 106, 107], [{ label: 'T', value: 'TWIN' }]]
-            this.roomNo = this.roomNo != null && rmNos.some((list) => this.roomNo === list ) ? this.roomNo : rmNos[0]
-            this.roomBed = this.roomBed != null && rmBed === this.roomBed ? this.roomBed :  rmBed[0]
-            break;
-            case "STD":
-            [rmNos, rmBed] = [[108, 109, 110], [{ label: 'S', value: 'SINGLE' }]]
-            this.roomNo = this.roomNo != null && rmNos.some((list) => this.roomNo === list) ? this.roomNo : rmNos[0];
-            this.roomBed =  this.roomBed != null && rmBed === this.roomBed ? this.roomBed :  rmBed[0]
-              break;
-              case "DLX":
-              [rmNos, rmBed] = [[101, 102, 103, 104], [{ label: 'K', value: 'KING' }]]
-                this.roomNo = this.roomNo != null && rmNos.some((list) => this.roomNo === list ) ? this.roomNo : rmNos[0]
-                this.roomBed =  this.roomBed != null &&  rmBed === this.roomBed ? this.roomBed :  rmBed[0]
-                break;
-                default:
-            break;
+          case 'FML':
+            ;[rmNos, rmBed] = [[105, 106, 107], [{ label: 'T', value: 'TWIN' }]]
+            this.roomNo =
+              this.roomNo != null && rmNos.some((list) => this.roomNo === list)
+                ? this.roomNo
+                : rmNos[0]
+            this.roomBed = this.roomBed != null && rmBed === this.roomBed ? this.roomBed : rmBed[0]
+            break
+          case 'STD':
+            ;[rmNos, rmBed] = [[108, 109, 110], [{ label: 'S', value: 'SINGLE' }]]
+            this.roomNo =
+              this.roomNo != null && rmNos.some((list) => this.roomNo === list)
+                ? this.roomNo
+                : rmNos[0]
+            this.roomBed = this.roomBed != null && rmBed === this.roomBed ? this.roomBed : rmBed[0]
+            break
+          case 'DLX':
+            ;[rmNos, rmBed] = [[101, 102, 103, 104], [{ label: 'K', value: 'KING' }]]
+            this.roomNo =
+              this.roomNo != null && rmNos.some((list) => this.roomNo === list)
+                ? this.roomNo
+                : rmNos[0]
+            this.roomBed = this.roomBed != null && rmBed === this.roomBed ? this.roomBed : rmBed[0]
+            break
+          default:
+            break
         }
       }
     },
     roomNo: {
-      handler(newVal){
+      handler(newVal) {
         const roomTypeList = ['DLX', 'DLX', 'DLX', 'DLX', 'FML', 'FML', 'FML', 'STD', 'STD', 'STD']
         this.roomType = roomTypeList[newVal - 101]
       }
     },
     roomBed: {
-      handler(newVal){
+      handler(newVal) {
         console.log(newVal)
-          switch(newVal.label){
-            case "T":
-              this.roomType = "FML"
-              break;
-              case "K":
-                this.roomType = "DLX"
-                break;
-                default:
-              this.roomType = "STD"
-              break;
-          }
+        switch (newVal.label) {
+          case 'T':
+            this.roomType = 'FML'
+            break
+          case 'K':
+            this.roomType = 'DLX'
+            break
+          default:
+            this.roomType = 'STD'
+            break
         }
+      }
     },
     'arrivalDepart.from': {
       immediate: true,
@@ -1161,7 +1182,7 @@ export default defineComponent({
             if (status === 200) {
               this.trigger('positive', message)
               console.log('Data berhasil diperbarui:', data)
-              this.refreshData()
+              // this.refreshData()
             } else {
               this.trigger('negative', message)
               console.error('Gagal memperbarui data')
@@ -1247,11 +1268,7 @@ export default defineComponent({
       return new Date(date)
     },
     formatDateWithoutTimezone(date) {
-      const dateObject = new Date(date)
-      const result = dateObject.toISOString().split('T')[0]
-      console.log(result)
-
-      return result
+      return date.replace(/\//g, '-')
     },
     onItemClick(optionValue, desc) {
       this.optionValue = optionValue

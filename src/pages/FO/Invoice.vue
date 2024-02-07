@@ -564,7 +564,7 @@ export default defineComponent({
         url += `&sort=${this.filterSortOrder.val}`
       }
 
-      const formattedDate = this.datePicker?.replace(/\//g, '-')
+      const formattedDate = this.datePicker != null ? this.datePicker?.replace(/\//g, '-') : ''
 
       if (formattedDate) {
         url += `&date=${formattedDate}T${formattedDate}`

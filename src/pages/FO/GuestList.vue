@@ -883,8 +883,8 @@ export default defineComponent({
       if (this.filterSortOrder['col'] != '' && this.filterSortOrder['val'] != '')
         url += `&sortOrder=${this.filterSortOrder['val']}`
 
-      const fromDate = this.datePicker.from.replace(/\//g, '-')
-      const toDate = this.datePicker.to.replace(/\//g, '-')
+      const fromDate = this.datePicker != null ? this.datePicker.from.replace(/\//g, '-') : ''
+      const toDate = this.datePicker != null ? this.datePicker.to.replace(/\//g, '-') : ''
 
       if (fromDate !== '' && toDate !== '') {
         url += `&date=${fromDate}+${toDate}`

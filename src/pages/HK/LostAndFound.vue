@@ -346,7 +346,6 @@ const columns = [
     align: 'center'
   }
 ]
-
 const chartOptions = {
   chart: {
     type: 'donut'
@@ -413,7 +412,7 @@ export default defineComponent({
       datePickerArrival: ref(),
       formattedArrivalDate: ref(),
       columns,
-      chartSeries
+      chartSeries: ref()
     }
   },
   data() {

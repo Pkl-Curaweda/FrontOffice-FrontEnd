@@ -15,7 +15,8 @@ export const resvStore = defineStore({
     waitingnote: '',
     selectedbank: '',
     selectedmethod: '',
-    detail: false
+    detail: false,
+    addroom: false,
   }),
   actions: {
     setCurrentResvId(id = 0) {
@@ -54,6 +55,9 @@ export const resvStore = defineStore({
     detailresv(value){
       this.detail = value
     },
+    setaddroom(value){
+      this.addroom = value
+    },
     clearData() {
       const data = {
         currentResvId: 0,
@@ -68,6 +72,7 @@ export const resvStore = defineStore({
         selectedbank: '',
         selectedmethod: '',
         detail: false,
+        addroom: false,
       }
       this.$state = data
     }

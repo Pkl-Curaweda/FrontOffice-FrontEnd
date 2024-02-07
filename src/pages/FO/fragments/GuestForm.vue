@@ -528,7 +528,7 @@
             v-if="resvNo"
             :disable="!resvNo"
             />
-          <q-input dense outlined v-model="voucherId" label="Voucher" class="q-mt-sm" :style="!resvNo ? 'width: 100%;': 'width: 50%;'"/>
+          <q-input dense outlined v-model="voucherId" label="Voucher" class="q-mt-sm col-grow" :style="!resvNo ? 'width: 100%;': 'width: 50%;'"/>
         </div>
       </q-expansion-item>
 

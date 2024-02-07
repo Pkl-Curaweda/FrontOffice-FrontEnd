@@ -4,7 +4,7 @@ import myAxios from './axios'
 import { Helper } from '../helper'
 
 export class Api {
-  constructor(module = '') {
+  constructor(module = 'root') {
     this.module = module
     this.apiService = myAxios
     this.token = true

@@ -1161,7 +1161,7 @@ export default defineComponent({
             if (status === 200) {
               this.trigger('positive', message)
               console.log('Data berhasil diperbarui:', data)
-              this.refreshData()
+              // this.refreshData()
             } else {
               this.trigger('negative', message)
               console.error('Gagal memperbarui data')

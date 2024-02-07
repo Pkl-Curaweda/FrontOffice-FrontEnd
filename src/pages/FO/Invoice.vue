@@ -515,8 +515,7 @@ export default defineComponent({
       if (searchInput != '' || searchInput != null) {
         // Make an API call to search based on searchInput
         this.api.get(
-          `invoice/${resvId}/${resvRoomId}?search=${searchInput}`,
-          ({ status, data }) => {
+          `invoice/${resvId}/${resvRoomId}?search=${searchInput}`, ({ status, data }) => {
             if (status === 200) {
               // Update the data with the search result
             } else {
@@ -570,32 +569,33 @@ export default defineComponent({
         url += `&date=${formattedDate}T${formattedDate}`
       }
 
-      this.$api
-        .get(url)
-        .then((response) => {
-          this.loading = false
+      this.api.get(
+          url, ({ status, data }) => {
+            if (status === 200) {
+              this.loading = false
 
-          if (response.status === 200) {
-            const { added, invoices, artList } = response.data.data
+if (response.status === 200) {
+  const { added, invoices, artList } = response.data.data
 
-            this.data2 = artList.map((inv) => ({
-              name: inv.id,
-              description: inv.description,
-              qty: 0
-            }))
-            this.trigger('positive',response.data.message)
-            this.formatData({ added, invoices })
-            this.pagination = {
-              page: response.data.data.meta?.currPage,
-              rowsNumber: response.data.data.meta?.total,
-              rowsPerPage: response.data.data.meta?.perPage
+  this.data2 = artList.map((inv) => ({
+    name: inv.id,
+    description: inv.description,
+    qty: 0
+  }))
+  this.trigger('positive',response.data.message)
+  this.formatData({ added, invoices })
+  this.pagination = {
+    page: response.data.data.meta?.currPage,
+    rowsNumber: response.data.data.meta?.total,
+    rowsPerPage: response.data.data.meta?.perPage
+  }
+}
+            } else {
+              console.error('Error searching data')
             }
           }
-        })
-        .catch((error) => {
-          this.loading = false
-          console.error('Error fetching data:', error)
-        })
+        )
+   
     },
 
     formatData({ added, invoices }) {

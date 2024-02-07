@@ -14,7 +14,19 @@
       rows-per-page-label="Show"
       :dense="$q.screen.lt.md"
       :title="title"
-    />
+    >
+      <template v-slot:top-row v-if="showInput">
+        <q-tr>
+          <q-td><input type="text" /></q-td>
+          <q-td><input type="text" /></q-td>
+          <q-td><input type="text" /></q-td>
+          <q-td><input type="text" /></q-td>
+          <q-td><input type="text" /></q-td>
+          <q-td><input type="text" /></q-td>
+          <q-td><input type="text" /></q-td>
+        </q-tr>
+      </template>
+    </q-table>
   </div>
 </template>
 
@@ -32,6 +44,7 @@ export default defineComponent({
   props: {
     columns: Array,
     rows: Array,
+    showInput: Boolean,
     hidePagination: Boolean,
     gapTable: Boolean,
     gapColor: String,

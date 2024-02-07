@@ -874,9 +874,9 @@ export default defineComponent({
 
       if (this.filterSortOrder['col'] != '' && this.filterSortOrder['val'] != '')
         url += `&sortOrder=${this.filterSortOrder['val']}`
-      console.log(this.datePicker)
-      const fromDate = this.datePicker.from.replace(/\//g, '-')
-      const toDate = this.datePicker.to.replace(/\//g, '-')
+
+      const fromDate = this.datePicker != null ? this.datePicker.from.replace(/\//g, '-') : ''
+      const toDate = this.datePicker != null ? this.datePicker.to.replace(/\//g, '-') : ''
 
       if (fromDate !== '' && toDate !== '') {
         url += `&date=${fromDate}+${toDate}`
@@ -929,7 +929,7 @@ export default defineComponent({
               : '#000000'
           ]
           this.setcolor =
-          rr.reservation.resvStatus.textColor === '#808080'
+            rr.reservation.resvStatus.textColor === '#808080'
               ? rr.reservation.resvStatus.textColor
               : 'primary'
           const { id } = rr.arrangment

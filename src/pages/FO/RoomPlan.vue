@@ -227,7 +227,7 @@ import { defineComponent, ref } from 'vue'
 import { subGroupingArray } from 'src/utils/arrays'
 import FOMenubar from 'src/components/FOMenubar.vue'
 
-const datePicker = ref({ from: '2020/07/08', to: '2020/07/17' })
+const datePicker = ref({ from: '', to: '' })
 
 const floor = ref('Floor 1'),
   floorOptions = ['Floor 1', 'Floor 2', 'Floor 3', 'Floor 4']
@@ -330,10 +330,28 @@ export default defineComponent({
   mounted() {
     this.backgroundRoom()
   },
+  watch: {
+    datePicker: {
+      deep: true,
+      handler(newDateRange) {
+        this.backgroundRoom()
+      }
+    }
+  },
   methods: {
     backgroundRoom() {
       this.loading = true
-      this.api.get(`floorplan`, ({ status, data }) => {
+
+      let url = `floorplan?`
+
+      const fromDate = this.datePicker != null ? this.datePicker.from.replace(/\//g, '-') : ''
+      const toDate = this.datePicker != null ? this.datePicker.to.replace(/\//g, '-') : ''
+
+      if (fromDate !== '' && toDate !== '') {
+        url += `&date=${fromDate}+${toDate}`
+      }
+
+      this.api.get(url, ({ status, data }) => {
         this.loading = false
         if (status == 200) {
           this.formatData(data)

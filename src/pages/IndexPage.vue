@@ -74,19 +74,18 @@
           </div>
         </div>
 
-        <div class="row q-gutter-md no-wrap">
-          <div
-            class="q-pa-md bg-white rounded shadow-3"
-            style="width: fit-content; max-width: 520px"
-          >
+        <div class="row q-gutter-md no-wrap col-grow">
+          <div class="q-pa-md bg-white rounded shadow-3">
             <h5 class="text-bold q-ma-none">Recent Reservation Schedule</h5>
             <q-date
               v-model="recentReservationDate"
               class="no-shadow q-pa-none full-width"
+              style="max-width: 520px"
               minimal
             />
             <div class="my-table">
               <q-table
+                style="max-width: 520px"
                 class="no-shadow"
                 v-model:pagination="pagination"
                 @request="onPaginationChange"
@@ -124,7 +123,7 @@
               </q-table>
             </div>
           </div>
-          <div>
+          <div class="col-grow">
             <div class="q-pa-md q-mb-md bg-white rounded shadow-3">
               <q-carousel
                 v-model="slide"
@@ -134,7 +133,7 @@
                 arrows
                 style="height: 100%"
               >
-                <q-carousel-slide name="style" class="col-grow">
+                <q-carousel-slide name="style">
                   <h5 class="text-bold q-ma-none">Reservation Statistics</h5>
                   <div class="q-mt-md">
                     <ReservationChart />
@@ -192,7 +191,7 @@
                 </q-carousel-slide>
               </q-carousel>
             </div>
-            <div class="q-pa-md bg-white rounded shadow-3">
+            <div class="q-pa-md bg-white rounded shadow-3 col-grow">
               <h5 class="text-bold q-ma-none">Housekeeping</h5>
               <div class="q-mt-md">
                 <BarChart />

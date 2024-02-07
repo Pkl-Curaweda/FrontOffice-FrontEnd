@@ -929,7 +929,7 @@ export default defineComponent({
               : '#000000'
           ]
           this.setcolor =
-          rr.reservation.resvStatus.textColor === '#808080'
+            rr.reservation.resvStatus.textColor === '#808080'
               ? rr.reservation.resvStatus.textColor
               : 'primary'
           const { id } = rr.arrangment

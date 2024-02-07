@@ -176,7 +176,7 @@
             <div class="q-mt-md">
               <div style="background-color: #069550" class="text-weight-bold flex flex-center">
                 <div class="flex flex-center text-white col q-ml-xl">Queuing Rooms</div>
-                <q-btn flat round class="q-ml-auto"
+                <q-btn flat round class="q-ml-auto" @click="refreshTable"
                   ><svg
                     width="32"
                     height="31"
@@ -431,6 +431,7 @@ export default defineComponent({
   },
   mounted() {
     this.fetchData()
+    this.fetchRefresh()
   },
   watch: {
     filterDisplay(newOption) {
@@ -515,7 +516,7 @@ export default defineComponent({
         this.loading = false
 
         if (status == 200) {
-          const { roomStatus, taskData, latestChange } = data
+          const { roomStatus, latestChange } = data
 
           this.statusRoom = latestChange.roomStatus.longDescription
           this.statusRoomNo = latestChange.id
@@ -528,11 +529,38 @@ export default defineComponent({
             btype: rs.bedSetup,
             statusdescription: rs.roomStatus.longDescription
           }))
+        }
+      })
+    },
+    fetchRefresh() {
+      let url = `status/refresh`
 
-          this.dataRows2 = taskData.map((td) => ({
+      this.api.get(url, ({ status, data }) => {
+        if (status == 200) {
+          const { listTask } = data
+
+          this.dataRows2 = listTask.map((td) => ({
             roomno: td.roomId,
             Request: td.request,
-            PIC: td.roomMaid.user.name,
+            PIC: td.roomMaid.aliases,
+            Status: td.mainStatus
+          }))
+
+          console.log(this.dataRows2)
+        }
+      })
+    },
+    refreshTable() {
+      let url = `status/refresh`
+
+      this.api.get(url, ({ status, data }) => {
+        if (status == 200) {
+          const { listTask } = data
+
+          this.dataRows2 = listTask.map((td) => ({
+            roomno: td.roomId,
+            Request: td.request,
+            PIC: td.roomMaid.aliases,
             Status: td.mainStatus
           }))
         }

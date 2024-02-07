@@ -90,6 +90,7 @@
                 class="no-shadow"
                 v-model:pagination="pagination"
                 @request="onPaginationChange"
+                :rows-per-page-options="[1, 5, 7, 10, 15, 20, 25, 30]"
                 :rows="data"
                 :loading="loading"
                 :columns="columns"

@@ -271,6 +271,78 @@
                             <q-item
                               clickable
                               v-close-popup
+                              @click="fixDetail(props.row)"
+                              style="display: flex"
+                            >
+                              <q-btn
+                                flat
+                                rounded
+                                size="13px"
+                                @click="fixDetail(props.row)"
+                                style="color: #008444"
+                                icon="visibility_off"
+                              />
+                              <q-item-section>
+                                <q-item-label>Fix</q-item-label>
+                              </q-item-section>
+                            </q-item>
+                          <q-item
+                              clickable
+                              v-close-popup
+                              @click="redirectToInvoice(props.row)"
+                              style="display: flex"
+                            >
+                              <q-btn
+                                flat
+                                rounded
+                                size="13px"
+                                @click="redirectToInvoice(props.row)"
+                                style="color: #008444"
+                                icon="description"
+                              >
+                              </q-btn>
+                              <q-item-section>
+                                <q-item-label>Invoice</q-item-label>
+                              </q-item-section>
+                            </q-item>
+                            <q-item
+                              clickable
+                              v-close-popup
+                              @click="waitinglist(props.row, false, true)"
+                              style="display: flex"
+                            >
+                              <q-btn
+                                flat
+                                rounded
+                                size="13px"
+                                @click="waitinglist(props.row, false, true)"
+                                style="color: #008444"
+                                icon="o_add_home"
+                              />
+                              <q-item-section>
+                                <q-item-label>Add Room</q-item-label>
+                              </q-item-section>
+                            </q-item>
+                            <q-item
+                              clickable
+                              v-close-popup
+                              @click="dialogeditroom = true"
+                              style="display: flex"
+                            >
+                              <q-btn
+                                flat
+                                rounded
+                                size="13px"
+                                style="color: #008444"
+                                icon="edit_note"
+                              />
+                              <q-item-section>
+                                <q-item-label>Change Room</q-item-label>
+                              </q-item-section>
+                            </q-item>
+                            <q-item
+                              clickable
+                              v-close-popup
                               @click="setRoomResv(props.row)"
                               style="display: flex"
                             >
@@ -306,7 +378,7 @@
                               <q-btn
                                 flat
                                 rounded
-                                size="13px"
+                                size="14px"
                                 style="color: #269861"
                                 @click="deleteResv(props.row)"
                                 ><svg
@@ -326,79 +398,8 @@
                                 <q-item-label>Delete</q-item-label>
                               </q-item-section>
                             </q-item>
-                            <q-item
-                              clickable
-                              v-close-popup
-                              @click="waitinglist(props.row, false, true)"
-                              style="display: flex"
-                            >
-                              <q-btn
-                                flat
-                                rounded
-                                size="13px"
-                                @click="waitinglist(props.row, false, true)"
-                                style="color: #008444"
-                                icon="o_add_home"
-                              />
-                              <q-item-section>
-                                <q-item-label>Add Room</q-item-label>
-                              </q-item-section>
-                            </q-item>
-                            <q-item
-                              clickable
-                              v-close-popup
-                              @click="redirectToInvoice(props.row)"
-                              style="display: flex"
-                            >
-                              <q-btn
-                                flat
-                                rounded
-                                size="13px"
-                                @click="redirectToInvoice(props.row)"
-                                style="color: #008444"
-                                icon="description"
-                              >
-                              </q-btn>
-                              <q-item-section>
-                                <q-item-label>Invoice</q-item-label>
-                              </q-item-section>
-                            </q-item>
-                            <q-item
-                              clickable
-                              v-close-popup
-                              @click="fixDetail(props.row)"
-                              style="display: flex"
-                            >
-                              <q-btn
-                                flat
-                                rounded
-                                size="13px"
-                                @click="fixDetail(props.row)"
-                                style="color: #008444"
-                                icon="visibility_off"
-                              />
-                              <q-item-section>
-                                <q-item-label>Fix</q-item-label>
-                              </q-item-section>
-                            </q-item>
-                            <q-item
-                              clickable
-                              v-close-popup
-                              @click="dialogeditroom = true"
-                              style="display: flex"
-                            >
-                              <q-btn
-                                flat
-                                rounded
-                                size="13px"
-                                style="color: #008444"
-                                icon="edit_note"
-                              />
-                              <q-item-section>
-                                <q-item-label>Change Room</q-item-label>
-                              </q-item-section>
-                            </q-item>
                           </q-list>
+
                         </q-menu>
 
                         <q-dialog v-model="dialogeditroom" ref="editRoomDialog">

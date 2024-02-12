@@ -817,14 +817,8 @@ export default defineComponent({
       this.filterSortOrder = null
     },
     searchName(searchInput) {
-      // Make an API call to search based on searchInput
-      this.api.get(`arrival?name=${searchInput}`, ({ status, data }) => {
-        if (status === 200) {
-          this.formatData(data.reservations)
-        } else {
-          console.error('Error searching data')
-        }
-      })
+      this.searchData = searchInput
+      this.fetchData()
     },
     setRoomResv(data) {
       this.$ResvStore.currentResvId = data['ResNo'].data
@@ -868,7 +862,7 @@ export default defineComponent({
     fetchData() {
       this.loading = true
 
-      let url = `arrival?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}&history=${this.state}`
+      let url = `arrival?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}&history=${this.state}&name=${this.searchData}`
 
       if (this.filterDisplay !== null) url += `&disOpt=${this.filterDisplay}`
 

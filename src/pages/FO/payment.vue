@@ -33,9 +33,8 @@
               <div
                 style="display: flex; cursor: pointer; width: 100%; justify-content: end; gap: 2px"
               >
-
-              <!-- <PaymentImage v-for="(option, i) in dropdownOptions" :key="i" :imageUrl="option.imageUrl" /> -->
-              <PaymentImage :showDebit="true"></PaymentImage>
+                <!-- <PaymentImage v-for="(option, i) in dropdownOptions" :key="i" :imageUrl="option.imageUrl" /> -->
+                <PaymentImage :showDebit="true"></PaymentImage>
                 <q-icon
                   :name="iconName2"
                   size="2rem"
@@ -99,7 +98,7 @@
               <div
                 style="display: flex; cursor: pointer; width: 100%; justify-content: end; gap: 2px"
               >
-               <PaymentImage :showBank="true" ></PaymentImage>
+                <PaymentImage :showBank="true"></PaymentImage>
                 <q-icon
                   :name="iconName1"
                   size="2rem"
@@ -157,7 +156,7 @@
               <div
                 style="display: flex; cursor: pointer; width: 100%; justify-content: end; gap: 2px"
               >
-               <PaymentImage :showEWallet="true" ></PaymentImage>
+                <PaymentImage :showEWallet="true"></PaymentImage>
                 <q-icon
                   :name="iconName3"
                   size="2rem"
@@ -216,7 +215,7 @@
               <div
                 style="display: flex; cursor: pointer; width: 100%; justify-content: end; gap: 2px"
               >
-              <PaymentImage :showVirtual="true" ></PaymentImage>
+                <PaymentImage :showVirtual="true"></PaymentImage>
                 <q-icon
                   :name="iconName4"
                   size="2rem"
@@ -346,74 +345,80 @@
             <q-separator horizontal class="q-ma-md" />
             <div class="centerComponent" style="width: 350px; font-weight: 600">
               <label class="q-mx-md" style="color: grey; font-size: small">RINCIAN PESANAN</label>
-              <div class="col q-px-md" style="background-color: #f1f5f9; margin-top: 10px">
-                <div style="color: black; font-size: larger" class="q-pa-sm">Rincian Harga</div>
-                <div v-for="(option, index) in priceBook" :key="index">
-                  <div style="display: flex" class="q-py-md">
-                    <div
-                      style="
-                        display: flex;
-                        justify-content: space-between;
-                        width: 100%;
-                        margin-right: 10px;
-                      "
-                    >
-                      <div>
-                        <label
-                          :for="'option_' + index"
-                          style="font-weight: 600"
-                          class="centerComponent textwrap"
-                          >{{ option.desc }}</label
-                        >
-                      </div>
-                      <div>
-                        <label
-                          :for="'option_' + index"
-                          style="font-weight: 600"
-                          class="centerComponent"
-                          >{{ formating(option.amount) }}</label
-                        >
+              <div class="col q-px-md" style="background-color: #f1f5f9">
+                <div style="color: black; font-size: larger" class="q-pa-md">Rincian Harga</div>
+                <div
+                  class="col q-px-md"
+                  style="
+                    background-color: #f1f5f9;
+                    margin-top: 10px;
+                    overflow-y: scroll;
+                    max-height: 150px;
+                  "
+                >
+                  <div v-for="(option, index) in priceBook" :key="index">
+                    <div style="display: flex" class="q-py-md">
+                      <div
+                        style="
+                          display: flex;
+                          justify-content: space-between;
+                          width: 100%;
+                          margin-right: 10px;
+                        "
+                      >
+                        <div>
+                          <label
+                            :for="'option_' + index"
+                            style="font-weight: 600"
+                            class="centerComponent textwrap"
+                            >{{ option.desc }}</label
+                          >
+                        </div>
+                        <div>
+                          <label
+                            :for="'option_' + index"
+                            style="font-weight: 600"
+                            class="centerComponent"
+                            >{{ formating(option.amount) }}</label
+                          >
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
+                  <q-separator horizontal class="q-mt-md q-mb-sm"/>
                 <div style="display: flex; justify-content: space-between; width: 100%">
-                  <div>
-                    <!-- <input
+                    <div>
+                      <!-- <input
                       type="checkbox"
                       :id="'option_' + index"
                       :value="DPP"
                       v-model="includeTax"
                     /> -->
-                    <label
-                      :for="'option_' + index"
-                      style="font-weight: 600;"
-                      class="centerComponent textwrap"
-                      >Tax</label
-                    >
+                    <div style="color: black" class="q-pa-sm">Tax</div>
+
+                    </div>
+                    <div style="width: fit-content; margin: 10px">
+                      <label
+                        :for="'option_' + index"
+                        style="font-weight: 600"
+                        class="centerComponent"
+                        >{{ formating(DPP) }}</label
+                      >
+                    </div>
                   </div>
-                  <div style="width: fit-content; margin: 10px">
-                    <label
-                      :for="'option_' + index"
-                      style="font-weight: 600"
-                      class="centerComponent"
-                      >{{ formating(DPP) }}</label
-                    >
+                  <div style="display: flex; justify-content: space-between; width: 100%">
+                    <div style="color: black; font-size: large" class="q-pa-sm">Harga Total</div>
+                    <div style="width: fit-content; margin: 10px">
+                      <label
+                        :for="'option_' + index"
+                        style="font-weight: 600"
+                        class="centerComponent"
+                      >
+                        {{ formating(total) }}</label
+                      >
+                    </div>
                   </div>
-                </div>
-                <q-separator horizontal />
-                <div style="display: flex; justify-content: space-between; width: 100%">
-                  <div style="color: black; font-size: large" class="q-pa-sm">Harga Total</div>
-                  <div style="width: fit-content; margin: 10px">
-                    <label
-                      :for="'option_' + index"
-                      style="font-weight: 600"
-                      class="centerComponent"
-                    >
-                      {{ formating(total) }}</label
-                    >
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -437,7 +442,7 @@ import { defineComponent, ref } from 'vue'
 import PaymentImage from './fragments/bankimage.vue'
 export default defineComponent({
   name: 'payment',
-  components: { FOMenubar,PaymentImage },
+  components: { FOMenubar, PaymentImage },
   data() {
     return {
       showCase: false,
@@ -456,8 +461,11 @@ export default defineComponent({
       includeTax: false,
       dropdownOptions: [
         { value: 'BCA', imageUrl: '../../../assets/img/payment/Bank_Central_Asia.svg.webp' },
-        { value: 'Mandiri', imageUrl: '../../../assets/img/payment/2560px-Bank_Mandiri_logo.svg.png' },
-        { value: 'BRI', imageUrl: '../../../assets/img/payment/1280px-BANK_BRI_logo.svg.webp' },
+        {
+          value: 'Mandiri',
+          imageUrl: '../../../assets/img/payment/2560px-Bank_Mandiri_logo.svg.png'
+        },
+        { value: 'BRI', imageUrl: '../../../assets/img/payment/1280px-BANK_BRI_logo.svg.webp' }
         // Add other options...
       ],
       dropdownOptions2: [
@@ -497,7 +505,7 @@ export default defineComponent({
       this.selectedBank = newVal
       console.log('method payment ' + this.selectedBank)
       console.log('method payment ' + this.selectedMethod)
-    },
+    }
     // includeTax() {
     //   this.calculateTotal()
     // }
@@ -589,7 +597,7 @@ export default defineComponent({
           params: { resvId: resvId, resvRoomId: resvRoomId }
         })
       } else {
-        this.trigger('warning','select your method')
+        this.trigger('warning', 'select your method')
       }
     },
 

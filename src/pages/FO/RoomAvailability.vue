@@ -268,14 +268,8 @@ export default defineComponent({
     },
     searchName(searchInput) {
       // Make an API call to search based on searchInput
-      this.api.get(`roomavail?search=${searchInput}`, ({ status, data }) => {
-        if (status === 200) {
-          // Update the data with the search result
-          this.formatData(data.logData, data.roomAverage)
-        } else {
-          console.error('Error searching data')
-        }
-      })
+      this.searchData = searchInput
+      this.fetchData()
     },
     setSortingDisplay(option) {
       this.sortingDisplay = option
@@ -291,7 +285,7 @@ export default defineComponent({
     fetchData() {
       this.loading = true
 
-      let url = `roomavail?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      let url = `roomavail?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}&search=${this.searchData}`
 
       const fromDate = this.datePicker != null ? this.datePicker.from.replace(/\//g, '-') : ''
       const toDate = this.datePicker != null ? this.datePicker.to.replace(/\//g, '-') : ''

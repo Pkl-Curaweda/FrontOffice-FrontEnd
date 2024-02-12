@@ -67,7 +67,7 @@
 
     <MultiPane>
       <template #upper>
-        <div class="my-table" >
+        <div class="my-table">
           <q-table
             class="no-shadow"
             v-model:pagination="pagination"
@@ -76,6 +76,7 @@
             :rows="data"
             :loading="loading"
             :columns="columns"
+            hide-bottom
             row-key="name"
           >
             <template>

@@ -344,11 +344,23 @@ export default defineComponent({
   }
 })
 </script>
+
 <style>
 .input-border .q-field__control::before {
   border-color: #d9d9d9 !important;
 }
 .input-border .q-field__label {
   color: black;
+}
+
+.q-toggle__thumb:after {
+  left: 0;
+  width: 20px;
+  height: 20px;
+}
+.q-toggle__inner--truthy .q-toggle__thumb:after {
+  left: 19px;
+  width: 20px;
+  height: 20px;
 }
 </style>

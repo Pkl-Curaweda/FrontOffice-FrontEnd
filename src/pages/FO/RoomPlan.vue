@@ -17,12 +17,12 @@
         </q-btn-dropdown>
       </template>
     </FOMenubar>
-    <div class="flex q-mx-xl q-mt-lg page-padding">
+    <div
+      class="q-ml-xl q-mt-lg"
+      style="display: flex; justify-content: center; align-items: center"
+    >
       <!-- ROOMS -->
-      <div
-        style="width: 100%; position: relative; overflow: hidden"
-        :style="`margin-inline: ${$q.screen.lt.md ? '1rem' : '4rem'};`"
-      >
+      <div style="width: 70%; position: relative; overflow: hidden">
         <q-img src="/src/assets/svg/roomplan_bg.svg" />
 
         <!-- LEFT ROOMS -->
@@ -201,10 +201,10 @@
         </div>
       </div>
 
-      <div class="flex justify-center items-start q-mt-xl q-mb-sm">
+      <div>
         <template v-for="(group, i) in subGroupingArray(statuses, 3)" :key="i">
           <q-separator vertical size="13px" v-if="i != 0" />
-          <div class="q-mx-md">
+          <div style="margin: 0 100px">
             <p
               v-for="(status, j) in group"
               :key="j"
@@ -212,7 +212,6 @@
               :style="`background-color: #${status.rowColor}; color: #${status.textColor}`"
             >
               {{ status.shortDescription }}
-              {{ status.longDescription ? `= ${status.longDescription}` : '' }}
             </p>
           </div>
         </template>

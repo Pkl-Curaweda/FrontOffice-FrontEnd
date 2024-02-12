@@ -185,6 +185,7 @@ export default defineComponent({
         useTax: this.DPP
       }
       try {
+        console.log(this.priceBook)
         if (this.priceBook != null && this.selectedMethod != '') {
           this.loading = true
           this.api.post(`invoice/payment/${resvId}/${resvRoomId}`, data, ({ status, data }) => {

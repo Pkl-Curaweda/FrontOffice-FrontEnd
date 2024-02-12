@@ -54,7 +54,7 @@
         </q-btn>
 
         <!-- remove reservation  -->
-        <q-btn
+        <!-- <q-btn
           @click="removeRoomResv"
           flat
           square
@@ -73,7 +73,7 @@
               fill="#008444"
             />
           </svg>
-        </q-btn>
+        </q-btn> -->
 
         <q-space />
 
@@ -85,7 +85,7 @@
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
           @click="newResvroom()"
-          :disabled="!this.$ResvStore.currentRoomResvId"
+          :disabled="!this.$ResvStore.currentRoomResvId || !this.$ResvStore.addroom"
         />
 
         <!-- show modal to create card's credential: KTP, SIM, address  -->
@@ -245,7 +245,7 @@
           :outlined="!$ResvStore.fix"
           :borderless="$ResvStore.fix"
           :readonly="$ResvStore.fix"
-          :disable= "$ResvStore.detail"
+          :disable="$ResvStore.detail"
           :options="roomTypeOpts"
           label="RmType"
           dropdown-icon="expand_more"
@@ -257,7 +257,7 @@
           dense
           v-model="roomNo"
           :options="roomNoOpts"
-          :disable= "$ResvStore.detail"
+          :disable="$ResvStore.detail"
           label="Room No"
           dropdown-icon="expand_more"
           class="full-width"
@@ -267,7 +267,7 @@
           dense
           v-model="roomBed"
           :options="roomBedOpts"
-          :disable= "$ResvStore.detail"
+          :disable="$ResvStore.detail"
           dropdown-icon="expand_more"
           class="full-width"
           option-label="value"
@@ -505,30 +505,41 @@
         dense
         style="font-weight: bold"
       >
-        <div v-for="row in resultRows" :key="row.id" clickable @click="selectRow(row)">
-          <div style="display: flex; width: 100%">
-            <q-radio selection="single" v-model="selected" :val="row" @click="checked(row.id)" />
+        <div v-if="$ResvStore.logc || !resvNo">
+          <div v-for="row in resultRows" :key="row.id" clickable @click="selectRow(row)">
+            <div style="display: flex; width: 100%">
+              <q-radio selection="single" v-model="selected" :val="row" @click="checked(row.id)" />
 
-            <div style="display: flex; justify-content: space-around; margin: auto; width: 100%">
-              <div>{{ row.id.split('-')[0] }}</div>
-              <div>{{ row.rate }}</div>
-              <div>{{ row.id.split('-')[1] }}</div>
+              <div style="display: flex; justify-content: space-around; margin: auto; width: 100%">
+                <div>{{ row.id.split('-')[0] }}</div>
+                <div>{{ row.rate }}</div>
+                <div>{{ row.id.split('-')[1] }}</div>
+              </div>
             </div>
           </div>
+          <q-separator horizontal class="q-ma-xs" />
         </div>
-        <q-separator horizontal class="q-ma-xs"/>
-        <div style="display: flex;" class="row">
-            <q-btn
+        <div style="display: flex" class="row">
+          <q-btn
             unelevated
             dense
             class="q-mt-sm text-capitalize q-px-sm q-mx-sm"
             color="primary"
             @click="redirectToInvoice"
             label="Invoice"
-            v-if="resvNo"
+            v-if="resvNo && !$ResvStore.fix"
             :disable="!resvNo"
-            />
-          <q-input dense outlined v-model="voucherId" label="Voucher" class="q-mt-sm col-grow" :style="!resvNo ? 'width: 100%;': 'width: 50%;'"/>
+          />
+          <q-input
+            dense
+            :outlined="!$ResvStore.fix"
+            v-model="voucherId"
+            label="Voucher"
+            class="q-mt-sm col-grow"
+            :readonly="$ResvStore.fix"
+            :borderless="$ResvStore.fix"
+            :style="!resvNo ? 'width: 100%;' : 'width: 20%;'"
+          />
         </div>
       </q-expansion-item>
 
@@ -728,7 +739,7 @@ export default defineComponent({
       resvStatus: ref([]),
       descSelect: ref(''),
       arrangmentValue: ref([]),
-      voucherId: ref(''),
+      voucherId: ref('')
     }
   },
   data() {
@@ -763,49 +774,59 @@ export default defineComponent({
         this.resultRows = this.rows.filter((r) => {
           return r.date == oldval
         })
-        let rmNos = [], rmBed
+        let rmNos = [],
+          rmBed
         switch (oldval) {
-          case "FML":
-            [rmNos, rmBed] = [[105, 106, 107], [{ label: 'T', value: 'TWIN' }]]
-            this.roomNo = this.roomNo != null && rmNos.some((list) => this.roomNo === list ) ? this.roomNo : rmNos[0]
-            this.roomBed = this.roomBed != null && rmBed === this.roomBed ? this.roomBed :  rmBed[0]
-            break;
-            case "STD":
-            [rmNos, rmBed] = [[108, 109, 110], [{ label: 'S', value: 'SINGLE' }]]
-            this.roomNo = this.roomNo != null && rmNos.some((list) => this.roomNo === list) ? this.roomNo : rmNos[0];
-            this.roomBed =  this.roomBed != null && rmBed === this.roomBed ? this.roomBed :  rmBed[0]
-              break;
-              case "DLX":
-              [rmNos, rmBed] = [[101, 102, 103, 104], [{ label: 'K', value: 'KING' }]]
-                this.roomNo = this.roomNo != null && rmNos.some((list) => this.roomNo === list ) ? this.roomNo : rmNos[0]
-                this.roomBed =  this.roomBed != null &&  rmBed === this.roomBed ? this.roomBed :  rmBed[0]
-                break;
-                default:
-            break;
+          case 'FML':
+            ;[rmNos, rmBed] = [[105, 106, 107], [{ label: 'T', value: 'TWIN' }]]
+            this.roomNo =
+              this.roomNo != null && rmNos.some((list) => this.roomNo === list)
+                ? this.roomNo
+                : rmNos[0]
+            this.roomBed = this.roomBed != null && rmBed === this.roomBed ? this.roomBed : rmBed[0]
+            break
+          case 'STD':
+            ;[rmNos, rmBed] = [[108, 109, 110], [{ label: 'S', value: 'SINGLE' }]]
+            this.roomNo =
+              this.roomNo != null && rmNos.some((list) => this.roomNo === list)
+                ? this.roomNo
+                : rmNos[0]
+            this.roomBed = this.roomBed != null && rmBed === this.roomBed ? this.roomBed : rmBed[0]
+            break
+          case 'DLX':
+            ;[rmNos, rmBed] = [[101, 102, 103, 104], [{ label: 'K', value: 'KING' }]]
+            this.roomNo =
+              this.roomNo != null && rmNos.some((list) => this.roomNo === list)
+                ? this.roomNo
+                : rmNos[0]
+            this.roomBed = this.roomBed != null && rmBed === this.roomBed ? this.roomBed : rmBed[0]
+            break
+          default:
+            break
         }
       }
     },
     roomNo: {
-      handler(newVal){
+      handler(newVal) {
         const roomTypeList = ['DLX', 'DLX', 'DLX', 'DLX', 'FML', 'FML', 'FML', 'STD', 'STD', 'STD']
         this.roomType = roomTypeList[newVal - 101]
       }
     },
     roomBed: {
-      handler(newVal){
-        console.log(newVal)
-          switch(newVal.label){
-            case "T":
-              this.roomType = "FML"
-              break;
-              case "K":
-                this.roomType = "DLX"
-                break;
-                default:
-              this.roomType = "STD"
-              break;
-          }
+      handler(newVal) {
+        // console.log(newVal)
+        switch (newVal.label) {
+          case 'T':
+            this.roomType = 'FML'
+            break
+          case 'K':
+            this.roomType = 'DLX'
+            break
+          default:
+            this.roomType = 'STD'
+            break
         }
+      }
     },
     'arrivalDepart.from': {
       immediate: true,
@@ -869,7 +890,7 @@ export default defineComponent({
       if (this.arrivalDepart.from && this.arrivalDepart.to) {
         const fromDate = new Date(this.arrivalDepart.from)
         const toDate = new Date(this.arrivalDepart.to)
-        console.log(this.arrivalDepart.to)
+        // console.log(this.arrivalDepart.to)
         const options = {
           month: 'numeric',
           day: 'numeric'
@@ -890,15 +911,15 @@ export default defineComponent({
     updateGuestsCountLabel() {
       this.guestsLabel = `${this.guests['adult']} Adult, ${this.guests['child']} Child, ${this.guests['baby']} Baby`
     },
-    removeRoomResv() {
-      try {
-        const { currentResvId, currentRoomResvId } = this.$ResvStore
-        this.api.delete(`detail/reservation/${currentResvId}/${currentRoomResvId}/delete`)
-        this.refreshData()
-      } catch (error) {
-        console.error(error)
-      }
-    },
+    // removeRoomResv() {
+    //   try {
+    //     const { currentResvId, currentRoomResvId } = this.$ResvStore
+    //     this.api.delete(`detail/reservation/${currentResvId}/${currentRoomResvId}/delete`)
+    //     this.refreshData()
+    //   } catch (error) {
+    //     console.error(error)
+    //   }
+    // },
     getResvProps() {
       this.api.get(`detail/reservation/1/1/create`, ({ status, data }) => {
         this.loading = false
@@ -907,13 +928,13 @@ export default defineComponent({
           const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
           this.rows = formattedRoomRates
           this.resultRows = formattedRoomRates
-          console.log(data)
+          // console.log(data)
         }
       })
     },
     selectRow(row) {
       this.selected = row
-      console.log(this.selected)
+      // console.log(this.selected)
       // this.calculateTotal()
     },
     // calculateTotal() {
@@ -955,7 +976,7 @@ export default defineComponent({
           data,
           ({ status, data, message }) => {
             if (status == 200) {
-              console.log(data)
+              // console.log(data)
               this.loading = false
               this.trigger('positive', message)
 
@@ -983,8 +1004,10 @@ export default defineComponent({
             this.loading = false
             if (status == 200) {
               this.trigger('positive', message)
-              console.log(response.data)
+              // console.log(response.data)
               this.refreshData()
+            }else{
+              this.trigger('negative', message)
             }
           }
         )
@@ -1006,6 +1029,8 @@ export default defineComponent({
             if (status == 200) {
               this.trigger('positive', message)
               this.refreshData()
+            } else{
+              this.trigger('negative', message)
             }
           }
         )
@@ -1025,7 +1050,7 @@ export default defineComponent({
         `detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
         ({ status, data, message }) => {
           this.loading = false
-          console.log('test')
+          // console.log('test')
           if (status == 200) {
             this.trigger('positive', message)
 
@@ -1065,11 +1090,11 @@ export default defineComponent({
             // this.resultStatus = this.checkData(reservation.description)
             // this.arrangmentCode = { id: arrangment.id, rate: arrangment.rate }
           }
-          console.log(this.arrangmentValue.id.split('-')[1])
+          // console.log(this.arrangmentValue.id.split('-')[1])
           this.selectRow(this.arrangmentValue)
           this.checkedCode(this.arrangmentValue.id.split('-')[1])
           // connsole.log(this.rows)
-          console.log(this.resvStatus.label)
+          // console.log(this.resvStatus.label)
         }
       )
     },
@@ -1077,7 +1102,7 @@ export default defineComponent({
       const rmt = []
       map.forEach((dt) => {
         const { id, rate } = dt
-        console.log(dt)
+        // console.log(dt)
         rmt.push({
           id,
           date: id.split('-')[0],
@@ -1085,14 +1110,14 @@ export default defineComponent({
           arrangement: id.split('-')[1]
         })
       })
-      console.log(rmt)
+      // console.log(rmt)
       return rmt
     },
     formattedStatus(map = []) {
       const rms = []
       map.forEach((dt) => {
         const { id, rate } = dt
-        console.log(dt)
+        // console.log(dt)
         rms.push({
           id,
           date: id.split('-')[0],
@@ -1100,7 +1125,7 @@ export default defineComponent({
           arrangement: id.split('-')[1]
         })
       })
-      console.log(rms)
+      // console.log(rms)
       return rms
     },
     checkCardIdselect(data) {
@@ -1125,7 +1150,7 @@ export default defineComponent({
                 data.carIdentifier && this.checkCardIdselect(data.carIdentifier)),
               (this.idcardnumber = data.cardId),
               (this.address = data.address)
-            console.log(data)
+            // console.log(data)
             if (this.nameidcard != '') {
               this.trigger('positive', message)
             }
@@ -1138,7 +1163,7 @@ export default defineComponent({
     async createData() {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
       this.resvNo = currentResvId
-      console.log(this.setRoww(this.selected.id))
+      // console.log(this.setRoww(this.selected.id))
       const dataToUpdate = {
         nameContact: this.guestName,
         resourceName: this.resvRecource,
@@ -1160,8 +1185,8 @@ export default defineComponent({
             this.loading = false
             if (status === 200) {
               this.trigger('positive', message)
-              console.log('Data berhasil diperbarui:', data)
-              this.refreshData()
+              // console.log('Data berhasil diperbarui:', data)
+              // this.refreshData()
             } else {
               this.trigger('negative', message)
               console.error('Gagal memperbarui data')
@@ -1184,10 +1209,10 @@ export default defineComponent({
         manyChild: this.guests.child,
         manyBaby: this.guests.baby,
         inHouseIndicator: true,
-        arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
-        departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
+        arrivalDate: this.arrivalDepart.from.split('T')[0],
+        departureDate: this.arrivalDepart.to.split('T')[0],
         reservationRemarks: this.resvRemark,
-        voucher: this.voucherId,
+        voucher: this.voucherId || '',
         resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id)
       }
 
@@ -1204,7 +1229,7 @@ export default defineComponent({
             datachangeroom,
             ({ status, data, message }) => {
               this.loading = false
-              console.log(this.resvStatus)
+              // console.log(this.resvStatus)
 
               if (status === 200) {
                 this.trigger('positive', message)
@@ -1227,12 +1252,13 @@ export default defineComponent({
             dataToUpdate,
             ({ status, data, message }) => {
               this.loading = false
-              console.log(this.resvStatus)
+              // console.log(this.resvStatus)
               if (status === 200) {
                 this.trigger('positive', message)
                 console.log('Data berhasil diperbarui:', data)
+                this.refreshData()
               } else {
-                console.error('Gagal memperbarui data')
+                // console.error('Gagal memperbarui data')
                 this.trigger('negative', message)
               }
             }
@@ -1247,20 +1273,16 @@ export default defineComponent({
       return new Date(date)
     },
     formatDateWithoutTimezone(date) {
-      const dateObject = new Date(date)
-      const result = dateObject.toISOString().split('T')[0]
-      console.log(result)
-
-      return result
+      return date.replace(/\//g, '-')
     },
     onItemClick(optionValue, desc) {
       this.optionValue = optionValue
       this.resvStatus = { id: optionValue, description: desc }
-      console.log(this.resvStatus.id)
+      // console.log(this.resvStatus.id)
     },
     getDropdownLabel() {
       if (this.resvStatus.label) {
-        console.log('berhasil')
+        // console.log('berhasil')
         // if (!this.dropdownSelected && this.descSelect != null) {
         //   console.log('berhasil')
         //   return this.descSelect
@@ -1309,13 +1331,13 @@ export default defineComponent({
     },
     KTPSelected() {
       this.CardIdselect = 'KTP'
-      console.log(this.CardIdselect)
+      // console.log(this.CardIdselect)
       this.isKtpSelected = !this.isKtpSelected
       this.isSimSelected = false
     },
     SIMSelected() {
       this.CardIdselect = 'SIM'
-      console.log(this.CardIdselect)
+      // console.log(this.CardIdselect)
       this.isSimSelected = !this.isSimSelected
       this.isKtpSelected = false
     },
@@ -1323,12 +1345,12 @@ export default defineComponent({
       if (row.split('-')[1] == 'RO') {
         this.isRoSelected = true
         this.isRbSelected = false
-        console.log(row)
+        // console.log(row)
       } else if (row.split('-')[1] == 'RB') {
         this.isRbSelected = true
         this.isRoSelected = false
       } else {
-        console.log('data tidak sesuai')
+        // console.log('data tidak sesuai')
       }
     },
     checkedCode(type) {
@@ -1340,7 +1362,7 @@ export default defineComponent({
         this.isRoSelected = false
         this.selected.id.split('-')[1] = '-' + type
       } else {
-        console.log('data tidak sesuai')
+        // console.log('data tidak sesuai')
       }
     }
   }

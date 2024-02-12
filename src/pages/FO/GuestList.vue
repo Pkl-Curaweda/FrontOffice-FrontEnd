@@ -271,6 +271,78 @@
                             <q-item
                               clickable
                               v-close-popup
+                              @click="fixDetail(props.row)"
+                              style="display: flex"
+                            >
+                              <q-btn
+                                flat
+                                rounded
+                                size="13px"
+                                @click="fixDetail(props.row)"
+                                style="color: #008444"
+                                icon="visibility_off"
+                              />
+                              <q-item-section>
+                                <q-item-label>Fix</q-item-label>
+                              </q-item-section>
+                            </q-item>
+                          <q-item
+                              clickable
+                              v-close-popup
+                              @click="redirectToInvoice(props.row)"
+                              style="display: flex"
+                            >
+                              <q-btn
+                                flat
+                                rounded
+                                size="13px"
+                                @click="redirectToInvoice(props.row)"
+                                style="color: #008444"
+                                icon="description"
+                              >
+                              </q-btn>
+                              <q-item-section>
+                                <q-item-label>Invoice</q-item-label>
+                              </q-item-section>
+                            </q-item>
+                            <q-item
+                              clickable
+                              v-close-popup
+                              @click="waitinglist(props.row, false, true)"
+                              style="display: flex"
+                            >
+                              <q-btn
+                                flat
+                                rounded
+                                size="13px"
+                                @click="waitinglist(props.row, false, true)"
+                                style="color: #008444"
+                                icon="o_add_home"
+                              />
+                              <q-item-section>
+                                <q-item-label>Add Room</q-item-label>
+                              </q-item-section>
+                            </q-item>
+                            <q-item
+                              clickable
+                              v-close-popup
+                              @click="dialogeditroom = true"
+                              style="display: flex"
+                            >
+                              <q-btn
+                                flat
+                                rounded
+                                size="13px"
+                                style="color: #008444"
+                                icon="edit_note"
+                              />
+                              <q-item-section>
+                                <q-item-label>Change Room</q-item-label>
+                              </q-item-section>
+                            </q-item>
+                            <q-item
+                              clickable
+                              v-close-popup
                               @click="setRoomResv(props.row)"
                               style="display: flex"
                             >
@@ -306,7 +378,7 @@
                               <q-btn
                                 flat
                                 rounded
-                                size="13px"
+                                size="14px"
                                 style="color: #269861"
                                 @click="deleteResv(props.row)"
                                 ><svg
@@ -326,45 +398,10 @@
                                 <q-item-label>Delete</q-item-label>
                               </q-item-section>
                             </q-item>
-
-                            <q-item
-                              clickable
-                              v-close-popup
-                              @click="fixDetail(props.row)"
-                              style="display: flex"
-                            >
-                              <q-btn
-                                flat
-                                rounded
-                                size="13px"
-                                @click="fixDetail(props.row)"
-                                style="color: #008444"
-                                icon="visibility_off"
-                              />
-                              <q-item-section>
-                                <q-item-label>Fix</q-item-label>
-                              </q-item-section>
-                            </q-item>
-
-                            <q-item
-                              clickable
-                              v-close-popup
-                              @click="dialogeditroom = true"
-                              style="display: flex"
-                            >
-                              <q-btn
-                                flat
-                                rounded
-                                size="13px"
-                                style="color: #008444"
-                                icon="edit_note"
-                              />
-                              <q-item-section>
-                                <q-item-label>Change Room</q-item-label>
-                              </q-item-section>
-                            </q-item>
                           </q-list>
+
                         </q-menu>
+
                         <q-dialog v-model="dialogeditroom" ref="editRoomDialog">
                           <q-card>
                             <q-card-section>
@@ -388,7 +425,7 @@
                               >
                                 <q-btn v-close-popup label="Cancel" outline color="primary" />
                                 <q-btn
-                                  v-close-popup
+                                  v-close-popup="this.waitingnote != null"
                                   label="accept"
                                   @click="waitinglist(props.row, true)"
                                   color="primary"
@@ -432,6 +469,7 @@ export default defineComponent({
       cancelEnabled: ref(true),
       iconName1: 'more_vert',
       showDropdown: false,
+      waitingnote: ref(),
       background: ref(),
       state: false,
       allObjectsInArray,
@@ -536,7 +574,7 @@ export default defineComponent({
             }
           ],
           onOptionChange: (val) => {
-            console.log(val.value)
+            // console.log(val.value)
             if (val.value == 'King bed')
               this.filterSortOrder = { col: 'BType', val: 'room+bedSetup+KING' }
             else if (val.value == 'Twin bed')
@@ -670,11 +708,17 @@ export default defineComponent({
     }
   },
   methods: {
+    redirectToInvoice(data) {
+      this.$router.push({
+        name: 'guest-invoice',
+        params: { resvId: data['ResNo'].data, resvRoomId: data['ResRoomNo'].data }
+      })
+    },
     postwaiting(data) {
       const resvId = data['ResNo'].data
       const roomNo = data['ResRoomNo'].data
 
-      console.log(resvId, roomNo)
+      // console.log(resvId, roomNo)
       const note = {
         request: this.waitingnote
       }
@@ -685,7 +729,7 @@ export default defineComponent({
           note,
           ({ data, status, message }) => {
             if (status === 200) {
-              console.log(data)
+              // console.log(data)
               this.trigger('positive', message)
               this.fetchData()
             }
@@ -711,7 +755,7 @@ export default defineComponent({
           ({ status, data, message }) => {
             if (status === 200) {
               this.triggerPositive(message)
-              console.log(data)
+              // console.log(data)
               this.fetchData()
             }
           }
@@ -721,13 +765,13 @@ export default defineComponent({
       }
     },
     showhistory(state) {
-      console.log(state)
+      // console.log(state)
       this.state = state
       this.fetchData()
     },
-    waitinglist(data, log) {
+    waitinglist(data, log, state) {
       const roomNo = data['RmNo'].data
-      console.log(roomNo)
+      // console.log(roomNo)
       this.roomno = roomNo
       // this.dialogeditroom = true
       // console.log(this.dialogeditroom)
@@ -736,14 +780,23 @@ export default defineComponent({
       this.$ResvStore.logc = true
       this.$ResvStore.detail = false
 
-      if (log === true && this.waitingnote != null && this.waitingnote != '') {
-        // this.$refs.editRoomDialog.hide();
-        console.log(this.waitingnote)
-        this.$ResvStore.waitingnote = this.waitingnote
+      if (state === true) {
+        const statedata = true
+        this.$ResvStore.addroom = statedata
         this.$ResvStore.currentResvId = data['ResNo'].data
+
         this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
       } else {
-        this.trigger('negative', 'note has not been filled in, data must be filled in')
+        if (log === true && this.waitingnote != null && this.waitingnote != '') {
+          // this.$refs.editRoomDialog.hide();
+          // console.log(this.waitingnote)
+          this.$ResvStore.addroom = false
+          this.$ResvStore.waitingnote = this.waitingnote
+          this.$ResvStore.currentResvId = data['ResNo'].data
+          this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
+        } else {
+          this.trigger('negative', 'note has not been filled in, data must be filled in')
+        }
       }
     },
     editroom(data) {
@@ -753,16 +806,17 @@ export default defineComponent({
       this.$ResvStore.ds = true
       this.$ResvStore.logc = false
       this.$ResvStore.detail = false
+      this.$ResvStore.addroom = false
     },
     changereset(data) {
       const resvId = data['ResNo'].data
       const roomNo = data['ResRoomNo'].data
-      console.log(roomNo)
+      // console.log(roomNo)
       this.api.put(`arrival?id=${resvId}-3`, null, ({ status, data, message }) => {
         this.loading = false
         if (status === 200) {
           this.trigger('positive', message)
-          console.log('Data berhasil diperbarui:', data)
+          // console.log('Data berhasil diperbarui:', data)
           this.fetchData()
         }
       })
@@ -771,12 +825,12 @@ export default defineComponent({
       try {
         const resvId = data['ResNo'].data
         const roomNo = data['ResRoomNo'].data
-        console.log(roomNo)
+        // console.log(roomNo)
         this.api.put(`arrival?id=${resvId}-1`, null, ({ status, data, message }) => {
           this.loading = false
           if (status === 200) {
             this.trigger('positive', message)
-            console.log('Data berhasil diperbarui:', data)
+            // console.log('Data berhasil diperbarui:', data)
             this.fetchData()
           } else {
             console.error('Gagal memperbarui data')
@@ -790,13 +844,13 @@ export default defineComponent({
       try {
         const resvId = data['ResNo'].data
         const roomNo = data['ResRoomNo'].data
-        console.log(roomNo)
+        // console.log(roomNo)
         this.loading = true
         this.api.put(`arrival?id=${resvId}-2`, null, ({ status, data, message }) => {
           this.loading = false
           if (status === 200) {
             this.trigger('positive', message)
-            console.log('Data berhasil diperbarui:', data)
+            // console.log('Data berhasil diperbarui:', data)
             this.fetchData()
           } else {
             console.error('Gagal memperbarui data')
@@ -808,9 +862,9 @@ export default defineComponent({
       }
     },
     toggleDropdown() {
-      console.log(this.showDropdown)
+      // console.log(this.showDropdown)
       this.showDropdown = !this.showDropdown
-      console.log(this.showDropdown)
+      // console.log(this.showDropdown)
       this.iconName1 = this.showDropdown ? this.arrowBottom : this.arrowUp
     },
     setSortOrder(val = '') {
@@ -826,6 +880,8 @@ export default defineComponent({
       this.$ResvStore.fix = false
       this.$ResvStore.ds = false
       this.$ResvStore.logc = false
+      this.$ResvStore.addroom = false
+
       this.$ResvStore.detail = true
     },
     fixDetail(data) {
@@ -834,14 +890,16 @@ export default defineComponent({
       this.$ResvStore.fix = true
       this.$ResvStore.detail = false
       this.$ResvStore.ds = false
+      this.$ResvStore.addroom = false
+
       this.$ResvStore.logc = false
-      console.log(this.$ResvStore.fix)
+      // console.log(this.$ResvStore.fix)
     },
     async deleteResv(data) {
       try {
         const resvId = data['ResNo'].data
         const roomNo = data['ResRoomNo'].data
-        console.log(roomNo)
+        // console.log(roomNo)
         this.api.delete(`detail/reservation/${resvId}/${roomNo}/delete`, ({ data, message }) => {
           this.fetchData()
           this.trigger('positive', message)
@@ -853,8 +911,8 @@ export default defineComponent({
     onPaginationChange(props) {
       props.pagination.rowsPerPage =
         props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
-      console.log(props)
-      console.log(props.rowsPerPage)
+      // console.log(props)
+      // console.log(props.rowsPerPage)
       this.pagination = props.pagination
       this.fetchData()
     },
@@ -969,7 +1027,7 @@ export default defineComponent({
         })
       })
       this.data = list
-      console.log(this.data)
+      // console.log(this.data)
     }
   }
 })

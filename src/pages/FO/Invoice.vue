@@ -459,6 +459,7 @@ export default defineComponent({
           // Sukses, Update the reactive variable
           // this.refreshData()
           this.postedArticles.value = [...this.postedArticles.value, ...postData]
+          this.fetchData()
 
           this.$q.notify({
             type: 'positive',
@@ -466,6 +467,8 @@ export default defineComponent({
             timeout: 1000
           })
         }
+        this.fetchData()
+
       })
     },
     removeInvoiceData(row) {
@@ -479,29 +482,22 @@ export default defineComponent({
       }
 
       // Make the DELETE request to the API endpoint
-      this.$api
-        .delete(`fo/detail/invoice/${resvId}/${resvRoomId}/delete?ids=${uniqueId}`)
-        .then((response) => {
-          if (response.status === 200 && response.data.success) {
-            // If deletion is successful, remove the row from the local data array
-            const index = this.data.findIndex((item) => item.uniqueId.data === uniqueId)
-            if (index !== -1) {
-              this.data.splice(index, 1)
-            }
-
-            this.$q.notify({
-              type: 'positive',
-              message: 'Row deleted successfully.',
-              timeout: 1000
-            })
-          } else {
-            console.error('Failed to delete row:', response.data.message)
+      this.api
+        .delete(`detail/invoice/${resvId}/${resvRoomId}/delete?ids=${uniqueId}`, ({data, message}) => {
+          const index = this.data.findIndex((item) => item.uniqueId.data === uniqueId)
+          if (index !== -1) {
+            this.data.splice(index, 1)
           }
-        })
-        .catch((error) => {
-          console.error('Error deleting row:', error)
-        })
-    },
+
+          this.$q.notify({
+            type: 'positive',
+            message: 'Row deleted successfully.',
+            timeout: 1000
+          })
+          this.fetchData()
+
+    })
+  },
     searchDesc(searchInput) {
       this.searchData = searchInput
       this.fetchData()
@@ -602,8 +598,8 @@ export default defineComponent({
           uniqueId: { data: inv.uniqueId, style: {} }
         })
       })
-
-      console.log(list)
+      console.log(list[0])
+      this.$ResvStore.uniqueId = list[0].uniqueId.data
       this.data = list
     },
     setRoomResv(data) {

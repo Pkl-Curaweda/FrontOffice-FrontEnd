@@ -29,7 +29,7 @@
           dropdown-icon="o_expand_more"
         >
           <div>
-            <q-date v-model="datePicker" />
+            <q-date v-model="datePicker" range />
           </div>
         </q-btn-dropdown>
       </template>
@@ -93,12 +93,7 @@
               </div>
               <div class="q-pa-sm flex justify-end" style="gap: 5px; border-top: 1px solid green">
                 <q-btn size="sm" no-caps outline>Cancel</q-btn>
-                <q-btn
-                  size="sm"
-                  no-caps
-                  color="primary"
-                  text-color="white"
-                  @click="handleAddArticles"
+                <q-btn size="sm" no-caps color="primary" text-color="white" @click="addArticles"
                   >Add</q-btn
                 >
               </div>
@@ -269,7 +264,7 @@ export default defineComponent({
       data2,
       searchInput: ref(''),
       loading: ref(false),
-      datePicker: ref(),
+      datePicker: ref({ from: '', to: '' }),
       filterDisplayOptions: [
         { label: 'Artno', value: 'artno' },
         { label: 'Description', value: 'description' }
@@ -419,17 +414,6 @@ export default defineComponent({
     }
   },
   methods: {
-    handleAddArticles() {
-      // Panggil fungsi untuk menambahkan artikel
-      this.addArticles()
-
-      // Panggil fungsi untuk menyegarkan data
-      // this.refreshData()
-    },
-    refreshData() {
-      window.location.reload()
-    },
-    // Fungsi untuk menangani POST request
     addArticles() {
       const { resvId, resvRoomId } = this.$route.params
 
@@ -454,21 +438,17 @@ export default defineComponent({
       }
 
       // Melakukan POST ke API
-      this.api.post(`invoice/${resvId}/${resvRoomId}/article`, postData, ({ status, data }) => {
-        if (status === 200) {
-          // Sukses, Update the reactive variable
-          // this.refreshData()
-          this.postedArticles.value = [...this.postedArticles.value, ...postData]
-          this.fetchData()
-
+      this.api.post(`invoice/${resvId}/${resvRoomId}/article`, postData, ({ status }) => {
+        if (status == 200) {
+          this.selected = []
           this.$q.notify({
             type: 'positive',
             message: 'Articles added successfully.',
             timeout: 1000
           })
         }
-        this.fetchData()
 
+        this.fetchData()
       })
     },
     removeInvoiceData(row) {
@@ -482,8 +462,9 @@ export default defineComponent({
       }
 
       // Make the DELETE request to the API endpoint
-      this.api
-        .delete(`detail/invoice/${resvId}/${resvRoomId}/delete?ids=${uniqueId}`, ({data, message}) => {
+      this.api.delete(
+        `detail/invoice/${resvId}/${resvRoomId}/delete?ids=${uniqueId}`,
+        ({ data, message }) => {
           const index = this.data.findIndex((item) => item.uniqueId.data === uniqueId)
           if (index !== -1) {
             this.data.splice(index, 1)
@@ -495,9 +476,9 @@ export default defineComponent({
             timeout: 1000
           })
           this.fetchData()
-
-    })
-  },
+        }
+      )
+    },
     searchDesc(searchInput) {
       this.searchData = searchInput
       this.fetchData()
@@ -537,10 +518,11 @@ export default defineComponent({
         url += `&sort=${this.filterSortOrder.val}`
       }
 
-      const formattedDate = this.datePicker != null ? this.datePicker?.replace(/\//g, '-') : ''
+      const fromDate = this.datePicker != null ? this.datePicker.from.replace(/\//g, '-') : ''
+      const toDate = this.datePicker != null ? this.datePicker.to.replace(/\//g, '-') : ''
 
-      if (formattedDate) {
-        url += `&date=${formattedDate}T${formattedDate}`
+      if (fromDate !== '' && toDate !== '') {
+        url += `&date=${fromDate}+${toDate}`
       }
 
       this.api.get(url, ({ status, data, message }) => {
@@ -599,7 +581,7 @@ export default defineComponent({
         })
       })
       console.log(list[0])
-      this.$ResvStore.uniqueId = list[0].uniqueId.data
+      if (list.length > 0) this.$ResvStore.uniqueId = list[0].uniqueId.data
       this.data = list
     },
     setRoomResv(data) {

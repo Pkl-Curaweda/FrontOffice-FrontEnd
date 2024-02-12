@@ -214,7 +214,7 @@ export default defineComponent({
 
       if (state === true) {
         this.$router.push({
-          name: 'guest-list'
+          name: 'guest-invoice'
         })
       } else {
         this.$router.push({

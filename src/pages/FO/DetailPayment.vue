@@ -29,7 +29,7 @@
                 <div style="padding: 5px">{{ this.user.billNumber }}</div>
               </div>
               <div class="col">
-                {{ selectedBank ? selectedBank + '/ ' : '' }}
+                {{ selectedBank }}
               </div>
             </div>
             <q-separator horizontal class="q-ma-md" />
@@ -111,7 +111,7 @@
               <div style="display: flex; justify-content: space-between; width: 100%">
                 <div style="color: black; font-size: large" class="q-pa-sm">Paid</div>
                 <div style="width: fit-content;">
-                  <q-input type="number" dense outlined v-model="paidmmount" @input="formatRupiah" />
+                  <q-input type="number" dense outlined v-model="paidmmount"/>
                   <!-- <q-input type="text" class="form-control" v-model="displayValue" @blur="isInputActive = false" @focus="isInputActive = true"/> -->
                 </div>
               </div>
@@ -208,6 +208,8 @@ export default defineComponent({
     },
     async paymentpost() {
       const { resvId, resvRoomId } = this.$route.params
+      const method = this.$route.query
+
       const data = {
         paymentMethod: this.selectedMethod,
         invoices: this.priceBook,
@@ -215,7 +217,8 @@ export default defineComponent({
         useTax: this.includeTax
       }
       try {
-        if (this.priceBook != null && this.selectedMethod != '') {
+        // if (this.priceBook != null && this.selectedMethod != '') {
+        if (method != null && method != '') {
           this.loading = true
           this.api.post(
             `invoice/payment/${resvId}/${resvRoomId}`,
@@ -295,13 +298,15 @@ export default defineComponent({
     fetchcart() {
       // const { currentResvId, currentRoomResvId } = this.$ResvStore
       const { resvId, resvRoomId } = this.$route.params
+      const { method } = this.$route.query
+      console.log(method)
 
-      const { selectedbank, selectedmethod } = this.$ResvStore
-      this.selectedBank = selectedbank
-      console.log(this.selectedBank)
-      this.selectedMethod = selectedmethod
+      // const { selectedbank, selectedmethod } = this.$ResvStore
+      // this.selectedBank = selectedbank
+      // console.log(this.selectedBank)
+      this.selectedBank = method
 
-      if (this.selectedBank != null && this.selectedBank != '') {
+      // if (this.selectedBank != null && this.selectedBank != '') {
         try {
           this.api.get(`invoice/payment/${resvId}/${resvRoomId}`, ({ status, message, data }) => {
             if (status === 200) {
@@ -319,7 +324,7 @@ export default defineComponent({
         } catch (error) {
           console.error(error)
         }
-      }
+      // }
     },
     formatData(raw = []) {
       const list = []

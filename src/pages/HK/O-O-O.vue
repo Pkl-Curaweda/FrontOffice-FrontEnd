@@ -256,8 +256,8 @@ export default defineComponent({
         url += `&sortOrder=${this.filterDisplay}`
       }
 
-      if (this.value) {
-        url = `ooo-rooms?type=OM`
+      if (this.value == true) {
+        url += `&type=OM`
       }
 
       this.api.get(url, ({ status, data }) => {
@@ -266,12 +266,12 @@ export default defineComponent({
           const { OOORoom, ident } = data
 
           const arrivalDate = data.arr // Gantilah 'arrival.arr' dengan properti yang benar
-          if (arrivalDate) {
+          if (this.datePickerArrival == null) {
             this.datePickerArrival = arrivalDate
           }
 
           const departureDate = data.dep // Gantilah 'data.dep' dengan properti yang benar
-          if (departureDate) {
+          if (this.datePickerDeparture == null) {
             this.datePickerDeparture = departureDate
           }
 

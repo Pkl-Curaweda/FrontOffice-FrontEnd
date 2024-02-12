@@ -280,24 +280,24 @@ export default defineComponent({
     if (this.$ResvStore.uniqueId) {
       this.getDetailForm()
     }
+    // this.getDetailForm()
 
     // this.fetchData()
     this.userView()
-
-    // watch(
-    //   () => this.$ResvStore.UniqueId,
-    //   () => {
-    //     this.getDetailForm()
-    //   }
-    // )
   },
+  // watch() {
+  //     () => this.$ResvStore.uniqueId,
+  //     () => {
+  //       this.getDetailForm()
+  //     }
+  // },
   watch: {
     // Watch for changes in specific properties and call the function when they change
     '$ResvStore.currentResvId': 'getDetailForm',
     '$ResvStore.currentRoomResvId': 'getDetailForm',
     '$ResvStore.dateBill': 'getDetailForm',
     '$ResvStore.Artlb': 'getDetailForm',
-    '$ResvStore.UniqueId': 'getDetailForm',
+    '$ResvStore.uniqueId': 'getDetailForm',
     filterSortOrder: {
       handler(oldFilter, newFilter) {
         Object.keys(this.filterColumns).forEach((key) => {
@@ -394,7 +394,7 @@ export default defineComponent({
           this.loading = false
 
           if (status === 200) {
-            this.trigger('positive',message)
+            this.trigger('positive', message)
             this.formatData()
             const { detail } = data
 
@@ -431,7 +431,7 @@ export default defineComponent({
           this.loading = false
 
           if (response.status === 200) {
-            this.trigger('positive',message)
+            this.trigger('positive', message)
             const { artList } = response.data.data
 
             this.data2 = artList.map((al) => ({
@@ -471,7 +471,7 @@ export default defineComponent({
             if (status == 200) {
               this.loading = false
               console.log(data)
-              this.trigger('positive',message)
+              this.trigger('positive', message)
               // Call setRoomResv with uniqueId after updating data
               this.setRoomResv(uniqueId)
             }

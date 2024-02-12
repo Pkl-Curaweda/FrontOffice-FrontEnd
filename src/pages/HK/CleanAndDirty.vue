@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-md">
     <div class="q-pa-md">
-      <div style="display: flex; gap: 15px">
+      <div style="display: flex; gap: 15px; justify-content: center; align-items: center">
         <HKCard
           card_class="q-col-xs-12 q-col-sm-6 q-col-md-4 q-col-lg-3"
           card_style="width:230px; height:330px;"
@@ -384,7 +384,7 @@
               <q-td key="Personinchange" :props="props">
                 {{ props.row.Personinchange }}
               </q-td>
-              <q-td key="Action" :props="props" style="width: 10px">
+              <!-- <q-td key="Action" :props="props" style="width: 10px">
                 <q-btn flat rounded size="13px" style="color: #008444"
                   ><svg
                     width="19"
@@ -413,7 +413,7 @@
                     />
                   </svg>
                 </q-btn>
-              </q-td>
+              </q-td> -->
             </q-tr>
           </template>
         </q-table>
@@ -432,8 +432,8 @@ const columns = [
   { name: 'Guestname', label: 'Guest Name', align: 'left', field: 'Guestname' },
   { name: 'Arrival', label: 'Arrival', align: 'left', field: 'Arrival' },
   { name: 'Departure', label: 'Departure', align: 'left', field: 'Departure' },
-  { name: 'Personinchange', label: 'Person In Change', align: 'left', field: 'Personinchange' },
-  { name: 'Action', label: 'Action', align: 'center', field: 'Action' }
+  { name: 'Personinchange', label: 'Person In Change', align: 'left', field: 'Personinchange' }
+  // { name: 'Action', label: 'Action', align: 'center', field: 'Action' }
 ]
 
 const rows = ref([])

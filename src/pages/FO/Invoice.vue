@@ -10,7 +10,7 @@
     <FOMenubar>
       <template #left>
         <div>
-          <q-input v-model="searchInput" borderless label="Name" type="search">
+          <q-input v-model="searchInput" borderless label="Description" type="search">
             <template v-slot:prepend>
               <q-icon name="search" color="primary" />
             </template>
@@ -238,7 +238,7 @@ const columns2 = [
     name: 'art',
     required: true,
     label: 'Art',
-    align: 'left',
+    align: 'center',
     field: (row) => row.name,
     format: (val) => `${val}`,
     sortable: true
@@ -499,30 +499,8 @@ export default defineComponent({
     })
   },
     searchDesc(searchInput) {
-      const { resvId, resvRoomId } = this.$route.params
-
-      if (resvId === 0 || resvRoomId === 0) {
-        this.loading = false
-        console.log(resvId)
-        return
-      }
-
-      console.log('test' + searchInput)
-      if (searchInput != '' || searchInput != null) {
-        // Make an API call to search based on searchInput
-        this.api.get(
-          `invoice/${resvId}/${resvRoomId}?search=${searchInput}`,
-          ({ status, data }) => {
-            if (status === 200) {
-              // Update the data with the search result
-            } else {
-              console.error('Error searching data')
-            }
-          }
-        )
-      } else {
-        console.log('data kosong')
-      }
+      this.searchData = searchInput
+      this.fetchData()
     },
     setSortOrder(val = '') {
       this.filterSortOrder = null
@@ -553,7 +531,7 @@ export default defineComponent({
         return
       }
 
-      let url = `invoice/${resvId}/${resvRoomId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      let url = `invoice/${resvId}/${resvRoomId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}&search=${this.searchData}`
 
       if (this.filterSortOrder.col !== '' && this.filterSortOrder.val !== '') {
         url += `&sort=${this.filterSortOrder.val}`

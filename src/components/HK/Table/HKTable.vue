@@ -3,6 +3,8 @@
     <q-table
       :rows="rows"
       :columns="columns"
+      :pagination="pagination"
+      :rows-per-page-options="[1, 5, 7, 10, 15, 20, 25, 30]"
       row-key="name"
       square
       :table-header-style="{
@@ -17,13 +19,81 @@
     >
       <template v-slot:top-row v-if="showInput">
         <q-tr>
-          <q-td><input type="text" /></q-td>
-          <q-td><input type="text" /></q-td>
-          <q-td><input type="text" /></q-td>
-          <q-td><input type="text" /></q-td>
-          <q-td><input type="text" /></q-td>
-          <q-td><input type="text" /></q-td>
-          <q-td><input type="text" /></q-td>
+          <q-td>
+            <q-select
+              outlined
+              v-model="roomNo"
+              :options="roomNoOptions"
+              dense
+              dropdown-icon="expand_more"
+          /></q-td>
+          <q-td
+            ><q-input
+              outlined
+              dense
+              v-model="reasonRoom"
+              class="input-border"
+              label="Reason Room"
+              style="width: fit-content"
+          /></q-td>
+          <q-td
+            ><q-btn-dropdown
+              flat
+              square
+              style="border: 1px #00000030 solid"
+              class="text-capitalize date-btn text-black rounded-borders"
+              label="Date"
+              icon="o_event"
+              color="primary"
+              dropdown-icon="o_expand_more"
+            >
+              <div>
+                <q-date v-model="datePickerArrival" color="green" today-btn />
+              </div> </q-btn-dropdown
+          ></q-td>
+          <q-td
+            ><q-btn-dropdown
+              flat
+              square
+              style="border: 1px #00000030 solid"
+              class="text-capitalize date-btn text-black rounded-borders"
+              label="Date"
+              icon="o_event"
+              color="primary"
+              dropdown-icon="o_expand_more"
+            >
+              <div>
+                <q-date v-model="datePickerDeparture" color="green" today-btn />
+              </div> </q-btn-dropdown
+          ></q-td>
+          <q-td
+            ><q-input
+              outlined
+              dense
+              class="input-border"
+              style="width: fit-content"
+              v-model="CreatedBy"
+              disable
+          /></q-td>
+          <q-td>
+            <q-select
+              outlined
+              v-model="dept"
+              :options="deptOption"
+              dense
+              dropdown-icon="expand_more"
+            />
+          </q-td>
+          <q-td style="display: flex; justify-content: center; align-items: center">
+            <q-btn
+              label="Add"
+              unelevated
+              color="primary"
+              dense
+              class="text-capitalize col-grow"
+              @click="postDataTable"
+            />
+          </q-td>
         </q-tr>
       </template>
     </q-table>
@@ -37,8 +107,27 @@ export default defineComponent({
   name: 'HKTable',
 
   setup() {
+    const datePickerArrival = ref()
+    const datePickerDeparture = ref()
     return {
-      gapColorClass: ref('gapWhite')
+      gapColorClass: ref('gapWhite'),
+      roomNoOptions: [101, 102, 103, 104, 105, 106, 107, 108, 109, 110],
+      roomNo: ref('Room No'),
+      dept: ref(),
+      datePickerArrival,
+      datePickerDeparture,
+      reasonRoom: ref(),
+      CreatedBy: ref(),
+      deptOption: [
+        { label: 'ENG', value: 1 },
+        { label: 'HK', value: 2 }
+      ]
+    }
+  },
+  data() {
+    return {
+      api: new this.$Api('housekeeping'),
+      user: this.$AuthStore.getUser()
     }
   },
   props: {
@@ -46,11 +135,47 @@ export default defineComponent({
     rows: Array,
     showInput: Boolean,
     hidePagination: Boolean,
+    currentType: String,
     gapTable: Boolean,
     gapColor: String,
     title: String
   },
+  mounted() {
+    this.fetchData()
+  },
   methods: {
+    fetchData() {
+      this.CreatedBy = this.user.username
+    },
+    postDataTable() {
+      const data = {
+        roomId: this.roomNo,
+        reason: this.reasonRoom,
+        from: new Date(this.datePickerArrival),
+        until: new Date(this.datePickerDeparture),
+        departmentId: this.dept.value,
+        description: 'Sended By Admin',
+        xType: this.currentType
+      }
+
+      let url = `ooo-rooms`
+
+      this.api.post(url, data, ({ status, message }) => {
+        if (status == 200) {
+          this.trigger('possitive', message)
+        }
+      })
+    },
+    trigger(type, txt) {
+      this.$q.notify(
+        {
+          type: type,
+          message: txt || 'error unknown action try again',
+          timeout: 1000
+        },
+        1000
+      )
+    },
     getGapColor() {
       if (this.gapColor) {
         switch (this.gapColor) {

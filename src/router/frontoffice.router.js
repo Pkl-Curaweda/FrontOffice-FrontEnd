@@ -78,7 +78,7 @@ const frontoffice_routes = [
   },
   {
     name: 'detail-payment',
-    path: '/fo/guest-invoice/:resvId/:resvRoomId/payment/detail',
+    path: '/fo/guest-invoice/:resvId/:resvRoomId/payment/detail/',
     component: () => import('pages/FO/DetailPayment.vue'),
     meta: {
       title: 'detail',

@@ -29,7 +29,7 @@
                 <div style="padding: 5px">{{ this.user.billNumber }}</div>
               </div>
               <div class="col">
-                {{ selectedBank ? selectedBank + '/ ' + selectedMethod : '' }}
+                {{ selectedBank }}
               </div>
             </div>
             <q-separator horizontal class="q-ma-md" />
@@ -74,7 +74,7 @@
                   </div>
                 </div>
               </div>
-              <div style="display: flex; justify-content: space-between; width: 100%">
+              <div style="display: flex; justify-content: space-between; width: 100%;" class="q-pa-sm">
                 <div>
                   <input
                     type="checkbox"
@@ -89,7 +89,7 @@
                     >Tax</label
                   >
                 </div>
-                <div style="width: fit-content; margin: 10px">
+                <div style="width: fit-content;">
                   <label
                     :for="'option_' + index"
                     style="font-weight: 600"
@@ -99,11 +99,27 @@
                 </div>
               </div>
               <q-separator horizontal />
+
               <div style="display: flex; justify-content: space-between; width: 100%">
-                <div style="color: black; font-size: large" class="q-pa-sm">Harga Total</div>
+                <div style="color: black; font-size: large" class="q-pa-sm">Total Amount</div>
                 <div style="width: fit-content; margin: 10px">
                   <label :for="'option_' + index" style="font-weight: 600" class="centerComponent">
                     {{ formating(total) }}</label
+                  >
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; width: 100%">
+                <div style="color: black; font-size: large" class="q-pa-sm">Paid</div>
+                <div style="width: fit-content;">
+                  <q-input type="number" dense outlined v-model="paidmmount"/>
+                  <!-- <q-input type="text" class="form-control" v-model="displayValue" @blur="isInputActive = false" @focus="isInputActive = true"/> -->
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; width: 100%">
+                <div style="color: black; font-size: large" class="q-pa-sm">Balance</div>
+                <div style="width: fit-content; margin: 10px">
+                  <label :for="'option_' + index" style="font-weight: 600" class="centerComponent">
+                    {{ formating(remainder) }}</label
                   >
                 </div>
               </div>
@@ -154,9 +170,12 @@ export default defineComponent({
       selectedMethod: ref(''),
       api: new this.$Api('frontoffice'),
       data: [],
+      remainder: 0,
       total: 0,
+      paidmmount: null,
       priceBook: [],
-      user: ref({ billNumber: '', arrivalDate: '', departureDate: '', guestName: '' })
+      user: ref({ billNumber: '', arrivalDate: '', departureDate: '', guestName: '' }),
+      isInputActive: false
     }
   },
   watch: {
@@ -167,7 +186,10 @@ export default defineComponent({
     },
     includeTax() {
       this.calculateTotal()
-    }
+    },
+    paidmmount(){
+      this.remainderpay()
+    },
   },
   created() {
     this.calculateTotal()
@@ -176,31 +198,46 @@ export default defineComponent({
     this.fetchcart()
   },
   methods: {
+    formatRupiah() {
+      let number = this.paidmmount;
+      console.log(number)
+      this.paidmmount = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(number);
+    },
+    remainderpay() {
+      this.remainder = this.total - this.paidmmount
+    },
     async paymentpost() {
       const { resvId, resvRoomId } = this.$route.params
+      const method = this.$route.query
+
       const data = {
         paymentMethod: this.selectedMethod,
         invoices: this.priceBook,
-        paidAmount: this.total,
-        useTax: this.DPP
+        paidAmount: this.paidmmount,
+        useTax: this.includeTax
       }
       try {
-        if (this.priceBook != null && this.selectedMethod != '') {
+        // if (this.priceBook != null && this.selectedMethod != '') {
+        if (method != null && method != '') {
           this.loading = true
-          this.api.post(`invoice/payment/${resvId}/${resvRoomId}`, data, ({ status, data }) => {
-            if (status === 200) {
-              this.loading = false
-              console.log(status)
-              this.trigger('positive', 'payment successful')
-              console.log('Data berhasil diperbarui:', data)
-              this.$nextTick(() => {
-                this.trigger('ongoing', 'loading')
-                this.redirectpayment(true)
-              })
-            } else {
-              this.trigger('warning', 'payment failed')
+          this.api.post(
+            `invoice/payment/${resvId}/${resvRoomId}`,
+            data,
+            ({ status, data, message }) => {
+              if (status === 200) {
+                this.loading = false
+                console.log(status)
+                this.trigger('positive', message)
+                console.log('Data berhasil diperbarui:', data)
+                this.$nextTick(() => {
+                  this.trigger('ongoing', 'loading')
+                  this.redirectpayment(true)
+                })
+              } else {
+                this.trigger('warning', 'payment failed')
+              }
             }
-          })
+          )
         } else {
           this.trigger('warning', 'data not found')
         }
@@ -213,7 +250,7 @@ export default defineComponent({
 
       if (state === true) {
         this.$router.push({
-          name: 'guest-list'
+          name: 'guest-invoice'
         })
       } else {
         this.$router.push({
@@ -261,13 +298,15 @@ export default defineComponent({
     fetchcart() {
       // const { currentResvId, currentRoomResvId } = this.$ResvStore
       const { resvId, resvRoomId } = this.$route.params
+      const { method } = this.$route.query
+      console.log(method)
 
-      const { selectedbank, selectedmethod } = this.$ResvStore
-      this.selectedBank = selectedbank
-      console.log(this.selectedBank)
-      this.selectedMethod = selectedmethod
+      // const { selectedbank, selectedmethod } = this.$ResvStore
+      // this.selectedBank = selectedbank
+      // console.log(this.selectedBank)
+      this.selectedBank = method
 
-      if (this.selectedBank != null && this.selectedBank != '') {
+      // if (this.selectedBank != null && this.selectedBank != '') {
         try {
           this.api.get(`invoice/payment/${resvId}/${resvRoomId}`, ({ status, message, data }) => {
             if (status === 200) {
@@ -285,7 +324,7 @@ export default defineComponent({
         } catch (error) {
           console.error(error)
         }
-      }
+      // }
     },
     formatData(raw = []) {
       const list = []

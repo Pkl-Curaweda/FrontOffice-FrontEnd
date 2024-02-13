@@ -16,6 +16,7 @@
           color="primary"
           class="border-button rounded-borders"
           @click="refreshData"
+          v-if="!this.$ResvStore.fix"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -38,6 +39,7 @@
           color="primary"
           class="border-button rounded-borders"
           @click="updateData"
+          v-if="!this.$ResvStore.fix"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -53,28 +55,6 @@
           </svg>
         </q-btn>
 
-        <!-- remove reservation  -->
-        <!-- <q-btn
-          @click="removeRoomResv"
-          flat
-          square
-          color="primary"
-          class="border-button rounded-borders"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="19"
-            height="18"
-            viewBox="0 0 19 18"
-            fill="none"
-          >
-            <path
-              d="M16 10.09V4C16 1.79 12.42 0 8 0C3.58 0 0 1.79 0 4V14C0 16.21 3.59 18 8 18C8.46 18 8.9 18 9.33 17.94C9.1129 17.3162 9.00137 16.6605 9 16V15.95C8.68 16 8.35 16 8 16C4.13 16 2 14.5 2 14V11.77C3.61 12.55 5.72 13 8 13C8.65 13 9.27 12.96 9.88 12.89C10.4127 12.0085 11.1638 11.2794 12.0607 10.7731C12.9577 10.2668 13.9701 10.0005 15 10C15.34 10 15.67 10.04 16 10.09ZM14 9.45C12.7 10.4 10.42 11 8 11C5.58 11 3.3 10.4 2 9.45V6.64C3.47 7.47 5.61 8 8 8C10.39 8 12.53 7.47 14 6.64V9.45ZM8 6C4.13 6 2 4.5 2 4C2 3.5 4.13 2 8 2C11.87 2 14 3.5 14 4C14 4.5 11.87 6 8 6ZM19 15V17H11V15H19Z"
-              fill="#008444"
-            />
-          </svg>
-        </q-btn> -->
-
         <q-space />
 
         <q-btn
@@ -85,7 +65,8 @@
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
           @click="newResvroom()"
-          :disabled="!this.$ResvStore.currentRoomResvId || !this.$ResvStore.addroom"
+          :disabled="!this.$ResvStore.currentRoomResvId || this.$ResvStore.addroom"
+          v-if="!this.$ResvStore.fix"
         />
 
         <!-- show modal to create card's credential: KTP, SIM, address  -->
@@ -97,7 +78,8 @@
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
           @click="getdataCard(true)"
-          :disabled="!this.$ResvStore.currentRoomResvId"
+          :disabled="!this.$ResvStore.currentRoomResvId || this.$ResvStore.addroom"
+          v-if="!this.$ResvStore.fix"
         />
 
         <q-dialog v-model="dialogpayment">
@@ -435,8 +417,8 @@
         <div class="q-pa-md">
           <q-btn-dropdown
             color="primary"
-            :disable="$ResvStore.logc"
-            :label="resvStatus.label || resvStatus.description || 'Status'"
+            :disable="$ResvStore.logc || this.$ResvStore.fix"
+            :label="resvStatus.label || resvStatus.description || dropdownOptions[0].description"
             outline
           >
             <q-list>
@@ -577,7 +559,8 @@
           color="primary"
           dense
           class="text-capitalize col-grow"
-          @click="createData()"
+          @click="createData"
+          :disabled="this.$ResvStore.fix"
         />
         <q-btn
           label="Check-In"
@@ -1007,7 +990,7 @@ export default defineComponent({
               this.trigger('positive', message)
               // console.log(response.data)
               this.refreshData()
-            }else{
+            } else {
               this.trigger('negative', message)
             }
           }
@@ -1030,7 +1013,7 @@ export default defineComponent({
             if (status == 200) {
               this.trigger('positive', message)
               this.refreshData()
-            } else{
+            } else {
               this.trigger('negative', message)
             }
           }
@@ -1172,11 +1155,11 @@ export default defineComponent({
         manyAdult: this.guests.adult,
         manyChild: this.guests.child,
         manyBaby: this.guests.baby,
-        inHouseIndicator: true,
+        // inHouseIndicator: true,
         arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
         departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
         reservationRemarks: this.resvRemark,
-        resvStatusId: parseInt(this.resvStatus.id)
+        resvStatusId: parseInt(this.resvStatus.id || '1')
       }
       try {
         await this.api.post(
@@ -1209,7 +1192,7 @@ export default defineComponent({
         manyAdult: this.guests.adult,
         manyChild: this.guests.child,
         manyBaby: this.guests.baby,
-        inHouseIndicator: true,
+        // inHouseIndicator: true,
         arrivalDate: this.arrivalDepart.from.split('T')[0],
         departureDate: this.arrivalDepart.to.split('T')[0],
         reservationRemarks: this.resvRemark,
@@ -1230,7 +1213,6 @@ export default defineComponent({
             datachangeroom,
             ({ status, data, message }) => {
               this.loading = false
-              // console.log(this.resvStatus)
 
               if (status === 200) {
                 this.trigger('positive', message)
@@ -1242,7 +1224,6 @@ export default defineComponent({
               }
             }
           )
-          // this.refresh()
         } catch (error) {
           console.error(error)
         }
@@ -1253,18 +1234,15 @@ export default defineComponent({
             dataToUpdate,
             ({ status, data, message }) => {
               this.loading = false
-              // console.log(this.resvStatus)
               if (status === 200) {
                 this.trigger('positive', message)
                 console.log('Data berhasil diperbarui:', data)
                 this.refreshData()
               } else {
-                // console.error('Gagal memperbarui data')
                 this.trigger('negative', message)
               }
             }
           )
-          // this.refresh()
         } catch (error) {
           console.error(error)
         }
@@ -1277,17 +1255,11 @@ export default defineComponent({
       return date.replace(/\//g, '-')
     },
     onItemClick(optionValue, desc) {
-      this.optionValue = optionValue
-      this.resvStatus = { id: optionValue, description: desc }
-      // console.log(this.resvStatus.id)
+        this.optionValue = optionValue
+        this.resvStatus = { id: optionValue, description: desc }
     },
     getDropdownLabel() {
       if (this.resvStatus.label) {
-        // console.log('berhasil')
-        // if (!this.dropdownSelected && this.descSelect != null) {
-        //   console.log('berhasil')
-        //   return this.descSelect
-        // }
         return this.resvStatus.label
       }
       return this.descSelect

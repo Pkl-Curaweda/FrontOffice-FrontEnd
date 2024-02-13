@@ -13,13 +13,14 @@ myAxios.interceptors.response.use(
       const mainPath = authStore().getMainPath()
       window.location.replace(mainPath)
     }
-    
+
     if (response.status == 401) {
       if (!err.config.sent) {
         err.config.sent = true
-
+        
+        console.log('HDASJBJSBBAJDBHABDJA')
         const new_token = await refreshToken()
-
+        console.log(new_token)
         if (new_token != null) {
           err.config.headers = {
             ...err.config.headers,

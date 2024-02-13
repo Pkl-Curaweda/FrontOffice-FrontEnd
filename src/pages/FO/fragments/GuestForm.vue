@@ -967,7 +967,8 @@ export default defineComponent({
         const { currentResvId, currentRoomResvId } = this.$ResvStore
         const data = {
           arrangmentCode: this.selected.id,
-          roomId: this.roomNo
+          roomId: this.roomNo,
+          voucher: this.voucherId
         }
         if (currentResvId == 0 || currentRoomResvId == 0) return
         this.loading = true

@@ -594,7 +594,8 @@ export default defineComponent({
 
         this.$router.push({
           name: 'detail-payment',
-          params: { resvId: resvId, resvRoomId: resvRoomId }
+          params: { resvId: resvId, resvRoomId: resvRoomId },
+          query: { method: this.selectedBank}
         })
       } else {
         this.trigger('warning', 'select your method')

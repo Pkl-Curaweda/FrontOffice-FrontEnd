@@ -41,7 +41,7 @@
         <q-file
           dense
           outlined
-          clearable
+          clearablenpm
           :placeholder="img"
           v-model="img"
           bg-color="primary"
@@ -54,7 +54,7 @@
         >
           <template v-slot:append> <q-icon name="o_file_upload" color="white" /></template>
         </q-file>
-        <q-img :src="imgURL" v-if="imgURL"/>
+        <q-img :src="imgURL" v-if="imgURL" />
       </div>
       <div class="row justify-center items-center q-mt-lg">
         <q-btn
@@ -85,9 +85,9 @@
 <script>
 // import FormDate from 'src/components/general/Date.vue'
 // import TimePicker from 'src/components/general/Time.vue'
-import { ref } from 'vue'
+import { defineComponent, ref } from 'vue'
 
-export default {
+export default defineComponent({
   name: 'LostFound',
   setup() {
     return {
@@ -132,13 +132,13 @@ export default {
     },
     fetchData() {
       const data = {
-        reportDate: this.itemDesc,
+        location: this.location,
         roomId: this.model,
         description: this.itemDesc,
-        image: this.imgURL,
+        image: this.imgURL
       }
 
-      this.api.post(`lostfound`, data, ({ status, message }) => {
+      this.api.post(`roomboy/lostfound`, data, ({ status, message }) => {
         if (status == 200) {
           this.trigger('possitive', message)
         }
@@ -155,7 +155,7 @@ export default {
       )
     }
   }
-}
+})
 </script>
 
 <style>

@@ -400,7 +400,6 @@ export default defineComponent({
   },
   setup() {
     return {
-      loading: ref(false),
       filterDisplay: ref('roomNum'),
       filterDisplayLabel: ref('Room Number'),
       sortingModel: ref('Room Number'),
@@ -431,6 +430,9 @@ export default defineComponent({
   mounted() {
     this.fetchData()
   },
+  watch() {
+    searchName(this.searchInput)
+  },
   watch: {
     datePickerArrival: {
       deep: true,
@@ -444,6 +446,7 @@ export default defineComponent({
       this.updateFilterDisplayLabel(newOption)
     },
     searchInput: {
+      deep: true,
       handler(newSearchInput) {
         this.searchName(newSearchInput)
       },
@@ -454,9 +457,6 @@ export default defineComponent({
         this.fetchData()
       }
     }
-  },
-  watch() {
-    searchName(this.searchInput)
   },
   methods: {
     updateFilterDisplayLabel(option) {
@@ -475,7 +475,7 @@ export default defineComponent({
           this.filterDisplayLabel = 'By Date'
           break
         default:
-          this.filterDisplayLabel = 'Default Label'
+          this.filterDisplay = 'roomNum'
       }
     },
     date(date) {
@@ -494,29 +494,10 @@ export default defineComponent({
       this.pagination = props.pagination
       this.fetchData()
     },
-    // searchName(searchInput) {
-    //   this.api.get(`lostfound?search${searchInput}`, ({ status, data }) => {
-    //     if (status === 200) {
-    //       const { lostFounds } = data
-    //       this.rows = lostFounds.map((lostFound) => ({
-    //         date: lostFound.date,
-    //         time: lostFound.time,
-    //         room_no: lostFound.roomNo,
-    //         pic: lostFound.pic,
-    //         item_desc: lostFound.desc,
-    //         reported_by: lostFound.reportedBy,
-    //         phone_no: lostFound.phoneNumber,
-    //         reported_date: lostFound.reportedDate,
-    //         location: lostFound.location,
-    //         image: lostFound.image,
-    //         action: ['edit', 'delete'],
-    //         dialogActive: false
-    //       }))
-    //     } else {
-    //       console.error('Error searching data')
-    //     }
-    //   })
-    // },
+    searchName(searchInput) {
+      this.searchData = searchInput
+      this.fetchData()
+    },
     fetchData() {
       this.loading = true
       if (this.startUp != false) {
@@ -524,7 +505,7 @@ export default defineComponent({
         this.fetchData()
       }
 
-      let url = `lostfound?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      let url = `lostfound?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}&search=${this.searchData}`
       if (this.filterDisplay !== null) url += `&sortOrder=${this.filterDisplay}`
 
       const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
@@ -532,7 +513,7 @@ export default defineComponent({
         url += `&searchDate=${DateArrival}`
       }
       console.log(this.datePickerArrival)
-      if (this.filterDisplay !== null) {
+      if (this.filterDisplay == null) {
         url += `&sortOrder=${this.filterDisplay}`
       }
       this.api.get(url, ({ status, data }) => {
@@ -546,7 +527,7 @@ export default defineComponent({
           this.chartSeries = [(this.lost = graph.lost), (this.found = graph.found)]
           console.log(this.searchInput)
           const arrivalDate = data.searchDate // Gantilah 'arrival.arr' dengan properti yang benar
-          if (arrivalDate) {
+          if (this.datePickerArrival == null) {
             this.datePickerArrival = arrivalDate
           }
           this.rows = lostFounds.map((lostFound) => ({

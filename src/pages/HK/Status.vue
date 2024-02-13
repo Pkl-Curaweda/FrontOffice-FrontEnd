@@ -133,7 +133,7 @@
                   <q-btn
                     label="Change Status"
                     style="border-radius: 10px; width: 160px; background-color: #81bb78"
-                    @click="handleRefresh"
+                    @click="postStatus"
                     class="text-weight-bold q-mt-lg"
                     push
                     no-caps
@@ -440,27 +440,19 @@ export default defineComponent({
     }
   },
   methods: {
-    handleRefresh() {
-      this.refreshData()
-
-      this.postStatus()
-    },
     postStatus() {
       let url = `status/${this.idRoom}/${this.status}`
       this.api.post(url, null, ({ status }) => {
         if (status == 200) {
-          this.refreshData()
-
           this.$q.notify({
             type: 'positive',
             message: 'Update successfully.',
             timeout: 1000
           })
+
+          this.fetchData()
         }
       })
-    },
-    refreshData() {
-      window.location.reload()
     },
     handleClick(id) {
       this.idRoom = id

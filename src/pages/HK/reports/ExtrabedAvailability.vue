@@ -112,7 +112,7 @@ export default defineComponent({
       datePickerDeparture: ref(),
       formattedArrivalDate: ref(), // Tambahkan variabel formattedArrivalDate
       formattedDepartureDate: ref(),
-      sortingModel: ref('Extra Bed'),
+      sortingModel: ref(),
       sortingOptions: ['Extra Bed', 'Pillow', 'Blanket'],
       tableColumns,
       latestArt: ref(110),
@@ -128,6 +128,12 @@ export default defineComponent({
     this.fetchData()
   },
   watch: {
+    sortingModel: {
+      deep: true,
+      handler(newValue) {
+        this.fetchData()
+      }
+    },
     datePickerArrival: {
       deep: true,
       handler(newDate) {
@@ -144,7 +150,7 @@ export default defineComponent({
   methods: {
     fetchData() {
       this.loading = true
-
+      console.log(this.sortingModel)
       switch (this.sortingModel) {
         case 'Extra Bed':
           this.latestArt = 110
@@ -157,11 +163,13 @@ export default defineComponent({
           break
         default:
           // Default to 'Extra Bed' if no match
-          this.latestArt = this.defaultLatestArt
+          this.sortingModel = 'Extra  Bed'
           break
       }
 
       let url = `amenities/${this.latestArt}?`
+
+      console.log(url)
 
       const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
       if (DateArrival !== undefined && DateArrival !== '') {
@@ -182,12 +190,12 @@ export default defineComponent({
           const { extra } = data
 
           const arrivalDate = data.from // Gantilah 'arrival.arr' dengan properti yang benar
-          if (arrivalDate) {
+          if (this.datePickerArrival == null) {
             this.datePickerArrival = arrivalDate
           }
 
           const departureDate = data.to // Gantilah 'data.dep' dengan properti yang benar
-          if (departureDate) {
+          if (this.datePickerDeparture == null) {
             this.datePickerDeparture = departureDate
           }
 

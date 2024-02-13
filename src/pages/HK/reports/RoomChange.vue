@@ -192,12 +192,12 @@ export default defineComponent({
           const { roomChangeData } = data
 
           const fromArrival = data.from
-          if (fromArrival) {
+          if (this.datePickerArrival == null) {
             this.datePickerArrival = fromArrival
           }
 
           const toArrival = data.to
-          if (toArrival) {
+          if (this.datePickerDeparture == null) {
             this.datePickerDeparture = toArrival
           }
 

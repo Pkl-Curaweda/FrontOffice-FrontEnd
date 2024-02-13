@@ -424,7 +424,6 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
-import { roomStatus } from 'src/data/room-status'
 
 const columns = [
   { name: 'Roomno', label: 'Room No', align: 'left', field: 'Roomno' },
@@ -455,8 +454,8 @@ export default defineComponent({
       expectedNominal: ref(),
       outLabel: ref('Out of Order'),
       outNominal: ref(),
-      datePickerArrival: ref('Date'),
-      datePickerDeparture: ref('Date'),
+      datePickerArrival: ref(),
+      datePickerDeparture: ref(),
       formattedArrivalDate: ref(), // Tambahkan variabel formattedArrivalDate
       formattedDepartureDate: ref(),
       mainData: {},
@@ -592,12 +591,12 @@ export default defineComponent({
           console.log(room)
 
           const arrivalDate = data.arr // Gantilah 'arrival.arr' dengan properti yang benar
-          if (arrivalDate) {
+          if (this.datePickerArrival == null) {
             this.datePickerArrival = arrivalDate
           }
 
           const departureDate = data.dep // Gantilah 'data.dep' dengan properti yang benar
-          if (departureDate) {
+          if (this.datePickerDeparture == null) {
             this.datePickerDeparture = departureDate
           }
 

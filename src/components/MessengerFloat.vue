@@ -1,5 +1,5 @@
 <template>
-  <q-btn round dense flat icon="o_notifications">
+  <q-btn round dense flat icon="o_notifications" @click="getNotif">
     <q-tooltip>Notifications</q-tooltip>
     <q-menu fit anchor="bottom left" self="top left" style="width: 300px">
       <q-item class="bg-primary text-white">
@@ -39,11 +39,8 @@ export default defineComponent({
       api: new this.$Api('root')
     }
   },
-  mounted() {
-    this.fetchData()
-  },
   methods: {
-    fetchData() {
+    getNotif() {
       let url = `notif`
 
       this.api.get(url, ({ status, data }) => {

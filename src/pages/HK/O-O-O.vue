@@ -53,8 +53,13 @@
             </q-list>
           </q-btn-dropdown>
 
-          <span>{{ labelSorting }}:</span>
-          <q-toggle v-model="value" />
+          <q-btn
+            color="primary"
+            text-color="white"
+            v-model="value"
+            :label="buttonLabel"
+            @click="toggleTable"
+          />
         </div>
 
         <div class="flex" style="gap: 8px 16px">
@@ -164,10 +169,10 @@ export default defineComponent({
   components: { HKCard, HKTable, HKPrintModal },
   setup() {
     return {
-      value: ref(false),
+      value: ref('OM'),
       tableColumns,
       tableRows: ref(),
-      labelSorting: ref(),
+      buttonLabel: ref('OM'),
       filterDisplay: ref('roomNumber'),
       filterDisplayLabel: ref('Room Number'),
       datePickerArrival: ref(),
@@ -208,8 +213,11 @@ export default defineComponent({
         this.fetchData()
       }
     },
-    value(newVal) {
-      this.fetchData()
+    value: {
+      deep: true,
+      handler(newVal) {
+        this.fetchData()
+      }
     }
   },
   methods: {
@@ -238,6 +246,16 @@ export default defineComponent({
           this.filterDisplayLabel = 'Default Label'
       }
     },
+    toggleTable() {
+      if (this.value === 'OM' && this.buttonLabel == 'OM') {
+        this.value = 'OOO'
+        this.buttonLabel = 'OOO'
+      } else {
+        this.value = 'OM'
+        this.buttonLabel = 'OM'
+      }
+      this.fetchData() // Panggil metode fetchData setelah toggle nilai
+    },
     fetchData() {
       this.loading = true
       let url = `ooo-rooms?`
@@ -256,8 +274,8 @@ export default defineComponent({
         url += `&sortOrder=${this.filterDisplay}`
       }
 
-      if (this.value == true) {
-        url += `&type=OM`
+      if (this.value !== null) {
+        url += `&type=${this.value}`
       }
 
       this.api.get(url, ({ status, data }) => {
@@ -274,8 +292,6 @@ export default defineComponent({
           if (this.datePickerDeparture == null) {
             this.datePickerDeparture = departureDate
           }
-
-          this.labelSorting = ident
 
           this.tableColumns = [
             {
@@ -345,22 +361,11 @@ export default defineComponent({
 })
 </script>
 
-<style>
+<style scoped>
 .input-border .q-field__control::before {
   border-color: #d9d9d9 !important;
 }
 .input-border .q-field__label {
   color: black;
-}
-
-.q-toggle__thumb:after {
-  left: 0;
-  width: 20px;
-  height: 20px;
-}
-.q-toggle__inner--truthy .q-toggle__thumb:after {
-  left: 19px;
-  width: 20px;
-  height: 20px;
 }
 </style>

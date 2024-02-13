@@ -1,20 +1,10 @@
 <template>
   <q-page class="flex flex-center page-padding">
-    <div class="flex full-width" style="gap: 16px; margin-bottom: 24px">
-      <q-btn
-        dense
-        outline
-        no-caps
-        label="Edit Room"
-        align="left"
-        style="width: 124px; height: fit-content; padding-inline: 8px; color: #757575"
-      />
-    </div>
-
     <!-- ROOMS -->
     <div
       style="width: 100%; position: relative; overflow: hidden"
       :style="`margin-inline: ${$q.screen.lt.md ? '1rem' : '4rem'};`"
+      class="q-mt-lg"
     >
       <q-img src="/src/assets/svg/roomplan_bg.svg" />
 

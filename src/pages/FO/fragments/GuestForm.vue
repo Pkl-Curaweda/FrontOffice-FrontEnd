@@ -67,7 +67,7 @@
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
           @click="newResvroom()"
-          :disabled="!this.$ResvStore.currentRoomResvId || !this.$ResvStore.addroom || this.$ResvStore.logc"
+          :disabled="!this.$ResvStore.currentRoomResvId || !this.$ResvStore.addroom || !this.$ResvStore.logc"
           v-if="!this.$ResvStore.fix"
         />
 

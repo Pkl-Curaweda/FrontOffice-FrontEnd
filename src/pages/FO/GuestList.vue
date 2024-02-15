@@ -755,8 +755,7 @@ export default defineComponent({
               this.trigger('positive', message)
               // console.log(data)
               this.fetchData()
-            }
-            else{
+            } else {
               this.trigger('negative', message)
             }
           }

@@ -488,7 +488,6 @@
         class="padding-expansion q-pa-none"
         default-opened="true"
         dense
-        default-opened="true"
         style="font-weight: bold"
       >
         <div v-if="$ResvStore.logc || !resvNo">
@@ -956,7 +955,7 @@ export default defineComponent({
         const data = {
           arrangmentCode: this.selected.id,
           roomId: this.roomNo,
-          voucher: this.voucherId || ""
+          voucher: this.voucherId || ''
         }
         if (currentResvId == 0 || currentRoomResvId == 0) return
         this.loading = true

@@ -1,6 +1,8 @@
 <template>
   <q-btn round dense flat icon="o_notifications" @click="getNotif">
-    <q-badge color="negative" text-color="white" v-if="(notifNumber > 0)" floating>{{ notifNumber }}</q-badge>
+    <q-badge color="negative" text-color="white" v-if="notifNumber > 0" floating>
+      {{ notifNumber }}</q-badge
+    >
     <q-tooltip>Notifications</q-tooltip>
     <q-menu fit anchor="bottom left" self="top left" style="width: 300px">
       <q-item class="bg-primary text-white">
@@ -27,7 +29,7 @@ import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'MessengerFloat',
-  mounted(){
+  mounted() {
     this.getValue()
   },
   setup() {
@@ -41,10 +43,13 @@ export default defineComponent({
       api: new this.$Api('root')
     }
   },
+  mounted() {
+    this.fetchData()
+  },
   methods: {
     getValue() {
       this.api.get('notif/value', ({ status, data }) => {
-        if(status == 200){
+        if (status == 200) {
           this.notifNumber = data.value
         }
       })
@@ -58,6 +63,21 @@ export default defineComponent({
             content: nf.content,
             time: nf.time
           }))
+          console.log(this.notif)
+        }
+      })
+    },
+
+    fetchData() {
+      let url = `notif`
+
+      this.api.get(url, ({ status, data }) => {
+        if (status == 200) {
+          this.notif = data.map((nf) => ({
+            content: nf.content,
+            time: nf.time
+          }))
+
           console.log(this.notif)
         }
       })

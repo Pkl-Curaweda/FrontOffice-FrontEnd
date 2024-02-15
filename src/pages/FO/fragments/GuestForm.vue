@@ -835,9 +835,9 @@ export default defineComponent({
     }
   },
   methods: {
-    refreshData() {
-      window.location.reload()
-    },
+    // refreshData() {
+    //   window.location.reload()
+    // },
     redirectToInvoice() {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
       this.$router.push({
@@ -1220,7 +1220,7 @@ export default defineComponent({
               if (status === 200) {
                 this.trigger('positive', message)
                 console.log('Data berhasil diperbarui:', data)
-                this.refreshData()
+                // this.refreshData()
               } else {
                 console.error('Gagal memperbarui data')
                 this.trigger('negative', message)

@@ -3,7 +3,7 @@
     <HKCard card_style="padding: 24px; width: 100%;">
       <!-- BTNs -->
       <div class="full-width justify-end flex q-mb-sm">
-        <q-btn padding="8px" flat>
+        <q-btn padding="8px" flat @click="showInputTable">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="28"
@@ -101,7 +101,12 @@
       </div>
 
       <!-- Table -->
-      <HKTable :columns="tableColumns" :rows="tableRows" :showInput="false" />
+      <HKTable
+        :columns="tableColumns"
+        :rows="tableRows"
+        :showInput="showInput"
+        :currentType="this.buttonLabel"
+      />
     </HKCard>
   </q-page>
 </template>
@@ -110,6 +115,8 @@ import HKCard from 'src/components/HK/Card/HKCard.vue'
 import HKTable from 'src/components/HK/Table/HKTable.vue'
 import HKPrintModal from 'src/components/HK/Modal/HKPrintModal.vue'
 import { defineComponent, ref } from 'vue'
+
+const showInput = ref(false)
 const tableColumns = [
   {
     name: 'room-no',
@@ -171,16 +178,15 @@ export default defineComponent({
     return {
       value: ref('OM'),
       tableColumns,
+      showInput,
       tableRows: ref(),
       buttonLabel: ref('OM'),
       filterDisplay: ref('roomNumber'),
       filterDisplayLabel: ref('Room Number'),
       datePickerArrival: ref(),
       datePickerDeparture: ref(),
-      formattedArrivalDate: ref('Date'), // Tambahkan variabel formattedArrivalDate
-      formattedDepartureDate: ref(),
-      sortingModel: ref('Room Number'),
-      sortingOptions: ['O-O-O', 'Off Market', 'Department', 'Person In Charge', 'All']
+      formattedArrivalDate: ref(), // Tambahkan variabel formattedArrivalDate
+      formattedDepartureDate: ref()
     }
   },
   data() {
@@ -221,6 +227,13 @@ export default defineComponent({
     }
   },
   methods: {
+    showInputTable() {
+      if (this.showInput == false) {
+        this.showInput = true
+      } else {
+        this.showInput = false
+      }
+    },
     setFilterDisplay(option, label) {
       this.filterDisplay = option
       this.updateFilterDisplayLabel(option)
@@ -354,6 +367,7 @@ export default defineComponent({
             dept: ooo.department,
             room_type: ooo.roomType
           }))
+          console.log(this.tableRows)
         }
       })
     }

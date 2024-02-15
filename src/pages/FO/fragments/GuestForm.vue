@@ -484,6 +484,7 @@
       <q-expansion-item
         :label="selected.id ? 'Room Rate: ' + selected.id : 'Room Rate: '"
         class="padding-expansion q-pa-none"
+        default-opened="true"
         dense
         style="font-weight: bold"
       >
@@ -1255,8 +1256,8 @@ export default defineComponent({
       return date.replace(/\//g, '-')
     },
     onItemClick(optionValue, desc) {
-        this.optionValue = optionValue
-        this.resvStatus = { id: optionValue, description: desc }
+      this.optionValue = optionValue
+      this.resvStatus = { id: optionValue, description: desc }
     },
     getDropdownLabel() {
       if (this.resvStatus.label) {

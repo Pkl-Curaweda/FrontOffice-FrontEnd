@@ -101,18 +101,106 @@
       </div>
 
       <!-- Table -->
-      <HKTable
-        :columns="tableColumns"
-        :rows="tableRows"
-        :showInput="showInput"
-        :currentType="this.buttonLabel"
-      />
+      <div :class="`tableComp ${gapColorClass}`" class="my-table">
+        <q-table
+          :rows="tableRows"
+          :columns="tableColumns"
+          :pagination="pagination"
+          :rows-per-page-options="[1, 5, 7, 10, 15, 20, 25, 30]"
+          row-key="name"
+          square
+          :table-header-style="{
+            backgroundColor: '#069550',
+            color: '#ffffff',
+            padding: '10px'
+          }"
+          :card-style="{ boxShadow: 'none' }"
+          rows-per-page-label="Show"
+          :dense="$q.screen.lt.md"
+          :title="title"
+          @request="onPaginationChange"
+          v-model:pagination="pagination"
+        >
+          <template v-slot:top-row v-if="showInput">
+            <q-tr>
+              <q-td>
+                <q-select
+                  outlined
+                  v-model="roomNo"
+                  :options="roomNoOptions"
+                  dense
+                  dropdown-icon="expand_more"
+              /></q-td>
+              <q-td
+                ><q-input
+                  outlined
+                  dense
+                  v-model="reasonRoom"
+                  class="input-border"
+                  label="Reason Room"
+                  style="width: fit-content"
+              /></q-td>
+              <q-td
+                ><q-btn-dropdown
+                  flat
+                  square
+                  style="border: 1px #00000030 solid"
+                  class="text-capitalize date-btn text-black rounded-borders"
+                  label="Date"
+                  icon="o_event"
+                  color="primary"
+                  dropdown-icon="o_expand_more"
+                >
+                  <div>
+                    <q-date v-model="datePickerFrom" color="green" today-btn />
+                  </div> </q-btn-dropdown
+              ></q-td>
+              <q-td
+                ><q-btn-dropdown
+                  flat
+                  square
+                  style="border: 1px #00000030 solid"
+                  class="text-capitalize date-btn text-black rounded-borders"
+                  label="Date"
+                  icon="o_event"
+                  color="primary"
+                  dropdown-icon="o_expand_more"
+                >
+                  <div>
+                    <q-date v-model="datePickerUntil" color="green" today-btn />
+                  </div> </q-btn-dropdown
+              ></q-td>
+              <q-td
+                ><q-input outlined dense class="input-border col-grow" v-model="CreatedBy" disable
+              /></q-td>
+              <q-td>
+                <q-select
+                  outlined
+                  v-model="dept"
+                  :options="deptOption"
+                  dense
+                  dropdown-icon="expand_more"
+                />
+              </q-td>
+              <q-td>
+                <q-btn
+                  label="Add"
+                  unelevated
+                  color="primary"
+                  dense
+                  class="text-capitalize full-width"
+                  @click="postDataTable"
+                />
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+      </div>
     </HKCard>
   </q-page>
 </template>
 <script>
 import HKCard from 'src/components/HK/Card/HKCard.vue'
-import HKTable from 'src/components/HK/Table/HKTable.vue'
 import HKPrintModal from 'src/components/HK/Modal/HKPrintModal.vue'
 import { defineComponent, ref } from 'vue'
 
@@ -169,34 +257,45 @@ const tableColumns = [
     align: 'left'
   }
 ]
-const tableRows = []
 
 export default defineComponent({
   name: 'OOOPages',
-  components: { HKCard, HKTable, HKPrintModal },
+  components: { HKCard, HKPrintModal },
   setup() {
     return {
-      value: ref('OM'),
+      value: ref('OOO'),
       tableColumns,
       showInput,
       tableRows: ref(),
-      buttonLabel: ref('OM'),
+      buttonLabel: ref('OOO'),
       filterDisplay: ref('roomNumber'),
       filterDisplayLabel: ref('Room Number'),
       datePickerArrival: ref(),
       datePickerDeparture: ref(),
       formattedArrivalDate: ref(), // Tambahkan variabel formattedArrivalDate
-      formattedDepartureDate: ref()
+      formattedDepartureDate: ref(),
+      roomNoOptions: [101, 102, 103, 104, 105, 106, 107, 108, 109, 110],
+      roomNo: ref('Room No'),
+      dept: ref(),
+      datePickerFrom: ref(),
+      datePickerUntil: ref(),
+      reasonRoom: ref(),
+      CreatedBy: ref(),
+      deptOption: [
+        { label: 'ENG', value: 1 },
+        { label: 'HK', value: 2 }
+      ]
     }
   },
   data() {
     return {
-      api: new this.$Api('housekeeping')
-      // pagination: {
-      //   page: 1,
-      //   rowsNumber: 0,
-      //   rowsPerPage: 20
-      // }
+      api: new this.$Api('housekeeping'),
+      pagination: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 20
+      },
+      user: this.$AuthStore.getUser()
     }
   },
   mounted() {
@@ -227,6 +326,14 @@ export default defineComponent({
     }
   },
   methods: {
+    onPaginationChange(props) {
+      props.pagination.rowsPerPage =
+        props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
+      // console.log(props)
+      // console.log(props.rowsPerPage)
+      this.pagination = props.pagination
+      this.fetchData()
+    },
     showInputTable() {
       if (this.showInput == false) {
         this.showInput = true
@@ -260,18 +367,49 @@ export default defineComponent({
       }
     },
     toggleTable() {
-      if (this.value === 'OM' && this.buttonLabel == 'OM') {
-        this.value = 'OOO'
-        this.buttonLabel = 'OOO'
-      } else {
+      if (this.value === 'OOO' && this.buttonLabel == 'OOO') {
         this.value = 'OM'
         this.buttonLabel = 'OM'
+      } else {
+        this.value = 'OOO'
+        this.buttonLabel = 'OOO'
       }
       this.fetchData() // Panggil metode fetchData setelah toggle nilai
     },
+    trigger(type, txt) {
+      this.$q.notify(
+        {
+          type: type,
+          message: txt || 'error unknown action try again',
+          timeout: 1000
+        },
+        1000
+      )
+    },
+    postDataTable() {
+      const data = {
+        roomId: this.roomNo,
+        reason: this.reasonRoom,
+        from: new Date(this.datePickerArrival),
+        until: new Date(this.datePickerDeparture),
+        departmentId: this.dept.value,
+        description: 'Sended By Admin',
+        xType: this.buttonLabel
+      }
+
+      let url = `ooo-rooms`
+
+      this.api.post(url, data, ({ status, message }) => {
+        if (status === 200) {
+          this.trigger('possitive', message)
+          this.fetchData()
+        }
+      })
+    },
     fetchData() {
       this.loading = true
-      let url = `ooo-rooms?`
+
+      let url = `ooo-rooms?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
 
       const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
       if (DateArrival !== undefined && DateArrival !== '') {
@@ -295,6 +433,8 @@ export default defineComponent({
         this.loading = false
         if (status == 200) {
           const { OOORoom, ident } = data
+
+          this.CreatedBy = this.user.username
 
           const arrivalDate = data.arr // Gantilah 'arrival.arr' dengan properti yang benar
           if (this.datePickerArrival == null) {

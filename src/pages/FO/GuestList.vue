@@ -207,38 +207,6 @@
                         </q-item>
                       </q-list>
                     </q-popup-edit>
-                    <q-dialog v-model="dialog2">
-                      <q-card>
-                        <q-card-section>
-                          <div class="text-h6">Waiting List</div>
-                          <q-separator horizontal class="q-ma-xs" />
-                          <div class="q-mt-sm">
-                            Do you want to request something for room number {{ this.roomno
-                            }}<br />Please Give Us Your Request
-                          </div>
-                          <q-input
-                            v-model="waitingnote"
-                            class="q-my-md"
-                            label="Note..."
-                            dense
-                            outlined
-                            type="textarea"
-                          />
-                          <div
-                            class="row items-center"
-                            style="width: 100%; justify-content: space-between"
-                          >
-                            <q-btn v-close-popup label="Cancel" outline color="primary" />
-                            <q-btn
-                              v-close-popup
-                              label="accept"
-                              @click="postwaiting(props.row)"
-                              color="primary"
-                            />
-                          </div>
-                        </q-card-section>
-                      </q-card>
-                    </q-dialog>
                   </q-td>
                 </template>
                 <q-td key="" :props="props" style="width: 10px; background-color: white">
@@ -286,7 +254,7 @@
                                 <q-item-label>Fix</q-item-label>
                               </q-item-section>
                             </q-item>
-                          <q-item
+                            <q-item
                               clickable
                               v-close-popup
                               @click="redirectToInvoice(props.row)"
@@ -399,9 +367,39 @@
                               </q-item-section>
                             </q-item>
                           </q-list>
-
                         </q-menu>
-
+                        <q-dialog v-model="dialog2">
+                          <q-card>
+                            <q-card-section>
+                              <div class="text-h6">Waiting List</div>
+                              <q-separator horizontal class="q-ma-xs" />
+                              <div class="q-mt-sm">
+                                Do you want to request something for room number {{ this.roomno
+                                }}<br />Please Give Us Your Request
+                              </div>
+                              <q-input
+                                v-model="waitingnote"
+                                class="q-my-md"
+                                label="Note..."
+                                dense
+                                outlined
+                                type="textarea"
+                              />
+                              <div
+                                class="row items-center"
+                                style="width: 100%; justify-content: space-between"
+                              >
+                                <q-btn v-close-popup label="Cancel" outline color="primary" />
+                                <q-btn
+                                  v-close-popup
+                                  label="accept"
+                                  @click="postwaiting(props.row)"
+                                  color="primary"
+                                />
+                              </div>
+                            </q-card-section>
+                          </q-card>
+                        </q-dialog>
                         <q-dialog v-model="dialogeditroom" ref="editRoomDialog">
                           <q-card>
                             <q-card-section>
@@ -754,9 +752,12 @@ export default defineComponent({
           articledata,
           ({ status, data, message }) => {
             if (status === 200) {
-              this.triggerPositive(message)
+              this.trigger('positive', message)
               // console.log(data)
               this.fetchData()
+            }
+            else{
+              this.trigger('negative', message)
             }
           }
         )
@@ -901,8 +902,8 @@ export default defineComponent({
         const roomNo = data['ResRoomNo'].data
         // console.log(roomNo)
         this.api.delete(`detail/reservation/${resvId}/${roomNo}/delete`, ({ data, message }) => {
-          this.fetchData()
           this.trigger('positive', message)
+          this.fetchData()
         })
       } catch (error) {
         console.error('Terjadi kesalahan, mohon coba lagi')

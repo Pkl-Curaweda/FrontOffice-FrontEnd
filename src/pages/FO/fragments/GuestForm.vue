@@ -65,7 +65,7 @@
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
           @click="newResvroom()"
-          :disabled="!this.$ResvStore.currentRoomResvId || this.$ResvStore.addroom"
+          :disabled="!this.$ResvStore.currentRoomResvId || !this.$ResvStore.addroom"
           v-if="!this.$ResvStore.fix"
         />
 
@@ -375,8 +375,10 @@
                     @click="updateGuestsCount('child', 1)"
                     ><q-icon name="add" color="white" size="16px" />
                   </q-btn>
-                </div></div
-            ></q-item-section>
+                </div>
+              </div>
+              ></q-item-section
+            >
           </q-item>
           <q-item>
             <q-item-section
@@ -485,6 +487,7 @@
         :label="selected.id ? 'Room Rate: ' + selected.id : 'Room Rate: '"
         class="padding-expansion q-pa-none"
         dense
+        default-opened="true"
         style="font-weight: bold"
       >
         <div v-if="$ResvStore.logc || !resvNo">
@@ -536,6 +539,7 @@
     <div class="col-grow">
       <q-expansion-item
         dense
+        default-opened="true"
         style="font-weight: bold"
         label="Reservation Remarks"
         class="padding-expansion"
@@ -951,7 +955,7 @@ export default defineComponent({
         const data = {
           arrangmentCode: this.selected.id,
           roomId: this.roomNo,
-          voucher: this.voucherId
+          voucher: this.voucherId || ""
         }
         if (currentResvId == 0 || currentRoomResvId == 0) return
         this.loading = true
@@ -1169,8 +1173,7 @@ export default defineComponent({
             this.loading = false
             if (status === 200) {
               this.trigger('positive', message)
-              // console.log('Data berhasil diperbarui:', data)
-              // this.refreshData()
+              this.refreshData()
             } else {
               this.trigger('negative', message)
               console.error('Gagal memperbarui data')
@@ -1255,8 +1258,8 @@ export default defineComponent({
       return date.replace(/\//g, '-')
     },
     onItemClick(optionValue, desc) {
-        this.optionValue = optionValue
-        this.resvStatus = { id: optionValue, description: desc }
+      this.optionValue = optionValue
+      this.resvStatus = { id: optionValue, description: desc }
     },
     getDropdownLabel() {
       if (this.resvStatus.label) {

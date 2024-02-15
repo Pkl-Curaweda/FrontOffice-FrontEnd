@@ -4,11 +4,11 @@ import { authStore } from 'src/stores/auth'
 
 const myAxios = axios.create()
 
-myAxios.interceptors.response.use( 
+myAxios.interceptors.response.use(
   (res) => res,
   async (err) => {
     const { response } = err
-    
+
     if (response.status == 403){
       const mainPath = authStore().getMainPath()
       window.location.replace(mainPath)
@@ -17,8 +17,8 @@ myAxios.interceptors.response.use(
     if (response.status == 401) {
       if (!err.config.sent) {
         err.config.sent = true
-        
-        console.log('HDASJBJSBBAJDBHABDJA')
+
+        // console.log('HDASJBJSBBAJDBHABDJA')
         const new_token = await refreshToken()
         console.log(new_token)
         if (new_token != null) {

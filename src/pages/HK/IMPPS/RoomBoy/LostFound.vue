@@ -135,10 +135,10 @@ export default defineComponent({
         location: this.location,
         roomId: this.model,
         description: this.itemDesc,
-        image: this.imgURL
+        image: this.img
       }
 
-      this.api.post(`roomboy/lostfound`, data, ({ status, message }) => {
+      this.api.useMultipart(true).post(`roomboy/lostfound`, data, ({ status, message }) => {
         if (status == 200) {
           this.trigger('possitive', message)
         }

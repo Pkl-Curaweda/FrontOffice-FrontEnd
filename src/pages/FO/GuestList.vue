@@ -180,7 +180,7 @@
                           style="display: flex"
                         >
                           <q-item-section>
-                            <q-item-label class="font-bold" @click="dialog2 = true"
+                            <q-item-label class="font-bold" @click="handletoggle(props.row, false)"
                               >Waiting List</q-item-label
                             >
                           </q-item-section>
@@ -294,7 +294,7 @@
                             <q-item
                               clickable
                               v-close-popup
-                              @click="dialogeditroom = true"
+                              @click="handletoggle(props.row, true)"
                               style="display: flex"
                             >
                               <q-btn
@@ -368,6 +368,38 @@
                             </q-item>
                           </q-list>
                         </q-menu>
+                        <q-dialog v-model="dialogeditroom" ref="editRoomDialog">
+                          <q-card>
+                            <q-card-section>
+                              <div class="text-h6">Change Room</div>
+                              <q-separator horizontal class="q-ma-xs" />
+                              <div class="q-mt-sm">
+                                Do you want to request something for room number {{ this.roomno
+                                }}<br />Please Give Us Your Request
+                              </div>
+                              <q-input
+                                v-model="waitingnote"
+                                class="q-my-md"
+                                label="Note..."
+                                dense
+                                outlined
+                                type="textarea"
+                              />
+                              <div
+                                class="row items-center"
+                                style="width: 100%; justify-content: space-between"
+                              >
+                                <q-btn v-close-popup label="Cancel" outline color="primary" />
+                                <q-btn
+                                  v-close-popup="this.waitingnote != null"
+                                  label="accept"
+                                  @click="changeRoom"
+                                  color="primary"
+                                />
+                              </div>
+                            </q-card-section>
+                          </q-card>
+                        </q-dialog>
                         <q-dialog v-model="dialog2">
                           <q-card>
                             <q-card-section>
@@ -394,38 +426,6 @@
                                   v-close-popup
                                   label="accept"
                                   @click="postwaiting(props.row)"
-                                  color="primary"
-                                />
-                              </div>
-                            </q-card-section>
-                          </q-card>
-                        </q-dialog>
-                        <q-dialog v-model="dialogeditroom" ref="editRoomDialog">
-                          <q-card>
-                            <q-card-section>
-                              <div class="text-h6">Change Room</div>
-                              <q-separator horizontal class="q-ma-xs" />
-                              <div class="q-mt-sm">
-                                Do you want to request something for room number {{ this.roomno
-                                }}<br />Please Give Us Your Request
-                              </div>
-                              <q-input
-                                v-model="waitingnote"
-                                class="q-my-md"
-                                label="Note..."
-                                dense
-                                outlined
-                                type="textarea"
-                              />
-                              <div
-                                class="row items-center"
-                                style="width: 100%; justify-content: space-between"
-                              >
-                                <q-btn v-close-popup label="Cancel" outline color="primary" />
-                                <q-btn
-                                  v-close-popup="this.waitingnote != null"
-                                  label="accept"
-                                  @click="waitinglist(props.row, true)"
                                   color="primary"
                                 />
                               </div>
@@ -466,6 +466,7 @@ export default defineComponent({
       setcolor: ref(''),
       cancelEnabled: ref(true),
       iconName1: 'more_vert',
+      datares: ref(),
       showDropdown: false,
       waitingnote: ref(),
       background: ref(),
@@ -706,15 +707,45 @@ export default defineComponent({
     }
   },
   methods: {
+    handletoggle(data, state) {
+      const roomNo = data['RmNo'].data
+      this.datares = data
+      this.roomno = roomNo
+
+      console.log(data)
+
+      if(state == true){
+        this.dialogeditroom = true
+      }else{
+        this.dialog2 = true
+      }
+    },
+    changeRoom() {
+      this.$ResvStore.fix = false
+      this.$ResvStore.ds = false
+      this.$ResvStore.logc = true
+      this.$ResvStore.detail = false
+      
+      if (this.waitingnote != null && this.waitingnote != '') {
+        // const statedata = true
+        // this.$ResvStore.addroom = statedata
+        this.$ResvStore.waitingnote = this.waitingnote
+        this.$ResvStore.currentResvId = this.datares['ResNo'].data
+        this.$ResvStore.currentRoomResvId = this.datares['ResRoomNo'].data
+      } else {
+        this.trigger('negative', 'note has not been filled in, data must be filled in')
+      }
+      
+    },
     redirectToInvoice(data) {
       this.$router.push({
         name: 'guest-invoice',
         params: { resvId: data['ResNo'].data, resvRoomId: data['ResRoomNo'].data }
       })
     },
-    postwaiting(data) {
-      const resvId = data['ResNo'].data
-      const roomNo = data['ResRoomNo'].data
+    postwaiting() {
+      const resvId = this.datares['ResNo'].data
+      const roomNo = this.datares['ResRoomNo'].data
 
       // console.log(resvId, roomNo)
       const note = {
@@ -773,6 +804,7 @@ export default defineComponent({
       const roomNo = data['RmNo'].data
       // console.log(roomNo)
       this.roomno = roomNo
+      console.log(roomNo)
       // this.dialogeditroom = true
       // console.log(this.dialogeditroom)
       this.$ResvStore.fix = false
@@ -784,7 +816,6 @@ export default defineComponent({
         const statedata = true
         this.$ResvStore.addroom = statedata
         this.$ResvStore.currentResvId = data['ResNo'].data
-
         this.$ResvStore.currentRoomResvId = data['ResRoomNo'].data
       } else {
         if (log === true && this.waitingnote != null && this.waitingnote != '') {

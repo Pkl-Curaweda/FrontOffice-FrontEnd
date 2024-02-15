@@ -17,6 +17,7 @@
           class="border-button rounded-borders"
           @click="refreshData"
           v-if="!this.$ResvStore.fix"
+          :disabled="!this.$ResvStore.currentRoomResvId || this.$ResvStore.addroom"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -39,6 +40,7 @@
           color="primary"
           class="border-button rounded-borders"
           @click="updateData"
+          :disabled="!this.$ResvStore.currentRoomResvId || this.$ResvStore.addroom"
           v-if="!this.$ResvStore.fix"
         >
           <svg
@@ -65,7 +67,7 @@
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
           @click="newResvroom()"
-          :disabled="!this.$ResvStore.currentRoomResvId || !this.$ResvStore.addroom"
+          :disabled="!this.$ResvStore.currentRoomResvId || !this.$ResvStore.addroom || !this.$ResvStore.logc"
           v-if="!this.$ResvStore.fix"
         />
 
@@ -78,7 +80,7 @@
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
           @click="getdataCard(true)"
-          :disabled="!this.$ResvStore.currentRoomResvId || this.$ResvStore.addroom"
+          :disabled="!this.$ResvStore.currentRoomResvId || this.$ResvStore.addroom || this.$ResvStore.logc"
           v-if="!this.$ResvStore.fix"
         />
 
@@ -173,9 +175,11 @@
         :disable="$ResvStore.logc"
         v-model="guestName"
         :label="!$ResvStore.fix ? 'Guest Name/ No Handphone' : ''"
-        class="q-mt-sm width-full"
+        class="q-mt-sm width-full text-bold"
         :class="$ResvStore.fix ? 'q-my-sm text-bold' : 'q-mt-sm'"
+        v-if="!$ResvStore.fix"
       />
+      <div class="q-mt-sm width-full text-bold" v-if="$ResvStore.fix">{{ guestName }}</div>
 
       <div
         style="gap: 10px"
@@ -513,13 +517,14 @@
             @click="redirectToInvoice"
             label="Invoice"
             v-if="resvNo && !$ResvStore.fix"
-            :disable="!resvNo"
+            :disable="!resvNo || this.$ResvStore.addroom || this.$ResvStore.logc"
           />
           <q-input
             dense
             :outlined="!$ResvStore.fix"
             v-model="voucherId"
             label="Voucher"
+            :disable="this.$ResvStore.addroom || this.$ResvStore.logc"
             class="q-mt-sm col-grow"
             :readonly="$ResvStore.fix"
             :borderless="$ResvStore.fix"
@@ -546,7 +551,7 @@
       >
         <q-card>
           <q-input
-            :disable="$ResvStore.logc"
+            :disable="$ResvStore.logc || this.$ResvStore.addroom"
             v-model="resvRemark"
             label="Note..."
             dense
@@ -564,25 +569,28 @@
           dense
           class="text-capitalize col-grow"
           @click="createData"
-          :disabled="this.$ResvStore.fix"
+          :disabled="this.$ResvStore.fix || this.$ResvStore.addroom || this.$ResvStore.logc"
+          v-if="!this.$ResvStore.fix"
         />
         <q-btn
           label="Check-In"
           unelevated
           color="primary"
           dense
-          :disabled="!this.$ResvStore.currentRoomResvId"
+          :disabled="!this.$ResvStore.currentRoomResvId || this.$ResvStore.addroom || this.$ResvStore.logc"
           class="text-capitalize col-grow"
           @click="postcheckin"
-        />
+          v-if="!this.$ResvStore.fix"
+          />
         <q-btn
           label="Check-Out"
           outline
           color="grey"
           dense
-          :disabled="!this.$ResvStore.currentRoomResvId"
+          :disabled="!this.$ResvStore.currentRoomResvId || this.$ResvStore.addroom || this.$ResvStore.logc"
           class="text-capitalize col-grow"
           @click="postcheckout"
+          v-if="!this.$ResvStore.fix"
         />
       </div>
     </div>
@@ -835,9 +843,9 @@ export default defineComponent({
     }
   },
   methods: {
-    // refreshData() {
-    //   window.location.reload()
-    // },
+    refreshData() {
+      window.location.reload()
+    },
     redirectToInvoice() {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
       this.$router.push({
@@ -936,6 +944,7 @@ export default defineComponent({
     //   }
     // },
     trigger(type, txt) {
+      if(txt != null){
       this.$q.notify(
         {
           type: type,
@@ -944,6 +953,7 @@ export default defineComponent({
         },
         1000
       )
+    }
     },
     calculateTax(subtotal) {
       return subtotal * 0.1
@@ -1174,9 +1184,8 @@ export default defineComponent({
             if (status === 200) {
               this.trigger('positive', message)
               this.refreshData()
-            } else {
+            }else{
               this.trigger('negative', message)
-              console.error('Gagal memperbarui data')
             }
           }
         )
@@ -1220,7 +1229,7 @@ export default defineComponent({
               if (status === 200) {
                 this.trigger('positive', message)
                 console.log('Data berhasil diperbarui:', data)
-                // this.refreshData()
+                this.refreshData()
               } else {
                 console.error('Gagal memperbarui data')
                 this.trigger('negative', message)

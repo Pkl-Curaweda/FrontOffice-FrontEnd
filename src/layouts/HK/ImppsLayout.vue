@@ -5,17 +5,22 @@
         <q-toolbar-title class="row items-center justify-between">
           <div>
             <q-icon name="chevron_left" size="30px" @click="goBack" style="cursor: pointer" />
-            <q-btn flat round dense icon="o_notifications" size="20px">
-              <q-badge color="red" floating>4</q-badge>
+            <q-btn flat round dense icon="o_notifications" size="20px" @click="getNotif">
+              <q-badge color="red" v-if="notifNumber > 0" floating> {{ notifNumber }}</q-badge>
               <q-menu>
                 <q-list style="min-width: 250px">
                   <q-item style="background-color: #cccccc">
                     <q-item-section>Notification</q-item-section>
                   </q-item>
-                  <q-item clickable class="row items-center justify-between">
+                  <q-item
+                    clickable
+                    class="row items-center justify-between"
+                    v-for="(data, key, i) in notif"
+                    :key="i"
+                  >
                     <q-item-section>
-                      <div class="text-body1">Amfinakamm</div>
-                      <div class="text-caption">2 hours ago</div>
+                      <div class="text-body1">{{ data.content }}</div>
+                      <div class="text-caption">{{ data.time }}</div>
                     </q-item-section>
                     <q-item-section class="absolute-right q-mr-md">
                       <div
@@ -25,26 +30,6 @@
                     </q-item-section>
                   </q-item>
                   <q-separator />
-                  <q-item clickable>
-                    <q-item-section>
-                      <div class="text-body1">Amfinakamm</div>
-                      <div class="text-caption">2 hours ago</div>
-                    </q-item-section>
-                    <q-item-section class="absolute-right q-mr-md">
-                      <div
-                        class="bg-primary"
-                        style="width: 10px; height: 10px; border-radius: 100%"
-                      ></div>
-                    </q-item-section>
-                  </q-item>
-                  <q-separator />
-
-                  <q-item clickable>
-                    <q-item-section>
-                      <div class="text-body1">Amfinakamm</div>
-                      <div class="text-caption">2 hours ago</div>
-                    </q-item-section>
-                  </q-item>
                 </q-list>
               </q-menu>
             </q-btn>
@@ -77,17 +62,23 @@
 </template>
 
 <script>
-export default {
+import { defineComponent, ref } from 'vue'
+
+export default defineComponent({
   name: 'immpsLayout',
   data() {
     return {
       api: new this.$Api('root'),
       user: this.$AuthStore.getUser(),
-      logout_loading: false
+      logout_loading: false,
+      notifNumber: ref(),
+      notif: []
     }
   },
-  watch: {
-    
+  watch: {},
+  mounted() {
+    this.getValue()
+    this.fetchData()
   },
   methods: {
     goBack() {
@@ -103,13 +94,40 @@ export default {
           this.$Helper.showNotif('Logout Success', '', 'positive')
 
           this.$router.go('/auth/login')
-        }else{
+        } else {
           this.$Helper.showNotif('Logout unsuccess', '', 'negative')
         }
 
         this.logout_loading = false
       })
     },
+    getValue() {
+      this.api.get('notif/value', ({ status, data }) => {
+        if (status == 200) {
+          this.notifNumber = data.value
+        }
+      })
+    },
+    getNotif() {
+      let url = `notif/read`
+      this.notifNumber > 0 ? (this.notifNumber = 0) : ''
+      console.log(this.notif.length)
+      this.api.post(url, {}, () => {})
+    },
+    fetchData() {
+      let url = `notif/`
+
+      this.api.get(url, ({ status, data }) => {
+        if (status == 200) {
+          this.notif = data.map((nf) => ({
+            content: nf.content,
+            time: nf.time
+          }))
+
+          console.log(this.notif)
+        }
+      })
+    }
   }
-}
+})
 </script>

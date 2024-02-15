@@ -11,7 +11,8 @@ export const housekeeping_routes = [
     component: () => import('pages/HK/ArrivalDepartureRoom.vue'),
     meta: {
       title: 'Arrival Departure Room',
-      icon: 'task'
+      icon: 'task',
+      protected: true
     }
   },
   {
@@ -19,7 +20,8 @@ export const housekeeping_routes = [
     component: () => import('pages/HK/CleanAndDirty.vue'),
     meta: {
       title: 'Clean And Dirty Room',
-      icon: 'cleaning_services'
+      icon: 'cleaning_services',
+      protected: true
     }
   },
   {
@@ -27,7 +29,8 @@ export const housekeeping_routes = [
     component: () => import('pages/HK/RoomOccupancy.vue'),
     meta: {
       title: 'Room Occupancy Overview',
-      icon: 'bed'
+      icon: 'bed',
+      protected: true
     }
   },
   {
@@ -35,7 +38,8 @@ export const housekeeping_routes = [
     component: () => import('pages/HK/O-O-O.vue'),
     meta: {
       title: 'O-O-O And Off Market Rooms',
-      icon: 'warning'
+      icon: 'warning',
+      protected: true
     }
   },
   {
@@ -43,7 +47,8 @@ export const housekeeping_routes = [
     component: () => import('pages/HK/Status.vue'),
     meta: {
       title: 'Status',
-      icon: 'rule'
+      icon: 'rule',
+      protected: true
     }
   },
   {
@@ -51,7 +56,8 @@ export const housekeeping_routes = [
     component: () => import('pages/HK/LostAndFound.vue'),
     meta: {
       title: 'Lost And Found',
-      icon: 'nest_eco_leaf'
+      icon: 'nest_eco_leaf',
+      protected: true
     }
   }
 ]
@@ -61,21 +67,24 @@ export const hkreports_routes = [
     path: '/hk/report/room-plan',
     component: () => import('pages/HK/reports/RoomPlan.vue'),
     meta: {
-      title: 'Room Plan'
+      title: 'Room Plan',
+      protected: true
     }
   },
   {
     path: '/hk/report/room-change',
     component: () => import('pages/HK/reports/RoomChange.vue'),
     meta: {
-      title: 'Room Change Report'
+      title: 'Room Change Report',
+      protected: true
     }
   },
   {
     path: '/hk/report/extrabed-availability',
     component: () => import('pages/HK/reports/ExtrabedAvailability.vue'),
     meta: {
-      title: 'Extrabed Availability'
+      title: 'Extrabed Availability',
+      protected: true
     }
   }
 ]
@@ -94,7 +103,7 @@ export const hkroomboy_routes = [
     name: 'LostFound',
     path: '/hk/rb/lostfound',
     component: () => import('pages/HK/IMPPS/RoomBoy/LostFound.vue'),
-      meta: {
+    meta: {
       title: 'Lost Found Room Boy',
       protected: true
     }

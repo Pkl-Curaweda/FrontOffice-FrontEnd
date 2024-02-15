@@ -1,6 +1,6 @@
 <template>
   <div class="rb full-width">
-    <UserGreet class="q-mt-md q-px-xs" :name="user.name" role="Room Boy" />
+    <UserGreet class="q-mt-md q-px-xs" />
     <div class="q-mt-md q-px-xs">
       <!-- <IMPPSSelectedTable
         :rows="rows"
@@ -124,7 +124,7 @@
         <template v-for="(data, i) in ratingcolor" :key="i">
           <q-icon name="star" :color="data.color" size="50px" />
         </template>
-    </div>
+      </div>
     </div>
   </div>
 </template>
@@ -174,8 +174,7 @@ export default defineComponent({
   },
   data() {
     return {
-      api: new this.$Api('impps'),
-      user: this.$AuthStore.getUser(),
+      api: new this.$Api('impps')
     }
   },
   mounted() {

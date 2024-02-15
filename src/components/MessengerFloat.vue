@@ -29,13 +29,12 @@ import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'MessengerFloat',
-  mounted() {
-    this.getValue()
-  },
   setup() {
+    const show = ref()
     return {
       notifNumber: ref(),
-      notif: []
+      notif: [],
+      show
     }
   },
   data() {
@@ -44,6 +43,7 @@ export default defineComponent({
     }
   },
   mounted() {
+    this.getValue()
     this.fetchData()
   },
   methods: {
@@ -55,21 +55,13 @@ export default defineComponent({
       })
     },
     getNotif() {
-      let url = `notif`
-
-      this.api.get(url, ({ status, data }) => {
-        if (status == 200) {
-          this.notif = data.map((nf) => ({
-            content: nf.content,
-            time: nf.time
-          }))
-          console.log(this.notif)
-        }
-      })
+      let url = `notif/read`
+      this.notifNumber > 0 ? (this.notifNumber = 0) : ''
+      console.log(this.notif.length)
+      this.api.post(url, {}, () => {})
     },
-
     fetchData() {
-      let url = `notif`
+      let url = `notif/`
 
       this.api.get(url, ({ status, data }) => {
         if (status == 200) {

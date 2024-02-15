@@ -1,11 +1,11 @@
 <template>
   <div :class="classname + 'row items-center q-gutter-md'">
-    <q-icon name="account_circle" color="black" size="45px" />
+    <img :src="user.picture" style="width: 80px; border-radius: 100%" />
     <div>
       <div>{{ time }}</div>
       <div>{{ date }}</div>
-      <div class="text-weight-bold text-h5">Hello, {{ name }}</div>
-      <div class="text-weight-bold">{{ role }}</div>
+      <div class="text-weight-bold text-h5">Hello, {{ user.name }}</div>
+      <div class="text-weight-bold">{{ user.role.name }}</div>
     </div>
   </div>
 </template>
@@ -18,19 +18,18 @@ export default {
   setup() {
     return {
       time: ref(''),
-      date: ref('')
+      date: ref(''),
+      name: ref(),
+      role: ref()
+    }
+  },
+  data() {
+    return {
+      user: this.$AuthStore.getUser()
     }
   },
   props: {
     classname: {
-      type: String,
-      default: ''
-    },
-    name: {
-      type: String,
-      default: ''
-    },
-    role: {
       type: String,
       default: ''
     }

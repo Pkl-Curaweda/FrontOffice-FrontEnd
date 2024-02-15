@@ -238,6 +238,7 @@ const columns2 = [
     format: (val) => `${val}`,
     sortable: true
   },
+  { name: 'stock', align: 'center', label: 'Stock', field: 'stock' },
   {
     name: 'description',
     align: 'center',
@@ -532,6 +533,7 @@ export default defineComponent({
 
           this.data2 = artList.map((inv) => ({
             name: inv.id,
+            stock: inv.stock,
             description: inv.description,
             qty: 0
           }))

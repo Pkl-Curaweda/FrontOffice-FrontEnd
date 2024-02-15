@@ -53,14 +53,33 @@
         </div>
       </div>
       <!-- Table -->
-      <HKTable :columns="columns" :rows="rows" class="q-mt-md" />
+      <div :class="`tableComp ${gapColorClass}`" class="my-table">
+        <q-table
+          :rows="rows"
+          :columns="columns"
+          :pagination="pagination"
+          :rows-per-page-options="[1, 5, 7, 10, 15, 20, 25, 30]"
+          row-key="name"
+          square
+          :table-header-style="{
+            backgroundColor: '#069550',
+            color: '#ffffff',
+            padding: '10px'
+          }"
+          :card-style="{ boxShadow: 'none' }"
+          rows-per-page-label="Show"
+          :dense="$q.screen.lt.md"
+          :title="title"
+          @request="onPaginationChange"
+          v-model:pagination="pagination"
+        />
+      </div>
     </HKCard>
   </q-page>
 </template>
 
 <script>
 import HKCard from 'src/components/HK/Card/HKCard.vue'
-import HKTable from 'src/components/HK/Table/HKTable.vue'
 import { defineComponent, ref } from 'vue'
 
 const columns = [
@@ -130,7 +149,7 @@ const rows = ref()
 
 export default defineComponent({
   name: 'RoomChangePage',
-  components: { HKCard, HKTable },
+  components: { HKCard },
   setup() {
     return {
       roomInput: ref(''),
@@ -149,7 +168,12 @@ export default defineComponent({
   },
   data() {
     return {
-      api: new this.$Api('housekeeping')
+      api: new this.$Api('housekeeping'),
+      pagination: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 20
+      }
     }
   },
   mounted() {
@@ -170,10 +194,18 @@ export default defineComponent({
     }
   },
   methods: {
+    onPaginationChange(props) {
+      props.pagination.rowsPerPage =
+        props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
+      // console.log(props)
+      // console.log(props.rowsPerPage)
+      this.pagination = props.pagination
+      this.fetchData()
+    },
     fetchData() {
       this.loading = true
 
-      let url = `roomchange?`
+      let url = `roomchange?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
 
       const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
       if (DateArrival !== undefined && DateArrival !== '') {

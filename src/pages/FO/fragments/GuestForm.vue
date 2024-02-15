@@ -290,6 +290,7 @@
         :label="arrivalDepartLabel"
         icon="o_calendar_today"
         :disable="$ResvStore.logc"
+        dropdown-icon="o_expand_more"
         outlined
       >
         <q-date v-model="arrivalDepart" range />
@@ -381,8 +382,7 @@
                   </q-btn>
                 </div>
               </div>
-              ></q-item-section
-            >
+            </q-item-section>
           </q-item>
           <q-item>
             <q-item-section

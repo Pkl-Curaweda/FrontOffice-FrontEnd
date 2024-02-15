@@ -360,7 +360,9 @@
           }"
           :card-style="{ boxShadow: 'none' }"
           rows-per-page-label="Show"
+          :rows-per-page-options="[1, 5, 7, 10, 15, 20, 25, 30]"
           v-model:pagination="pagination"
+          hide-bottom
           @request="onPaginationChange"
           :dense="$q.screen.lt.md"
         >
@@ -520,6 +522,10 @@ export default defineComponent({
       this.fetchData()
     },
     onPaginationChange(props) {
+      props.pagination.rowsPerPage =
+        props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
+      console.log(props)
+      console.log(props.rowsPerPage)
       this.pagination = props.pagination
       this.fetchData()
     },

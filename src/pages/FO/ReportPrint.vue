@@ -256,7 +256,7 @@ export default defineComponent({
 
       html2pdf(element, {
         margin: 0,
-        filename: 'invoice.pdf',
+        filename: `Report ${new Date().toISOString().split('T')[0]}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: {
@@ -350,9 +350,8 @@ export default defineComponent({
     },
     pageref() {
       this.$router.push({
-          name: 'reports',
-        }
-      )
+        name: 'reports'
+      })
     }
   }
 })

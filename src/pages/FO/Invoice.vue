@@ -61,6 +61,9 @@
                   row-key="name"
                   selection="multiple"
                   v-model:selected="selected"
+                  v-model:pagination="paginationArt"
+                  @request="onPaginationArt"
+                  :rows-per-page-options="[1, 5, 7, 10, 15, 20, 25, 30]"
                 >
                   <template #body-cell-qty="props">
                     <q-td :props="props">
@@ -366,6 +369,11 @@ export default defineComponent({
         rowsNumber: 0,
         rowsPerPage: 20
       },
+      paginationArt: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 5
+      },
       data: [],
       uniqueId: []
     }
@@ -503,6 +511,14 @@ export default defineComponent({
       this.pagination = props.pagination
       this.fetchData()
     },
+    onPaginationArt() {
+      this.paginationArt.rowsPerPage =
+        this.paginationArt.rowsPerPage < 1 ? 50 : this.paginationArt.rowsPerPage
+      console.log(props)
+      console.log(props.rowsPerPage)
+      this.paginationArt = this.paginationArt
+      this.fetchData()
+    },
     fetchData() {
       this.loading = true
 
@@ -513,7 +529,7 @@ export default defineComponent({
         return
       }
 
-      let url = `invoice/${resvId}/${resvRoomId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}&search=${this.searchData}`
+      let url = `invoice/${resvId}/${resvRoomId}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}&search=${this.searchData}&artPage=${this.paginationArt.page}&artPerPage=${this.paginationArt.rowsPerPage}`
 
       if (this.filterSortOrder.col !== '' && this.filterSortOrder.val !== '') {
         url += `&sort=${this.filterSortOrder.val}`

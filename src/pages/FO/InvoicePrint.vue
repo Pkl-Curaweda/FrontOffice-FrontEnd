@@ -11,7 +11,14 @@
             dense
             class="text-capitalize q-px-lg"
           />
-          <q-btn label="Cancel" dense outline color="primary" @click="pageref" class="text-capitalize q-px-md" />
+          <q-btn
+            label="Cancel"
+            dense
+            outline
+            color="primary"
+            @click="pageref"
+            class="text-capitalize q-px-md"
+          />
         </div>
       </template>
     </FOMenubar>
@@ -263,7 +270,7 @@ export default defineComponent({
 
       html2pdf(element, {
         margin: 10,
-        filename: 'invoice.pdf',
+        filename: `Invoice ${new Date().toISOString().split('T')[0]}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -271,9 +278,8 @@ export default defineComponent({
     },
     pageref() {
       this.$router.push({
-          name: 'guest-invoice',
-        }
-      )
+        name: 'guest-invoice'
+      })
     },
     getDataTable() {
       this.loading = true

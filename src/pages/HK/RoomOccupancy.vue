@@ -78,11 +78,24 @@
       </q-card-section>
     </HKCard>
     <div class="row justify-between q-mt-md">
-      <HKTable
-        :rows="tableRow"
-        :columns="tableCol"
-        :class="`${$q.screen.lt.md ? 'col-12' : 'col-8 '}`"
-      />
+      <div :class="`${$q.screen.lt.md ? 'col-12' : 'col-8 '}`" class="my-table">
+        <q-table
+          v-model:pagination="pagination"
+          :rows="tableRow"
+          :columns="tableCol"
+          hide-bottom
+          row-key="name"
+          square
+          :table-header-style="{
+            backgroundColor: '#069550',
+            color: '#ffffff',
+            padding: '10px'
+          }"
+          :card-style="{ boxShadow: 'none' }"
+          :dense="$q.screen.lt.md"
+          :title="title"
+        />
+      </div>
       <HKCard radius="20px" card_class="card-shadow q-mt-md radio-card">
         <q-card-section>
           <q-form>
@@ -103,7 +116,6 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
-import HKTable from 'src/components/HK/Table/HKTable.vue'
 
 // const responsiveChart = [
 //   {
@@ -258,10 +270,10 @@ const selectOption = ['Show by Week', 'Show by Month', 'Show by Year']
 
 export default defineComponent({
   name: 'RoomOccupancyPage',
-  components: { HKCard, HKTable },
+  components: { HKCard },
   setup() {
     return {
-      r_group: ref('STANDARD'),
+      r_group: ref(''),
       model: ref(null),
       options: selectOption,
       roomData,
@@ -276,7 +288,12 @@ export default defineComponent({
   },
   data() {
     return {
-      api: new this.$Api('housekeeping')
+      api: new this.$Api('housekeeping'),
+      pagination: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 10
+      }
     }
   },
   mounted() {

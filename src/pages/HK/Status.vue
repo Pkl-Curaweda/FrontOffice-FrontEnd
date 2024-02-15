@@ -3,7 +3,7 @@
     <div style="width: 100%">
       <div class="row q-ma-lg" style="gap: 10px">
         <div class="col-grow">
-          <HKCard style="height: fit-content">
+          <HKCard style="height: 100%">
             <div>
               <div
                 class="q-pt-sm q-gutter-x-md col-grow"
@@ -63,6 +63,7 @@
                     color: '#ffffff',
                     padding: '10px'
                   }"
+                  hide-bottom
                   :card-style="{ boxShadow: 'none' }"
                   rows-per-page-label="Show"
                   v-model:pagination="paginationRoom"
@@ -209,6 +210,7 @@
                 color: '#ffffff',
                 padding: '10px'
               }"
+              hide-bottom
               rows-per-page-label="Show"
               v-model:pagination="paginationTask"
               @request="onPaginationChangeTask"

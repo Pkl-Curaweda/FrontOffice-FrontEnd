@@ -60,14 +60,33 @@
           />
         </div>
       </div>
-      <HKTable :columns="tableColumns" :rows="tableRows" style="width: 100%" />
+      <div :class="`tableComp ${gapColorClass}`" class="my-table" style="width: 100%">
+        <q-table
+          :rows="tableRows"
+          :columns="tableColumns"
+          :pagination="pagination"
+          :rows-per-page-options="[1, 5, 7, 10, 15, 20, 25, 30]"
+          row-key="name"
+          square
+          :table-header-style="{
+            backgroundColor: '#069550',
+            color: '#ffffff',
+            padding: '10px'
+          }"
+          :card-style="{ boxShadow: 'none' }"
+          rows-per-page-label="Show"
+          :dense="$q.screen.lt.md"
+          :title="title"
+          @request="onPaginationChange"
+          v-model:pagination="pagination"
+        />
+      </div>
     </HKCard>
   </q-page>
 </template>
 <script>
 import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
-import HKTable from 'src/components/HK/Table/HKTable.vue'
 
 const tableColumns = [
   {
@@ -105,7 +124,7 @@ const tableRows = ref()
 
 export default defineComponent({
   name: 'ExtrabedPage',
-  components: { HKCard, HKTable },
+  components: { HKCard },
   setup() {
     return {
       datePickerArrival: ref(),
@@ -121,7 +140,12 @@ export default defineComponent({
   },
   data() {
     return {
-      api: new this.$Api('housekeeping')
+      api: new this.$Api('housekeeping'),
+      pagination: {
+        page: 1,
+        rowsNumber: 0,
+        rowsPerPage: 20
+      }
     }
   },
   mounted() {
@@ -148,6 +172,14 @@ export default defineComponent({
     }
   },
   methods: {
+    onPaginationChange(props) {
+      props.pagination.rowsPerPage =
+        props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
+      // console.log(props)
+      // console.log(props.rowsPerPage)
+      this.pagination = props.pagination
+      this.fetchData()
+    },
     fetchData() {
       this.loading = true
       console.log(this.sortingModel)
@@ -167,7 +199,7 @@ export default defineComponent({
           break
       }
 
-      let url = `amenities/${this.latestArt}?`
+      let url = `amenities/${this.latestArt}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
 
       console.log(url)
 

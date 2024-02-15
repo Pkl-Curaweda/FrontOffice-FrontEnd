@@ -12,6 +12,7 @@
         color: '#ffffff',
         padding: '10px'
       }"
+      hide-bottom
       :card-style="{ boxShadow: 'none' }"
       rows-per-page-label="Show"
       :dense="$q.screen.lt.md"

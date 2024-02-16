@@ -1,4 +1,4 @@
-const frontoffice_routes = [
+export const frontoffice_routes = [
   {
     name: 'guest-list',
     path: '/fo/guest-list',
@@ -109,3 +109,15 @@ const frontoffice_routes = [
 ]
 
 export default frontoffice_routes
+
+export const fosuperadmin_routes = [
+  {
+    name: 'PageSuperAdmin',
+    path: '/fo/super-admin',
+    component: () => import('pages/FO/SuperAdmin/SuperAdmin.vue'),
+    meta: {
+      title: 'Page Super Admin',
+      protected: true
+    }
+  }
+]

@@ -1,4 +1,4 @@
-import frontoffice_routes from './frontoffice.router'
+import { frontoffice_routes, fosuperadmin_routes } from './frontoffice.router'
 import {
   housekeeping_routes,
   hkreports_routes,
@@ -35,6 +35,12 @@ const routes = [
     path: '/fo',
     component: () => import('layouts/FOLayout.vue'),
     children: frontoffice_routes
+  },
+
+  {
+    path: '/fo/super-admin',
+    component: () => import('layouts/FOLayout.vue'),
+    children: fosuperadmin_routes
   },
 
   {

@@ -44,7 +44,8 @@
             </svg>
           </q-icon>
           <q-popup-proxy :offset="[10, 10]" v-model="isPopupOpen">
-            <q-card style="width: 350px" class="q-px-sm">
+            <q-card style="width: 350px" class="q-px-sm q-py-sm">
+              <div class="text-h5 q-mt-md">{{ titleVoucher || 'Add Voucher' }}</div>
               <q-input
                 dense
                 outlined
@@ -109,14 +110,19 @@
         hide-bottom
         :rows-per-page-options="['']"
       >
-        <template v-slot:header="props">
-          <q-tr class="table-head" :props="props">
-            <q-th
-              v-for="(col, i) in props.cols"
-              :key="i"
-              style="padding-top: 0px; padding-bottom: 0px"
-            >
-              <span class="text-h6">{{ col.label }}</span>
+        <template>
+          <q-tr class="table-head">
+            <q-th style="padding-top: 0px; padding-bottom: 0px">
+              <template v-slot:header="props">
+                <q-tr class="table-head" :props="props">
+                  <q-th
+                    v-for="(col, i) in props.cols"
+                    :key="i"
+                    style="padding-top: 0px; padding-bottom: 0px"
+                  >
+                  </q-th>
+                </q-tr>
+              </template>
             </q-th>
           </q-tr>
         </template>
@@ -199,6 +205,7 @@ export default defineComponent({
       data: ref(),
       searchInput: ref(''),
       datePicker: ref({ from: '', to: '' }),
+      titleVoucher: ref(),
       isPopupOpen: ref(false),
       labelButton: ref(),
       readVoucherName: ref(false)
@@ -246,9 +253,9 @@ export default defineComponent({
     },
     saveVoucher() {
       if (this.labelButton === 'Edit') {
-        this.updateVoucher() // Panggil fungsi update jika sedang dalam mode edit
+        this.updateVoucher()
       } else {
-        this.addVoucher() // Panggil fungsi add jika sedang dalam mode tambah
+        this.addVoucher()
       }
     },
     addVoucher() {
@@ -301,9 +308,7 @@ export default defineComponent({
       })
     },
     clearFields() {
-      // Bersihkan field jika tombol cancel ditekan
       this.labelButton = ''
-      // Bersihkan field lainnya
       this.voucherName = ''
       this.description = ''
       this.discount = ''
@@ -311,11 +316,13 @@ export default defineComponent({
       this.complimentary = false
       this.houseUse = false
       this.input = ''
+      this.titleVoucher = ''
     },
     editVoucher(row) {
       const voucherName = row.voucherName.data
       this.isPopupOpen = true
       this.labelButton = 'Edit'
+      this.titleVoucher = 'Edit Voucher'
       this.readVoucherName = true
       this.editingRow = row
 
@@ -365,8 +372,8 @@ export default defineComponent({
             expired: { data: vc.expireAt, style: { backgroundColor: vc.rowColor } },
             description: { data: vc.description, style: { backgroundColor: vc.rowColor } },
             discount: { data: vc.discount, style: { backgroundColor: vc.rowColor } },
-            complimentary: { data: vc.complimentary, style: { backgroundColor: vc.rowColor } }, // Akses rmNo dari objek added
-            houseUse: { data: vc.houseUse, style: { backgroundColor: vc.rowColor } } // Akses roomBoy dari objek added
+            complimentary: { data: vc.complimentary, style: { backgroundColor: vc.rowColor } },
+            houseUse: { data: vc.houseUse, style: { backgroundColor: vc.rowColor } }
           }))
         }
       })
@@ -374,9 +381,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style>
-.my-table {
-  overflow-y: auto;
-}
-</style>

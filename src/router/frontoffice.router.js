@@ -1,4 +1,4 @@
-const frontoffice_routes = [
+export const frontoffice_routes = [
   {
     name: 'guest-list',
     path: '/fo/guest-list',
@@ -11,7 +11,7 @@ const frontoffice_routes = [
   },
   {
     name: 'guest-invoice',
-  path: '/fo/guest-invoice/:resvId/:resvRoomId',
+    path: '/fo/guest-invoice/:resvId/:resvRoomId',
     component: () => import('pages/FO/Invoice.vue'),
     meta: {
       title: 'Arrival Guest List - Invoice',
@@ -38,11 +38,21 @@ const frontoffice_routes = [
     }
   },
   {
-    name:'reports',
+    name: 'reports',
     path: '/fo/reports',
     component: () => import('pages/FO/Reports.vue'),
     meta: {
       title: 'Reports',
+      main_route: true,
+      protected: true
+    }
+  },
+  {
+    name: 'voucher',
+    path: '/fo/voucher',
+    component: () => import('pages/FO/Voucher.vue'),
+    meta: {
+      title: 'Voucher',
       main_route: true,
       protected: true
     }
@@ -85,7 +95,29 @@ const frontoffice_routes = [
       main_route: false,
       protected: true
     }
+  },
+  {
+    name: 'super-admin',
+    path: '/fo/super-admin',
+    component: () => import('pages/FO/SuperAdmin/SuperAdmin.vue'),
+    meta: {
+      title: 'Super Admin',
+      main_route: false,
+      protected: true
+    }
   }
 ]
 
 export default frontoffice_routes
+
+export const fosuperadmin_routes = [
+  {
+    name: 'PageSuperAdmin',
+    path: '/fo/super-admin',
+    component: () => import('pages/FO/SuperAdmin/SuperAdmin.vue'),
+    meta: {
+      title: 'Page Super Admin',
+      protected: true
+    }
+  }
+]

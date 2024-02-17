@@ -380,7 +380,7 @@ export default defineComponent({
           }))
           this.data = listTask.map((lt) => ({
             roomNo: { data: lt.roomNo, style: { backgroundColor: lt.rowColor } },
-            RoomType: { data: lt.roomType, style: { backgroundColor: lt.rowColor } },
+            RoomType: { data: lt.roomType.longDesc, style: { backgroundColor: lt.rowColor } },
             Schedule: { data: lt.schedule, style: { backgroundColor: lt.rowColor } },
             Standard: { data: lt.standard, style: { backgroundColor: lt.rowColor } },
             Actual: { data: lt.actual, style: { backgroundColor: lt.rowColor } },

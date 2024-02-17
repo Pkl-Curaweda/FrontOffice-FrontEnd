@@ -222,6 +222,10 @@ export default defineComponent({
     datePicker: {
       deep: true,
       handler(newDateRange) {
+        this.$router.push({
+          name: "room-availability",
+          query: { from: this.datePicker.from, to: this.datePicker.to }
+        })
         this.fetchData()
       }
     }
@@ -287,8 +291,9 @@ export default defineComponent({
 
       let url = `roomavail?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}&search=${this.searchData}`
 
-      const fromDate = this.datePicker != null ? this.datePicker.from.replace(/\//g, '-') : ''
-      const toDate = this.datePicker != null ? this.datePicker.to.replace(/\//g, '-') : ''
+      let { from, to } = this.$route.query
+      const fromDate = from != undefined ? from.replace(/\//g, '-') : ''
+      const toDate = to != null ? to.replace(/\//g, '-') : ''
 
       if (fromDate !== '' && toDate !== '') {
         url += `&date=${fromDate}+${toDate}`
@@ -327,16 +332,7 @@ export default defineComponent({
 
       list.push({
         Date: { data: { label: 'Room Average' }, style: {} },
-        room_1: { data: { label: avg.total_101 + '%' }, style: {} },
-        room_2: { data: { label: avg.total_102 + '%' }, style: {} },
-        tiga: { data: { label: avg.total_103 + '%' }, style: {} },
-        empat: { data: { label: avg.total_104 + '%' }, style: {} },
-        lima: { data: { label: avg.total_105 + '%' }, style: {} },
-        enam: { data: { label: avg.total_106 + '%' }, style: {} },
-        tujuh: { data: { label: avg.total_107 + '%' }, style: {} },
-        delapan: { data: { label: avg.total_108 + '%' }, style: {} },
-        sembilan: { data: { label: avg.total_109 + '%' }, style: {} },
-        sepuluh: { data: { label: avg.total_110 + '%' }, style: {} }
+        ...avg
       })
       this.data = list
       console.log('list data after pushing room average:', this.data)

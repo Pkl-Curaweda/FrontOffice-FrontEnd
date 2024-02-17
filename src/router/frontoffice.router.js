@@ -20,6 +20,7 @@ export const frontoffice_routes = [
     }
   },
   {
+    name: 'room-availability',
     path: '/fo/room-availability',
     component: () => import('pages/FO/RoomAvailability.vue'),
     meta: {

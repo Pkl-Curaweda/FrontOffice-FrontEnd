@@ -328,10 +328,11 @@ export default defineComponent({
       }
 
       let url = `invoice/${resvId}/${resvRoomId}/print`
-
+      
       this.api.get(url, ({ status, data }) => {
         this.loading = false
-
+        console.log(data)
+        
         if (status == 200) {
           this.formatData(data.invoices)
           this.billNumber = data.billNumber

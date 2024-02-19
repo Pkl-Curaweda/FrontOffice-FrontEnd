@@ -80,10 +80,10 @@ export const hkreports_routes = [
     }
   },
   {
-    path: '/hk/report/extrabed-availability',
-    component: () => import('pages/HK/reports/ExtrabedAvailability.vue'),
+    path: '/hk/report/amenities-availability',
+    component: () => import('src/pages/HK/reports/AmenitiesAvailability.vue'),
     meta: {
-      title: 'Extrabed Availability',
+      title: 'Amenities Availability',
       protected: true
     }
   }

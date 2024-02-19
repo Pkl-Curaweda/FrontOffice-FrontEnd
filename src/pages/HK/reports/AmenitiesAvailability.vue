@@ -1,7 +1,7 @@
 <template>
   <q-page class="flex flex-center">
     <HKCard
-      title="Extrabed Availibility"
+      title="Amenities Availibility"
       radius="25px"
       card_class="full-width q-px-lg flex q-mt-xl"
     >

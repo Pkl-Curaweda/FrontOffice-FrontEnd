@@ -261,9 +261,9 @@ const tableCol = [
 const tableRow = ref([])
 
 const radio_opt = [
-  { label: 'Standard Room', value: 'STANDARD' },
-  { label: 'Deluxe Room', value: 'DELUXE' },
-  { label: 'Family Room', value: 'FAMILY' }
+  { label: 'Standard Room', value: 'STD' },
+  { label: 'Deluxe Room', value: 'DLX' },
+  { label: 'Family Room', value: 'FML' }
 ]
 
 const selectOption = ['Show by Week', 'Show by Month', 'Show by Year']
@@ -372,7 +372,7 @@ export default defineComponent({
 
           this.tableRow = roomStatus.map((rs) => ({
             name: rs.id,
-            r_type: rs.roomType,
+            r_type: rs.roomType.longDesc,
             status: rs.roomStatus.longDescription
           }))
         }

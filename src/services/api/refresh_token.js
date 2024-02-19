@@ -3,19 +3,21 @@ import { Api } from '.'
 import { Config } from '../config'
 
 export const refreshToken = async () => {
-  let data
-  const api = new Api()
-  await api.get('/auth/user/refresh', ({ data, status }) => {
-    console.log(status)
-    if (status == 200 && data['accessToken']) {
-      authStore().setAccessToken(data['accessToken'])
-      data = data['accessToken']
-    } else {
-      Config.logout()
-      data =  null
-    }
-  })
-
-  return data
+  try{
+    const api = new Api()
+    console.log('API GET')
+    await api.get('/auth/user/refresh', ({ status, data }) => {
+      console.log(status, data)
+      if (status == 200 && data['accessToken']) {
+        authStore().setAccessToken(data['accessToken'])
+        return data['accessToken']
+      }else {
+        Config.logout()
+        return null
+      }
+    })
+  }catch(err){
+    console.log(err)
+  }
 }
 

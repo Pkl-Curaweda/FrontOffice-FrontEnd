@@ -2,6 +2,7 @@ import axios from 'axios'
 import { refreshToken } from './refresh_token'
 import { authStore } from 'src/stores/auth'
 import { realtimeNotif } from './realtime_notif'
+import { Config } from '../config'
 
 const myAxios = axios.create()
 
@@ -16,11 +17,8 @@ myAxios.interceptors.response.use(
     }
 
     if (response.status == 401) {
-      console.log('401 ni mas')
       if (!err.config.sent) {
         err.config.sent = true
-
-        // console.log('BHABDJA')
         const new_token = await refreshToken()
         if (new_token != null) {
           err.config.headers = {
@@ -28,7 +26,6 @@ myAxios.interceptors.response.use(
             Authorization: `Bearer ${new_token}`
           }
         }
-
         return axios(err.config)
       }
     }

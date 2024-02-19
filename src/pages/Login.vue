@@ -42,7 +42,7 @@
           </template>
         </q-input>
 
-        <a href="" class="self-end q-mb-sm">Forgot password?</a>
+        <!-- <a href="" class="self-end q-mb-sm">Forgot password?</a> -->
         <q-btn label="login" type="submit" class="width-full" color="primary" :loading="loading" />
       </q-form>
     </div>

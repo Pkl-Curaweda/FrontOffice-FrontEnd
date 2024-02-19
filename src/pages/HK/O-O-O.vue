@@ -505,7 +505,7 @@ export default defineComponent({
             until: ooo.until,
             created_by: ooo.pic,
             dept: ooo.department,
-            room_type: ooo.roomType
+            room_type: ooo.roomType.longDesc
           }))
           console.log(this.tableRows)
         }

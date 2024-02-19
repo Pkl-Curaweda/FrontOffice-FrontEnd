@@ -546,10 +546,10 @@ export default defineComponent({
           data: '',
           options: ['DLX', 'STD', 'FML'],
           onOptionChange: (val) => {
-            if (val == 'DLX') this.filterSortOrder = { col: 'RType', val: 'room+type+DELUXE' }
+            if (val == 'DLX') this.filterSortOrder = { col: 'RType', val: 'room+type+DLX' }
             else if (val == 'STD')
-              this.filterSortOrder = { col: 'RType', val: 'room+type+STANDARD' }
-            else if (val == 'FML') this.filterSortOrder = { col: 'RType', val: 'room+type+FAMILY' }
+              this.filterSortOrder = { col: 'RType', val: 'room+type+STD' }
+            else if (val == 'FML') this.filterSortOrder = { col: 'RType', val: 'room+type+FML' }
             else this.filterSortOrder = { col: '', val: '' }
           }
         },
@@ -1032,8 +1032,8 @@ export default defineComponent({
                 borderwidth: '4px'
               }
             },
-            RType: { data: rr.room.roomType, style: { backgroundColor, color } },
-            BType: { data: rr.room.bedSetup, style: { backgroundColor, color } },
+            RType: { data: rr.room.roomType.id, style: { backgroundColor, color } },
+            BType: { data: rr.room.roomType.bedSetup, style: { backgroundColor, color } },
             GuestName: {
               data: rr.reservation.reserver.guest.name,
               style: { backgroundColor, color }

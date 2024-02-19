@@ -519,8 +519,8 @@ export default defineComponent({
 
           this.dataRows = roomStatus.map((rs) => ({
             roomno: rs.id,
-            roomtype: rs.roomType,
-            btype: rs.bedSetup,
+            roomtype: rs.roomType.longDesc,
+            btype: rs.roomType.bedSetup,
             statusdescription: rs.roomStatus.longDescription
           }))
         }

@@ -147,7 +147,7 @@
         <q-dialog v-model="CleanRoom">
           <q-card style="width: 100%">
             <div class="q-pa-lg">
-              <div class="q-pa-sm">CleanRoom</div>
+              <div class="q-pa-sm">Add Room Task</div>
               <div style="display: flex">
                 <div v-if="this.choosenRoom">
                   <img :src="this.choosenRoom.image" style="width: 100px; border-radius: 2px" />
@@ -176,25 +176,27 @@
               style="border-style: dashed; border-width: 1px; border-color: grey"
             />
             <div class="q-pa-lg">
-              <div class="q-pa-sm">CleanRoom</div>
+              <div class="q-pa-sm">Assigned</div>
               <div style="display: flex">
-                <div v-if="this.choosenRoom">
-                  <img :src="this.choosenRoom.image" style="width: 100px; border-radius: 2px" />
+                <div v-if="this.maidSelect">
+                  <img :src="this.choosenMaid.image" style="width: 100px; border-radius: 2px" />
                 </div>
                 <div style="padding: 8px; gap: 2px; width: 100%">
                   <div>
                     <q-select
                       outlined
                       style="width: 100%"
-                      v-model="roomSelect"
-                      :options="listRoomNo"
-                      label="RoomNo"
+                      v-model="maidSelect"
+                      :options="listMaid"
+                      label="Assigned"
                       dense
                       class="q-mb-md"
                     />
-                    <div style="padding: 10px; gap: 2px" v-if="this.choosenRoom">
-                      <div>Id : {{ this.choosenRoom.id }}</div>
-                      <div>Work Load : {{ this.choosenRoom.workload }}</div>
+                    <div style="padding: 10px; gap: 2px" v-if="this.maidSelect">
+                      <div>Id : {{ this.choosenMaid.id }}</div>
+                      <div>Aliases : {{ this.choosenMaid.aliases }}</div>
+                      <div>Shift : {{ this.choosenMaid.shift }}</div>
+                      <div>Work Load : {{ this.choosenMaid.workload }}</div>
                     </div>
                   </div>
                 </div>
@@ -204,10 +206,10 @@
             <q-card-actions align="right">
               <q-btn v-close-popup label="Cancel" dense no-caps color="primary" outline="" />
               <q-btn
-                @click="postClean"
+                @click="postCleanTask"
                 dense
                 no-caps
-                v-close-popup="this.roomNoSelect != null"
+                v-close-popup="this.maidSelect != null"
                 label="Change Room"
                 color="primary"
               />
@@ -526,6 +528,7 @@ export default defineComponent({
       roomBoy: ref([]),
       roomBoy2: ref([]),
       choosenRoom: ref([]),
+      choosenMaid: ref([]),
       roomboySelect: ref(''),
       roomSelect: ref(),
       maidSelect: ref(''),
@@ -576,6 +579,9 @@ export default defineComponent({
     },
     roomSelect() {
       this.roomSelect ? this.getDataTask(1) : ''
+    },
+    maidSelect() {
+      this.maidSelect ? this.getDetailMaid() : ''
     }
   },
   methods: {
@@ -615,7 +621,7 @@ export default defineComponent({
           null,
           ({ status, message }) => {
             if (status == 200) {
-              this.trigger('possitive', message)
+              this.trigger('positive', message)
               this.fetchData()
             } else {
               this.trigger('negative', message)
@@ -627,7 +633,7 @@ export default defineComponent({
       }
     },
     dialogalert(roomNo) {
-      this.dialog1 = true
+      this.nextnotify('positive', 'success')
       this.roomNo = roomNo['roomNo'].data
       this.roomId = roomNo['taskId'].data
       this.comments = roomNo['Comments'].data
@@ -729,7 +735,6 @@ export default defineComponent({
             if (status === 200) {
               const { unAvailableData } = data
               this.roomBoy = unAvailableData
-              console.log(this.roomBoy)
             }
           }
         )
@@ -740,7 +745,6 @@ export default defineComponent({
             if (status === 200) {
               const { assigneData } = data
               this.roomBoy2 = assigneData
-              console.log(this.roomBoy2)
             }
           }
         )
@@ -754,7 +758,7 @@ export default defineComponent({
           : `spv/helper/add?roomNo=0&roomBoy=0`
         this.api.get(detailAPI, ({ message, status, data }) => {
           if (status == 200) {
-            this.trigger('possitive', message)
+            this.nextnotify('positive', message)
             const { room, maid } = data.list
             this.choosenRoom = data.choosenRoom
             console.log(this.choosenRoom)
@@ -766,16 +770,19 @@ export default defineComponent({
         console.error(error)
       }
     },
-    getDetailTask() {
+    getDetailMaid() {
       try {
-        this.api.get(`spv/helper/add?roomNo=0&roomBoy=0`, ({ message, status, data }) => {
-          if (status == 200) {
-            this.trigger('possitive', message)
-            const { room, maid } = data.list
-            this.listRoomNo = room.map((item) => ({ label: item.id }))
-            this.listMaid = maid
+        console.log(this.maidSelect)
+        this.api.get(
+          `spv/helper/add?roomNo=0&roomBoy=${this.maidSelect.value}`,
+          ({ message, status, data }) => {
+            if (status == 200) {
+              this.nextnotify('positive', message)
+              const { choosenMaid } = data
+              this.choosenMaid = choosenMaid
+            }
           }
-        })
+        )
       } catch (error) {
         console.error(error)
       }
@@ -793,7 +800,6 @@ export default defineComponent({
             this.roomboySelect = null
             this.roomboySelectSend = null
             this.fetchData()
-            console.log(this.roomboySelect)
           }
         }
       )
@@ -804,7 +810,7 @@ export default defineComponent({
           roomNo: this.roomSelect.label,
           maidId: this.maidSelect.value,
           request: this.requestInput,
-          comment: this.commentInput,
+          comment: this.commentsInput,
           customWorkload: this.choosenRoom.workload
         }
         this.api.post(`spv/task`, change, ({ message, status }) => {
@@ -813,7 +819,7 @@ export default defineComponent({
             this.roomSelect.label = null
             this.maidSelect.value = null
             this.requestInput = null
-            this.commentInput = null
+            this.commentsInput = null
             this.choosenRoom.workload = null
             this.fetchData()
           } else {
@@ -824,13 +830,13 @@ export default defineComponent({
         console.error(error)
       }
     },
-    postClean() {
+    postCleanTask() {
       try {
         const change = {
           roomNo: this.roomSelect.label,
           maidId: this.maidSelect.value,
-          request: this.requestInput,
-          comment: this.commentInput,
+          request: 'Needs to be cleaned',
+          comment: this.commentsInput,
           customWorkload: this.choosenRoom.workload
         }
         this.api.post(`spv/task`, change, ({ message, status }) => {
@@ -839,7 +845,7 @@ export default defineComponent({
             this.roomSelect.label = null
             this.maidSelect.value = null
             this.requestInput = null
-            this.commentInput = null
+            this.commentsInput = null
             this.choosenRoom.workload = null
             this.fetchData()
           } else {
@@ -856,10 +862,24 @@ export default defineComponent({
         {
           type: type,
           message: txt || 'error unknown action try again',
-          timeout: 1000
+          timeout: 500
         },
-        1000
+        500
       )
+    },
+    nextnotify(type, txt) {
+      this.$q.notify(
+        {
+          type: 'ongoing',
+          message: 'Loading',
+          timeout: 200
+        },
+      )
+      setTimeout(() => {
+        if (type == 'positive') {
+          this.trigger(type, txt)
+        }
+      }, 2000)
     }
   }
 })

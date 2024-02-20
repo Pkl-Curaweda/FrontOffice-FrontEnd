@@ -66,7 +66,7 @@ export class Api {
       this.notif(err)
       return callback({
         status: response?.status || 599,
-        message: response?.data?.message != undefined ||  response?.data?.message !='jwt' ? response.data?.message : null,
+        message: response?.data?.message != undefined ||  response?.data?.message !='jwt' ? response?.data?.message : null,
         data: response?.data?.data || {}
       })
     }

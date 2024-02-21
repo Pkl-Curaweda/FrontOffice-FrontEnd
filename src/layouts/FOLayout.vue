@@ -2,7 +2,7 @@
   <q-layout view="hHh lpR fFf">
     <q-header bordered class="bg-white text-black">
       <q-toolbar class="items-center">
-        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
+        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" v-if="$route.path != '/fo/super-admin'" />
         <q-toolbar-title> {{ $route.meta.title }} </q-toolbar-title>
 
         <q-space />
@@ -16,7 +16,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" side="left" overlay behavior="mobile" bordered>
+    <q-drawer v-model="leftDrawerOpen" side="left" overlay behavior="mobile" bordered v-if="$route.path != '/fo/super-admin'">
       <SideBar />
     </q-drawer>
 

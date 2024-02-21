@@ -13,34 +13,211 @@
         :btnEdit="false"
         hidePagination
       /> -->
-        <div style="width: 100%; justify-content: space-between; display: flex; padding: 10px">
+        <div style="display: flex">
           <q-btn
             flat
             square
             color="primary"
             icon="pending_actions"
             @click="showhistory(!this.state)"
+            style=""
           >
             <q-tooltip>History</q-tooltip>
           </q-btn>
-          <q-btn
-            dense
-            noCaps
-            color="primary"
-            @click="dialog2 = true"
-            label="Change Status"
-            class="q-px-lg"
-            style="
-              border-radius: 10px;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-            "
+          <div
+            style="scrollbar-width: none; gap: 10px; display: flex; padding: 10px; overflow-x: auto"
           >
-          </q-btn>
+            <q-btn
+              dense
+              noCaps
+              color="primary"
+              @click="handleacces('addTask')"
+              label="Add Task"
+              class="q-px-lg"
+              style="width: 100%; border-radius: 10px; white-space: nowrap"
+            />
+            <q-btn
+              dense
+              noCaps
+              color="primary"
+              @click="handleacces('changeRoom')"
+              label="Change Room Status"
+              class="q-px-lg"
+              style="width: 100%; white-space: nowrap; border-radius: 10px"
+            />
+            <q-btn
+              dense
+              noCaps
+              color="primary"
+              @click="handleacces('unavailableRoom')"
+              label="Unavailable Room Boy"
+              class="q-px-lg"
+              style="width: 100%; white-space: nowrap; border-radius: 10px"
+            />
+          </div>
         </div>
-        <q-dialog v-model="dialog2" persistent>
-          <q-card style="width: 300px">
+        <q-dialog v-model="dialog1">
+          <q-card style="width: 300px; justify-content: center">
+            <div style="width: 100%; text-align: center; margin-top: 10px">Choose Type</div>
+            <div class="q-pa-lg col" style="display: flex; width: 100%; gap: 5px">
+              <q-btn
+                dense
+                noCaps
+                color="primary"
+                @click="CleanRoom = true"
+                label="CLean Room"
+                class="q-px-md"
+                style="border-radius: 10px; width: 100%"
+              />
+              <q-btn
+                dense
+                noCaps
+                color="primary"
+                @click="Request = true"
+                label="Request"
+                class="q-px-md"
+                style="border-radius: 10px; width: 100%"
+              />
+            </div>
+          </q-card>
+        </q-dialog>
+        <q-dialog v-model="Request">
+          <q-card style="width: 100%">
+            <div class="q-pa-lg">
+              <h7>Add Request Task</h7>
+              <div style="display: flex; gap: 5px" class="q-pt-lg">
+                <q-select
+                  outlined
+                  style="width: 100%"
+                  v-model="roomSelect"
+                  :options="listRoomNo"
+                  label="RoomNo"
+                  dense
+                  class="q-mb-md"
+                />
+                <q-select
+                  outlined
+                  style="width: 100%"
+                  v-model="maidSelect"
+                  :options="listMaid"
+                  label="Assigned"
+                  dense
+                  class="q-mb-md"
+                />
+              </div>
+              <div style="display: flex" v-if="this.choosenRoom">
+                <div>
+                  <img :src="this.choosenRoom.image" style="width: 100px; border-radius: 2px" />
+                </div>
+                <div style="padding: 10px; gap: 2px">
+                  <div>
+                    <div>Id : {{ this.choosenRoom.id }}</div>
+                    <div>Work Load : {{ this.choosenRoom.workload }}</div>
+                  </div>
+                </div>
+              </div>
+              <q-input
+                filled
+                placeholder="Request"
+                type="text"
+                v-model="requestInput"
+                class="q-my-md"
+              />
+              <q-input
+                filled
+                placeholder="Add Comment"
+                type="textarea"
+                v-model="commentsInput"
+                class="q-mb-md"
+              />
+              <q-card-actions align="right">
+                <q-btn v-close-popup label="Cancel" dense no-caps color="primary" outline="" />
+                <q-btn
+                  @click="postReqTask"
+                  v-close-popup="this.roomSelect != null"
+                  dense
+                  no-caps
+                  label="Change Status"
+                  color="primary"
+                />
+              </q-card-actions>
+            </div>
+          </q-card>
+        </q-dialog>
+        <q-dialog v-model="CleanRoom">
+          <q-card style="width: 100%">
+            <div class="q-pa-lg">
+              <div class="q-pa-sm">Add Room Task</div>
+              <div style="display: flex">
+                <div v-if="this.choosenRoom">
+                  <img :src="this.choosenRoom.image" style="width: 100px; border-radius: 2px" />
+                </div>
+                <div style="padding: 8px; gap: 2px; width: 100%">
+                  <div>
+                    <q-select
+                      outlined
+                      style="width: 100%"
+                      v-model="roomSelect"
+                      :options="listRoomNo"
+                      label="RoomNo"
+                      dense
+                      class="q-mb-md"
+                    />
+                    <div style="padding: 10px; gap: 2px" v-if="this.choosenRoom">
+                      <div>Id : {{ this.choosenRoom.id }}</div>
+                      <div>Work Load : {{ this.choosenRoom.workload }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="q-mt-sm"
+              style="border-style: dashed; border-width: 1px; border-color: grey"
+            />
+            <div class="q-pa-lg">
+              <div class="q-pa-sm">Assigned</div>
+              <div style="display: flex">
+                <div v-if="this.maidSelect">
+                  <img :src="this.choosenMaid.image" style="width: 100px; border-radius: 2px" />
+                </div>
+                <div style="padding: 8px; gap: 2px; width: 100%">
+                  <div>
+                    <q-select
+                      outlined
+                      style="width: 100%"
+                      v-model="maidSelect"
+                      :options="listMaid"
+                      label="Assigned"
+                      dense
+                      class="q-mb-md"
+                    />
+                    <div style="padding: 10px; gap: 2px" v-if="this.maidSelect">
+                      <div>Id : {{ this.choosenMaid.id }}</div>
+                      <div>Aliases : {{ this.choosenMaid.aliases }}</div>
+                      <div>Shift : {{ this.choosenMaid.shift }}</div>
+                      <div>Work Load : {{ this.choosenMaid.workload }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <q-input filled placeholder="Add Comment" type="textarea" v-model="commentsInput" />
+            </div>
+            <q-card-actions align="right">
+              <q-btn v-close-popup label="Cancel" dense no-caps color="primary" outline="" />
+              <q-btn
+                @click="postCleanTask"
+                dense
+                no-caps
+                v-close-popup="this.maidSelect != null"
+                label="Change Room"
+                color="primary"
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+        <q-dialog v-model="dialog2">
+          <q-card style="width: 600px">
             <div class="q-pa-lg">
               <q-select
                 outlined
@@ -54,11 +231,125 @@
               <q-option-group :options="options" type="radio" size="sm" v-model="group" />
             </div>
             <q-card-actions align="right">
+              <q-btn v-close-popup label="Cancel" dense no-caps color="primary" outline="" />
               <q-btn
-                @click="changestatus"
+                @click="changeStatus"
+                dense
+                no-caps
+                v-close-popup
+                label="Add Task"
+                color="primary"
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+        <q-dialog v-model="dialog3">
+          <q-card style="width: 500px">
+            <div class="q-pa-lg">
+              <div>Unavailable Room Boy</div>
+              <q-select
+                outlined
+                v-model="roomboySelect"
+                :options="listRoomboy"
+                label="Room Boy"
+                dense
+                class="q-mb-md"
+              />
+              <!-- <q-table
+                :rows="data"
+                row-key="name"
+                square
+                :card-style="{ boxShadow: 'none' }"
+                :rows-per-page-options="[0]"
+                :hide-pagination="true"
+              >
+                <template v-slot:body="props">
+                  <q-tr :props="props">
+                    <template v-for="(cell, key, i) in props.row" :key="i">
+                      <q-td
+                        :style="'background-color: #' + cell.style.backgroundColor"
+                        @click="
+                          !cell.style.backgroundColor.includes('BBE2EC')
+                            ? dialogalert(props.row)
+                            : ''
+                        "
+                        v-if="!['taskId'].includes(key)"
+                      >
+                        {{ cell.data }}
+                      </q-td>
+                    </template>
+                  </q-tr>
+                </template></q-table
+              > -->
+              <div style="display: flex" v-if="this.roomBoy.image">
+                <div>
+                  <img
+                    :src="this.roomBoy.image || user.picture"
+                    style="width: 110px; border-radius: 2px"
+                  />
+                </div>
+                <div style="padding: 10px; gap: 2px; display: flex; justify-content: space-between">
+                  <div style="display: block">
+                    <div>Aliases</div>
+                    <div>Shift</div>
+                    <div>Work Load</div>
+                    <div>Total Task</div>
+                  </div>
+                  <div style="display: block">
+                    <div>: {{ this.roomBoy.aliases }}</div>
+                    <div>: {{ this.roomBoy.shift }}</div>
+                    <div>: {{ this.roomBoy.workload }}</div>
+                    <div>: {{ this.roomBoy.totalTask }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="q-mt-sm"
+              style="border-style: dashed; border-width: 1px; border-color: grey"
+            />
+            <div class="q-pa-lg">
+              <div>Send To</div>
+              <q-select
+                outlined
+                v-model="roomboySelectSend"
+                :options="listRoomboy"
+                label="Room Boy"
+                dense
+                class="q-mb-md"
+              />
+              <div style="display: flex" v-if="this.roomBoy2.image">
+                <div>
+                  <img
+                    :src="this.roomBoy2.image || user.picture"
+                    style="width: 110px; border-radius: 2px"
+                  />
+                </div>
+                <div style="padding: 10px; gap: 2px; display: flex; justify-content: space-between">
+                  <div style="display: block">
+                    <div>Aliases</div>
+                    <div>Shift</div>
+                    <div>Work Load</div>
+                    <div>Total Task</div>
+                  </div>
+                  <div style="display: block">
+                    <div>: {{ this.roomBoy2.aliases }}</div>
+                    <div>: {{ this.roomBoy2.shift }}</div>
+                    <div>: {{ this.roomBoy2.workload }}</div>
+                    <div>: {{ this.roomBoy2.totalTask }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <q-card-actions align="right">
+              <q-btn v-close-popup label="Cancel" dense no-caps color="primary" outline="" />
+              <q-btn
+                @click="postUnvailable"
+                dense
+                no-caps
+                v-close-popup="this.roomNoSelect != null"
                 label="Change Status"
                 color="primary"
-                v-close-popup="this.roomNoSelect != null"
               />
             </q-card-actions>
           </q-card>
@@ -106,14 +397,6 @@
               </q-tr>
             </template>
           </q-table>
-          <!-- <q-dialog v-model="dialog" persistent>
-            <q-card>
-              <div align="center" class="q-pa-sm">{{ this.roomNo }}</div>
-              <q-card-actions align="right">
-                <q-btn flat label="Ok" color="primary" v-close-popup />
-              </q-card-actions>
-            </q-card>
-          </q-dialog> -->
         </div>
       </div>
       <q-form class="q-mt-md">
@@ -205,8 +488,8 @@
 
 <script>
 import UserGreet from 'src/components/HK/IMPPS/General/UserGreet.vue'
-import { defineComponent, ref } from 'vue'
-
+import { defineComponent, ref, watch, provide, inject } from 'vue'
+import { useQuasar } from 'quasar'
 const rows = ref([])
 
 export default defineComponent({
@@ -233,25 +516,28 @@ export default defineComponent({
         { color: 'yellow-7' },
         { color: 'yellow-7' }
       ]),
-      // optionsRoom: [
-      //   'Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'
-      // ],
-      optionsRoom: [],
-      // options: [
-      //   { label: 'Vacant Clean Checked', value: 'VC' },
-      //   { label: 'Vacant Clean Unchecked', value: 'VCU' },
-      //   { label: 'Vacant Dirty', value: 'VD' },
-      //   { label: 'Occupied Cleaned', value: 'OC' },
-      //   { label: 'Occupied Dirty', value: 'OD' },
-      //   { label: 'Expected Departure', value: 'ED' },
-      //   { label: 'Do Not Disturb', value: 'DnD' },
-      //   { label: 'Out Of Order', value: 'OOO' },
-      //   { label: 'Off Market', value: 'OM' }
-      // ],
       options: ref([]),
       comments: ref(''),
-      dialog: ref(false),
+      request: ref(''),
+      commentsInput: ref(''),
+      requestInput: ref(''),
+      optionsRoom: [],
+      lsitMaid: [],
+      listRoomNo: [],
+      listRoomboy: [],
+      roomBoy: ref([]),
+      roomBoy2: ref([]),
+      choosenRoom: ref([]),
+      choosenMaid: ref([]),
+      roomboySelect: ref(''),
+      roomSelect: ref(),
+      maidSelect: ref(''),
+      roomboySelectSend: ref(''),
+      dialog1: ref(false),
       dialog2: ref(false),
+      dialog3: ref(false),
+      CleanRoom: ref(false),
+      Request: ref(false),
       columns: [
         {
           name: 'roomNo',
@@ -274,24 +560,51 @@ export default defineComponent({
   data() {
     return {
       api: new this.$Api('impps'),
-      user: this.$AuthStore.getUser(),
+      user: this.$AuthStore.getUser()
     }
   },
   mounted() {
     this.fetchData()
   },
   watch: {
+    roomboySelect() {
+      if (this.roomboySelect) {
+        this.getDataRoomboy(1)
+      }
+    },
+    roomboySelectSend() {
+      if (this.roomboySelectSend) {
+        this.getDataRoomboy(2)
+      }
+    },
+    roomSelect() {
+      this.roomSelect ? this.getDataTask(1) : ''
+    },
+    maidSelect() {
+      this.maidSelect ? this.getDetailMaid() : ''
+    }
   },
   methods: {
+    handleacces(state) {
+      if (state == 'unavailableRoom') {
+        this.unAvailability()
+        this.dialog3 = true
+      } else if (state == 'changeRoom') {
+        this.dialog2 = true
+      } else if (state == 'addTask') {
+        this.getDataTask()
+        this.dialog1 = true
+      }
+    },
     ratingcheck(i) {
       // console.log(ratingcolor)
-      console.log(i)
+      console.log('total rating' + i)
       let listRating = []
-      for(let rating = 1; rating <= 5; rating++){
+      for (let rating = 1; rating <= 5; rating++) {
         listRating.push({
-          color: rating <= i ? "yellow-7" : "light-green-3"
+          color: rating <= i ? 'yellow-7' : 'light-green-3'
         })
-      console.log(listRating)
+        console.log(listRating)
       }
       this.ratingcolor = listRating
       this.currentRating = i
@@ -308,7 +621,7 @@ export default defineComponent({
           null,
           ({ status, message }) => {
             if (status == 200) {
-              this.trigger('possitive', message)
+              this.trigger('positive', message)
               this.fetchData()
             } else {
               this.trigger('negative', message)
@@ -320,7 +633,7 @@ export default defineComponent({
       }
     },
     dialogalert(roomNo) {
-      this.dialog = true
+      this.nextnotify('positive', 'success')
       this.roomNo = roomNo['roomNo'].data
       this.roomId = roomNo['taskId'].data
       this.comments = roomNo['Comments'].data
@@ -402,15 +715,171 @@ export default defineComponent({
         }
       })
     },
+    unAvailability() {
+      this.api.get(`spv/helper/unavail?unavail=0&assigne=0`, ({ status, data, message }) => {
+        if (status === 200) {
+          const { listRoomBoy } = data
+          this.listRoomboy = listRoomBoy.map((item) => ({ label: item.name, value: item.id }))
+          this.trigger('positive', message)
+        }
+      })
+    },
+    getDataRoomboy(state) {
+      const value = this.roomboySelect || 0
+      const value2 = this.roomboySelectSend || 0
+
+      if (state === 1) {
+        this.api.get(
+          `spv/helper/unavail?unavail=${value.value}&assigne=0`,
+          ({ status, data, message }) => {
+            if (status === 200) {
+              const { unAvailableData } = data
+              this.roomBoy = unAvailableData
+            }
+          }
+        )
+      } else if (state === 2) {
+        this.api.get(
+          `spv/helper/unavail?unavail=0&assigne=${value2.value}`,
+          ({ status, data, message }) => {
+            if (status === 200) {
+              const { assigneData } = data
+              this.roomBoy2 = assigneData
+            }
+          }
+        )
+      }
+    },
+    getDataTask(state) {
+      try {
+        let detailAPI = `spv/helper/add?roomNo=0&roomBoy=0`
+        state == 1
+          ? (detailAPI = `spv/helper/add?roomNo=${this.roomSelect.label}&roomBoy=0`)
+          : `spv/helper/add?roomNo=0&roomBoy=0`
+        this.api.get(detailAPI, ({ message, status, data }) => {
+          if (status == 200) {
+            this.nextnotify('positive', message)
+            const { room, maid } = data.list
+            this.choosenRoom = data.choosenRoom
+            console.log(this.choosenRoom)
+            this.listRoomNo = room.map((item) => ({ label: item.id }))
+            this.listMaid = maid
+          }
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    getDetailMaid() {
+      try {
+        console.log(this.maidSelect)
+        this.api.get(
+          `spv/helper/add?roomNo=0&roomBoy=${this.maidSelect.value}`,
+          ({ message, status, data }) => {
+            if (status == 200) {
+              this.nextnotify('positive', message)
+              const { choosenMaid } = data
+              this.choosenMaid = choosenMaid
+            }
+          }
+        )
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    postUnvailable() {
+      this.api.post(
+        `spv/unavail`,
+        {
+          unAvailableId: this.roomboySelect.value,
+          assigneId: this.roomboySelectSend.value
+        },
+        ({ status, message }) => {
+          if (status === 200) {
+            this.trigger('positive', message)
+            this.roomboySelect = null
+            this.roomboySelectSend = null
+            this.fetchData()
+          }
+        }
+      )
+    },
+    postReqTask() {
+      try {
+        const change = {
+          roomNo: this.roomSelect.label,
+          maidId: this.maidSelect.value,
+          request: this.requestInput,
+          comment: this.commentsInput,
+          customWorkload: this.choosenRoom.workload
+        }
+        this.api.post(`spv/task`, change, ({ message, status }) => {
+          if (status == 200) {
+            this.trigger('positive', message)
+            this.roomSelect.label = null
+            this.maidSelect.value = null
+            this.requestInput = null
+            this.commentsInput = null
+            this.choosenRoom.workload = null
+            this.fetchData()
+          } else {
+            this.trigger('warning', message)
+          }
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    postCleanTask() {
+      try {
+        const change = {
+          roomNo: this.roomSelect.label,
+          maidId: this.maidSelect.value,
+          request: 'Needs to be cleaned',
+          comment: this.commentsInput,
+          customWorkload: this.choosenRoom.workload
+        }
+        this.api.post(`spv/task`, change, ({ message, status }) => {
+          if (status == 200) {
+            this.trigger('positive', message)
+            this.roomSelect.label = null
+            this.maidSelect.value = null
+            this.requestInput = null
+            this.commentsInput = null
+            this.choosenRoom.workload = null
+            this.fetchData()
+          } else {
+            this.trigger('warning', message)
+          }
+        })
+        this.fetchData()
+      } catch (error) {
+        console.error(error)
+      }
+    },
     trigger(type, txt) {
       this.$q.notify(
         {
           type: type,
           message: txt || 'error unknown action try again',
-          timeout: 1000
+          timeout: 500
         },
-        1000
+        500
       )
+    },
+    nextnotify(type, txt) {
+      this.$q.notify(
+        {
+          type: 'ongoing',
+          message: 'Loading',
+          timeout: 200
+        },
+      )
+      setTimeout(() => {
+        if (type == 'positive') {
+          this.trigger(type, txt)
+        }
+      }, 2000)
     }
   }
 })

@@ -574,11 +574,13 @@ export default defineComponent({
       this.loading = true
 
       let url = `clean-dirty?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
-
+      console.log(this.datePickerArrival)
       const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
       if (DateArrival !== undefined && DateArrival !== '') {
         url += `&arrival=${DateArrival}`
       }
+      
+      console.log(url)
 
       const DateDeparture = this.datePickerDeparture?.replace(/\//g, '-')
       if (DateDeparture !== undefined && DateDeparture !== '') {

@@ -19,19 +19,20 @@ myAxios.interceptors.response.use(
     if (response.status == 401) {
       if (!err.config.sent) {
         err.config.sent = true
-        const new_token = await refreshToken()
-        if (new_token != null) {
+        const token = await refreshToken()
+        console.log(token)
+        if(token != null){
           err.config.headers = {
             ...err.config.headers,
-            Authorization: `Bearer ${new_token}`
-          }
+            Authorization: `Bearer ${token}`
         }
         return axios(err.config)
-      }
+        }
     }
+  }
 
     throw err
-  }
+}
 )
 
 export default myAxios

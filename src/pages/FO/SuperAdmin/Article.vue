@@ -1,5 +1,15 @@
 <template>
-  <q-page class="col-grow row" style="gap: 20px">
+  <q-page
+    class=""
+    style="
+      gap: 20px;
+      display: flex;
+      overflow-y: scroll;
+      width: 100%;
+      min-width: max-content;
+      min-height: calc(100vh - 51.25px);
+    "
+  >
     <HKCard card_class="col-grow q-mt-xl" :style="`border-radius: 0 0 ${radius} ${radius}`">
       <div
         class="full-width flex-center absolute flex justify-center text-subtitle"
@@ -15,7 +25,7 @@
           outlined
           dense
           v-model="searchInput"
-          class="input-border q-pb-md"
+          class="input-border"
           label="Description"
           style="width: fit-content"
         >
@@ -26,7 +36,7 @@
       </div>
       <div
         :class="`tableComp ${gapColorClass}`"
-        class="my-table multi-panel"
+        class="my-table multi-panel q-py-md"
         style="width: 100%; flex-grow: 1"
       >
         <q-table
@@ -39,6 +49,7 @@
             color: '#ffffff',
             padding: '9px'
           }"
+          hide-bottom
           :card-style="{ boxShadow: 'none' }"
           :rows-per-page-options="[0]"
           :dense="$q.screen.lt.md"
@@ -53,6 +64,9 @@
               </q-td>
               <q-td key="Stock" :props="props">
                 {{ props.row.stock }}
+              </q-td>
+              <q-td key="Remain" :props="props">
+                {{ props.row.remain }}
               </q-td>
               <q-td key="Price" :props="props">
                 {{ props.row.price }}
@@ -72,12 +86,7 @@
                     />
                   </svg>
                 </q-btn>
-                <q-btn
-                  flat
-                  rounded
-                  size="13px"
-                  style="color: #008444"
-                  @click="deleteVoucher(props.row)"
+                <q-btn flat rounded size="13px" style="color: #008444" @click="deleteArt(props.row)"
                   ><svg
                     width="19"
                     height="19"
@@ -99,7 +108,7 @@
     </HKCard>
     <HKCard :style="`border-radius: 0 0 ${radius} ${radius}`">
       <div class="text-h5 q-mt-md">{{ titleVoucher || 'Add Article' }}</div>
-      <div class="row" style="gap: 10px">
+      <div style="gap: 10px; display: flex">
         <q-input
           dense
           outlined
@@ -110,15 +119,26 @@
         />
         <q-input dense outlined v-model="price" label="Price" class="q-mt-sm col-grow text-bold" />
       </div>
-      <q-input
-        dense
-        outlined
-        v-model="description"
-        label="description"
-        class="q-mt-sm col-grow text-bold"
-      />
+      <div class="q-mt-sm" style="display: flex; gap: 10px">
+        <q-input dense outlined v-model="stock" label="Stock" class="col-grow text-bold">
+          <template v-slot:append>
+            <q-icon name="error">
+              <q-tooltip> Ignore if unlimited </q-tooltip>
+            </q-icon>
+          </template>
+        </q-input>
+
+        <q-input
+          dense
+          outlined
+          v-model="description"
+          label="description"
+          class="col-grow text-bold"
+        />
+      </div>
       <div class="q-py-sm flex q-mt-sm" style="gap: 5px; border-top: 1px solid green">
-        <q-btn size="sm" no-caps color="primary" text-color="white" @click="postArt">
+        <q-btn size="sm" no-caps outline v-if="!isEditing" @click="clearFields">Cancel</q-btn>
+        <q-btn size="sm" no-caps color="primary" text-color="white" @click="saveArt">
           {{ labelButton || 'Submit' }}</q-btn
         >
       </div>
@@ -139,13 +159,16 @@ export default defineComponent({
         { name: 'Article Number', label: 'Article Number', align: 'left', field: 'articleNumber' },
         { name: 'Description', label: 'Description', align: 'left', field: 'description' },
         { name: 'Stock', label: 'Stock', align: 'left', field: 'stock' },
+        { name: 'Remain', label: 'Remain', align: 'left', field: 'remain' },
         { name: 'Price', label: 'Price (Rp. )', align: 'left', field: 'price' },
         { name: 'Action', label: 'Action', align: 'center', field: '' }
       ],
+      titleVoucher: ref(),
       rows: ref(),
       searchInput: ref(''),
       artNo: ref(),
       price: ref(),
+      stock: ref(),
       description: ref()
     }
   },
@@ -183,10 +206,19 @@ export default defineComponent({
       this.searchData = searchInput
       this.fetchData()
     },
+    saveArt() {
+      if (this.titleVoucher === 'Edit Article') {
+        this.updateArt()
+      } else {
+        this.postArt()
+        this.clearFields()
+      }
+    },
     postArt() {
       const data = {
         artNo: parseInt(this.artNo),
         price: parseInt(this.price),
+        stock: parseInt(this.stock),
         description: this.description
       }
 
@@ -201,9 +233,61 @@ export default defineComponent({
         }
       })
     },
+    updateArt() {
+      const data = {
+        artNo: parseInt(this.artNo),
+        price: parseInt(this.price),
+        stock: parseInt(this.stock),
+        description: this.description
+      }
+
+      let url = `article`
+
+      this.api.post(url, data, ({ status, message }) => {
+        if (status == 200) {
+          this.trigger('possitive', message)
+          this.fetchData()
+        } else {
+          this.trigger('negative', message)
+        }
+      })
+    },
     editArt(row) {
-      const artNo = row.artNo
-      let url = `article/`
+      this.titleVoucher = 'Edit Article'
+      const artNo = row.articleNumber
+      console.log(row.articleNumber)
+      let url = `article?art=${artNo}`
+
+      this.api.get(url, ({ status, data, message }) => {
+        if (status == 200) {
+          const { detail } = data
+
+          this.artNo = detail.artNo
+          this.price = detail.price
+          this.stock = detail.stock
+          this.description = detail.description
+          this.trigger('possitve', message)
+        }
+      })
+    },
+    deleteArt(row) {
+      const artNo = row.articleNumber
+
+      let url = `article/${artNo}`
+
+      this.api.delete(url, ({ status, message }) => {
+        if (status == 200) {
+          this.trigger('possitive', message)
+          this.fetchData()
+        }
+      })
+    },
+    clearFields() {
+      this.titleVoucher = ''
+      this.artNo = ''
+      this.price = ''
+      this.stock = ''
+      this.description = ''
     },
     fetchData() {
       this.loading = true
@@ -219,7 +303,8 @@ export default defineComponent({
           this.rows = table.map((art) => ({
             articleNumber: art.artNo,
             description: art.description,
-            stock: 'art',
+            stock: art.stock,
+            remain: art.remain,
             price: art.price
           }))
 

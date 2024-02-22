@@ -96,16 +96,6 @@ export const frontoffice_routes = [
       main_route: false,
       protected: true
     }
-  },
-  {
-    name: 'super-admin',
-    path: '/fo/super-admin',
-    component: () => import('pages/FO/SuperAdmin/SuperAdmin.vue'),
-    meta: {
-      title: 'Super Admin',
-      main_route: false,
-      protected: true
-    }
   }
 ]
 
@@ -117,7 +107,25 @@ export const fosuperadmin_routes = [
     path: '/fo/super-admin',
     component: () => import('pages/FO/SuperAdmin/SuperAdmin.vue'),
     meta: {
-      title: 'Page Super Admin',
+      title: 'Super Admin',
+      protected: true
+    }
+  },
+  {
+    name: 'PageSuperAdminArticle',
+    path: '/fo/super-admin/article',
+    component: () => import('pages/FO/SuperAdmin/Article.vue'),
+    meta: {
+      title: 'Super Admin - Article',
+      protected: true
+    }
+  },
+  {
+    name: 'PageSuperAdminAccess',
+    path: '/fo/super-admin/access',
+    component: () => import('pages/FO/SuperAdmin/Access.vue'),
+    meta: {
+      title: 'Super Admin - Access',
       protected: true
     }
   }

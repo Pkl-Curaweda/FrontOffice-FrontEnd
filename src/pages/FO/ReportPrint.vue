@@ -60,35 +60,26 @@
             </q-btn-dropdown>
           </div>
           <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%">
-            <p class="q-my-auto col-grow">Pages</p>
+            <p class="q-my-auto col-grow">From To</p>
             <!-- Modify this part of your template -->
             <q-btn-dropdown
               flat
               square
-              style="border: 1px #00000030 solid"
-              class="text-capitalize rounded-borders"
-              :label="filterDisplayLabelPages"
+              range
+              class="text-capitalize"
+              style="border: 1px #00000030 solid; border-radius: 5px"
+              label="TDate - FDate"
               color="primary"
-              icon="event"
+              icon="o_event"
               dropdown-icon="o_expand_more"
-              v-model="pageOpt"
             >
-              <q-list>
-                <!-- Use v-for to generate options dynamically -->
-                <q-item
-                  v-for="pageOpt in sumPagesOpt"
-                  :key="pageOpt"
-                  clickable
-                  v-close-popup
-                  @click="setFilterDisplayPages(pageOpt)"
-                >
-                  <q-item-section>Page {{ pageOpt }}</q-item-section>
-                </q-item>
-              </q-list>
+              <div>
+                <q-date v-model="datePicker" range />
+              </div>
             </q-btn-dropdown>
           </div>
           <div class="row justify-around" style="overflow: auto; min-width: 100%; max-width: 100%">
-            <p class="q-my-auto col-grow">Pages</p>
+            <p class="q-my-auto col-grow">Per Pages</p>
             <!-- Modify this part of your template -->
             <q-btn-dropdown
               flat
@@ -121,8 +112,7 @@
         <div class="my-table col-grow q-pb-md" ref="pdfContainer">
           <q-table
             class="no-shadow"
-            v-model:pagination="pagination"
-            @request="onPaginationChange"
+            :rows-per-page-options="[0]"
             :rows="data"
             hide-bottom
             :loading="loading"
@@ -174,6 +164,7 @@ export default defineComponent({
       filterDisplayLabel: ref('Per-Day'),
       filterDisplayLabelPages: ref('Page 1'),
       filterDisplayLabelPerPages: ref('Per Page 1'),
+      datePicker: ref({ from: '', to: '' }),
       perPageOpt: ref(20),
       pageOpt: 1,
       columns: [
@@ -211,6 +202,12 @@ export default defineComponent({
     },
     filterDisplay: {
       handler(option) {
+        this.getDataTable()
+      }
+    },
+    datePicker: {
+      deep: true,
+      handler(newDateRange) {
         this.getDataTable()
       }
     }
@@ -273,6 +270,13 @@ export default defineComponent({
       this.loading = true
 
       let url = `report?perPage=20`
+
+      const fromDate = this.datePicker != null ? this.datePicker.from.replace(/\//g, '-') : ''
+      const toDate = this.datePicker != null ? this.datePicker.to.replace(/\//g, '-') : ''
+
+      if (fromDate !== '' && toDate !== '') {
+        url += `&date=${fromDate}+${toDate}`
+      }
 
       if (this.filterDisplay) {
         url += `&disOpt=${this.filterDisplay}`

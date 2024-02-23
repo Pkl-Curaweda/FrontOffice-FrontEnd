@@ -124,21 +124,23 @@ export const fosuperadmin_routes = [
     }
   },
   {
-    name: 'PageSuperAdminArticle',
+    name: 'article-admin',
     path: '/fo/super-admin/article',
-    component: () => import('pages/FO/SuperAdmin/Article.vue'),
+    component: () => import('src/pages/FO/SuperAdmin/ArticleSuperAdmin.vue'),
     meta: {
       title: 'Super Admin - Article',
-      protected: true
+      protected: true,
+      main_route: false,
     }
-  },
+  },  
   {
-    name: 'PageSuperAdminAccess',
+    name: 'access-admin',
     path: '/fo/super-admin/access',
-    component: () => import('pages/FO/SuperAdmin/Access.vue'),
+    component: () => import('src/pages/FO/SuperAdmin/AccessSuperAdmin.vue'),
     meta: {
       title: 'Super Admin - Access',
-      protected: true
+      protected: true,
+      main_route: false,
     }
   }
   // {

@@ -101,7 +101,7 @@
     </FOMenubar>
 
     <div class="my-table multi-panel q-px-md q-py-sm" style="flex-grow: 1">
-      <q-table
+      <!-- <q-table
         class="no-shadow"
         :rows="data"
         :loading="loading"
@@ -170,6 +170,81 @@
             </q-td>
           </q-tr>
         </template>
+      </q-table> -->
+      <q-table
+        :rows="rows"
+        :columns="columns"
+        row-key="name"
+        square
+        class="q-px-md"
+        :table-header-style="{
+          backgroundColor: '#069550',
+          color: '#ffffff',
+          padding: '9px'
+        }"
+        :card-style="{ boxShadow: 'none' }"
+        rows-per-page-label="Show"
+        :rows-per-page-options="[]"
+        hide-bottom
+        :dense="$q.screen.lt.md"
+      >
+        <template v-slot:body="props">
+          <q-tr :props="props" class="q-d-xs q-d-sm q-d-md">
+            <q-td key="Voucher Name" :props="props">
+              {{ props.row.voucherName }}
+            </q-td>
+            <q-td key="Expired" :props="props" style="width: 10px">
+              {{ props.row.expired }}
+            </q-td>
+            <q-td key="Description" :props="props">
+              {{ props.row.description }}
+            </q-td>
+            <q-td key="Discount" :props="props">
+              {{ props.row.discount }}
+            </q-td>
+            <q-td key="Complimentary" :props="props" style="width: 10px">
+              {{ props.row.complimentary }}
+            </q-td>
+            <q-td key="House Use" :props="props" style="width: 10px">
+              {{ props.row.houseUse }}
+            </q-td>
+            <q-td key="Action" :props="props" style="width: 10px">
+              <q-btn flat rounded size="13px" style="color: #008444" @click="editVoucher(props.row)"
+                ><svg
+                  width="19"
+                  height="19"
+                  viewBox="0 0 19 19"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8 13C8.8 13 9.57 12.93 10.31 12.82L13.22 9.91C11.89 10.59 10 11 8 11C5.58 11 3.3 10.4 2 9.45V6.64C3.47 7.47 5.61 8 8 8C10.39 8 12.53 7.47 14 6.64V9.13L15.39 7.74C15.57 7.56 15.78 7.42 16 7.3V4C16 1.79 12.42 0 8 0C3.58 0 0 1.79 0 4V14C0 16.04 3.06 17.72 7 17.97V16.13L7.17 15.96C3.84 15.76 2 14.46 2 14V11.77C3.61 12.55 5.72 13 8 13ZM8 2C11.87 2 14 3.5 14 4C14 4.5 11.87 6 8 6C4.13 6 2 4.5 2 4C2 3.5 4.13 2 8 2ZM15.13 10.83L17.17 12.87L11.04 19H9V16.96L15.13 10.83ZM18.85 11.19L17.87 12.17L15.83 10.13L16.81 9.15C17 8.95 17.33 8.95 17.53 9.15L18.85 10.47C19.05 10.67 19.05 11 18.85 11.19Z"
+                    fill="#008444"
+                  />
+                </svg>
+              </q-btn>
+              <q-btn
+                flat
+                rounded
+                size="13px"
+                style="color: #008444"
+                @click="deleteVoucher(props.row)"
+                ><svg
+                  width="19"
+                  height="19"
+                  viewBox="0 0 19 19"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M16 10.59V4.5C16 2.29 12.42 0.5 8 0.5C3.58 0.5 0 2.29 0 4.5V14.5C0 16.71 3.59 18.5 8 18.5C8.46 18.5 8.9 18.5 9.33 18.44C9.1129 17.8162 9.00137 17.1605 9 16.5V16.45C8.68 16.5 8.35 16.5 8 16.5C4.13 16.5 2 15 2 14.5V12.27C3.61 13.05 5.72 13.5 8 13.5C8.65 13.5 9.27 13.46 9.88 13.39C10.4127 12.5085 11.1638 11.7794 12.0607 11.2731C12.9577 10.7668 13.9701 10.5005 15 10.5C15.34 10.5 15.67 10.54 16 10.59ZM14 9.95C12.7 10.9 10.42 11.5 8 11.5C5.58 11.5 3.3 10.9 2 9.95V7.14C3.47 7.97 5.61 8.5 8 8.5C10.39 8.5 12.53 7.97 14 7.14V9.95ZM8 6.5C4.13 6.5 2 5 2 4.5C2 4 4.13 2.5 8 2.5C11.87 2.5 14 4 14 4.5C14 5 11.87 6.5 8 6.5ZM19 15.5V17.5H11V15.5H19Z"
+                    fill="#269861"
+                  />
+                </svg>
+              </q-btn>
+            </q-td>
+          </q-tr>
+        </template>
       </q-table>
     </div>
   </q-page>
@@ -187,12 +262,12 @@ export default defineComponent({
     return {
       columns: [
         { name: 'Voucher Name', label: 'Voucher Name', align: 'left', field: 'voucherName' },
-        { name: 'Expired', label: 'Expired', align: 'left', field: 'expired' },
+        { name: 'Expired', label: 'Expired', align: 'center', field: 'expired' },
         { name: 'Description', label: 'Description', align: 'left', field: 'description' },
-        { name: 'Discount', label: 'Discount', align: 'left', field: 'Discount' },
-        { name: 'Complimentary', label: 'Complimentary', align: 'left', field: 'Compliemntary' },
-        { name: 'House Use', label: 'House Use', align: 'left', field: 'houseUse' },
-        { name: '', label: 'Action', align: 'center', field: '' }
+        { name: 'Discount', label: 'Discount', align: 'left', field: 'discount' },
+        { name: 'Complimentary', label: 'Complimentary', align: 'center', field: 'compliemntary' },
+        { name: 'House Use', label: 'House Use', align: 'center', field: 'houseUse' },
+        { name: 'Action', label: 'Action', align: 'center', field: '' }
       ],
       voucherName,
       description: ref(),
@@ -202,7 +277,7 @@ export default defineComponent({
       houseUse: ref(false),
       input: ref(''),
       date: ref(''),
-      data: ref(),
+      rows: ref(),
       searchInput: ref(''),
       datePicker: ref({ from: '', to: '' }),
       titleVoucher: ref(),
@@ -319,7 +394,7 @@ export default defineComponent({
       this.titleVoucher = ''
     },
     editVoucher(row) {
-      const voucherName = row.voucherName.data
+      const voucherName = row.voucherName
       this.isPopupOpen = true
       this.labelButton = 'Edit'
       this.titleVoucher = 'Edit Voucher'
@@ -341,7 +416,7 @@ export default defineComponent({
       })
     },
     deleteVoucher(row) {
-      const voucherName = row.voucherName.data
+      const voucherName = row.voucherName
       let url = `voucher/${voucherName}`
 
       this.api.delete(url, ({ status, message }) => {
@@ -367,13 +442,13 @@ export default defineComponent({
       this.api.get(url, ({ status, data }) => {
         this.loading = false
         if (status == 200) {
-          this.data = data.map((vc) => ({
-            voucherName: { data: vc.voucherName, style: { backgroundColor: vc.rowColor } },
-            expired: { data: vc.expireAt, style: { backgroundColor: vc.rowColor } },
-            description: { data: vc.description, style: { backgroundColor: vc.rowColor } },
-            discount: { data: vc.discount, style: { backgroundColor: vc.rowColor } },
-            complimentary: { data: vc.complimentary, style: { backgroundColor: vc.rowColor } },
-            houseUse: { data: vc.houseUse, style: { backgroundColor: vc.rowColor } }
+          this.rows = data.map((vc) => ({
+            voucherName: vc.voucherName,
+            expired: vc.expireAt,
+            description: vc.description,
+            discount: vc.discount,
+            complimentary: vc.complimentary,
+            houseUse: vc.houseUse
           }))
         }
       })

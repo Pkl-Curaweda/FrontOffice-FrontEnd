@@ -35,13 +35,13 @@
           <div class="auto">Room</div>
         </div>
       </q-btn>
-      <q-btn class="child-card text-white" to="/fo/super-admin">
-        <div style="display: block; align: center; justify-content: center">
+      <q-btn class="child-card text-white" to="/fo/super-admin/article">
+        <div style="display: block; align: center; justify-content: center" >
           <q-icon name="account_tree" size="xl" class="auto" />
           <div class="auto">Access</div>
         </div>
       </q-btn>
-      <q-btn class="child-card text-white" to="/fo/super-admin">
+      <q-btn class="child-card text-white" to="/fo/super-admin/access">
         <div style="display: block; align: center; justify-content: center">
           <q-icon name="article" size="xl" class="auto" />
           <div class="auto">Article</div>

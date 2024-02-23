@@ -8,7 +8,7 @@
           round
           icon="menu"
           @click="toggleLeftDrawer"
-          v-if="$route.path != '/fo/super-admin/' && $route.path != '/fo/super-admin/room' && $route.path != '/fo/super-admin/'"
+          v-if="$route.path != '/fo/super-admin/' && $route.path != '/fo/super-admin/room' && $route.path != '/fo/super-admin/access'&& $route.path != '/fo/super-admin/article'"
         />
         <q-toolbar-title> {{ $route.meta.title }} </q-toolbar-title>
 

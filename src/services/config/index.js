@@ -26,6 +26,9 @@ export const Config = {
     } else if (module == 'root') {
       url = 'http://localhost:3000/'
       if (hostname === 'localhost') url = 'http://localhost:3000/'
+    } else if (module == 'superadmin') {
+      url = 'http://localhost:3000/sa'
+      if (hostname === 'localhost') url = 'http://localhost:3000/sa'
     } else if (module == 'impps') {
       url = 'http://localhost:3000/impps/'
       if (hostname === 'localhost') url = 'http://localhost:3000/impps/'

@@ -965,6 +965,7 @@ export default defineComponent({
         this.api.delete(`detail/reservation/${resvId}/${roomNo}/delete`, ({ data, message }) => {
           this.trigger('positive', message)
           this.fetchData()
+          window.location.reload()
         })
       } catch (error) {
         console.error('Terjadi kesalahan, mohon coba lagi')

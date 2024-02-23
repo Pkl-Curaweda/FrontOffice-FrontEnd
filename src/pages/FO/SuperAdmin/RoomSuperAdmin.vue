@@ -3,9 +3,7 @@
     <div class="q-pa-md">
       <div style="display: flex; gap: 5px; width: 100%">
         <div class="q-pa-md" style="width: 75%">
-          <div
-            style="justify-content: start; display: flex; width: 100%; margin-inline: auto"
-          >
+          <div style="justify-content: start; display: flex; width: 100%; margin-inline: auto">
             <!-- <div class="q-my-auto" style="font-size: larger">List Room</div> -->
             <q-btn
               color="primary"
@@ -485,7 +483,7 @@
                   @click="clearData"
                   label="Close"
                   class="q-px-md"
-                  style="border-radius: 10px; width: 100%"
+                  style="width: 100%"
                 />
                 <q-btn
                   dense
@@ -494,7 +492,7 @@
                   @click="deleteDataRoom"
                   label="Delete"
                   class="q-px-md"
-                  style="border-radius: 10px; width: 100%"
+                  style="width: 100%"
                 />
               </div>
             </div>
@@ -619,13 +617,13 @@
               </div>
               <q-card-actions align="right">
                 <q-btn
-                    @click="deleteDetail(2)"
-                    v-if="this.editArr"
-                    no-caps
-                    label="Delete"
-                    outline
-                    color="primary"
-                  />
+                  @click="deleteDetail(2)"
+                  v-if="this.editArr"
+                  no-caps
+                  label="Delete"
+                  outline
+                  color="primary"
+                />
                 <q-btn @click="postEditArr()" no-caps label="Change Room" color="primary" />
               </q-card-actions>
             </q-form>
@@ -728,7 +726,6 @@
                   </div>
                 </div>
                 <q-card-actions align="right">
-
                   <q-btn
                     @click="postEditRoom"
                     v-close-popup="this.roomSelect != null"

@@ -233,7 +233,7 @@
                         dense
                         noCaps
                         color="red"
-                        @click="deleteResv(props.row)"
+                        @click="removeInvoiceData(props.row)"
                         label="Delete"
                         class="q-px-md"
                         style="width: 100%"
@@ -497,6 +497,7 @@ export default defineComponent({
       if (resvId === 0 || resvRoomId === 0) {
         this.loading = false
         console.log(resvId)
+        window.reload.location()
         return
       }
 

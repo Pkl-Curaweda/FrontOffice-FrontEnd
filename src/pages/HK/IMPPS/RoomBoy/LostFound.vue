@@ -59,7 +59,7 @@
         <q-btn
           dense
           color="primary"
-          @click="fetchData()"
+          @click="postData()"
           no-caps
           style="border-radius: 8px"
           class="q-px-xl q-mb-md"
@@ -128,7 +128,7 @@ export default defineComponent({
         this.trigger('ongoing', 'loading')
       })
     },
-    fetchData() {
+    postData() {
       const data = {
         location: this.location,
         roomId: this.model,
@@ -139,6 +139,9 @@ export default defineComponent({
       this.api.useMultipart(true).post(`roomboy/lostfound`, data, ({ status, message }) => {
         if (status == 200) {
           this.trigger('possitive', message)
+          this.$router.push({
+          name: 'DashboardRBPage'
+        })
         }
       })
     },

@@ -366,15 +366,14 @@
                 dense
               >
             </q-select>
-            <q-input
-                v-model="standardTimeInput"
-                type="text"
-                autogrow
-                style="width: 70%"
-                dense
-                outlined
-                label="Standard Time"
-              />
+              <q-input
+                  type="number"
+                  v-model="standardTimeInput"
+                  dense
+                  outlined
+                  class="col-grow"
+                  label="Standard Time"
+                />
           </div>
               <q-checkbox
                 v-model="selectionRbRo"
@@ -820,7 +819,7 @@ export default defineComponent({
       confirmTypeDelete: ref(false),
       confirmArrDelete: ref(false),
       typeDelete: ref(0),
-      standardTimeInput: ref(''),
+      standardTimeInput: ref(),
       standardTimePrev: ref(''),
     }
   },
@@ -950,7 +949,7 @@ export default defineComponent({
           this.bedSetupSelect = data.bedSetup
           this.priceRBInput = data.RBPrice
           this.priceROInput = data.ROPrice
-          this.standardTimePrev = data.standardTime
+          this.standardTimeInput = data.standardTime
          }
       })
     },
@@ -1104,7 +1103,7 @@ export default defineComponent({
     postAddType(state) {
       const checkStandard = {}
 
-      this.standardTimeInput != this.standardTimePrev ? (checkStandard['standardTime'] = this.standardTimeInput): ''
+      this.standardTimeInput != this.standardTimePrev ? (checkStandard['standardTime'] = parseInt(this.standardTimeInput)): ''
       if (state == 1) {
         try {
           this.api.post(
@@ -1117,7 +1116,7 @@ export default defineComponent({
               generateArr: this.postAddType,
               priceRB: this.priceRBInput,
               priceRO: this.priceROInput,
-              checkStandard
+              ...checkStandard
 
             },
             ({ status, message }) => {
@@ -1162,7 +1161,7 @@ export default defineComponent({
     },
     postEditTypeRoom() {
       const checkStandard = {}
-      this.standardTimeInput != this.standardTimePrev ? (checkStandard['standardTime'] = this.standardTimeInput): ''
+      this.standardTimeInput != this.standardTimePrev ? (checkStandard['standardTime'] = parseInt(this.standardTimeInput)): ''
 
       this.api.post(
         `room/room-type`,
@@ -1172,7 +1171,7 @@ export default defineComponent({
           bedSetup: this.bedSetupSelect.label || this.bedSetupSelect,
           generateArr: false,
           priceRB: this.priceRBInput,
-          checkStandard,
+          ...checkStandard,
           priceRO: this.priceROInput
         },
         ({ message, status }) => {

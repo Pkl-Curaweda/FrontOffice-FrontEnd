@@ -211,6 +211,7 @@ import { formatDate } from 'src/utils/time'
 import { ref, defineAsyncComponent } from 'vue'
 import MessengerFloat from 'src/components/MessengerFloat.vue'
 import { getCurrentTime } from 'src/utils/time'
+// import frontoffice_routes from 'src/router/frontoffice.router'
 
 const ReservationChart = defineAsyncComponent(() =>
   import('components/charts/ReservationChart.vue')
@@ -226,6 +227,7 @@ export default {
     const leftDrawerOpen = ref(false),
       currentClock = '-',
       currentDate = '-'
+      // const shouldShowSidebar = !frontoffice_routes.path.startsWith('/fo/super-admin')
 
     return {
       newReservation: ref(''),

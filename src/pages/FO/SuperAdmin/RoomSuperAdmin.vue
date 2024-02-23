@@ -1113,9 +1113,9 @@ export default defineComponent({
               shortDesc: this.shortDescInput,
               longDesc: this.longDescInput,
               bedSetup: this.bedSetupSelect.label,
-              generateArr: this.postAddType,
-              priceRB: this.priceRBInput,
-              priceRO: this.priceROInput,
+              generateArr: this.selectionRbRo,
+              priceRB: parseInt(this.priceRBInput),
+              priceRO: parseInt(this.priceROInput),
               ...checkStandard
 
             },
@@ -1170,10 +1170,9 @@ export default defineComponent({
           longDesc: this.longDescInput,
           bedSetup: this.bedSetupSelect.label || this.bedSetupSelect,
           generateArr: false,
-          priceRB: this.priceRBInput,
           ...checkStandard,
-          priceRO: this.priceROInput
-        },
+          priceRB: parseInt(this.priceRBInput),
+              priceRO: parseInt(this.priceROInput),        },
         ({ message, status }) => {
           if (status == 200) {
             this.trigger('positive', message)

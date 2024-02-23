@@ -117,10 +117,10 @@
           style="width: 80px"
           class="text-bold q-mt-sm"
         />
-        <q-input dense outlined v-model="price" label="Price" class="q-mt-sm col-grow text-bold" />
+        <q-input dense outlined type="number" v-model="price" label="Price" class="q-mt-sm col-grow text-bold" />
       </div>
       <div class="q-mt-sm" style="display: flex; gap: 10px">
-        <q-input dense outlined v-model="stock" label="Stock" class="col-grow text-bold">
+        <q-input dense outlined v-model="stock" label="Stock" class="col-grow text-bold" style="width: 100px;">
           <template v-slot:append>
             <q-icon name="error">
               <q-tooltip> Ignore if unlimited </q-tooltip>

@@ -201,7 +201,7 @@
           </q-tr>
         </template>
         <template v-slot:body="props">
-          <q-tr :props="props" class="q-d-xs q-d-sm q-d-md">
+          <q-tr :props="props" class="q-d-xs q-d-sm q-d-md" >
             <q-td key="Nama" :props="props" @click="showListUser(props.row)" class="cursor-pointer">
               {{ props.row.nama }}
             </q-td>
@@ -210,15 +210,16 @@
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
-              style="{{ props.row.readerSuperAdmin }}"
+              :style="`${props.row.readerSuperAdmin}`"
             >
-              <!-- {{ props.row.readerSuperAdmin }} -->
+              {{ props.row.readerSuperAdmin.backgroundColor }}
             </q-td>
             <q-td
               key="Editor Super Admin"
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
+              style="{{ props.row.readerSuperAdmin }}"
             >
               {{ props.row.editorSuperAdmin }}
             </q-td>
@@ -227,6 +228,7 @@
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
+              style="{{ props.row.readerAdmin }}"
             >
               {{ props.row.readerAdmin }}
             </q-td>
@@ -235,6 +237,7 @@
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
+              style="background-color: `#{{ props.row.editorAdmin }}`;"
             >
               {{ props.row.editorAdmin }}
             </q-td>
@@ -243,6 +246,7 @@
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
+              style="{{ props.row.readerSuperAdmin }}"
             >
               {{ props.row.readerRoomboy }}
             </q-td>
@@ -251,6 +255,7 @@
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
+              style="{{ props.row.readerSuperAdmin }}"
             >
               {{ props.row.editorRoomboy }}
             </q-td>
@@ -259,6 +264,7 @@
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
+              style="{{ props.row.readerSuperAdmin }}"
             >
               {{ props.row.readerSupervisor }}
             </q-td>
@@ -267,6 +273,7 @@
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
+              style="{{ props.row.readerSuperAdmin }}"
             >
               {{ props.row.editorSupervisor }}
             </q-td>
@@ -285,7 +292,7 @@
                   />
                 </svg>
               </q-btn>
-              <q-btn flat rounded size="13px" style="color: #008444" @click="deleteRole(props.row)"
+              <q-btn flat rounded size="13px" style="color: #008444" @click="handleConfirm(props.row)"
                 ><svg
                   width="19"
                   height="19"
@@ -980,7 +987,7 @@ export default defineComponent({
           createAdmin: this.checkboxEditorAdmin,
           showMaid: this.checkboxReaderRoomboy,
           createMaid: this.checkboxEditorRoomboy,
-          showSupervisor: this.checkboxReaderRoomboy,
+          showSupervisor: this.checkboxReaderSupervisor,
           createSupervisor: this.checkboxEditorSupervisor
         }
       }
@@ -1011,7 +1018,7 @@ export default defineComponent({
           createAdmin: this.checkboxEditorAdmin,
           showMaid: this.checkboxReaderRoomboy,
           createMaid: this.checkboxEditorRoomboy,
-          showSupervisor: this.checkboxReaderRoomboy,
+          showSupervisor: this.checkboxReaderSupervisor,
           createSupervisor: this.checkboxEditorSupervisor
         }
       }
@@ -1032,6 +1039,7 @@ export default defineComponent({
     },
     editRole(row) {
       const roleId = row.id
+      console.log(roleId)
       this.titleCardRole = 'Edit Role'
       this.submitRole = 'Edit Role'
       this.newRole = true
@@ -1048,8 +1056,8 @@ export default defineComponent({
           this.checkboxEditorAdmin = data.access.createAdmin
           this.checkboxReaderRoomboy = data.access.showMaid
           this.checkboxEditorRoomboy = data.access.createMaid
-          this.checkboxREaderSupervisor = data.access.showSupervisor
-          this.checkboxEditorSupervisor = data.access.creareSupervisor
+          this.checkboxReaderSupervisor = data.access.showSupervisor
+          this.checkboxEditorSupervisor = data.access.createSupervisor
           this.roleId = roleId
           this.putIdRole(this.roleId)
           this.trigger('possitive', message)
@@ -1074,8 +1082,44 @@ export default defineComponent({
     },
     showListUser(row) {
       this.nameRole = row.id
-      this.dialogListUser = true
-      this.fetchData()
+      this.loading = true
+      
+      let url = `access?roleId=${this.nameRole}`
+      
+      this.api.get(url, ({ status, data }) => {
+        this.loading = false
+        
+        if (status == 200) {
+          const { listRole, listUser } = data
+          
+          this.rowsListRole = listRole.map((lr) => ({
+            id: lr.id,
+            nama: lr.name,
+            readerSuperAdmin: lr.superAdmin.reader,
+            editorSuperAdmin: lr.superAdmin.editor,
+            readerAdmin: lr.admin.reader,
+            editorAdmin: lr.admin.editor,
+            readerRoomboy: lr.roomBoy.reader,
+            editorRoomboy: lr.roomBoy.editor,
+            readerSupervisor: lr.supervisor.reader,
+            editorSupervisor: lr.supervisor.editor
+          }))
+
+          if(listUser.length > 0){
+            this.rowsListUser = listUser.map((lu) => ({
+              id: lu.id,
+              name: lu.name,
+              email: lu.email,
+              role: lu.role,
+              roomBoy: lu.isRoomBoy
+            }))
+            this.dialogListUser = true
+          }else{
+            this.trigger('negative', 'No User Assign To This Role')
+            this.dialogListUser = false
+          }
+        }
+      })
     },
     clearFieldRole() {
       this.roleName = ''
@@ -1246,13 +1290,17 @@ export default defineComponent({
             editorSupervisor: lr.supervisor.editor
           }))
 
-          this.rowsListUser = listUser.map((lu) => ({
-            id: lu.id,
-            name: lu.name,
-            email: lu.email,
-            role: lu.role,
-            roomBoy: lu.isRoomBoy
-          }))
+          if(listUser.length > 0){
+            this.rowsListUser = listUser.map((lu) => ({
+              id: lu.id,
+              name: lu.name,
+              email: lu.email,
+              role: lu.role,
+              roomBoy: lu.isRoomBoy
+            }))
+          }else{
+          this.trigger('negative', 'No User Assign To This Role')
+          }
         }
         // else {
         //   this.trigger('negative', message)

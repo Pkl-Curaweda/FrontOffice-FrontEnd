@@ -417,8 +417,9 @@ export default defineComponent({
       )
     },
     postDataTable() {
+      console.log(this.roomNo)
       const data = {
-        roomId: this.roomNo.label,
+        roomId: this.roomNo?.label ? this.roomNo.label : this.roomNo,
         reason: this.reasonRoom,
         from: new Date(this.datePickerArrival),
         until: new Date(this.datePickerDeparture),
@@ -426,6 +427,8 @@ export default defineComponent({
         description: 'Sended By Admin',
         xType: this.buttonLabel
       }
+
+      console.log(data)
 
       let url = `ooo-rooms`
 

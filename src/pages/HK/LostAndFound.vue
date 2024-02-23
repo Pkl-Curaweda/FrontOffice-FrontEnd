@@ -281,6 +281,7 @@
 
 <script>
 import HKCard from 'src/components/HK/Card/HKCard.vue'
+import HKChart from 'src/components/charts/HKChart.vue'
 import { defineComponent, ref } from 'vue'
 
 const columns = [
@@ -566,7 +567,7 @@ export default defineComponent({
         this.fetchData()
       }
 
-      let url = `lostfound?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}&search=${this.searchData}`
+      let url = `lostfound?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}&search=${this.searchData ? this.searchData : ''}`
       if (this.filterDisplay !== null) url += `&sortOrder=${this.filterDisplay}`
 
       const DateArrival = this.datePickerArrival?.replace(/\//g, '-')

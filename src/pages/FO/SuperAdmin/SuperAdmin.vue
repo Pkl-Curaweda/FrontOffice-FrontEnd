@@ -35,13 +35,13 @@
           <div class="auto">Room</div>
         </div>
       </q-btn>
-      <q-btn class="child-card text-white" to="/fo/super-admin/access">
+      <q-btn class="child-card text-white"  @click="changeroute('access')" to="/fo/super-admin/access">
         <div style="display: block; align: center; justify-content: center" >
           <q-icon name="account_tree" size="xl" class="auto" />
           <div class="auto">Access</div>
         </div>
       </q-btn>
-      <q-btn class="child-card text-white" to="/fo/super-admin/article">
+      <q-btn class="child-card text-white"  @click="changeroute('article')" to="/fo/super-admin/article">
         <div style="display: block; align: center; justify-content: center">
           <q-icon name="article" size="xl" class="auto" />
           <div class="auto">Article</div>
@@ -73,6 +73,18 @@ export default defineComponent({
       if (state == 'room') {
         this.$router.push({
           name: 'super-admin',
+          params: { resvId: resvId, resvRoomId: resvRoomId },
+          query: { line: 'room' }
+        })
+      } else       if (state == 'article') {
+        this.$router.push({
+          name: 'article-admin',
+          params: { resvId: resvId, resvRoomId: resvRoomId },
+          query: { line: 'room' }
+        })
+      } else       if (state == 'access') {
+        this.$router.push({
+          name: 'access-admin',
           params: { resvId: resvId, resvRoomId: resvRoomId },
           query: { line: 'room' }
         })

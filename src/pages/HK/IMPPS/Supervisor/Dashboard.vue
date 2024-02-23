@@ -149,7 +149,7 @@
                   v-close-popup="this.roomSelect != null"
                   dense
                   no-caps
-                  label="Change Status"
+                  label="Add Task"
                   color="primary"
                 />
               </q-card-actions>
@@ -376,13 +376,11 @@
                     <div>Aliases</div>
                     <div>Shift</div>
                     <div>Work Load</div>
-                    <div>Total Task</div>
                   </div>
                   <div style="display: block">
                     <div>: {{ this.roomBoy2.aliases }}</div>
                     <div>: {{ this.roomBoy2.shift }}</div>
                     <div>: {{ this.roomBoy2.workload }}</div>
-                    <div>: {{ this.roomBoy2.totalTask }}</div>
                   </div>
                 </div>
               </div>

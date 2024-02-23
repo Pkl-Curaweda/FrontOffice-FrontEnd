@@ -530,27 +530,22 @@ export default defineComponent({
         },
         RmNo: {
           data: '',
-          options: ['101-110', '110-101', 'Guaranted', '6 PM', 'Tentative'],
+          options: [],
+          actToDo: {},
           onOptionChange: (val) => {
-            if (val == '101-110') this.filterSortOrder = { col: 'RmNo', val: 'room+id+asc' }
-            else if (val == '110-101') this.filterSortOrder = { col: 'RmNo', val: 'room+id+desc' }
-            else if (val == 'Guaranted')
-              this.filterSortOrder = { col: 'RmNo', val: 'resv+status+1' }
-            else if (val == '6 PM') this.filterSortOrder = { col: 'RmNo', val: 'resv+status+2' }
-            else if (val == 'Tentative')
-              this.filterSortOrder = { col: 'RmNo', val: 'resv+status+3' }
-            else this.filterSortOrder = { col: '', val: '' }
+            if(val){
+              this.filterSortOrder = this.filterColumns.RmNo.actToDo[val]
+            } else this.filterSortOrder = { col: '', val: '' }
           }
         },
         RType: {
           data: '',
-          options: ['DLX', 'STD', 'FML'],
+          options: [],
+          actToDo: {},
           onOptionChange: (val) => {
-            if (val == 'DLX') this.filterSortOrder = { col: 'RType', val: 'room+type+DLX' }
-            else if (val == 'STD')
-              this.filterSortOrder = { col: 'RType', val: 'room+type+STD' }
-            else if (val == 'FML') this.filterSortOrder = { col: 'RType', val: 'room+type+FML' }
-            else this.filterSortOrder = { col: '', val: '' }
+            if(val){
+              this.filterSortOrder = this.filterColumns.RType.actToDo[val]
+            } else this.filterSortOrder = { col: '', val: '' }
           }
         },
         BType: {
@@ -574,11 +569,11 @@ export default defineComponent({
           ],
           onOptionChange: (val) => {
             // console.log(val.value)
-            if (val.value == 'King bed')
+            if (val?.value == 'King bed')
               this.filterSortOrder = { col: 'BType', val: 'room+bedSetup+KING' }
-            else if (val.value == 'Twin bed')
+            else if (val?.value == 'Twin bed')
               this.filterSortOrder = { col: 'BType', val: 'room+bedSetup+TWIN' }
-            else if (val.value == 'Single bed')
+            else if (val?.value == 'Single bed')
               this.filterSortOrder = { col: 'BType', val: 'room+bedSetup+SINGLE' }
             else this.filterSortOrder = { col: '', val: '' }
           }
@@ -637,7 +632,7 @@ export default defineComponent({
           data: '',
           options: [],
           onOptionChange: (val) => {
-            if (val == null) this.filterSortOrder['col'] != ''
+            if (val == null) this.filterSortOrder = { col: '', val: '' }
             else this.filterSortOrder = { col: 'RoomBoy', val: 'room+name+' + val }
           }
         },
@@ -971,7 +966,12 @@ export default defineComponent({
         if (status == 200) {
           // const { reservations } = data.reservation
           const roomBoys = this.getUniqueRoomBoys(data.roomBoys)
+          const { sortingRoomNo, sortingRoomType } = data
           this.filterColumns.RoomBoy.options = roomBoys
+          this.filterColumns.RmNo.options = sortingRoomNo.options
+          this.filterColumns.RmNo.actToDo = sortingRoomNo.toChange
+          this.filterColumns.RType.options = sortingRoomType.options
+          this.filterColumns.RType.actToDo = sortingRoomType.toChange
           // this.background = reservations.reservation.resvStatus.rowColor
           this.formatData(data.reservations)
           this.pagination = {

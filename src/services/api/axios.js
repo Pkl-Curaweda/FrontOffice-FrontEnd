@@ -21,12 +21,12 @@ myAxios.interceptors.response.use(
         err.config.sent = true
         const token = await refreshToken()
         console.log(token)
-        if(token != null){
+        if (token != null) {
           err.config.headers = {
             ...err.config.headers,
             Authorization: `Bearer ${token}`
-        }
-        return axios(err.config)
+          }
+          return axios(err.config)
         }else{
           Config.logout()
           window.location.reload()
@@ -35,7 +35,7 @@ myAxios.interceptors.response.use(
   }
 
     throw err
-}
+  }
 )
 
 export default myAxios

@@ -41,7 +41,6 @@
         <q-file
           dense
           outlined
-          clearablenpm
           :placeholder="img"
           v-model="img"
           bg-color="primary"

@@ -87,7 +87,7 @@ export default defineComponent({
             this.$AuthStore.setAccessToken(data['accessToken'])
             this.$AuthStore.setMainPath(data['path'])
             this.$router.go(data['path'])
-          }else{
+          } else {
             this.$Helper.showNotif(message, '', 'negative')
           }
 

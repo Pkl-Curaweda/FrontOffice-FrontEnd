@@ -6,7 +6,7 @@
     <template v-for="(r, index) in frontoffice_routes" :key="index">
       <q-item
         clickable
-        v-if="r.path != '/' && r.meta.main_route && r.path !=='/fo/payment'"
+        v-if="r.path != '/' && r.meta.main_route"
         :active="$route.meta.title === r.meta.title"
         v-ripple
         :to="r.path"

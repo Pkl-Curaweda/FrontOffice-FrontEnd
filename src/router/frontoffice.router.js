@@ -97,28 +97,57 @@ export const frontoffice_routes = [
       protected: true
     }
   },
-  {
-    name: 'super-admin',
-    path: '/fo/super-admin',
-    component: () => import('pages/FO/SuperAdmin/SuperAdmin.vue'),
-    meta: {
-      title: 'Super Admin',
-      main_route: false,
-      protected: true
-    }
-  }
+
 ]
 
 export default frontoffice_routes
 
 export const fosuperadmin_routes = [
   {
-    name: 'PageSuperAdmin',
+    name: 'super-admin',
     path: '/fo/super-admin',
-    component: () => import('pages/FO/SuperAdmin/SuperAdmin.vue'),
+    component: () => import('src/pages/FO/SuperAdmin/SuperAdmin.vue'),
     meta: {
-      title: 'Page Super Admin',
+      title: 'Super Admin',
+      protected: true,
+      main_route: false,
+    }
+  },
+  {
+    name: 'room-admin',
+    path: '/fo/super-admin/room',
+    component: () => import('src/pages/FO/SuperAdmin/RoomSuperAdmin.vue'),
+    meta: {
+      title: 'Room Admin',
+      protected: true,
+      main_route: false,
+    }
+  },
+  {
+    name: 'PageSuperAdminArticle',
+    path: '/fo/super-admin/article',
+    component: () => import('pages/FO/SuperAdmin/Article.vue'),
+    meta: {
+      title: 'Super Admin - Article',
+      protected: true
+    }
+  },
+  {
+    name: 'PageSuperAdminAccess',
+    path: '/fo/super-admin/access',
+    component: () => import('pages/FO/SuperAdmin/Access.vue'),
+    meta: {
+      title: 'Super Admin - Access',
       protected: true
     }
   }
+  // {
+  //   name: 'PageSuperAdmin',
+  //   path: '/fo/super-admin',
+  //   component: () => import('src/pages/FO/SuperAdmin/RoomSuperAdmin.vue'),
+  //   meta: {
+  //     title: 'Page Super Admin',
+  //     protected: true
+  //   }
+  // },
 ]

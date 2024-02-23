@@ -872,6 +872,8 @@ export default defineComponent({
       this.idArrRB = null
       this.idArrRO = null
       this.detailArr = null
+      this.priceRBInput = null
+      this.priceROInput = null
     },
     handleConfirm(data) {
       this.cacheData = data

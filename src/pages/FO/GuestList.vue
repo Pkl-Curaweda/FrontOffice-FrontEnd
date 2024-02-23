@@ -340,7 +340,7 @@
                             <q-item
                               clickable
                               v-close-popup
-                              @click="deleteResv(props.row)"
+                              @click="confirmDelete = true"
                               style="display: flex"
                             >
                               <q-btn
@@ -348,7 +348,7 @@
                                 rounded
                                 size="14px"
                                 style="color: #269861"
-                                @click="deleteResv(props.row)"
+                                @click="confirmDelete = true"
                                 ><svg
                                   width="19"
                                   height="19"
@@ -368,6 +368,36 @@
                             </q-item>
                           </q-list>
                         </q-menu>
+                        <q-dialog v-model="confirmDelete" key="" :props="props">
+                          <q-card style="width: 350px; justify-content: center">
+                            <div class="q-pa-sm col" style="display: block; width: 100%; gap: 5px">
+                              <div style="width: 100%; text-align: center">
+                                Do you want to delete reservation number data
+                                {{ props.row.ResNo.data }}
+                              </div>
+                              <div class="q-pa-sm col" style="display: flex; width: 100%; gap: 5px">
+                                <q-btn
+                                  dense
+                                  noCaps
+                                  color="primary"
+                                  v-close-popup
+                                  label="Close"
+                                  class="q-px-md"
+                                  style="width: 100%"
+                                />
+                                <q-btn
+                                  dense
+                                  noCaps
+                                  color="red"
+                                  @click="deleteResv(props.row)"
+                                  label="Delete"
+                                  class="q-px-md"
+                                  style="width: 100%"
+                                />
+                              </div>
+                            </div>
+                          </q-card>
+                        </q-dialog>
                         <q-dialog v-model="dialogeditroom" ref="editRoomDialog">
                           <q-card>
                             <q-card-section>
@@ -478,6 +508,8 @@ export default defineComponent({
       searchInput: ref(''),
       datePicker: ref({ from: '', to: '' }),
       filterDisplay: ref(null),
+      confirmDelete: ref(false),
+      cacheData: ref([]),
 
       filterDisplayOptions: [
         { label: 'All', value: null },
@@ -530,27 +562,22 @@ export default defineComponent({
         },
         RmNo: {
           data: '',
-          options: ['101-110', '110-101', 'Guaranted', '6 PM', 'Tentative'],
+          options: [],
+          actToDo: {},
           onOptionChange: (val) => {
-            if (val == '101-110') this.filterSortOrder = { col: 'RmNo', val: 'room+id+asc' }
-            else if (val == '110-101') this.filterSortOrder = { col: 'RmNo', val: 'room+id+desc' }
-            else if (val == 'Guaranted')
-              this.filterSortOrder = { col: 'RmNo', val: 'resv+status+1' }
-            else if (val == '6 PM') this.filterSortOrder = { col: 'RmNo', val: 'resv+status+2' }
-            else if (val == 'Tentative')
-              this.filterSortOrder = { col: 'RmNo', val: 'resv+status+3' }
-            else this.filterSortOrder = { col: '', val: '' }
+            if(val){
+              this.filterSortOrder = this.filterColumns.RmNo.actToDo[val]
+            } else this.filterSortOrder = { col: '', val: '' }
           }
         },
         RType: {
           data: '',
-          options: ['DLX', 'STD', 'FML'],
+          options: [],
+          actToDo: {},
           onOptionChange: (val) => {
-            if (val == 'DLX') this.filterSortOrder = { col: 'RType', val: 'room+type+DLX' }
-            else if (val == 'STD')
-              this.filterSortOrder = { col: 'RType', val: 'room+type+STD' }
-            else if (val == 'FML') this.filterSortOrder = { col: 'RType', val: 'room+type+FML' }
-            else this.filterSortOrder = { col: '', val: '' }
+            if(val){
+              this.filterSortOrder = this.filterColumns.RType.actToDo[val]
+            } else this.filterSortOrder = { col: '', val: '' }
           }
         },
         BType: {
@@ -574,11 +601,11 @@ export default defineComponent({
           ],
           onOptionChange: (val) => {
             // console.log(val.value)
-            if (val.value == 'King bed')
+            if (val?.value == 'King bed')
               this.filterSortOrder = { col: 'BType', val: 'room+bedSetup+KING' }
-            else if (val.value == 'Twin bed')
+            else if (val?.value == 'Twin bed')
               this.filterSortOrder = { col: 'BType', val: 'room+bedSetup+TWIN' }
-            else if (val.value == 'Single bed')
+            else if (val?.value == 'Single bed')
               this.filterSortOrder = { col: 'BType', val: 'room+bedSetup+SINGLE' }
             else this.filterSortOrder = { col: '', val: '' }
           }
@@ -637,7 +664,7 @@ export default defineComponent({
           data: '',
           options: [],
           onOptionChange: (val) => {
-            if (val == null) this.filterSortOrder['col'] != ''
+            if (val == null) this.filterSortOrder = { col: '', val: '' }
             else this.filterSortOrder = { col: 'RoomBoy', val: 'room+name+' + val }
           }
         },
@@ -714,9 +741,9 @@ export default defineComponent({
 
       console.log(data)
 
-      if(state == true){
+      if (state == true) {
         this.dialogeditroom = true
-      }else{
+      } else {
         this.dialog2 = true
       }
     },
@@ -725,7 +752,8 @@ export default defineComponent({
       this.$ResvStore.ds = false
       this.$ResvStore.logc = true
       this.$ResvStore.detail = false
-      
+      this.$ResvStore.addroom = false
+
       if (this.waitingnote != null && this.waitingnote != '') {
         // const statedata = true
         // this.$ResvStore.addroom = statedata
@@ -735,7 +763,6 @@ export default defineComponent({
       } else {
         this.trigger('negative', 'note has not been filled in, data must be filled in')
       }
-      
     },
     redirectToInvoice(data) {
       this.$router.push({
@@ -926,7 +953,7 @@ export default defineComponent({
       this.$ResvStore.logc = false
       // console.log(this.$ResvStore.fix)
     },
-    async deleteResv(data) {
+    async deleteResv(data, state) {
       try {
         const resvId = data['ResNo'].data
         const roomNo = data['ResRoomNo'].data
@@ -971,7 +998,12 @@ export default defineComponent({
         if (status == 200) {
           // const { reservations } = data.reservation
           const roomBoys = this.getUniqueRoomBoys(data.roomBoys)
+          const { sortingRoomNo, sortingRoomType } = data
           this.filterColumns.RoomBoy.options = roomBoys
+          this.filterColumns.RmNo.options = sortingRoomNo.options
+          this.filterColumns.RmNo.actToDo = sortingRoomNo.toChange
+          this.filterColumns.RType.options = sortingRoomType.options
+          this.filterColumns.RType.actToDo = sortingRoomType.toChange
           // this.background = reservations.reservation.resvStatus.rowColor
           this.formatData(data.reservations)
           this.pagination = {

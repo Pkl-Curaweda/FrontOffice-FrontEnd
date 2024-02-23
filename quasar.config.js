@@ -14,7 +14,8 @@ module.exports = configure(function (/* ctx */) {
   return {
     framework: {
       plugins: [
-        'Dialog'
+        'Dialog',
+        'bottomSheet'
       ]
     },
     eslint: {

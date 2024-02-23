@@ -65,7 +65,7 @@
                 noCaps
                 color="primary"
                 @click="CleanRoom = true"
-                label="CLean Room"
+                label="Clean Room"
                 class="q-px-md"
                 style="border-radius: 10px; width: 100%"
               />
@@ -83,8 +83,20 @@
         </q-dialog>
         <q-dialog v-model="Request">
           <q-card style="width: 100%">
+            <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
+              <div class="cursor-pointer non-selectable q-px-md">Add Request Task</div>
+              <q-space />
+              <q-btn
+                dense
+                flat
+                color="grey"
+                size="sm"
+                outline
+                icon="close"
+                v-close-popup
+              />
+            </q-bar>
             <div class="q-pa-lg">
-              <h7>Add Request Task</h7>
               <div style="display: flex; gap: 5px" class="q-pt-lg">
                 <q-select
                   outlined
@@ -146,23 +158,34 @@
         </q-dialog>
         <q-dialog v-model="CleanRoom">
           <q-card style="width: 100%">
+            <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
+              <div class="cursor-pointer non-selectable q-px-md">Add Room Task</div>
+              <q-space />
+              <q-btn
+                dense
+                flat
+                color="grey"
+                size="sm"
+                outline
+                icon="close"
+                v-close-popup
+              />
+            </q-bar>
             <div class="q-pa-lg">
-              <div class="q-pa-sm">Add Room Task</div>
-              <div style="display: flex">
+              <q-select
+                outlined
+                style="width: 100%"
+                v-model="roomSelect"
+                :options="listRoomNo"
+                label="RoomNo"
+                dense
+              />
+              <div style="display: flex; width: 100%; padding: 8px;">
                 <div v-if="this.choosenRoom">
-                  <img :src="this.choosenRoom.image" style="width: 100px; border-radius: 2px" />
+                  <img :src="this.choosenRoom.image" class="cropped-image" style="width: 100px; border-radius: 2px" />
                 </div>
                 <div style="padding: 8px; gap: 2px; width: 100%">
                   <div>
-                    <q-select
-                      outlined
-                      style="width: 100%"
-                      v-model="roomSelect"
-                      :options="listRoomNo"
-                      label="RoomNo"
-                      dense
-                      class="q-mb-md"
-                    />
                     <div style="padding: 10px; gap: 2px" v-if="this.choosenRoom">
                       <div>Id : {{ this.choosenRoom.id }}</div>
                       <div>Work Load : {{ this.choosenRoom.workload }}</div>
@@ -177,26 +200,24 @@
             />
             <div class="q-pa-lg">
               <div class="q-pa-sm">Assigned</div>
-              <div style="display: flex">
-                <div v-if="this.maidSelect">
-                  <img :src="this.choosenMaid.image" style="width: 100px; border-radius: 2px" />
+              <q-select
+                outlined
+                style="width: 100%"
+                v-model="maidSelect"
+                :options="listMaid"
+                label="Assigned"
+                dense
+              />
+              <div style="display: flex; width: 100%;">
+                <div v-if="this.maidSelect" style="padding: 8px;">
+                  <img :src="this.choosenMaid.image" class="cropped-image" style="width: 100px; border-radius: 2px" />
                 </div>
                 <div style="padding: 8px; gap: 2px; width: 100%">
                   <div>
-                    <q-select
-                      outlined
-                      style="width: 100%"
-                      v-model="maidSelect"
-                      :options="listMaid"
-                      label="Assigned"
-                      dense
-                      class="q-mb-md"
-                    />
                     <div style="padding: 10px; gap: 2px" v-if="this.maidSelect">
                       <div>Id : {{ this.choosenMaid.id }}</div>
                       <div>Aliases : {{ this.choosenMaid.aliases }}</div>
                       <div>Shift : {{ this.choosenMaid.shift }}</div>
-                      <div>Work Load : {{ this.choosenMaid.workload }}</div>
                     </div>
                   </div>
                 </div>
@@ -218,7 +239,20 @@
         </q-dialog>
         <q-dialog v-model="dialog2">
           <q-card style="width: 600px">
-            <div class="q-pa-lg">
+            <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
+              <div class="cursor-pointer non-selectable q-px-md">Change Status to: {{ group }}</div>
+              <q-space />
+              <q-btn
+                dense
+                flat
+                color="grey"
+                size="sm"
+                outline
+                icon="close"
+                v-close-popup
+              />
+            </q-bar>
+            <div class="q-pa-md">
               <q-select
                 outlined
                 v-model="roomNoSelect"
@@ -227,7 +261,6 @@
                 dense
                 class="q-mb-md"
               />
-              <div align="left">Change Status to: {{ group }}</div>
               <q-option-group :options="options" type="radio" size="sm" v-model="group" />
             </div>
             <q-card-actions align="right">
@@ -242,11 +275,24 @@
               />
             </q-card-actions>
           </q-card>
+
         </q-dialog>
         <q-dialog v-model="dialog3">
           <q-card style="width: 500px">
+            <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
+              <div class="cursor-pointer non-selectable q-px-md">Unavailable Room Boy</div>
+              <q-space />
+              <q-btn
+                dense
+                flat
+                color="grey"
+                size="sm"
+                outline
+                icon="close"
+                v-close-popup
+              />
+            </q-bar>
             <div class="q-pa-lg">
-              <div>Unavailable Room Boy</div>
               <q-select
                 outlined
                 v-model="roomboySelect"
@@ -347,11 +393,11 @@
                 @click="postUnvailable"
                 dense
                 no-caps
-                v-close-popup="this.roomNoSelect != null"
-                label="Change Status"
+                label="Submit"
                 color="primary"
-              />
-            </q-card-actions>
+                />
+              </q-card-actions>
+              <!-- v-close-popup="this.roomNoSelect != null" -->
           </q-card>
         </q-dialog>
         <div class="my-table">
@@ -614,15 +660,16 @@ export default defineComponent({
       this.state = state
       this.fetchData()
     },
-    changestatus() {
+    changeStatus() {
       if (this.roomNoSelect != null) {
         this.api.post(
-          `spv/change-status/${this.roomNoSelect}/${this.group}`,
+          `spv/change-status/${this.roomNoSelect.label}/${this.group}`,
           null,
           ({ status, message }) => {
             if (status == 200) {
               this.trigger('positive', message)
               this.fetchData()
+              window.location.reload()
             } else {
               this.trigger('negative', message)
             }
@@ -685,7 +732,7 @@ export default defineComponent({
         this.loading = false
 
         if (status == 200) {
-          const { listTask, listStatus } = data
+          const { listTask, listStatus, listRoom } = data
           console.log(listTask)
           this.options = listStatus.map((data) => ({
             label: data.longDescription,
@@ -702,11 +749,12 @@ export default defineComponent({
             PIC: { data: lt.pic, style: { backgroundColor: lt.rowColor } },
             Comments: { data: lt.comments, style: { backgroundColor: lt.rowColor } },
             taskId: { data: lt.taskId, style: { backgroundColor: lt.rowColor } }
+
           }))
-          this.optionsRoom = this.data.map((item) => item.roomNo.data)
+
+          this.optionsRoom = listRoom.map((item) => ({label: item.id}))
           // console.log(this.option)
           console.log(this.optionsRoom)
-
           // this.optionsRoom = forEach(1)
           // const roomNo = this.data.map((item) => item.roomNo.data)
           // this.roomNo = roomNo
@@ -800,6 +848,7 @@ export default defineComponent({
             this.roomboySelect = null
             this.roomboySelectSend = null
             this.fetchData()
+            window.location.reload()
           }
         }
       )
@@ -822,6 +871,7 @@ export default defineComponent({
             this.commentsInput = null
             this.choosenRoom.workload = null
             this.fetchData()
+            window.location.reload()
           } else {
             this.trigger('warning', message)
           }
@@ -848,6 +898,7 @@ export default defineComponent({
             this.commentsInput = null
             this.choosenRoom.workload = null
             this.fetchData()
+            window.location.reload()
           } else {
             this.trigger('warning', message)
           }
@@ -906,5 +957,12 @@ export default defineComponent({
   padding: 16px;
   border: 1px solid black;
   border-radius: 8px;
+}
+
+.cropped-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 1px;
+  object-fit: cover;
 }
 </style>

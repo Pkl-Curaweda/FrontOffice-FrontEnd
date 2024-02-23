@@ -352,6 +352,7 @@ export default defineComponent({
         houseUse: this.houseUse,
         expireAt: new Date(this.input)
       }
+      if(this.input === null) data.expireAt = null
 
       let url = `voucher/add`
 
@@ -372,6 +373,7 @@ export default defineComponent({
         houseUse: this.houseUse,
         expireAt: new Date(this.input)
       }
+      if(this.input === null) data.expireAt = null
 
       let url = `voucher`
 

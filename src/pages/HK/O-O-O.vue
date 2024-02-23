@@ -17,7 +17,9 @@
             />
           </svg>
         </q-btn>
-        <HKPrintModal :columns="tableColumns" :rows="tableRows" />
+        <q-btn flat @click="printOOO" color="primary">
+          <q-icon size="30px" name="o_print" />
+        </q-btn>
       </div>
 
       <!-- Filtering -->
@@ -34,6 +36,13 @@
             dropdown-icon="o_expand_more"
           >
             <q-list>
+              <q-item
+                clickable
+                v-close-popup
+                @click="setFilterDisplay('createdDate', 'Created Date')"
+              >
+                <q-item-section>Created Date</q-item-section>
+              </q-item>
               <q-item
                 clickable
                 v-close-popup
@@ -101,12 +110,12 @@
       </div>
 
       <!-- Table -->
-      <div :class="`tableComp ${gapColorClass}`" class="my-table">
+      <div :class="`tableComp ${gapColorClass}`" class="my-table" ref="pdfContainer">
         <q-table
           :rows="tableRows"
           :columns="tableColumns"
           :pagination="pagination"
-          :rows-per-page-options="[1, 5, 7, 10, 15, 20, 25, 30]"
+          :rows-per-page-options="[0]"
           row-key="name"
           square
           :table-header-style="{
@@ -114,12 +123,10 @@
             color: '#ffffff',
             padding: '10px'
           }"
+          hide-bottom
           :card-style="{ boxShadow: 'none' }"
-          rows-per-page-label="Show"
           :dense="$q.screen.lt.md"
           :title="title"
-          @request="onPaginationChange"
-          v-model:pagination="pagination"
         >
           <template v-slot:top-row v-if="showInput">
             <q-tr>
@@ -146,7 +153,7 @@
                   square
                   style="border: 1px #00000030 solid"
                   class="text-capitalize date-btn text-black rounded-borders"
-                  label="Date"
+                  :label="datePickerFrom?.replace(/\//g, '-') || 'Date'"
                   icon="o_event"
                   color="primary"
                   dropdown-icon="o_expand_more"
@@ -161,7 +168,7 @@
                   square
                   style="border: 1px #00000030 solid"
                   class="text-capitalize date-btn text-black rounded-borders"
-                  label="Date"
+                  :label="datePickerUntil?.replace(/\//g, '-') || 'Date'"
                   icon="o_event"
                   color="primary"
                   dropdown-icon="o_expand_more"
@@ -201,8 +208,8 @@
 </template>
 <script>
 import HKCard from 'src/components/HK/Card/HKCard.vue'
-import HKPrintModal from 'src/components/HK/Modal/HKPrintModal.vue'
 import { defineComponent, ref } from 'vue'
+import html2pdf from 'html2pdf.js'
 
 const showInput = ref(false)
 const tableColumns = [
@@ -260,7 +267,7 @@ const tableColumns = [
 
 export default defineComponent({
   name: 'OOOPages',
-  components: { HKCard, HKPrintModal },
+  components: { HKCard },
   setup() {
     return {
       value: ref('OOO'),
@@ -268,33 +275,27 @@ export default defineComponent({
       showInput,
       tableRows: ref(),
       buttonLabel: ref('OOO'),
-      filterDisplay: ref('roomNumber'),
-      filterDisplayLabel: ref('Room Number'),
+      filterDisplay: ref('createdDate'),
+      filterDisplayLabel: ref('Created Date'),
       datePickerArrival: ref(),
       datePickerDeparture: ref(),
       formattedArrivalDate: ref(), // Tambahkan variabel formattedArrivalDate
       formattedDepartureDate: ref(),
-      roomNoOptions: [101, 102, 103, 104, 105, 106, 107, 108, 109, 110],
-      roomNo: ref('Room No'),
-      dept: ref(),
       datePickerFrom: ref(),
       datePickerUntil: ref(),
+      formattedFromDate: ref(), // Tambahkan variabel formattedArrivalDate
+      formattedUntilDate: ref(),
+      roomNoOptions: ref(),
+      roomNo: ref(101),
+      dept: ref('Deparment'),
       reasonRoom: ref(),
       CreatedBy: ref(),
-      deptOption: [
-        { label: 'ENG', value: 1 },
-        { label: 'HK', value: 2 }
-      ]
+      deptOption: ref()
     }
   },
   data() {
     return {
       api: new this.$Api('housekeeping'),
-      pagination: {
-        page: 1,
-        rowsNumber: 0,
-        rowsPerPage: 20
-      },
       user: this.$AuthStore.getUser()
     }
   },
@@ -303,6 +304,18 @@ export default defineComponent({
   },
   watch: {
     datePickerArrival: {
+      deep: true,
+      handler(newDate) {
+        this.fetchData()
+      }
+    },
+    datePickerFrom: {
+      deep: true,
+      handler(newDate) {
+        this.fetchData()
+      }
+    },
+    datePickerUntil: {
       deep: true,
       handler(newDate) {
         this.fetchData()
@@ -323,16 +336,30 @@ export default defineComponent({
       handler(newVal) {
         this.fetchData()
       }
+    },
+    roomNo: {
+      handler(newValue) {
+        this.fetchData()
+      }
+    },
+    dept: {
+      handler(newValue) {
+        this.fetchData()
+      }
     }
   },
+
   methods: {
-    onPaginationChange(props) {
-      props.pagination.rowsPerPage =
-        props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
-      // console.log(props)
-      // console.log(props.rowsPerPage)
-      this.pagination = props.pagination
-      this.fetchData()
+    printOOO() {
+      const element = this.$refs.pdfContainer
+
+      html2pdf(element, {
+        margin: 10,
+        filename: `OOO - OM ${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      })
     },
     showInputTable() {
       if (this.showInput == false) {
@@ -349,6 +376,9 @@ export default defineComponent({
     updateFilterDisplayLabel(option) {
       // Logic to update the label based on the selected option
       switch (option) {
+        case 'createdDate':
+          this.filterDisplayLabel = 'Created Date'
+          break
         case 'roomNumber':
           this.filterDisplayLabel = 'Room Number'
           break
@@ -363,7 +393,7 @@ export default defineComponent({
           break
         // Add other cases as needed
         default:
-          this.filterDisplayLabel = 'Default Label'
+          this.filterDisplayLabel = 'Created Date'
       }
     },
     toggleTable() {
@@ -388,7 +418,7 @@ export default defineComponent({
     },
     postDataTable() {
       const data = {
-        roomId: this.roomNo,
+        roomId: this.roomNo.label,
         reason: this.reasonRoom,
         from: new Date(this.datePickerArrival),
         until: new Date(this.datePickerDeparture),
@@ -409,7 +439,7 @@ export default defineComponent({
     fetchData() {
       this.loading = true
 
-      let url = `ooo-rooms?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      let url = `ooo-rooms?`
 
       const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
       if (DateArrival !== undefined && DateArrival !== '') {
@@ -432,7 +462,7 @@ export default defineComponent({
       this.api.get(url, ({ status, data }) => {
         this.loading = false
         if (status == 200) {
-          const { OOORoom, ident } = data
+          const { OOORoom, ident, listOfRoom, listOfDepartment } = data
 
           this.CreatedBy = this.user.username
 
@@ -446,6 +476,24 @@ export default defineComponent({
             this.datePickerDeparture = departureDate
           }
 
+          const fromDate = this.datePickerFrom // Gantilah 'arrival.arr' dengan properti yang benar
+          if (this.datePickerFrom == null) {
+            this.datePickerFrom = fromDate
+          }
+
+          const untilDate = this.datePickerUntil // Gantilah 'arrival.arr' dengan properti yang benar
+          if (this.datePickerUntil == null) {
+            this.datePickerUntil = untilDate
+          }
+
+          this.roomNoOptions = listOfRoom.map((lof) => ({
+            label: lof.id
+          }))
+
+          this.deptOption = listOfDepartment.map((lod) => ({
+            label: lod.label,
+            value: lod.id
+          }))
           this.tableColumns = [
             {
               name: 'room-no',

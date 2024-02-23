@@ -47,11 +47,13 @@
                       </q-item>
                     </q-list>
                   </q-btn-dropdown>
-                  <HKPrintModal :rows="dataRows" :columns="dataColumns" />
+                  <q-btn flat @click="printStatus" color="primary">
+                    <q-icon size="30px" name="o_print" />
+                  </q-btn>
                 </div>
               </div>
 
-              <div class="tableComp">
+              <div class="tableComp" ref="pdfContainer">
                 <q-table
                   :rows="dataRows"
                   :columns="dataColumns"
@@ -301,7 +303,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
-import HKPrintModal from 'src/components/HK/Modal/HKPrintModal.vue'
+import html2pdf from 'html2pdf.js'
 
 const dataColumns = [
   {
@@ -361,7 +363,7 @@ const dataColumns2 = [
 
 export default defineComponent({
   name: 'StatusPage',
-  components: { HKCard, HKPrintModal },
+  components: { HKCard },
   setup() {
     return {
       statusRoom: ref(),
@@ -442,6 +444,17 @@ export default defineComponent({
     }
   },
   methods: {
+    printStatus() {
+      const element = this.$refs.pdfContainer
+
+      html2pdf(element, {
+        margin: 10,
+        filename: `Status ${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      })
+    },
     postStatus() {
       let url = `status/${this.idRoom}/${this.status}`
       this.api.post(url, null, ({ status }) => {

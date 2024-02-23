@@ -52,8 +52,8 @@
     <!-- Table -->
     <div class="full-width">
       <!-- Filtering -->
-      <div class="flex q-mb-sm justify-between" style="gap: 8px">
-        <div class="flex" style="gap: 16px">
+      <div class="flex q-mb-sm justify-between col-grow" style="gap: 8px">
+        <div class="flex">
           <div class="flex items-center" style="gap: 8px">
             <span style="font-size: 16px; font-weight: 500">Sorting :</span>
             <q-btn-dropdown
@@ -111,7 +111,7 @@
               </q-list>
             </q-btn-dropdown>
           </div>
-          <q-btn
+          <!-- <q-btn
             outline
             dense
             @click="guestHistoryModel = true"
@@ -121,7 +121,7 @@
           >
             <q-icon name="history" style="color: #616161; margin-right: 8px" />
             <div style="color: #616161">Guest History</div>
-          </q-btn>
+          </q-btn> -->
         </div>
 
         <!-- Dates -->
@@ -160,6 +160,18 @@
                 <q-date v-model="datePickerDeparture" color="green" today-btn />
               </div>
             </q-btn-dropdown>
+            <q-input
+              outlined
+              dense
+              v-model="searchInput"
+              class="input-border"
+              label="Search ResNo/NIK"
+              style="width: fit-content"
+            >
+              <template v-slot:prepend>
+                <q-icon name="search" />
+              </template>
+            </q-input>
           </div>
         </div>
       </div>
@@ -208,6 +220,9 @@
             </q-td>
             <q-td key="guest_name" :props="props">
               {{ props.row.guest_name }}
+            </q-td>
+            <q-td key="nik" :props="props">
+              {{ props.row.nik }}
             </q-td>
             <q-td key="arr" :props="props">
               {{ props.row.arr }}
@@ -266,7 +281,7 @@
     </div>
 
     <!-- Guest History Dialog -->
-    <q-dialog v-model="guestHistoryModel">
+    <!-- <q-dialog v-model="guestHistoryModel">
       <q-card style="width: 100vw; max-width: 100vw; padding-block: 24px">
         <q-card-section class="flex justify-center text-h5">Guest List History</q-card-section>
         <q-card-section>
@@ -292,14 +307,13 @@
           />
         </q-card-section>
       </q-card>
-    </q-dialog>
+    </q-dialog> -->
   </q-page>
 </template>
 
 <script>
 import HKCard from 'src/components/HK/Card/HKCard.vue'
 import HKDateInput from 'src/components/HK/Form/HKDateInput.vue'
-import HKTable from 'src/components/HK/Table/HKTable.vue'
 import { defineComponent, ref } from 'vue'
 
 const arrivalData = []
@@ -345,6 +359,13 @@ const tableColumns = [
     name: 'guest_name',
     label: 'Guest Name',
     field: 'guest_name',
+    sortable: true,
+    align: 'left'
+  },
+  {
+    name: 'nik',
+    label: 'NIK',
+    field: 'nik',
     sortable: true,
     align: 'left'
   },
@@ -399,86 +420,86 @@ const tableColumns = [
   }
 ]
 
-const tableColumnsHistory = [
-  {
-    name: 'res_no',
-    required: true,
-    label: 'ResNo',
-    align: 'left',
-    field: 'name',
-    sortable: true
-  },
-  {
-    name: 'res_resource',
-    label: 'ResResource',
-    field: 'res_resource',
-    align: 'left',
-    sortable: true
-  },
-  {
-    name: 'rm_no',
-    label: 'RmNo',
-    field: 'rm_no',
-    sortable: true,
-    align: 'left'
-  },
-  {
-    name: 'r_type',
-    label: 'RType',
-    field: 'r_type',
-    sortable: true,
-    align: 'left'
-  },
-  {
-    name: 'b_type',
-    label: 'BType',
-    field: 'b_type',
-    sortable: true,
-    align: 'left'
-  },
-  {
-    name: 'nik',
-    label: 'NIK',
-    field: 'nik',
-    sortable: true,
-    align: 'left'
-  },
-  {
-    name: 'guest_name',
-    label: 'Guest Name',
-    field: 'guest_name',
-    sortable: true,
-    align: 'left'
-  },
-  {
-    name: 'arr',
-    label: 'Arr',
-    field: 'arr',
-    sortable: true,
-    align: 'left'
-  },
-  {
-    name: 'arrival',
-    label: 'Arrival',
-    field: 'arrival',
-    sortable: true,
-    align: 'left'
-  },
-  {
-    name: 'depart',
-    label: 'Depart',
-    field: 'depart',
-    sortable: true,
-    align: 'left'
-  },
-  {
-    name: 'night',
-    label: 'Night',
-    field: 'night',
-    sortable: true,
-    align: 'left'
-  }
-]
+// const tableColumnsHistory = [
+//   {
+//     name: 'res_no',
+//     required: true,
+//     label: 'ResNo',
+//     align: 'left',
+//     field: 'name',
+//     sortable: true
+//   },
+//   {
+//     name: 'res_resource',
+//     label: 'ResResource',
+//     field: 'res_resource',
+//     align: 'left',
+//     sortable: true
+//   },
+//   {
+//     name: 'rm_no',
+//     label: 'RmNo',
+//     field: 'rm_no',
+//     sortable: true,
+//     align: 'left'
+//   },
+//   {
+//     name: 'r_type',
+//     label: 'RType',
+//     field: 'r_type',
+//     sortable: true,
+//     align: 'left'
+//   },
+//   {
+//     name: 'b_type',
+//     label: 'BType',
+//     field: 'b_type',
+//     sortable: true,
+//     align: 'left'
+//   },
+//   {
+//     name: 'nik',
+//     label: 'NIK',
+//     field: 'nik',
+//     sortable: true,
+//     align: 'left'
+//   },
+//   {
+//     name: 'guest_name',
+//     label: 'Guest Name',
+//     field: 'guest_name',
+//     sortable: true,
+//     align: 'left'
+//   },
+//   {
+//     name: 'arr',
+//     label: 'Arr',
+//     field: 'arr',
+//     sortable: true,
+//     align: 'left'
+//   },
+//   {
+//     name: 'arrival',
+//     label: 'Arrival',
+//     field: 'arrival',
+//     sortable: true,
+//     align: 'left'
+//   },
+//   {
+//     name: 'depart',
+//     label: 'Depart',
+//     field: 'depart',
+//     sortable: true,
+//     align: 'left'
+//   },
+//   {
+//     name: 'night',
+//     label: 'Night',
+//     field: 'night',
+//     sortable: true,
+//     align: 'left'
+//   }
+// ]
 
 const departureData = []
 
@@ -486,14 +507,14 @@ const tableRows = []
 
 export default defineComponent({
   name: 'ArrivalPage',
-  components: { HKCard, HKTable },
+  components: { HKCard },
   setup() {
     return {
       arrivalData: ref(),
       departureData: ref(),
       loading: ref(false),
       tableColumns,
-      tableColumnsHistory,
+      // tableColumnsHistory,
       filterDisplay: ref('room+id+asc'),
       filterDisplayLabel: ref('Room Number'),
       inputtedDate: ref(),
@@ -557,26 +578,28 @@ export default defineComponent({
   methods: {
     searchName(searchInput) {
       // Make an API call to search based on searchInput
-      this.api.get(`arrival-departure?search=${searchInput}`, ({ status, data }) => {
-        if (status === 200) {
-          const { table } = data
-          this.tableRowsHistory = table.map((row) => ({
-            name: row.resNo,
-            res_resource: row.resResource,
-            rm_no: row.roomNo.id,
-            r_type: row.roomType,
-            b_type: row.bedType,
-            nik: row.nik,
-            guest_name: row.guestName,
-            arr: row.arrangment.split('-')[1],
-            arrival: row.arrival,
-            depart: row.departure,
-            night: row.night
-          }))
-        } else {
-          console.error('Error searching data')
-        }
-      })
+      // this.api.get(`arrival-departure?search=${searchInput}`, ({ status, data }) => {
+      //   if (status === 200) {
+      //     const { table } = data
+      //     this.tableRowsHistory = table.map((row) => ({
+      //       name: row.resNo,
+      //       res_resource: row.resResource,
+      //       rm_no: row.roomNo.id,
+      //       r_type: row.roomType,
+      //       b_type: row.bedType,
+      //       nik: row.nik,
+      //       guest_name: row.guestName,
+      //       arr: row.arrangment.split('-')[1],
+      //       arrival: row.arrival,
+      //       depart: row.departure,
+      //       night: row.night
+      //     }))
+      //   } else {
+      //     console.error('Error searching data')
+      //   }
+      // })
+      this.searchData = searchInput
+      this.fetchData()
     },
     onPaginationChange(props) {
       props.pagination.rowsPerPage =
@@ -620,7 +643,7 @@ export default defineComponent({
     fetchData() {
       this.loading = true
 
-      let url = `arrival-departure?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
+      let url = `arrival-departure?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}&search=${this.searchData}`
 
       const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
       if (DateArrival !== undefined && DateArrival !== '') {
@@ -699,6 +722,7 @@ export default defineComponent({
             r_type: row.roomType,
             b_type: row.bedType,
             guest_name: row.guestName,
+            nik: row.nik,
             arr: row.arrangment.split('-')[1],
             arrival: row.arrival,
             depart: row.departure,

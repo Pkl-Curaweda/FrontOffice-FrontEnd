@@ -5,7 +5,7 @@
       radius="25px"
       card_class="full-width q-px-lg flex q-mt-xl"
     >
-      <q-btn flat square color="primary" icon="o_print" style="justify-content: flex-end" />
+      <q-btn flat square color="primary" icon="o_print" @click="printAmenities" />
       <div class="justify-between row q-mb-sm" style="width: 100%">
         <!-- ==========Date=============== -->
         <div class="row" style="gap: 16px">
@@ -60,12 +60,16 @@
           />
         </div>
       </div>
-      <div :class="`tableComp ${gapColorClass}`" class="my-table" style="width: 100%">
+      <div
+        :class="`tableComp ${gapColorClass}`"
+        class="my-table"
+        style="width: 100%"
+        ref="pdfContainer"
+      >
         <q-table
           :rows="tableRows"
           :columns="tableColumns"
-          :pagination="pagination"
-          :rows-per-page-options="[1, 5, 7, 10, 15, 20, 25, 30]"
+          :rows-per-page-options="[0]"
           row-key="name"
           square
           :table-header-style="{
@@ -73,12 +77,10 @@
             color: '#ffffff',
             padding: '10px'
           }"
+          hide-bottom
           :card-style="{ boxShadow: 'none' }"
-          rows-per-page-label="Show"
           :dense="$q.screen.lt.md"
           :title="title"
-          @request="onPaginationChange"
-          v-model:pagination="pagination"
         />
       </div>
     </HKCard>
@@ -87,6 +89,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
+import html2pdf from 'html2pdf.js'
 
 const tableColumns = [
   {
@@ -172,13 +175,16 @@ export default defineComponent({
     }
   },
   methods: {
-    onPaginationChange(props) {
-      props.pagination.rowsPerPage =
-        props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
-      // console.log(props)
-      // console.log(props.rowsPerPage)
-      this.pagination = props.pagination
-      this.fetchData()
+    printAmenities() {
+      const element = this.$refs.pdfContainer
+
+      html2pdf(element, {
+        margin: 10,
+        filename: `Amenities - ${this.sortingModel} ${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      })
     },
     fetchData() {
       this.loading = true

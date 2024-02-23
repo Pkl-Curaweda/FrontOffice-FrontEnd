@@ -340,7 +340,7 @@
                             <q-item
                               clickable
                               v-close-popup
-                              @click="deleteResv(props.row)"
+                              @click="confirmDelete = true"
                               style="display: flex"
                             >
                               <q-btn
@@ -348,7 +348,7 @@
                                 rounded
                                 size="14px"
                                 style="color: #269861"
-                                @click="deleteResv(props.row)"
+                                @click="confirmDelete = true"
                                 ><svg
                                   width="19"
                                   height="19"
@@ -368,6 +368,36 @@
                             </q-item>
                           </q-list>
                         </q-menu>
+                        <q-dialog v-model="confirmDelete" key="" :props="props">
+                          <q-card style="width: 350px; justify-content: center">
+                            <div class="q-pa-sm col" style="display: block; width: 100%; gap: 5px">
+                              <div style="width: 100%; text-align: center">
+                                Do you want to delete reservation number data
+                                {{ props.row.ResNo.data }}
+                              </div>
+                              <div class="q-pa-sm col" style="display: flex; width: 100%; gap: 5px">
+                                <q-btn
+                                  dense
+                                  noCaps
+                                  color="primary"
+                                  v-close-popup
+                                  label="Close"
+                                  class="q-px-md"
+                                  style="width: 100%"
+                                />
+                                <q-btn
+                                  dense
+                                  noCaps
+                                  color="red"
+                                  @click="deleteResv(props.row)"
+                                  label="Delete"
+                                  class="q-px-md"
+                                  style="width: 100%"
+                                />
+                              </div>
+                            </div>
+                          </q-card>
+                        </q-dialog>
                         <q-dialog v-model="dialogeditroom" ref="editRoomDialog">
                           <q-card>
                             <q-card-section>
@@ -478,6 +508,8 @@ export default defineComponent({
       searchInput: ref(''),
       datePicker: ref({ from: '', to: '' }),
       filterDisplay: ref(null),
+      confirmDelete: ref(false),
+      cacheData: ref([]),
 
       filterDisplayOptions: [
         { label: 'All', value: null },
@@ -709,9 +741,9 @@ export default defineComponent({
 
       console.log(data)
 
-      if(state == true){
+      if (state == true) {
         this.dialogeditroom = true
-      }else{
+      } else {
         this.dialog2 = true
       }
     },
@@ -720,7 +752,8 @@ export default defineComponent({
       this.$ResvStore.ds = false
       this.$ResvStore.logc = true
       this.$ResvStore.detail = false
-      
+      this.$ResvStore.addroom = false
+
       if (this.waitingnote != null && this.waitingnote != '') {
         // const statedata = true
         // this.$ResvStore.addroom = statedata
@@ -730,7 +763,6 @@ export default defineComponent({
       } else {
         this.trigger('negative', 'note has not been filled in, data must be filled in')
       }
-      
     },
     redirectToInvoice(data) {
       this.$router.push({
@@ -921,7 +953,7 @@ export default defineComponent({
       this.$ResvStore.logc = false
       // console.log(this.$ResvStore.fix)
     },
-    async deleteResv(data) {
+    async deleteResv(data, state) {
       try {
         const resvId = data['ResNo'].data
         const roomNo = data['ResRoomNo'].data

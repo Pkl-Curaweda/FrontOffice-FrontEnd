@@ -41,7 +41,6 @@
         <q-file
           dense
           outlined
-          clearablenpm
           :placeholder="img"
           v-model="img"
           bg-color="primary"
@@ -114,7 +113,6 @@ export default defineComponent({
     handleUpload() {
       if (this.img) {
         this.imgURL = URL.createObjectURL(this.img)
-        this.trigger('positive', this.imgURL)
         console.log(this.img)
       }
     },

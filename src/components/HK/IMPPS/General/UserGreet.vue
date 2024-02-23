@@ -1,7 +1,7 @@
 <template>
   <div :class="classname + 'row items-center q-gutter-md'">
     <img :src="user.picture" style="width: 80px; border-radius: 100%" />
-    <div>
+    <div style="white-space: nowrap;">
       <div>{{ time }}</div>
       <div>{{ date }}</div>
       <div class="text-weight-bold text-h5">Hello, {{ user.name }}</div>

@@ -197,7 +197,7 @@
                     rounded
                     size="13px"
                     style="color: #269861"
-                    @click="removeInvoiceData(props.row)"
+                    @click="confirmDelete = true"
                     ><svg
                       width="19"
                       height="19"
@@ -213,6 +213,35 @@
                   </q-btn>
                 </q-td>
               </q-tr>
+              <q-dialog v-model="confirmDelete" key="" :props="props">
+                <q-card style="width: 320px; justify-content: center">
+                  <div class="q-pa-sm col" style="display: block; width: 100%; gap: 5px">
+                    <div style="width: 100%; text-align: center">
+                      Do you want to delete Invoice Art data {{ props.row.Art.data }}
+                    </div>
+                    <div class="q-pa-sm col" style="display: flex; width: 100%; gap: 5px">
+                      <q-btn
+                        dense
+                        noCaps
+                        color="primary"
+                        v-close-popup
+                        label="Close"
+                        class="q-px-md"
+                        style="width: 100%"
+                      />
+                      <q-btn
+                        dense
+                        noCaps
+                        color="red"
+                        @click="deleteResv(props.row)"
+                        label="Delete"
+                        class="q-px-md"
+                        style="width: 100%"
+                      />
+                    </div>
+                  </div>
+                </q-card>
+              </q-dialog>
             </template>
           </q-table>
         </div>
@@ -269,6 +298,7 @@ export default defineComponent({
       searchInput: ref(''),
       loading: ref(false),
       datePicker: ref({ from: '', to: '' }),
+      confirmDelete: ref(false),
       filterDisplayOptions: [
         { label: 'Artno', value: 'artno' },
         { label: 'Description', value: 'description' }

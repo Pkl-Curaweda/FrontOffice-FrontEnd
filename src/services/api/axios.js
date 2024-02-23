@@ -27,9 +27,12 @@ myAxios.interceptors.response.use(
             Authorization: `Bearer ${token}`
           }
           return axios(err.config)
+        }else{
+          Config.logout()
+          window.location.reload()
         }
-      }
     }
+  }
 
     throw err
   }

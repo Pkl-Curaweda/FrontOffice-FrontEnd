@@ -86,20 +86,20 @@ const columns = [
   {
     name: 'change-date',
     label: 'Change Date',
-    align: 'left',
+    align: 'center',
     field: 'changeDate',
     sortable: true
   },
   {
     name: 'arrival',
-    align: 'left',
+    align: 'center',
     label: 'Arrival',
     field: 'arrival',
     sortable: true
   },
   {
     name: 'depart',
-    align: 'left',
+    align: 'center',
     label: 'Depart',
     field: 'depart',
     sortable: true
@@ -109,19 +109,19 @@ const columns = [
     label: 'Pax',
     field: 'time',
     sortable: true,
-    align: 'left'
+    align: 'center'
   },
   {
     name: 'room no',
     label: 'RmNo',
     field: 'rmNo',
-    align: 'left'
+    align: 'center'
   },
   {
     name: 'move to',
     label: 'MoveTo',
     field: 'moveTo',
-    align: 'left'
+    align: 'center'
   },
 
   {
@@ -129,19 +129,19 @@ const columns = [
     label: 'Reason',
     field: 'reason',
     sortable: true,
-    align: 'left'
+    align: 'center'
   },
   {
     name: 'res no',
     label: 'ResNo',
     field: 'resNo',
-    align: 'left'
+    align: 'center'
   },
   {
     name: 'guest name',
     label: 'Guest Name',
     field: 'guestName',
-    align: 'left'
+    align: 'center'
   }
 ]
 

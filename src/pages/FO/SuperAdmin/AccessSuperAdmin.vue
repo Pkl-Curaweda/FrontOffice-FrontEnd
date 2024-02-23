@@ -210,8 +210,9 @@
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
+              style="{{ props.row.readerSuperAdmin }}"
             >
-              {{ props.row.readerSuperAdmin }}
+              <!-- {{ props.row.readerSuperAdmin }} -->
             </q-td>
             <q-td
               key="Editor Super Admin"

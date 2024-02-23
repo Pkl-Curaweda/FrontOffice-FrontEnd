@@ -100,13 +100,7 @@
         <q-card-section>
           <q-form>
             <div class="text-weight-bold text-h5">Room Type</div>
-            <q-option-group
-              :options="radio_opt"
-              type="radio"
-              v-model="r_group"
-              color="dark"
-              @input="changeRoom"
-            />
+            <q-option-group :options="radio_opt" type="radio" v-model="r_group" color="dark" />
           </q-form>
         </q-card-section>
       </HKCard>
@@ -260,11 +254,7 @@ const tableCol = [
 
 const tableRow = ref([])
 
-const radio_opt = [
-  { label: 'Standard Room', value: 'STD' },
-  { label: 'Deluxe Room', value: 'DLX' },
-  { label: 'Family Room', value: 'FML' }
-]
+const radio_opt = ref([])
 
 const selectOption = ['Show by Week', 'Show by Month', 'Show by Year']
 
@@ -319,7 +309,7 @@ export default defineComponent({
 
         if (status == 200) {
           this.loading = false
-          const { currData, roomStatus } = data
+          const { currData, roomStatus, listOfTypes } = data
 
           // const room = percData.roomPerc
           // const person = percData.personPerc
@@ -330,6 +320,11 @@ export default defineComponent({
           // ]
 
           console.log(this.seriesBar)
+
+          this.radio_opt = listOfTypes.map((lot) => ({
+            label: lot.label,
+            value: lot.id
+          }))
 
           this.roomData = [
             {

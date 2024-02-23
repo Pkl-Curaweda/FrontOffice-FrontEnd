@@ -223,10 +223,10 @@
         v-if="$ResvStore.fix"
       >
         <div class="">
-          {{ roomType + ' (' + selected.id.split('-')[0] + ')' }}
+          {{ roomType }}
         </div>
-        <div class="">{{ roomNo }}</div>
-        <div class="">{{ roomBed.label + ' ' }} Bed</div>
+        <div class="">{{ roomNo.value }}</div>
+        <div class="">{{ roomBed + ' ' }} Bed</div>
       </div>
       <div v-if="!$ResvStore.fix" style="gap: 8px" class="row no-wrap q-mt-sm">
         <q-select
@@ -235,7 +235,7 @@
           :outlined="!$ResvStore.fix"
           :borderless="$ResvStore.fix"
           :readonly="$ResvStore.fix"
-          :disable="$ResvStore.detail"
+          :disable="true"
           :options="roomTypeOpts"
           label="RmType"
           dropdown-icon="expand_more"
@@ -257,7 +257,7 @@
           dense
           v-model="roomBed"
           :options="roomBedOpts"
-          :disable="$ResvStore.detail"
+          :disable="true"
           dropdown-icon="expand_more"
           class="full-width"
           option-label="value"
@@ -646,33 +646,6 @@ export default defineComponent({
     const rows = []
     const resultRows = ref([])
     const status = []
-
-    const arrangmentList = [
-      {
-        id: 'DLX-RB',
-        rate: 530000
-      },
-      {
-        id: 'DLX-RO',
-        rate: 500000
-      },
-      {
-        id: 'FML-RB',
-        rate: 530000
-      },
-      {
-        id: 'FML-RO',
-        rate: 530000
-      },
-      {
-        id: 'STD-RB',
-        rate: 330000
-      },
-      {
-        id: 'STD-RO',
-        rate: 300000
-      }
-    ]
     function toggleRbSelected() {
       isRbSelected.value = !isRbSelected.value
       isRoSelected.value = false // Reset the state of RO button
@@ -704,19 +677,19 @@ export default defineComponent({
       guests: ref({ adult: 1, child: 0, baby: 0 }),
       guestsLabel: ref('1 Adult, 0 Child, 0 Baby'),
       resvStatusOpts: ref([['DLX', 'FML', 'STD']]),
+      indexReference: ref(),
       balance: ref(0),
       resvRemark: ref(''),
       roomNo: ref(null),
       roomType: ref(null),
       detail: ref(),
       roomBed: ref(null),
-      roomNoOpts: [],
-      roomTypeOpts: ref(['DLX', 'FML', 'STD']),
-      roomBedOpts: [
-        { label: 'K', value: 'KING' },
-        { label: 'T', value: 'TWIN' },
-        { label: 'S', value: 'SINGLE' }
-      ],
+      roomNoOpts: ref([]),
+      shownRoomType: ref(),
+      roomTypeOpts: ref([]),
+      shownBedOpts: ref(),
+      roomBedOpts: ref([]),
+
       loading: ref(false),
       isRbSelected,
       isRoSelected,
@@ -745,7 +718,6 @@ export default defineComponent({
         { value: '2', description: '6 PM' },
         { value: '3', description: 'Tentative' }
       ],
-      arrangmentList,
       selectedOption: null,
       resvRecource: ref(null),
       resvRecourceOpts: ['Individual reservation', 'Walk In'],
@@ -779,71 +751,23 @@ export default defineComponent({
       }
     )
   },
-  created() {
-    for (let i = 101; i <= 110; i++) {
-      this.roomNoOpts.push(i)
-    }
-  },
   watch: {
     roomType: {
       handler(oldval, newval) {
+        console.log(oldval)
         this.resultRows = this.rows.filter((r) => {
           return r.date == oldval
         })
-        let rmNos = [],
-          rmBed
-        switch (oldval) {
-          case 'FML':
-            ;[rmNos, rmBed] = [[105, 106, 107], [{ label: 'T', value: 'TWIN' }]]
-            this.roomNo =
-              this.roomNo != null && rmNos.some((list) => this.roomNo === list)
-                ? this.roomNo
-                : rmNos[0]
-            this.roomBed = this.roomBed != null && rmBed === this.roomBed ? this.roomBed : rmBed[0]
-            break
-          case 'STD':
-            ;[rmNos, rmBed] = [[108, 109, 110], [{ label: 'S', value: 'SINGLE' }]]
-            this.roomNo =
-              this.roomNo != null && rmNos.some((list) => this.roomNo === list)
-                ? this.roomNo
-                : rmNos[0]
-            this.roomBed = this.roomBed != null && rmBed === this.roomBed ? this.roomBed : rmBed[0]
-            break
-          case 'DLX':
-            ;[rmNos, rmBed] = [[101, 102, 103, 104], [{ label: 'K', value: 'KING' }]]
-            this.roomNo =
-              this.roomNo != null && rmNos.some((list) => this.roomNo === list)
-                ? this.roomNo
-                : rmNos[0]
-            this.roomBed = this.roomBed != null && rmBed === this.roomBed ? this.roomBed : rmBed[0]
-            break
-          default:
-            break
+      }
+    },
+      roomNo: {
+        handler(newVal) {
+          console.log(newVal)
+          this.roomType = this.roomTypeOpts[newVal.index].value
+          console.log(this.roomBedOpts, this.roomTypeOpts)
+          this.roomBed = this.roomBedOpts[newVal.index].label
         }
-      }
-    },
-    roomNo: {
-      handler(newVal) {
-        const roomTypeList = ['DLX', 'DLX', 'DLX', 'DLX', 'FML', 'FML', 'FML', 'STD', 'STD', 'STD']
-        this.roomType = roomTypeList[newVal - 101]
-      }
-    },
-    roomBed: {
-      handler(newVal) {
-        // console.log(newVal)
-        switch (newVal.label) {
-          case 'T':
-            this.roomType = 'FML'
-            break
-          case 'K':
-            this.roomType = 'DLX'
-            break
-          default:
-            this.roomType = 'STD'
-            break
-        }
-      }
-    },
+      },
     'arrivalDepart.from': {
       immediate: true,
       handler() {
@@ -877,8 +801,8 @@ export default defineComponent({
     kirimData() {},
     setRoww() {
       return {
-        roomId: this.roomNo ? this.roomNo : 1,
-        roomType: this.roomType,
+        roomId: this.roomNo.value,
+        roomType: this.roomType.label,
         roomBed: this.roomBed.label,
         voucher: this.voucherId,
         arrangmentCode: this.selected && this.selected.id ? this.selected.id : ''
@@ -940,10 +864,22 @@ export default defineComponent({
       this.api.get(`detail/reservation/1/1/create`, ({ status, data }) => {
         this.loading = false
         if (status === 200) {
-          const { arrangmentCode } = data
+          const { arrangmentCode, availableRooms } = data
           const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
           this.rows = formattedRoomRates
           this.resultRows = formattedRoomRates
+          let formatedType = {}, indexOfReference = {}, roomNos = [], roomTypes = []
+          let index = 0
+          for(let room of availableRooms){
+          roomNos.push({ index, label: room.id, value: room.id })
+            this.roomTypeOpts.push({ index, label: room.roomType.longDesc, value: room.roomType.id, bed: room.roomType.bedSetup })
+            this.roomBedOpts.push({ index, label: room.roomType.bedSetup, value: room.roomType.bedSetup })
+            formatedType[room.roomType.id] = { }
+            indexOfReference[room.id] = index
+            index++
+          }
+          this.roomNoOpts = roomNos
+          this.indexReference = indexOfReference
           // console.log(data)
         }
       })
@@ -985,7 +921,7 @@ export default defineComponent({
         const { currentResvId, currentRoomResvId } = this.$ResvStore
         const data = {
           arrangmentCode: this.selected.id,
-          roomId: this.roomNo,
+          roomId: this.roomNo.value,
           voucher: this.voucherId || ''
         }
         if (currentResvId == 0 || currentRoomResvId == 0) return
@@ -1091,9 +1027,8 @@ export default defineComponent({
             this.arrangmentValue = { id: arrangment.id, rate: arrangment.rate }
             this.resvRemark = reservation.reservationRemarks
             this.roomImage = room.roomImage
-            this.roomNo = room.id
-            this.roomType = room.roomType
-            this.roomBed = [room.bedSetup].map(this.roomBedMapper)[0]
+            console.log('whatt???', this.indexReference)
+            this.roomNo = this.roomNoOpts[this.indexReference[room.id]]
             this.availRooms = [
               ...this.availRooms,
               { id: room.id, roomType: room.roomType, bedSetup: room.bedSetup }
@@ -1186,7 +1121,7 @@ export default defineComponent({
       const dataToUpdate = {
         nameContact: this.guestName,
         resourceName: this.resvRecource,
-        room: this.setRoww(this.roomNo, this.selected.id, this.voucherId), //row
+        room: this.setRoww(this.roomNo.value, this.selected.id, this.voucherId), //row
         manyAdult: this.guests.adult,
         manyChild: this.guests.child,
         manyBaby: this.guests.baby,
@@ -1234,7 +1169,7 @@ export default defineComponent({
       }
 
       const datachangeroom = {
-        roomId: this.roomNo,
+        roomId: this.roomNo.value,
         arrangmentCodeId: this.selected.id,
         note: waitingnote
       }

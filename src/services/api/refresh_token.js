@@ -9,8 +9,6 @@ export const refreshToken = async () => {
         authStore().setAccessToken(data.accessToken)
         return data.accessToken
       }else {
-        Config.logout()
-      window.location.reload()
         return null
       }
     })

@@ -273,7 +273,7 @@
               <q-item
                 clickable
                 v-close-popup
-                @click="setFilterDisplay('roomId+desc', 'Room Number')"
+                @click="setFilterDisplay('roomId+asc', 'Room Number')"
               >
                 <q-item-section>Room Number</q-item-section>
               </q-item>
@@ -446,7 +446,7 @@ export default defineComponent({
     return {
       columns,
       rows,
-      filterDisplay: ref('guestName+asc'),
+      filterDisplay: ref('roomId+asc'),
       filterDisplayLabel: ref('Room Number'),
       vacantLabel: ref('Vacant Clean Checked'),
       occupiedLabel: ref('Occupied Clean'),
@@ -499,7 +499,7 @@ export default defineComponent({
     updateFilterDisplayLabel(option) {
       // Logic to update the label based on the selected option
       switch (option) {
-        case 'roomId+desc':
+        case 'roomId+asc':
           this.filterDisplayLabel = 'Room Number'
           break
         case 'roomType+asc':
@@ -579,7 +579,7 @@ export default defineComponent({
       if (DateArrival !== undefined && DateArrival !== '') {
         url += `&arrival=${DateArrival}`
       }
-      
+
       console.log(url)
 
       const DateDeparture = this.datePickerDeparture?.replace(/\//g, '-')

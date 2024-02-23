@@ -108,21 +108,21 @@
                   >
                 </div>
               </div>
-              <div style="display: flex; justify-content: space-between; width: 100%">
+              <!-- <div style="display: flex; justify-content: space-between; width: 100%">
                 <div style="color: black; font-size: large" class="q-pa-sm">Paid</div>
                 <div style="width: fit-content;">
                   <q-input type="number" dense outlined v-model="paidmmount"/>
-                  <!-- <q-input type="text" class="form-control" v-model="displayValue" @blur="isInputActive = false" @focus="isInputActive = true"/> -->
                 </div>
-              </div>
-              <div style="display: flex; justify-content: space-between; width: 100%">
+              </div> -->
+              <!-- <q-input type="text" class="form-control" v-model="displayValue" @blur="isInputActive = false" @focus="isInputActive = true"/> -->
+              <!-- <div style="display: flex; justify-content: space-between; width: 100%">
                 <div style="color: black; font-size: large" class="q-pa-sm">Balance</div>
                 <div style="width: fit-content; margin: 10px">
                   <label :for="'option_' + index" style="font-weight: 600" class="centerComponent">
                     {{ formating(remainder) }}</label
                   >
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -211,9 +211,9 @@ export default defineComponent({
       const method = this.$route.query
 
       const data = {
-        paymentMethod: this.selectedMethod,
-        invoices: this.priceBook,
-        paidAmount: this.paidmmount,
+          paymentMethod: this.selectedMethod,
+          invoices: this.priceBook,
+        paidAmount: this.total,
         useTax: this.includeTax
       }
       try {

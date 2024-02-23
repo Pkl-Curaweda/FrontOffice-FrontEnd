@@ -225,7 +225,7 @@
         <div class="">
           {{ roomType }}
         </div>
-        <div class="">{{ roomNo.value }}</div>
+        <div class="">{{ roomNo?.value }}</div>
         <div class="">{{ roomBed + ' ' }} Bed</div>
       </div>
       <div v-if="!$ResvStore.fix" style="gap: 8px" class="row no-wrap q-mt-sm">
@@ -547,7 +547,7 @@
       <q-btn
         color="primary"
         dense
-        class="q-ma-sm q-pa-xs"
+        class="q-ma-sm q-px-sm"
         @click="updateData"
         :disabled="!this.$ResvStore.currentRoomResvId || this.$ResvStore.addroom"
         v-if="!this.$ResvStore.fix"

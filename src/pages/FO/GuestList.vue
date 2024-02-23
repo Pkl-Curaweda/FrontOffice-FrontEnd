@@ -737,6 +737,7 @@ export default defineComponent({
     handletoggle(data, state) {
       const roomNo = data['RmNo'].data
       this.datares = data
+      console.log(this.datares)
       this.roomno = roomNo
 
       console.log(data)

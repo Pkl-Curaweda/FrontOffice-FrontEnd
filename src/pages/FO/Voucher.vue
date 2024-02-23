@@ -334,16 +334,16 @@ export default defineComponent({
       }
     },
     addVoucher() {
-      if (this.discount > 100) {
-        this.$q.notify(
-          {
-            type: 'negative',
-            message: 'Can set discount many than 100',
-            timeout: 1000
-          },
-          1000
-        )
-      }
+      // if (this.discount > 100) {
+      //   this.$q.notify(
+      //     {
+      //       type: 'negative',
+      //       message: 'Cant set discount many than 100',
+      //       timeout: 1000
+      //     },
+      //     1000
+      //   )
+      // }
       const data = {
         voucherName: this.voucherName,
         description: this.description,
@@ -358,9 +358,11 @@ export default defineComponent({
 
       this.api.post(url, data, ({ status, message }) => {
         if (status === 200) {
-          this.trigger('possitive', message)
+          this.trigger('positive', message)
           this.clearFields()
           this.fetchData()
+        }else{
+          this.trigger('negative', message)
         }
       })
     },
@@ -379,8 +381,10 @@ export default defineComponent({
 
       this.api.post(url, data, ({ status, message }) => {
         if (status === 200) {
-          this.trigger('possitive', message)
+          this.trigger('positive', message)
           this.fetchData()
+        }else{
+          this.trigger('negative', message)
         }
       })
     },
@@ -414,7 +418,7 @@ export default defineComponent({
           this.houseUse = data.houseUse
           this.input = data.expireAt
         }
-        this.trigger('possitive', message)
+        this.trigger('positive', message)
       })
     },
     deleteVoucher(row) {
@@ -423,8 +427,10 @@ export default defineComponent({
 
       this.api.delete(url, ({ status, message }) => {
         if (status == 200) {
-          this.trigger('possitive', message)
+          this.trigger('positive', message)
           this.fetchData()
+        } else {
+          this.trigger('negative', message)
         }
       })
     },

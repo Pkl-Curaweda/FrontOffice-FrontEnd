@@ -78,7 +78,7 @@
           label="payment"
           @click="redirectpayment"
         />
-        <q-btn
+        <!-- <q-btn
           flat
           square
           color="primary"
@@ -86,7 +86,7 @@
           class="border-button rounded-borders"
           style="padding: 6px 3px"
           @click="viewBill = true"
-        />
+        /> -->
 
         <!-- dialog view bill on form invoice -->
         <q-dialog v-model="viewBill">
@@ -328,11 +328,11 @@ export default defineComponent({
       }
 
       let url = `invoice/${resvId}/${resvRoomId}/print`
-      
+
       this.api.get(url, ({ status, data }) => {
         this.loading = false
         console.log(data)
-        
+
         if (status == 200) {
           this.formatData(data.invoices)
           this.billNumber = data.billNumber

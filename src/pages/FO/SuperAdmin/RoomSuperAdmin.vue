@@ -355,17 +355,27 @@
                   label="Short Desc"
                 />
               </div>
+              <div class="col" style="width: 100%; gap: 10px; display: flex">
               <q-select
                 outlined
                 v-model="bedSetupSelect"
                 :options="bedlist"
-                style="width: 100%"
+                style="width: 30%"
                 :label="'Bed Setup'"
                 dropdown-icon="expand_more"
                 dense
               >
-              </q-select>
-
+            </q-select>
+            <q-input
+                v-model="standardTimeInput"
+                type="text"
+                autogrow
+                style="width: 70%"
+                dense
+                outlined
+                label="Standard Time"
+              />
+          </div>
               <q-checkbox
                 v-model="selectionRbRo"
                 v-if="!this.editType"
@@ -418,7 +428,7 @@
               </div>
               <q-card-actions align="right">
                 <q-btn
-                  @click="postAddType"
+                  @click="postAddType(1)"
                   v-if="!this.editType"
                   no-caps
                   label="Submit"
@@ -809,7 +819,9 @@ export default defineComponent({
       cacheData: ref([]),
       confirmTypeDelete: ref(false),
       confirmArrDelete: ref(false),
-      typeDelete: ref(0)
+      typeDelete: ref(0),
+      standardTimeInput: ref(''),
+      standardTimePrev: ref(''),
     }
   },
   data() {
@@ -871,6 +883,7 @@ export default defineComponent({
       this.detailArr = null
       this.priceRBInput = null
       this.priceROInput = null
+      this.standardTimeInput = null
     },
     handleConfirm(data) {
       this.cacheData = data
@@ -937,7 +950,8 @@ export default defineComponent({
           this.bedSetupSelect = data.bedSetup
           this.priceRBInput = data.RBPrice
           this.priceROInput = data.ROPrice
-        }
+          this.standardTimePrev = data.standardTime
+         }
       })
     },
     getDetailArr() {
@@ -1088,17 +1102,23 @@ export default defineComponent({
       }
     },
     postAddType(state) {
+      const checkStandard = {}
+
+      this.standardTimeInput != this.standardTimePrev ? (checkStandard['standardTime'] = this.standardTimeInput): ''
       if (state == 1) {
         try {
           this.api.post(
             `/room/room-type/add`,
             {
+
               shortDesc: this.shortDescInput,
               longDesc: this.longDescInput,
               bedSetup: this.bedSetupSelect.label,
               generateArr: this.postAddType,
               priceRB: this.priceRBInput,
-              priceRO: this.priceROInput
+              priceRO: this.priceROInput,
+              checkStandard
+
             },
             ({ status, message }) => {
               if (status == 200) {
@@ -1141,6 +1161,9 @@ export default defineComponent({
       }
     },
     postEditTypeRoom() {
+      const checkStandard = {}
+      this.standardTimeInput != this.standardTimePrev ? (checkStandard['standardTime'] = this.standardTimeInput): ''
+
       this.api.post(
         `room/room-type`,
         {
@@ -1149,6 +1172,7 @@ export default defineComponent({
           bedSetup: this.bedSetupSelect.label || this.bedSetupSelect,
           generateArr: false,
           priceRB: this.priceRBInput,
+          checkStandard,
           priceRO: this.priceROInput
         },
         ({ message, status }) => {

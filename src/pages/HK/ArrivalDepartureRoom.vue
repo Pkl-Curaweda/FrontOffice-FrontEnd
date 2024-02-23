@@ -65,48 +65,9 @@
               color="primary"
               dropdown-icon="o_expand_more"
             >
-              <q-list>
-                <q-item
-                  clickable
-                  v-close-popup
-                  @click="setFilterDisplay('room+id+asc', 'Room Number')"
-                >
-                  <q-item-section>Room Number</q-item-section>
-                </q-item>
-                <q-item
-                  clickable
-                  v-close-popup
-                  @click="setFilterDisplay('room+type+DELUXE', 'Room Type Deluxe')"
-                >
-                  <q-item-section>Room Type Deluxe</q-item-section>
-                </q-item>
-                <q-item
-                  clickable
-                  v-close-popup
-                  @click="setFilterDisplay('room+type+FAMILY', 'Room Type Family')"
-                >
-                  <q-item-section>Room Type Family</q-item-section>
-                </q-item>
-                <q-item
-                  clickable
-                  v-close-popup
-                  @click="setFilterDisplay('room+type+STANDARD', 'Room Type Standard')"
-                >
-                  <q-item-section>Room Type Standard</q-item-section>
-                </q-item>
-                <q-item
-                  clickable
-                  v-close-popup
-                  @click="setFilterDisplay('rese+name+asc', 'Guest Name')"
-                >
-                  <q-item-section>Guest Name</q-item-section>
-                </q-item>
-                <q-item
-                  clickable
-                  v-close-popup
-                  @click="setFilterDisplay('resv+id+asc', 'Reservation Number')"
-                >
-                  <q-item-section>Reservation Number</q-item-section>
+              <q-list v-for="(type, i) in listOfSortTypes" :key="i">
+                <q-item clickable v-close-popup @click="setFilterDisplay(type.id, type.label)">
+                  <q-item-section>{{ type.label }}</q-item-section>
                 </q-item>
               </q-list>
             </q-btn-dropdown>
@@ -515,7 +476,7 @@ export default defineComponent({
       loading: ref(false),
       tableColumns,
       // tableColumnsHistory,
-      filterDisplay: ref('room+id+asc'),
+      filterDisplay: ref(),
       filterDisplayLabel: ref('Room Number'),
       inputtedDate: ref(),
       formattedDate: ref(),
@@ -526,7 +487,8 @@ export default defineComponent({
       tableRows: ref(),
       tableRowsHistory: ref(),
       guestHistoryModel: ref(false),
-      searchInput: ref('')
+      searchInput: ref(''),
+      listOfSortTypes: ref()
     }
   },
   data() {
@@ -611,34 +573,7 @@ export default defineComponent({
     },
     setFilterDisplay(option, label) {
       this.filterDisplay = option
-      this.updateFilterDisplayLabel(option)
-      this.fetchData()
-    },
-    updateFilterDisplayLabel(option) {
-      // Logic to update the label based on the selected option
-      switch (option) {
-        case 'room+id+asc':
-          this.filterDisplayLabel = 'Room Number'
-          break
-        case 'room+type+DELUXE':
-          this.filterDisplayLabel = 'Room Type Deluxe'
-          break
-        case 'room+type+FAMILY':
-          this.filterDisplayLabel = 'Room Type Family'
-          break
-        case 'room+type+STANDARD':
-          this.filterDisplayLabel = 'Room Type Standard'
-          break
-        case 'rese+name+asc':
-          this.filterDisplayLabel = 'Guest Name'
-          break
-        case 'resv+id+asc':
-          this.filterDisplayLabel = 'Reservation Number'
-          break
-        // Add other cases as needed
-        default:
-          this.filterDisplayLabel = 'Default Label'
-      }
+      this.filterDisplayLabel = label
     },
     fetchData() {
       this.loading = true
@@ -731,6 +666,8 @@ export default defineComponent({
             room_stat: row.roomStatus.shortDescription,
             created_date: row.created
           }))
+
+          this.listOfSortTypes = data.sortingList
         }
       })
     }

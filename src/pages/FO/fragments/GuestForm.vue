@@ -766,17 +766,22 @@ export default defineComponent({
           this.roomType = this.roomTypeOpts[newVal.index].value
           console.log(this.roomBedOpts, this.roomTypeOpts)
           this.roomBed = this.roomBedOpts[newVal.index].label
+
+          if(this.arrivalDepart.from && this.arrivalDepart.to) this.checkRoomAvailability()
         }
       },
     'arrivalDepart.from': {
       immediate: true,
       handler() {
+        console.log(this.arrivalDepart.from)
         this.formatArrivalDepart()
+        if(this.roomNo && this.arrivalDepart.from) this.checkRoomAvailability()
       }
     },
     'arrivalDepart.to': {
       immediate: true,
       handler() {
+        console.log(this.arrivalDepart.to)
         this.formatArrivalDepart()
       }
     },
@@ -808,6 +813,18 @@ export default defineComponent({
         arrangmentCode: this.selected && this.selected.id ? this.selected.id : ''
       }
     },
+    checkRoomAvailability() {
+      this.api.get(`detail/checker/room?roomId=${this.roomNo.value}&range=${this.arrivalDepart.from}T${this.arrivalDepart.to}`, ({ status, message }) => {
+        if(status != 200){
+          this. trigger('negative', message)
+          this.arrivalDepart.from = null
+          this.arrivalDepart.to = null
+          this.arrivalDepartLabel = 'Arrival - Depature, 1 Nights'
+        }else{
+          this.trigger('positive', message)
+        }
+      })
+    },
     roomBedMapper(bed) {
       let obj = {
         label: bed,
@@ -827,7 +844,7 @@ export default defineComponent({
       })
     },
     formatArrivalDepart() {
-      if (this.arrivalDepart.from && this.arrivalDepart.to) {
+      if (this.arrivalDepart?.from && this.arrivalDepart?.to) {
         const fromDate = new Date(this.arrivalDepart.from)
         const toDate = new Date(this.arrivalDepart.to)
         // console.log(this.arrivalDepart.to)

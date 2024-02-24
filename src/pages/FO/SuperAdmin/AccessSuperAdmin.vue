@@ -210,72 +210,64 @@
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
-              :style="`${props.row.readerSuperAdmin}`"
+              :style="{ backgroundColor: props.row.readerSuperAdmin }"
             >
-              {{ props.row.readerSuperAdmin.backgroundColor }}
             </q-td>
             <q-td
               key="Editor Super Admin"
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
-              style="{{ props.row.readerSuperAdmin }}"
+              :style="{ backgroundColor: props.row.editorSuperAdmin }"
             >
-              {{ props.row.editorSuperAdmin }}
             </q-td>
             <q-td
               key="Reader Admin"
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
-              style="{{ props.row.readerAdmin }}"
+              :style="{ backgroundColor: props.row.readerAdmin }"
             >
-              {{ props.row.readerAdmin }}
             </q-td>
             <q-td
               key="Editor Admin"
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
-              style="background-color: `#{{ props.row.editorAdmin }}`;"
-            >
-              {{ props.row.editorAdmin }}
+              :style="{ backgroundColor: props.row.editorAdmin }"
+              >
             </q-td>
             <q-td
               key="Reader Room Boy"
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
-              style="{{ props.row.readerSuperAdmin }}"
-            >
-              {{ props.row.readerRoomboy }}
+              :style="{ backgroundColor: props.row.readerRoomboy }"
+              >
             </q-td>
             <q-td
               key="Editor Room Boy"
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
-              style="{{ props.row.readerSuperAdmin }}"
-            >
-              {{ props.row.editorRoomboy }}
+              :style="{ backgroundColor: props.row.editorRoomboy }"           
+              >
             </q-td>
             <q-td
               key="Reader Supervisor"
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
-              style="{{ props.row.readerSuperAdmin }}"
-            >
-              {{ props.row.readerSupervisor }}
+              :style="{ backgroundColor: props.row.readerSupervisor }"
+              >
             </q-td>
             <q-td
               key="Editor Supervisor"
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
-              style="{{ props.row.readerSuperAdmin }}"
-            >
-              {{ props.row.editorSupervisor }}
+              :style="{ backgroundColor: props.row.editorSupervisor }"            
+              >
             </q-td>
             <q-td key="Action" :props="props" style="width: 10px">
               <q-btn flat rounded size="13px" style="color: #008444" @click="editRole(props.row)"
@@ -962,6 +954,7 @@ export default defineComponent({
       }
     },
     saveUser() {
+      console.log(this.addUser)
       if (this.addUser == 'Edit User') {
         this.stateEdit = true
         this.updateUser()
@@ -1217,8 +1210,8 @@ export default defineComponent({
       this.name != this.prevUser.name ? (DataToUpdate['name'] = this.name) : ''
       this.email != this.prevUser.email ? (DataToUpdate['email'] = this.email) : ''
       this.numberPhone != this.prevUser.phone ? (DataToUpdate['phone'] = this.numberPhone) : ''
-      new Date(this.input) != this.prevUser.birthday
-        ? (DataToUpdate['birthday'] = new Date(this.input))
+      new Date(this.input).toISOString() != this.prevUser.birthday
+        ? (DataToUpdate['birthday'] = new Date(this.input).toISOString())
         : ''
       this.nik != this.prevUser.nik ? (DataToUpdate['nik'] = this.nik) : ''
       this.gender != this.prevUser.gender ? (DataToUpdate['gender'] = this.gender) : ''

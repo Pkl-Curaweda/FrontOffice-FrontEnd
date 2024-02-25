@@ -1,3 +1,4 @@
+
 <template>
   <apexchart
     style="padding: 0 20px"

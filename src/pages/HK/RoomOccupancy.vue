@@ -62,6 +62,9 @@
           <apexchart
             style="padding: 0 20px"
             type="bar"
+            width="100%"
+            height="300px"
+            ref="barChart"
             :options="chartOptionsBar"
             :series="seriesBar"
           />
@@ -71,6 +74,7 @@
           <apexchart
             style="padding: 0 20px"
             type="donut"
+            ref="donutChart"
             :options="chartOptionsDonut"
             :series="seriesDonut"
           />
@@ -133,14 +137,9 @@ import HKCard from 'src/components/HK/Card/HKCard.vue'
 //   }
 // ]
 
-const seriesBar = [
-  { name: 'Room', data: [1, 2, 3, 4, 5, 6, 8] },
-  { name: 'Person', data: [1, 2, 3, 4, 5, 6, 8] }
-]
-
 const chartOptionsBar = ref({
   chart: {
-    type: 'bar'
+    type: 'bar',
   },
   responsive: [
     {
@@ -150,7 +149,7 @@ const chartOptionsBar = ref({
   plotOptions: {
     bar: {
       horizontal: false,
-      columnWidth: '25%',
+      columnWidth: '50%',
       endingShape: 'rounded'
     }
   },
@@ -163,7 +162,7 @@ const chartOptionsBar = ref({
     colors: ['transparent']
   },
   xaxis: {
-    categories: ['Oc.Room', 'Com.Room', 'HU.Room', 'Est. Oc.Room', 'OOO.Room', 'Off Market Room']
+    categories: ['Occ', 'Comp', 'HU', 'OOO', 'OM', 'Est Occ']
   },
   fill: {
     colors: ['#A468D3', '#77CE7F']
@@ -175,7 +174,6 @@ const chartOptionsBar = ref({
   }
 })
 
-const seriesDonut = [1, 2]
 const chartOptionsDonut = {
   chart: {
     type: 'donut',
@@ -192,45 +190,21 @@ const chartOptionsDonut = {
   },
   fill: {
     colors: [
-      '#77CE7F',
-      '#00FFE0',
-      '#2B8DFF',
-      '#688CD3',
-      '#A468D3',
-      '#FFE500',
-      '#FFA800',
-      '#FE0001',
-      '#B9B9B9',
-      '#000000'
+      '#a468d3',
+      '#77ce7f'
     ]
   },
   labels: [
-    '101 - DLX - K',
-    '102 - DLX - K',
-    '103 - DLX - K',
-    '104 - DLX - K',
-    '105 - FML - T',
-    '106 - FML - T',
-    '107 - FML - T',
-    '108 - STD - S',
-    '109 - STD - S',
-    '110 - STD - S'
+    'Room',
+    'Person'
   ],
   legend: {
     position: 'left',
     show: false,
     markers: {
       fillColors: [
-        '#77CE7F',
-        '#00FFE0',
-        '#2B8DFF',
-        '#688CD3',
-        '#A468D3',
-        '#FFE500',
-        '#FFA800',
-        '#FE0001',
-        '#B9B9B9',
-        '#000000'
+      '#a468d3',
+      '#77ce7f'
       ]
     }
   }
@@ -256,23 +230,23 @@ const tableRow = ref([])
 
 const radio_opt = ref([])
 
-const selectOption = ['Show by Week', 'Show by Month', 'Show by Year']
+const selectOption = [{ label: 'Show by Week', value: "week" }, { label: 'Show by Month', value: "month" }, { label: 'Show by Year', value: "year" }]
 
 export default defineComponent({
   name: 'RoomOccupancyPage',
   components: { HKCard },
   setup() {
     return {
-      r_group: ref(''),
+      r_group: ref("ALL"),
       model: ref(null),
       options: selectOption,
       roomData,
       tableCol,
       tableRow,
       radio_opt,
-      seriesBar,
       chartOptionsBar,
-      seriesDonut,
+      seriesDonutEntry: ref([]),
+      seriesBarEntry: ref([]),
       chartOptionsDonut
     }
   },
@@ -283,7 +257,11 @@ export default defineComponent({
         page: 1,
         rowsNumber: 0,
         rowsPerPage: 10
-      }
+      },
+      filter: ref(null),
+      startUp: true,
+      seriesBar: this.seriesBarEntry,
+      seriesDonut: this.seriesDonutEntry
     }
   },
   mounted() {
@@ -294,22 +272,32 @@ export default defineComponent({
       handler(option) {
         this.fetchData()
       }
+    },
+    model: {
+      handler(value){
+        this.filter = value.value
+        this.fetchData()
+      }
     }
   },
   methods: {
     fetchData() {
       this.loading = true
+      if (this.startUp != false) {
+        this.startUp = false
+        this.fetchData()
+      }
 
-      let url = `roomocc?`
+      let url = `roomocc?disOpt=${this.filter}`
 
-      if (this.r_group !== null) url += `filt=${this.r_group}`
+      if (this.r_group !== null) url += `&filt=${this.r_group}`
 
       this.api.get(url, ({ status, data }) => {
         this.loading = false
 
         if (status == 200) {
           this.loading = false
-          const { currData, roomStatus, listOfTypes } = data
+          const { currData, roomStatus, listOfTypes, percData } = data
 
           // const room = percData.roomPerc
           // const person = percData.personPerc
@@ -319,8 +307,16 @@ export default defineComponent({
           //   { name: 'Person', data: person }
           // ]
 
-          console.log(this.seriesBar)
-
+          const { roomPerc, personPerc, graph } = percData
+          const donutData = [graph.room, graph.person]
+          this.seriesDonut = donutData
+          this.$refs.donutChart.updateSeries(this.seriesDonut)
+          const barData = [
+            { name: 'Room', data: roomPerc },
+            { name: 'Person', data: personPerc }
+          ]
+          this.seriesBar = barData
+          this.$refs.barChart.updateSeries(this.seriesBar)
           this.radio_opt = listOfTypes.map((lot) => ({
             label: lot.label,
             value: lot.id

@@ -17,7 +17,7 @@
 
       <!-- Pie Chart (Desktop) -->
       <div style="flex: 1 1 0%">
-        <HKChart ref="hkChartDesktop" :series="series" :options="chartOptions" />
+        <apexchart type="donut" ref="hkChartDesktop" width="400" :options="chartOptions" :series="series"></apexchart>
       </div>
 
       <!-- Found & Lost -->
@@ -363,9 +363,6 @@ const columns = [
   }
 ]
 const chartOptions = {
-  chart: {
-    type: 'donut'
-  },
   dataLabels: {
     enabled: false
   },
@@ -427,7 +424,7 @@ export default defineComponent({
       datePickerArrival: ref(),
       formattedArrivalDate: ref(),
       columns,
-      chartSeries: ref()
+      seriesEntry: ref([])
     }
   },
   data() {
@@ -440,6 +437,7 @@ export default defineComponent({
         rowsNumber: 0,
         rowsPerPage: 20
       },
+      startUp: true,
       series: this.seriesEntry
     }
   },
@@ -574,7 +572,6 @@ export default defineComponent({
       if (DateArrival !== undefined && DateArrival !== '') {
         url += `&searchDate=${DateArrival}`
       }
-      console.log(this.datePickerArrival)
       if (this.filterDisplay == null) {
         url += `&sortOrder=${this.filterDisplay}`
       }
@@ -586,8 +583,9 @@ export default defineComponent({
           // this.formatData(lostFounds)
           this.found = graph.found // Isi nilai found50
           this.lost = graph.lost // Isi nilai lost
-          this.chartSeries = [(this.lost = graph.lost), (this.found = graph.found)]
-          console.log(this.searchInput)
+          this.series = [graph.lost, graph.found]
+          this.$refs.hkChartDesktop.updateSeries(this.series)
+
           const arrivalDate = data.searchDate // Gantilah 'arrival.arr' dengan properti yang benar
           if (this.datePickerArrival == null) {
             this.datePickerArrival = arrivalDate

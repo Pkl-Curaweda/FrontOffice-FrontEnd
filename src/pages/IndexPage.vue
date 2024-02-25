@@ -136,7 +136,12 @@
                 <q-carousel-slide name="style">
                   <h5 class="text-bold q-ma-none">Reservation Statistics</h5>
                   <div class="q-mt-md">
-                    <ReservationChart />
+                    <apexchart
+                      style="padding: 0 20px"
+                      type="bar"
+                      :options="reservationChartOption"
+                      :series="reservationSeries"
+                    ></apexchart>
                   </div>
                 </q-carousel-slide>
                 <q-carousel-slide name="tv" class="col-grow">
@@ -213,10 +218,6 @@ import MessengerFloat from 'src/components/MessengerFloat.vue'
 import { getCurrentTime } from 'src/utils/time'
 // import frontoffice_routes from 'src/router/frontoffice.router'
 
-const ReservationChart = defineAsyncComponent(() =>
-  import('components/charts/ReservationChart.vue')
-)
-
 const UsageChart = defineAsyncComponent(() => import('components/charts/UsageChart.vue'))
 
 const BarChart = defineAsyncComponent(() => import('components/charts/BarChart.vue'))
@@ -246,7 +247,44 @@ export default {
         { name: 'ResResource', label: 'Reserve Resource', align: 'left', field: 'ResResource' },
         { name: 'CreatedDate', label: 'Created Date', align: 'left', field: 'CreatedDate' }
       ],
-      slide
+      slide,
+      reservationChartOption: ref({
+        chart: {
+          type: 'bar'
+        },
+        responsive: [
+          {
+            breakpoint: 80
+          }
+        ],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%',
+            endingShape: 'rounded'
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: []
+        },
+        fill: {
+          colors: ['#0194F3', '#77CE7F', '#FEEB74']
+        },
+        legend: {
+          markers: {
+            fillColors: ['#0194F3', '#77CE7F', '#FEEB74']
+          }
+        }
+      }),
+      reservationSeriesEntry: []
     }
   },
   data() {
@@ -257,7 +295,8 @@ export default {
         page: 1,
         rowsNumber: 0,
         rowsPerPage: 20
-      }
+      },
+      reservationSeries: this.reservationSeriesEntry
     }
   },
   watch: {
@@ -271,7 +310,7 @@ export default {
   mounted() {
     this.getValueDashboard()
   },
-  components: { SideBar, ProfileFloat, MessengerFloat, ReservationChart, UsageChart, BarChart },
+  components: { SideBar, ProfileFloat, MessengerFloat, UsageChart, BarChart },
   created() {
     this.updateTime()
 
@@ -308,8 +347,11 @@ export default {
 
         if (status == 200) {
           this.formatData(data.resv.reservation)
-          const { currData } = data
-          console.log(currData)
+          const { currData, resvChart } = data
+          const listOfReservationCategory = []
+          Object.values(resvChart).forEach((chart) => {
+            listOfReservationCategory.push(chart.ident)
+          })
           this.newReservation = String(currData.newReservation).padStart(3, '0')
           this.availableRooms = String(currData.availableRoom).padStart(3, '0')
           this.checkIn = String(currData.checkIn).padStart(3, '0')

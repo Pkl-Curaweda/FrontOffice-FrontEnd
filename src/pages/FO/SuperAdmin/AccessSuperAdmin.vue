@@ -106,7 +106,7 @@
           <q-dialog v-model="newRole">
             <q-card style="max-width: 65vw">
               <q-card-section class="row items-center q-pb-none">
-                <div class="text-h6">{{ titleCardRole || 'Add New Role' }}</div>
+                <div class="text-h6">{{ editRoomBoySet.title }}</div>
                 <q-space />
                 <div class="text-h6">Given Access</div>
                 <q-space />
@@ -284,7 +284,7 @@
                   />
                 </svg>
               </q-btn>
-              <q-btn flat rounded size="13px" style="color: #008444" @click="handleConfirm(props.row)"
+              <q-btn flat rounded size="13px" style="color: #008444" @click="handleConfirm('role', props.row.id, props.row.nama)"
                 ><svg
                   width="19"
                   height="19"
@@ -303,7 +303,7 @@
         </template>
       </q-table>
     </div>
-    <q-dialog v-model="dialogListUser" full-width>
+    <q-dialog v-model="dialogListUser" seamless position="bottom" full-width>
       <q-card>
         <q-card-section class="flex items-center q-pb-none">
           <div class="text-h6">List User</div>
@@ -371,7 +371,7 @@
                 <q-dialog v-model="newRoomBoy">
                   <q-card style="width: 700px; max-width: 80vw">
                     <q-card-section class="row items-center q-pb-none">
-                      <div class="text-h6">{{ titleRoomBoy || 'Add New Room Boy' }}</div>
+                      <div class="text-h6">{{ editRoomBoySet.title }}</div>
                       <q-space />
                       <q-btn icon="close" flat round dense v-close-popup />
                     </q-card-section>
@@ -465,8 +465,8 @@
                             class="q-mt-sm col-grow"
                           />
                         </div>
-                        <q-btn class="text-capitalize" color="primary" @click="saveRoomBoy">{{
-                          addRoomboy || 'Add Room Boy'
+                        <q-btn class="text-capitalize" color="primary" @click="sendRoomBoyRequest">{{
+                          editRoomBoySet.button
                         }}</q-btn>
                       </div>
                     </q-card-section>
@@ -492,7 +492,7 @@
               }"
               :card-style="{ boxShadow: 'none' }"
               rows-per-page-label="Show"
-              :rows-per-page-options="[]"
+              :rows-per-page-options="[0]"
               hide-bottom
               :dense="$q.screen.lt.md"
               v-if="showTable"
@@ -509,11 +509,11 @@
                 <q-dialog v-model="newUser" full-width>
                   <q-card>
                     <q-card-section class="row items-center q-pb-none">
-                      <div class="text-h6">Add New User</div>
+                      <div class="text-h6">{{ editRoomBoySet.title  }}</div>
                       <q-space />
                       <div class="text-h6 q-mx-xl">Access</div>
                       <q-btn class="text-capitalize q-mx-md" color="primary" @click="saveUser">{{
-                        addUser || 'Add User'
+                        editRoomBoySet.button
                       }}</q-btn>
                       <q-btn icon="close" flat round dense v-close-popup @click="clearFieldRole" />
                     </q-card-section>
@@ -609,7 +609,7 @@
                           />
                           <q-input
                             v-model="password"
-                            v-if="addUser == null"
+                            v-if="!isEditingUser"
                             outlined
                             dense
                             label="Password"
@@ -624,7 +624,7 @@
                             </template>
                           </q-input>
                           <q-input
-                            v-if="addUser == null"
+                            v-if="!isEditingUser"
                             v-model="confirmPassword"
                             outlined
                             dense
@@ -647,8 +647,8 @@
                             <div>
                               <label class="text-bold">Super Admin Page</label>
                               <div style="display: flex">
-                                <q-checkbox v-model="checkboxReaderSuperAdminUser" label="Reader" />
-                                <q-checkbox v-model="checkboxEditorSuperAdminUser" label="Editor" />
+                                <q-checkbox :disable="true" v-model="checkboxReaderSuperAdminUser" label="Reader" />
+                                <q-checkbox :disable="true" v-model="checkboxEditorSuperAdminUser" label="Editor" />
                               </div>
                             </div>
                           </HKCard>
@@ -656,8 +656,8 @@
                             <div>
                               <label class="text-bold">Admin Page</label>
                               <div style="display: flex">
-                                <q-checkbox v-model="checkboxReaderAdminUser" label="Reader" />
-                                <q-checkbox v-model="checkboxEditorAdminUser" label="Editor" />
+                                <q-checkbox :disable="true" v-model="checkboxReaderAdminUser" label="Reader" />
+                                <q-checkbox :disable="true" v-model="checkboxEditorAdminUser" label="Editor" />
                               </div>
                             </div>
                           </HKCard>
@@ -667,8 +667,8 @@
                             <div>
                               <label class="text-bold">Room Boy Page</label>
                               <div style="display: flex">
-                                <q-checkbox v-model="checkboxReaderRoomboyUser" label="Reader" />
-                                <q-checkbox v-model="checkboxEditorRoomboyUser" label="Editor" />
+                                <q-checkbox :disable="true" v-model="checkboxReaderRoomboyUser" label="Reader" />
+                                <q-checkbox :disable="true" v-model="checkboxEditorRoomboyUser" label="Editor" />
                               </div>
                             </div>
                           </HKCard>
@@ -676,8 +676,8 @@
                             <div>
                               <label class="text-bold">Supervisor Page</label>
                               <div style="display: flex">
-                                <q-checkbox v-model="checkboxReaderSupervisorUser" label="Reader" />
-                                <q-checkbox v-model="checkboxEditorSupervisorUser" label="Editor" />
+                                <q-checkbox :disable="true" v-model="checkboxReaderSupervisorUser" label="Reader" />
+                                <q-checkbox :disable="true" v-model="checkboxEditorSupervisorUser" label="Editor" />
                               </div>
                             </div>
                           </HKCard>
@@ -738,7 +738,7 @@
                       rounded
                       size="13px"
                       style="color: #008444"
-                      @click="handleConfirm(props.row)"
+                      @click="handleConfirm('user', props.row.id, props.row.name)"
                     >
                       <svg
                         width="19"
@@ -765,7 +765,7 @@
           <q-card style="width: 300px; justify-content: center">
             <div class="q-pa-sm col" style="display: block; width: 100%; gap: 5px">
               <div style="width: 100%; text-align: center">
-                Do you want to delete data?
+                Do you want to delete {{ deleteData.name }}?
               </div>
               <div class="q-pa-sm col" style="display: flex; width: 100%; gap: 5px">
                 <q-btn
@@ -782,7 +782,7 @@
                   dense
                   noCaps
                   color="red"
-                  @click="deleteRole"
+                  @click="sendDeletionRequest"
                   label="Delete"
                   class="q-px-md"
                   style="border-radius: 10px; width: 100%"
@@ -866,7 +866,7 @@ export default defineComponent({
       isConfirmPwd: ref(true),
       submitRole: ref(),
       titleCardRole: ref(),
-      roleIdUser: ref(1),
+      roleIdUser: ref(),
       date: ref(),
       input: ref(),
       addUser: ref(),
@@ -883,11 +883,16 @@ export default defineComponent({
       department: ref(),
       optionDepartment: ref(),
       addRoomboy: ref(),
+      isEditingUser: ref(),
+      editUserSet: ref({ title: undefined, button: undefined }),
+      isEditingRoomBoy: ref(),
+      editRoomBoySet: ref({ title: undefined, button: undefined }),
       titleRoomBoy: ref(),
       showTable: ref(true),
       prevUser: ref([]),
       cacheData: ref([]),
       confirmDelete: ref(false),
+      deleteData: ref({ ident: undefined, id: undefined, name: undefined })
     }
   },
   data() {
@@ -907,29 +912,49 @@ export default defineComponent({
     },
     roomBoy: {
       handler(newValue) {
-        console.log(newValue)
+        console.log(this.shift)
+        // SET DROPDOWN VALUE
+        this.workShift = newValue.shiftId
+        this.alias = newValue.aliases
+        this.department = newValue.departmentId
+
         this.roleIdRoomBoy = newValue.value
         this.nameRoomBoy = newValue.label
         this.emailRoomBoy = newValue.email
         this.roleRoomBoy = newValue.role
         this.imgRoomBoy = newValue.picture
-        this.putDataRoomBoy()
       }
     },
-    shift: {
+    workShift: {
       handler(newValue) {
-        this.putDataRoomBoy()
-        this.editDataRoomBoy()
+        console.log(newValue)
+        if(!newValue?.label) this.workShift = this.optionShift[newValue - 1]
       }
     },
     department: {
-      handler(newValue) {
-        this.putDataRoomBoy()
-        this.editDataRoomBoy()
+      handler(data){
+        console.log(data)
+        if(!data?.label) this.department = this.optionDepartment[data - 1]
+      }
+    },
+    isEditingRoomBoy: {
+      handler(value){
+        console.log(value)
+        if(value){
+          this.editRoomBoySet = { title: "Edit Room Boy", button: `Edit Room Boy` }
+        } else this.editRoomBoySet = { title: "Add New Room Boy", button: `Assign as Maid` }
+      }
+    },
+    isEditingUser: {
+      handler(value){
+        if(value){
+          this.editRoomBoySet = { title: "Edit User", button: `Edit User` }
+        } else this.editRoomBoySet = { title: "Add New User", button: `Add User` }
       }
     }
   },
   methods: {
+    // HELPER AND HANDDLER
     handleUpload() {
       if (this.img) {
         this.imgURL = URL.createObjectURL(this.img)
@@ -946,173 +971,21 @@ export default defineComponent({
         1000
       )
     },
-    saveRole() {
-      if (this.submitRole == 'Edit Role') {
-        this.updateRole()
-      } else {
-        this.postRole()
-      }
-    },
-    saveUser() {
-      console.log(this.addUser)
-      if (this.addUser == 'Edit User') {
-        this.stateEdit = true
-        this.updateUser()
-      } else {
-        this.postNewUser()
-      }
-    },
-    saveRoomBoy() {
-      if (this.addRoomboy == 'Edit RoomBoy') {
-        this.updateRoomBoy()
-      } else {
-        this.postRoomBoy()
-      }
-    },
-    postRole() {
-      const data = {
-        name: this.roleName,
-        path: this.path,
-        access: {
-          showSuperAdmin: this.checkboxReaderSuperAdmin,
-          createSuperAdmin: this.chekckboxEditorSuperAdmin,
-          showAdmin: this.checkboxReaderAdmin,
-          createAdmin: this.checkboxEditorAdmin,
-          showMaid: this.checkboxReaderRoomboy,
-          createMaid: this.checkboxEditorRoomboy,
-          showSupervisor: this.checkboxReaderSupervisor,
-          createSupervisor: this.checkboxEditorSupervisor
-        }
-      }
-      let url = `access/role`
-      this.api.post(url, data, ({ status, message }) => {
-        if (status == 200) {
-          this.fetchData()
-          this.clearFieldRole()
-          this.trigger('possitive', message)
-        }
-      })
-    },
-    putIdRole(id) {
-      this.roleId = id
-    },
-    putIdUser(id, idUser) {
-      this.userId = id
-      this.roleIdUserEdit = idUser
-    },
-    updateRole() {
-      const data = {
-        name: this.roleName,
-        path: this.path,
-        access: {
-          showSuperAdmin: this.checkboxReaderSuperAdmin,
-          createSuperAdmin: this.chekckboxEditorSuperAdmin,
-          showAdmin: this.checkboxReaderAdmin,
-          createAdmin: this.checkboxEditorAdmin,
-          showMaid: this.checkboxReaderRoomboy,
-          createMaid: this.checkboxEditorRoomboy,
-          showSupervisor: this.checkboxReaderSupervisor,
-          createSupervisor: this.checkboxEditorSupervisor
-        }
-      }
-
-      let url = `access/role/${this.roleId}`
-      this.api.put(url, data, ({ status, message }) => {
-        if (status == 200) {
-          this.trigger('possitive', message)
-          this.clearFieldRole()
-          this.fetchData()
-        }
-      })
-    },
-    handleConfirm(data) {
-      this.cacheData = data
-      console.log(this.cacheData)
+    handleConfirm(ident, id, name) {
+      this.deleteData = { ident, id, name }
       this.confirmDelete = true
     },
-    editRole(row) {
-      const roleId = row.id
-      console.log(roleId)
-      this.titleCardRole = 'Edit Role'
-      this.submitRole = 'Edit Role'
-      this.newRole = true
-
-      let url = `access/helper/role/${roleId}`
-
-      this.api.get(url, ({ status, data, message }) => {
-        if (status == 200) {
-          this.roleName = data.name
-          this.path = data.defaultPath
-          this.checkboxReaderSuperAdmin = data.access.showSuperAdmin
-          this.checkboxEditorSuperAdmin = data.access.createSuperAdmin
-          this.checkboxReaderAdmin = data.access.showAdmin
-          this.checkboxEditorAdmin = data.access.createAdmin
-          this.checkboxReaderRoomboy = data.access.showMaid
-          this.checkboxEditorRoomboy = data.access.createMaid
-          this.checkboxReaderSupervisor = data.access.showSupervisor
-          this.checkboxEditorSupervisor = data.access.createSupervisor
-          this.roleId = roleId
-          this.putIdRole(this.roleId)
-          this.trigger('possitive', message)
-        }
-      })
-    },
-    deleteRole() {
-      console.log(this.cacheData)
-      let url = `access/role/${this.cacheData.id}`
-
-      this.api.delete(url, ({ status, message }) => {
-        if (status == 200) {
-          this.trigger('possitive', message)
+    sendDeletionRequest() {
+      try{
+        this.api.delete(`access/${this.deleteData.ident}/${this.deleteData.id}`, ({ message, status }) =>  {
+          if(status != 200) return this.trigger('negative', message) 
+          this.trigger('positive', message)
           this.fetchData()
-          window.location.reload()
-        }
-      })
-    },
-    addNewRole() {
-      this.newRole = true
-      this.clearFieldRole()
-    },
-    showListUser(row) {
-      this.nameRole = row.id
-      this.loading = true
-      
-      let url = `access?roleId=${this.nameRole}`
-      
-      this.api.get(url, ({ status, data }) => {
-        this.loading = false
-        
-        if (status == 200) {
-          const { listRole, listUser } = data
-          
-          this.rowsListRole = listRole.map((lr) => ({
-            id: lr.id,
-            nama: lr.name,
-            readerSuperAdmin: lr.superAdmin.reader,
-            editorSuperAdmin: lr.superAdmin.editor,
-            readerAdmin: lr.admin.reader,
-            editorAdmin: lr.admin.editor,
-            readerRoomboy: lr.roomBoy.reader,
-            editorRoomboy: lr.roomBoy.editor,
-            readerSupervisor: lr.supervisor.reader,
-            editorSupervisor: lr.supervisor.editor
-          }))
-
-          if(listUser.length > 0){
-            this.rowsListUser = listUser.map((lu) => ({
-              id: lu.id,
-              name: lu.name,
-              email: lu.email,
-              role: lu.role,
-              roomBoy: lu.isRoomBoy
-            }))
-            this.dialogListUser = true
-          }else{
-            this.trigger('negative', 'No User Assign To This Role')
-            this.dialogListUser = false
-          }
-        }
-      })
+          this.confirmDelete = false
+        })
+      }catch(err){
+        console.log(err.message)
+      }
     },
     clearFieldRole() {
       this.roleName = ''
@@ -1127,6 +1000,7 @@ export default defineComponent({
       this.checkboxEditorSupervisor = false
       this.titleCardRole = ''
       this.submitRole = ''
+      this.img = null
       this.imgURL = null
       this.name = null
       this.email = null
@@ -1136,129 +1010,8 @@ export default defineComponent({
       this.gender = null
       this.username = null
     },
-    postNewUser() {
-      const data = {
-        picture: this.img,
-        name: this.name,
-        email: this.email,
-        phone: this.numberPhone,
-        birthday: new Date(this.input),
-        nik: this.nik,
-        gender: this.gender,
-        username: this.username,
-        password: this.password,
-        roleId: parseInt(this.roleIdUser)
-      }
 
-      let url = `access/user/add`
-
-      this.api.useMultipart(true).post(url, data, ({ status, message }) => {
-        if (status == 200) {
-          this.trigger('possitve', message)
-          this.fetchData()
-        }
-      })
-    },
-    editUser(row) {
-      this.addUser = 'Edit User'
-      const userId = row.id
-      this.newUser = true
-
-      let url = `access/helper/user/${userId}/edit/0`
-
-      this.api.get(url, ({ status, data, message }) => {
-        if (status == 200) {
-          const { shownUser, shownRoles, listRoles } = data
-
-          this.optionUser = listRoles.map((lrs) => ({
-            label: lrs.name,
-            value: lrs.id
-          }))
-          this.setPrev(shownUser)
-
-          this.imgURL = shownUser.picture
-          this.name = shownUser.name
-          this.email = shownUser.email
-          this.numberPhone = shownUser.phone
-          this.input = shownUser.birthday
-          this.nik = shownUser.nik
-          this.gender = shownUser.gender
-          this.username = shownUser.username
-
-          this.checkboxReaderSuperAdminUser = shownRoles.access.showSuperAdmin
-          this.checkboxEditorSuperAdminUser = shownRoles.access.createSuperAdmin
-          this.checkboxReaderAdminUser = shownRoles.access.showAdmin
-          this.checkboxEditorAdminUser = shownRoles.access.createAdmin
-          this.checkboxReaderRoomboyUser = shownRoles.access.showMaid
-          this.checkboxEditorRoomboyUser = shownRoles.access.createMaid
-          this.checkboxReaderSupervisorUser = shownRoles.access.showSupervisor
-          this.checkboxEditorSupervisorUser = shownRoles.access.createSupervisor
-          this.user = shownRoles.name
-          this.roleIdUser = shownUser.role.id
-          this.userId = userId
-          this.putIdUser(this.userId, this.roleIdUser)
-          console.log(this.roleIdUser)
-        }
-      })
-    },
-    setPrev(data) {
-      this.prevUser = data
-    },
-    updateUser() {
-      console.log(this.prevUser)
-      let DataToUpdate = {}
-      this.name != this.prevUser.name ? (DataToUpdate['name'] = this.name) : ''
-      this.email != this.prevUser.email ? (DataToUpdate['email'] = this.email) : ''
-      this.numberPhone != this.prevUser.phone ? (DataToUpdate['phone'] = this.numberPhone) : ''
-      new Date(this.input).toISOString() != this.prevUser.birthday
-        ? (DataToUpdate['birthday'] = new Date(this.input).toISOString())
-        : ''
-      this.nik != this.prevUser.nik ? (DataToUpdate['nik'] = this.nik) : ''
-      this.gender != this.prevUser.gender ? (DataToUpdate['gender'] = this.gender) : ''
-      this.username != this.prevUser.username ? (DataToUpdate['username'] = this.username) : ''
-      this.roleIdUserEdit != this.prevUser.roleIdUserEdit
-        ? (DataToUpdate['roleId'] = this.roleIdUserEdit)
-        : ''
-
-      console.log(DataToUpdate)
-      if (this.password == this.confirmPassword) {
-        let url = `access/user/edit/${this.userId}`
-        this.api.post(url, DataToUpdate, ({ status, message }) => {
-          if (status == 200) {
-            this.trigger('positive', message)
-            this.clearFieldRole()
-          }
-        })
-      } else {
-        this.trigger('warning', message)
-      }
-    },
-    deleteUser(row) {
-      let url = `access/user/${row.id}`
-
-      this.api.delete(url, ({ status, message }) => {
-        if (status == 200) {
-          this.trigger('possitive', message)
-          this.fetchData()
-        }
-      })
-    },
-    postRoomBoy() {
-      const data = {
-        userId: this.roomBoy.value,
-        shift: this.workShift.value,
-        departmentId: this.department.value,
-        aliases: this.alias
-      }
-
-      let url = `access/rb`
-      this.api.post(url, data, ({ status, message }) => {
-        if (status == 200) {
-          this.trigger('possitive', message)
-          this.fetchData()
-        }
-      })
-    },
+    // MAIN PAGE
     fetchData() {
       this.loading = true
 
@@ -1302,76 +1055,140 @@ export default defineComponent({
         console.log(this.rowsListRole)
       })
     },
-    newUserDialog() {
-      this.newUser = true
-      this.putDataUser()
-    },
-    newRoomBoyDialog() {
-      this.newRoomBoy = true
-      this.putDataRoomBoy()
-    },
-    editRoomboy() {
-      this.newRoomBoy = true
-      this.titleRoomBoy = 'Edit Room Boy'
-      this.addRoomboy = 'Edit Room Boy'
-      this.putDataRoomBoy()
-    },
-    editDataRoomBoy() {
-      let url = `access/helper/room-boy/${this.roleIdRoomBoy}/edit`
-
+    showListUser(row) {
+      this.nameRole = row.id
+      this.loading = true
+      
+      let url = `access?roleId=${this.nameRole}`
+      
       this.api.get(url, ({ status, data }) => {
+        this.loading = false
+        
         if (status == 200) {
-          const { listMaid, listShift, listDepartment } = data
-
-          this.optionRoomBoy = listMaid.map((lu) => ({
-            label: lu.user.name,
-            value: lu.id,
-            email: lu.email,
-            role: lu.role.name,
-            picture: lu.picture
+          const { listRole, listUser } = data
+          
+          this.rowsListRole = listRole.map((lr) => ({
+            id: lr.id,
+            nama: lr.name,
+            readerSuperAdmin: lr.superAdmin.reader,
+            editorSuperAdmin: lr.superAdmin.editor,
+            readerAdmin: lr.admin.reader,
+            editorAdmin: lr.admin.editor,
+            readerRoomboy: lr.roomBoy.reader,
+            editorRoomboy: lr.roomBoy.editor,
+            readerSupervisor: lr.supervisor.reader,
+            editorSupervisor: lr.supervisor.editor
           }))
 
-          this.optionShift = listShift.map((ls) => ({
-            label: ls.label,
-            value: ls.id
-          }))
-
-          this.optionDepartment = listDepartment.map((ld) => ({
-            label: ld.longDesc,
-            value: ld.id
-          }))
+          if(listUser.length > 0){
+            this.rowsListUser = listUser.map((lu) => ({
+              id: lu.id,
+              name: lu.name,
+              email: lu.email,
+              role: lu.role,
+              roomBoy: lu.isRoomBoy
+            }))
+            this.dialogListUser = true
+          }else{
+            this.trigger('negative', 'No User Assign To This Role')
+            this.dialogListUser = false
+          }
         }
       })
     },
-    putDataRoomBoy() {
-      let url = `access/helper/room-boy/${this.roleIdRoomBoy}/add`
 
-      this.api.get(url, ({ status, data }) => {
+    // ADD OR EDIT ROLE
+    saveRole() {
+      if (this.submitRole == 'Edit Role') {
+        this.updateRole()
+      } else {
+        this.postRole()
+      }
+    },
+    postRole() {
+      const data = {
+        name: this.roleName,
+        path: this.path,
+        access: {
+          showSuperAdmin: this.checkboxReaderSuperAdmin,
+          createSuperAdmin: this.chekckboxEditorSuperAdmin,
+          showAdmin: this.checkboxReaderAdmin,
+          createAdmin: this.checkboxEditorAdmin,
+          showMaid: this.checkboxReaderRoomboy,
+          createMaid: this.checkboxEditorRoomboy,
+          showSupervisor: this.checkboxReaderSupervisor,
+          createSupervisor: this.checkboxEditorSupervisor
+        }
+      }
+      let url = `access/role`
+      this.api.post(url, data, ({ status, message }) => {
         if (status == 200) {
-          const { listUser, listShift, listDepartment } = data
-
-          this.optionRoomBoy = listUser.map((lu) => ({
-            label: lu.name,
-            value: lu.id,
-            email: lu.email,
-            role: lu.role.name,
-            picture: lu.picture
-          }))
-
-          this.optionShift = listShift.map((ls) => ({
-            label: ls.label,
-            value: ls.id
-          }))
-
-          this.optionDepartment = listDepartment.map((ld) => ({
-            label: ld.longDesc,
-            value: ld.id
-          }))
+          this.fetchData()
+          this.clearFieldRole()
+          this.trigger('possitive', message)
         }
       })
     },
+    addNewRole() {
+      this.newRole = true
+      this.clearFieldRole()
+    },
+    updateRole() {
+      const data = {
+        name: this.roleName,
+        path: this.path,
+        access: {
+          showSuperAdmin: this.checkboxReaderSuperAdmin,
+          createSuperAdmin: this.chekckboxEditorSuperAdmin,
+          showAdmin: this.checkboxReaderAdmin,
+          createAdmin: this.checkboxEditorAdmin,
+          showMaid: this.checkboxReaderRoomboy,
+          createMaid: this.checkboxEditorRoomboy,
+          showSupervisor: this.checkboxReaderSupervisor,
+          createSupervisor: this.checkboxEditorSupervisor
+        }
+      }
+
+      let url = `access/role/${this.roleId}`
+      this.api.put(url, data, ({ status, message }) => {
+        if (status == 200) {
+          this.trigger('possitive', message)
+          this.clearFieldRole()
+          this.fetchData()
+        }
+      })
+    },
+    editRole(row) {
+      const roleId = row.id
+      console.log(roleId)
+      this.titleCardRole = 'Edit Role'
+      this.submitRole = 'Edit Role'
+      this.newRole = true
+
+      let url = `access/helper/role/${roleId}`
+
+      this.api.get(url, ({ status, data, message }) => {
+        if (status == 200) {
+          this.roleName = data.name
+          this.path = data.defaultPath
+          this.checkboxReaderSuperAdmin = data.access.showSuperAdmin
+          this.checkboxEditorSuperAdmin = data.access.createSuperAdmin
+          this.checkboxReaderAdmin = data.access.showAdmin
+          this.checkboxEditorAdmin = data.access.createAdmin
+          this.checkboxReaderRoomboy = data.access.showMaid
+          this.checkboxEditorRoomboy = data.access.createMaid
+          this.checkboxReaderSupervisor = data.access.showSupervisor
+          this.checkboxEditorSupervisor = data.access.createSupervisor
+          this.roleId = roleId
+          this.putIdRole(this.roleId)
+          this.trigger('possitive', message)
+        }
+      })
+    },
+    
+    // ADD OR EDIT USER
     putDataUser() {
-      let url = `access/helper/user/0/add/${this.roleIdUser}`
+      let url = `access/helper/user/0/add/${this.roleIdUser || this.nameRole}`
 
       this.api.get(url, ({ status, data }) => {
         if (status == 200) {
@@ -1382,6 +1199,7 @@ export default defineComponent({
             value: lrs.id
           }))
 
+          if(!this.user) this.user = { label: shownRoles.name, value: shownRoles.id }
           this.checkboxReaderSuperAdminUser = shownRoles.access.showSuperAdmin
           this.checkboxEditorSuperAdminUser = shownRoles.access.createSuperAdmin
           this.checkboxReaderAdminUser = shownRoles.access.showAdmin
@@ -1392,7 +1210,206 @@ export default defineComponent({
           this.checkboxEditorSupervisorUser = shownRoles.access.createSupervisor
         }
       })
-    }
+    },
+    saveUser() {
+      if (this.isEditingUser) {
+        this.stateEdit = true
+        this.updateUser()
+      } else {
+        this.postNewUser()
+      }
+    },
+    postNewUser() {
+      const data = {
+        picture: this.img,
+        name: this.name,
+        email: this.email,
+        phone: this.numberPhone,
+        birthday: new Date(this.input),
+        nik: this.nik,
+        gender: this.gender,
+        username: this.username,
+        password: this.password,
+        roleId: parseInt(this.roleIdUser)
+      }
+      if(this.password != this.confirmPassword) return this.trigger('warning', 'Password didnt match')
+      let url = `access/user/add`
+      this.api.useMultipart(true).post(url, data, ({ status, message }) => {
+        if (status == 200) {
+          this.newUser = false
+          this.trigger('positive', message)
+          this.clearFieldRole()
+          this.fetchData()
+        }else this.trigger('negative', message)
+      })
+    },
+    updateUser() {
+      let DataToUpdate = {}
+      this.name != this.prevUser.name ? (DataToUpdate['name'] = this.name) : ''
+      this.email != this.prevUser.email ? (DataToUpdate['email'] = this.email) : ''
+      this.numberPhone != this.prevUser.phone ? (DataToUpdate['phone'] = this.numberPhone) : ''
+      new Date(this.input).toISOString() != this.prevUser.birthday ? (DataToUpdate['birthday'] = new Date(this.input).toISOString()) : ''
+      this.nik != this.prevUser.nik ? (DataToUpdate['nik'] = this.nik) : ''
+      this.gender != this.prevUser.gender ? (DataToUpdate['gender'] = this.gender) : ''
+      this.username != this.prevUser.username ? (DataToUpdate['username'] = this.username) : ''
+      this.user.value != this.prevUser.roleIdUserEdit ? (DataToUpdate['roleId'] = this.user.value) : ''
+      this.img ? DataToUpdate['picture'] = this.img : '' 
+
+      let url = `access/user/edit/${this.userId}`
+      this.api.useMultipart(true).post(url, DataToUpdate, ({ status, message }) => {
+        if (status == 200) {
+          this.newUser = false
+          this.trigger('positive', message)
+          this.clearFieldRole()
+          this.fetchData()
+        }
+      })
+    },
+
+    newUserDialog() {
+      this.newUser = true
+      this.isEditingUser = false
+      this.putDataUser()
+    },
+
+    editUser(row) {
+      this.newUser = true
+      this.isEditingUser = true
+      const userId = row.id
+
+      let url = `access/helper/user/${userId}/edit/0`
+      this.api.get(url, ({ status, data, message }) => {
+        if (status == 200) {
+          const { shownUser, shownRoles, listRoles } = data
+
+          this.optionUser = listRoles.map((lrs) => ({
+            label: lrs.name,
+            value: lrs.id
+          }))
+          this.setPrev(shownUser)
+
+          this.imgURL = shownUser.picture
+          this.name = shownUser.name
+          this.email = shownUser.email
+          this.numberPhone = shownUser.phone
+          this.input = shownUser.birthday.split('T')[0]
+          this.nik = shownUser.nik
+          this.gender = shownUser.gender
+          this.username = shownUser.username
+
+          this.checkboxReaderSuperAdminUser = shownRoles.access.showSuperAdmin
+          this.checkboxEditorSuperAdminUser = shownRoles.access.createSuperAdmin
+          this.checkboxReaderAdminUser = shownRoles.access.showAdmin
+          this.checkboxEditorAdminUser = shownRoles.access.createAdmin
+          this.checkboxReaderRoomboyUser = shownRoles.access.showMaid
+          this.checkboxEditorRoomboyUser = shownRoles.access.createMaid
+          this.checkboxReaderSupervisorUser = shownRoles.access.showSupervisor
+          this.checkboxEditorSupervisorUser = shownRoles.access.createSupervisor
+          this.user = shownRoles.name
+          this.roleIdUser = shownUser.role.id
+          this.userId = userId
+          this.putIdUser(this.userId, this.roleIdUser)
+          console.log(this.roleIdUser)
+        }
+      })
+    },
+
+    // ADD OR EDIT ROOM BOY
+    saveRoomBoy() {
+      if (this.isEditingRoomBoy) {
+        this.updateRoomBoy()
+      } else {
+        this.postRoomBoy()
+      }
+    },
+    putIdRole(id) {
+      this.roleId = id
+    },
+    putIdUser(id, idUser) {
+      this.userId = id
+      this.roleIdUserEdit = idUser
+    },
+    setPrev(data) {
+      this.prevUser = data
+    },
+    sendRoomBoyRequest() {
+      const data = {
+        userId: this.roomBoy.value,
+        shift: this.workShift.value,
+        departmentId: this.department.value,
+        aliases: this.alias
+      }
+      if(this.isEditingRoomBoy){
+        delete data.userId
+        this.api.put(`access/rb/${this.roomBoy.value}`, data, ({ status, message  }) => {
+          if(status != 200) return this.trigger('negative', message)
+          this.newRoomBoy = false
+          this.trigger('positive', message)
+          this.fetchData()
+        })
+      }else{
+        this.api.post('access/rb', data, ({ status, message }) => {
+          if(status != 200) return this.trigger('negative', message)
+          this.newRoomBoy = false
+          this.trigger('positive', message)
+          this.fetchData()
+        })
+      }
+    },
+    newRoomBoyDialog() {
+      console.log('etagdhsag')
+      this.newRoomBoy = true
+      this.isEditingRoomBoy = false
+      this.setDataRoomBoy()
+    },
+    editRoomboy() {
+      this.newRoomBoy = true
+      this.isEditingRoomBoy = true
+      this.setDataRoomBoy('edit')
+    },
+    setDataRoomBoy(act) {
+      if(act != "edit") act = "add"
+      let url = `access/helper/room-boy/0/${act}`
+
+      this.api.get(url, ({ status, data }) => {
+        if (status == 200) {
+          const { listUser, listShift, listDepartment , listMaid} = data
+          if(listMaid){
+            this.optionRoomBoy = listMaid.map(maid => ({
+              label: `${maid.user.name} | ${maid.aliases}`,
+              value: maid.id,
+              email: maid.user.email,
+              picture: maid.user.picture,
+              role: maid.user.role.name,
+              aliases: maid.aliases,
+              departmentId: maid.departmentId,
+              shiftId: maid.shiftId
+            }))
+          }else{
+            this.optionRoomBoy = listUser.map((lu) => ({
+              label: lu.name,
+              value: lu.id,
+              email: lu.email,
+              role: lu.role.name,
+              picture: lu.picture
+            }))
+          }
+
+          this.optionShift = listShift.map((ls) => ({
+            label: ls.label,
+            value: ls.id
+          }))
+
+          this.optionDepartment = listDepartment.map((ld) => ({
+            label: ld.longDesc,
+            value: ld.id
+          }))
+
+          //Set Default
+          this.roomBoy =  this.optionRoomBoy[0]
+        }
+      })
+    },
   }
 })
 </script>

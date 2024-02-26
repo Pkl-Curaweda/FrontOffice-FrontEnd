@@ -452,7 +452,6 @@ export default defineComponent({
       deep: true,
       handler(newDate) {
         this.fetchData()
-        console.log(newDate)
       }
     },
     filterDisplay(newOption) {
@@ -494,7 +493,6 @@ export default defineComponent({
     },
     date(date) {
       this.datePickerArrival = date.replace(/\//g, '-')
-      console.log(this.datePickerArrival)
 
       this.fetchData()
       this.searchName()
@@ -578,7 +576,6 @@ export default defineComponent({
       this.api.get(url, ({ status, data }) => {
         this.loading = false
         if (status == 200) {
-          console.log(this.series)
           const { graph, lostFounds } = data // Ambil objek graph dari respons
           // this.formatData(lostFounds)
           this.found = graph.found // Isi nilai found50
@@ -605,7 +602,6 @@ export default defineComponent({
             action: ['edit', 'delete'],
             dialogActive: false
           }))
-          console.log(this.rows)
         }
       })
     }

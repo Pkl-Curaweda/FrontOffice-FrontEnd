@@ -633,7 +633,7 @@
                   outline
                   color="primary"
                 />
-                <q-btn @click="postEditArr()" no-caps label="Change Room" color="primary" />
+                <q-btn @click="postEditArr()" no-caps label="Change Price" color="primary" />
               </q-card-actions>
             </q-form>
           </q-card>
@@ -739,7 +739,7 @@
                     @click="postEditRoom"
                     v-close-popup="this.roomSelect != null"
                     no-caps
-                    label="Change Status"
+                    label="Edit Room"
                     color="primary"
                   />
                 </q-card-actions>
@@ -886,7 +886,6 @@ export default defineComponent({
     },
     handleConfirm(data) {
       this.cacheData = data
-      console.log(this.cacheData)
       this.confirmDelete = true
     },
     handleConfirmDetail() {
@@ -914,14 +913,12 @@ export default defineComponent({
     handleUpload() {
       if (this.img) {
         this.imgURL = URL.createObjectURL(this.img)
-        this.trigger('positive', this.imgURL)
       }
     },
     checkedCode(type) {
       if (type === 'RO') {
         this.isRoSelected = true
         this.isRbSelected = false
-        console.log(type)
       } else if (type === 'RB') {
         this.isRbSelected = true
         this.isRoSelected = false
@@ -986,7 +983,6 @@ export default defineComponent({
             })
           })
           this.roomTypes = roomTypes.map((item) => ({ label: item.id }))
-          console.log(this.roomTypes)
           this.arrangment = arrangment.map((item) => ({ label: item.id }))
           this.listroom = list
           // const index = this.listroom.indexOf(0)
@@ -995,30 +991,21 @@ export default defineComponent({
           //   index = this.listroom.indexOf(0, index + 1)
           // }
 
-          console.log(this.listroom.length)
-          console.log(index)
-
-          // console.log(this.listroom.length - index - 2)
         }
       })
     },
     editRoom(data) {
       this.rowdataSelect = data
-      console.log(this.rowdataSelect)
       this.descriptionInput = this.rowdataSelect.description.data
       this.roomNoInput = this.rowdataSelect.roomNo.data
       this.typeRoomSelect = this.rowdataSelect.roomType.data
       // this.img = this.rowdataSelect.image.data
-      // console.log(this.rowdataSelect.image.data)
       this.floorInput = this.rowdataSelect.floor.data
       this.editroom = true
     },
     postEditRoom() {
       try {
-        console.log(this.typeRoomSelect)
-        const pictureExist =
-          this.img != null ? { image: this.img } : { picture: this.rowdataSelect.image.data }
-        console.log(pictureExist)
+        const pictureExist = this.img != null ? { picture: this.img } : { image: this.rowdataSelect.image.data }
         // if (this.img){}
         this.api.useMultipart(true).post(
           `room/room`,
@@ -1062,7 +1049,8 @@ export default defineComponent({
               this.trigger('positive', message)
               this.detailSelect = null
               this.rateInput = null
-              window.location.reload()
+              this.editArr = false
+              this.getDataRoom()
             } else {
               this.trigger('negative', message)
             }
@@ -1091,6 +1079,8 @@ export default defineComponent({
               this.roomNoInput = null
               this.img = null
               this.descriptionInput = null
+              this.addroom = false
+              this.getDataRoom()
             } else {
               this.trigger('negative', message)
             }
@@ -1124,6 +1114,7 @@ export default defineComponent({
                 this.trigger('positive', message)
                 this.getDataRoom()
                 this.clearData()
+                this.addtype = false
               }
             }
           )
@@ -1151,6 +1142,7 @@ export default defineComponent({
                 this.getDataRoom()
                 this.trigger('positive', message)
                 this.clearData()
+                this.addArr = false
               }
             }
           )
@@ -1177,12 +1169,12 @@ export default defineComponent({
           if (status == 200) {
             this.trigger('positive', message)
             this.getDataRoom()
+            this.addtype = false
           }
         }
       )
     },
     deleteDataRoom() {
-      // console.log(data.roomNo.data)
       try {
         const url = `room/room/${this.cacheData.roomNo.data}`
         this.api.delete(url, ({ message, status }) => {

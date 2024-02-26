@@ -641,20 +641,16 @@ export default defineComponent({
       }
     },
     ratingcheck(i) {
-      // console.log(ratingcolor)
-      console.log('total rating' + i)
       let listRating = []
       for (let rating = 1; rating <= 5; rating++) {
         listRating.push({
           color: rating <= i ? 'yellow-7' : 'light-green-3'
         })
-        console.log(listRating)
       }
       this.ratingcolor = listRating
       this.currentRating = i
     },
     showhistory(state) {
-      console.log(state)
       this.state = state
       this.fetchData()
     },
@@ -731,7 +727,6 @@ export default defineComponent({
 
         if (status == 200) {
           const { listTask, listStatus, listRoom } = data
-          console.log(listTask)
           this.options = listStatus.map((data) => ({
             label: data.longDescription,
             value: data.shortDescription
@@ -751,8 +746,6 @@ export default defineComponent({
           }))
 
           this.optionsRoom = listRoom.map((item) => ({label: item.id}))
-          // console.log(this.option)
-          console.log(this.optionsRoom)
           // this.optionsRoom = forEach(1)
           // const roomNo = this.data.map((item) => item.roomNo.data)
           // this.roomNo = roomNo
@@ -807,7 +800,6 @@ export default defineComponent({
             this.nextnotify('positive', message)
             const { room, maid } = data.list
             this.choosenRoom = data.choosenRoom
-            console.log(this.choosenRoom)
             this.listRoomNo = room.map((item) => ({ label: item.id }))
             this.listMaid = maid
           }
@@ -818,7 +810,6 @@ export default defineComponent({
     },
     getDetailMaid() {
       try {
-        console.log(this.maidSelect)
         this.api.get(
           `spv/helper/add?roomNo=0&roomBoy=${this.maidSelect.value}`,
           ({ message, status, data }) => {

@@ -282,7 +282,6 @@ export default defineComponent({
         url += `&disOpt=${this.filterDisplay}`
       }
       if (this.pageOpt) {
-        console.log(this.sumPagesOpt, this.pageOpt)
         url += `&page=${this.pageOpt}`
       }
 
@@ -348,9 +347,7 @@ export default defineComponent({
           taxSerive: { data: rp.taxService.taxed, style: {} }
         })
       })
-      // console.log(this.data, list)
       this.data = list
-      // console.log(this.data)
     },
     pageref() {
       this.$router.push({

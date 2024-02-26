@@ -360,7 +360,6 @@ export default defineComponent({
     formatData(raw = []) {
       const list = []
       raw.forEach((fp) => {
-        console.log(fp)
         list.push({
           bg_color: fp.roomStatus.rowColor,
           text_color: fp.roomStatus.textColor

@@ -267,9 +267,7 @@ export default defineComponent({
           taxSerive: { data: rp.taxService.taxed, style: {} }
         })
       })
-      console.log(this.data, list)
       this.data = list
-      console.log(this.data)
     }
   }
 })

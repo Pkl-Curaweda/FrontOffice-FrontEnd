@@ -20,7 +20,6 @@ myAxios.interceptors.response.use(
       if (!err.config.sent) {
         err.config.sent = true
         const token = await refreshToken()
-        console.log(token)
         if (token != null) {
           err.config.headers = {
             ...err.config.headers,

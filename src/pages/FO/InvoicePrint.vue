@@ -288,7 +288,6 @@ export default defineComponent({
 
       if (resvId === 0 || resvRoomId === 0) {
         this.loading = false
-        console.log(resvId)
         return
       }
 
@@ -318,9 +317,7 @@ export default defineComponent({
           Amount: { data: ip.amount, style: {} }
         })
       })
-      console.log(this.data, list)
       this.data = list
-      console.log(this.data)
     }
   }
 })

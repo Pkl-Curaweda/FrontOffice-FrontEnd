@@ -123,7 +123,7 @@
               </q-table>
             </div>
           </div>
-          <div class="col-grow">
+          <div class="col-grow" >
             <div class="q-pa-md q-mb-md bg-white rounded shadow-3">
               <q-carousel
                 v-model="slide"
@@ -133,12 +133,13 @@
                 arrows
                 style="height: 100%"
               >
-                <q-carousel-slide name="style">
+                <q-carousel-slide name="style" >
                   <h5 class="text-bold q-ma-none">Reservation Statistics</h5>
                   <div class="q-mt-md">
                     <apexchart
-                      style="padding: 0 20px"
+                      style="padding: 0 20px; "
                       type="bar"
+                      height="400"
                       :options="reservationOption"
                       :series="reservationSeries"
                       ref="resevationChart"
@@ -151,54 +152,11 @@
                     <apexchart
                       style="padding: 0 20px"
                       type="bar"
+                      height="400"
                       :options="usageOption"
                       :series="usageSeries"
                       ref="usageChart"
                     ></apexchart>
-                    <div class="row justify-center" style="gap: 8px">
-                      <q-list class="row" style="gap: 5px">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="#feeb74"
-                          viewBox="0 0 256 256"
-                        >
-                          <path
-                            d="M232,128A104,104,0,1,1,128,24,104.13,104.13,0,0,1,232,128Z"
-                          ></path>
-                        </svg>
-                        <p class="text-xs q-my-auto">Low</p>
-                      </q-list>
-                      <q-list class="row" style="gap: 5px">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="#77ce7f"
-                          viewBox="0 0 256 256"
-                        >
-                          <path
-                            d="M232,128A104,104,0,1,1,128,24,104.13,104.13,0,0,1,232,128Z"
-                          ></path>
-                        </svg>
-                        <p class="text-xs q-my-auto">Medium</p>
-                      </q-list>
-                      <q-list class="row" style="gap: 5px">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="#0194f3"
-                          viewBox="0 0 256 256"
-                        >
-                          <path
-                            d="M232,128A104,104,0,1,1,128,24,104.13,104.13,0,0,1,232,128Z"
-                          ></path>
-                        </svg>
-                        <p class="text-xs q-my-auto">High</p>
-                      </q-list>
-                    </div>
                   </div>
                 </q-carousel-slide>
               </q-carousel>
@@ -206,7 +164,13 @@
             <div class="q-pa-md bg-white rounded shadow-3 col-grow">
               <h5 class="text-bold q-ma-none">Housekeeping</h5>
               <div class="q-mt-md">
-                <BarChart />
+                <apexchart
+                  type="bar"
+                  height="200"
+                  ref="barChart"
+                  :options="chartOptions"
+                  :series="series"
+                ></apexchart>
               </div>
             </div>
           </div>
@@ -224,6 +188,51 @@ import { defineComponent, ref } from 'vue'
 import MessengerFloat from 'src/components/MessengerFloat.vue'
 import { getCurrentTime } from 'src/utils/time'
 // import frontoffice_routes from 'src/router/frontoffice.router'
+const chartOptions = {
+  chart: {
+    type: 'bar',
+    height: 430
+  },
+  plotOptions: {
+    bar: {
+      horizontal: true,
+      dataLabels: {
+        position: 'top'
+      }
+    }
+  },
+  dataLabels: {
+    enabled: true,
+    offsetX: -6,
+    style: {
+      fontSize: '12px',
+      colors: ['#fff']
+    }
+  },
+  series: [ 67, 89 ],
+  stroke: {
+    show: true,
+    width: 1,
+    colors: ['#fff']
+  },
+  tooltip: {
+    shared: true,
+    intersect: false
+  },
+  xaxis: {
+    categories: [
+      'Vacant Clean',
+      'Vacant Clean Unchecked',
+      'Vacant Dirty',
+      'Occupied Clean',
+      'Occupied Dirty'
+    ]
+  }
+}
+
+const series = ref([
+  { data: [] }
+])
 
 const usageOptionEntry = ref({
   chart: {
@@ -239,12 +248,11 @@ const usageOptionEntry = ref({
   dataLabels: {
     enabled: false
   },
-  series: [],
   xaxis: {
     categories: []
   },
   fill: {
-    colors: []
+    colors: ['#0194F3', '#77CE7F', '#FEEB74']
   },
   legend: {
     show: true, // Menampilkan legenda
@@ -254,11 +262,11 @@ const usageOptionEntry = ref({
 
 const reservationOptionEntry = ref({
   chart: {
-    type: 'bar'
+    type: 'bar',
   },
   responsive: [
     {
-      breakpoint: 80
+      breakpoint: 900
     }
   ],
   plotOptions: {
@@ -277,13 +285,9 @@ const reservationOptionEntry = ref({
     colors: ['transparent']
   },
   xaxis: {
-    categories: []
-  },
-  series: [
-    { name: undefined, data: undefined },
-    { name: undefined, data: undefined },
-    { name: undefined, data: undefined }
-  ],
+    categories: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+   },
+  label: [ "Arrival", "Departure", "Reservation"],
   fill: {
     colors: ['#0194F3', '#77CE7F', '#FEEB74']
   },
@@ -311,6 +315,8 @@ export default defineComponent({
       leftDrawerOpen,
       currentClock,
       currentDate,
+      series,
+      chartOptions,
       columns: [
         { name: 'ResNo', label: 'ResNo', align: 'left', field: 'ResNo' },
         { name: 'GuestName', label: 'GuestName', align: 'left', field: 'GuestName' },
@@ -320,7 +326,7 @@ export default defineComponent({
     ],
       slide,
       reservationEnrty: ref([]),
-      usageEntry: ref([]),
+      usageEntry: ref([ 90, 90]),
       reservationOptionEntry,
       usageOptionEntry
     }
@@ -351,6 +357,8 @@ export default defineComponent({
   },
   mounted() {
     this.getValueDashboard()
+    this.getStatistic()
+    this.getChart()
   },
   components: { SideBar, ProfileFloat, MessengerFloat },
   created() {
@@ -395,41 +403,6 @@ export default defineComponent({
         if (status == 200) {
           this.formatData(data.resv.reservation)
           const { currData, resvChart, hkChart } = data
-          const listOfReservationCategory = [],
-          listOfReservationSeries = {
-            arrival: { name: 'Arrival', data: [] },
-            departure: { name: 'Departure', data: [] },
-            occupancy: { name: 'Occupancy', data: [] }
-          }
-          
-          const listOfUsageCategory = [], listOfUsageSeries =[]
-          Object.values(resvChart).forEach((chart) => {
-            listOfReservationCategory.push(chart.ident)
-            listOfReservationSeries.arrival.data.push(chart.nw)
-            listOfReservationSeries.departure.data.push(chart.ci)
-            listOfReservationSeries.occupancy.data.push(chart.co)
-          })
-          
-          for (let usage of hkChart) {
-            console.log(usage)
-            listOfUsageCategory.push(usage.label)
-            listOfUsageSeries.push(usage.value)
-          }
-          
-          // USAGE CHART
-          this.usageOption.series = listOfUsageSeries
-          this.usageOption.xaxis.categories = listOfUsageCategory
-
-          // RESERATION CHART
-          this.reservationOption.series = Object.values(listOfReservationSeries)
-          this.reservationOption.xaxis.categories = listOfReservationCategory
-          
-          console.log(this.usageOption.series, this.reservationOption.series)
-          // this.$refs.reservationChart.refresh()
-          // this.$refs.usageChart.refresh()
-          // REFRESH APEXCHART
-          this.$refs.reservationChart.updateSeries(this.reservationOption.series)
-          this.$refs.usageChart.updateSeries(this.usageOption.series)
           
           // this.$refs.reservationOption.xaxis.categories = listOfReservationCategory
 
@@ -455,6 +428,59 @@ export default defineComponent({
       })
 
       this.data = list
+    },
+    getStatistic() {
+      this.api.get(`dashboard`, ({ data, status, message }) => {
+        if (status == 200) {
+          const { hk } = data
+          this.series = [
+            {
+              data: [hk.vc, hk.vcu, hk.vd, hk.oc, hk.od]
+            }
+          ]
+          this.$refs.barChart.updateSeries(this.series)
+        }
+      })
+    },
+    getChart() {
+      this.api.get('dashboard', ({ data, status, message }) => {
+        if(status != 200) return
+        const { hkChart, resvChart } = data
+        let listOfUsageCategory = [], listOfUsageSeries =[], listOfReservationCategory = [], listOfReservationSeries = {
+            arrival: { name: 'Arrival', data: [] },
+            departure: { name: 'Departure', data: [] },
+            occupancy: { name: 'Occupancy', data: [] }
+        }
+        Object.values(resvChart).forEach((chart) => {
+            listOfReservationCategory.push(chart.ident)
+            listOfReservationSeries.arrival.data.push(chart.nw)
+            listOfReservationSeries.departure.data.push(chart.ci)
+            listOfReservationSeries.occupancy.data.push(chart.co)
+          })
+          
+          for (let usage of hkChart) {
+            console.log(usage)
+            listOfUsageCategory.push(usage.label)
+            listOfUsageSeries.push(usage.value)
+          }
+
+          // USAGE CHART
+          this.usageSeries = [{ data: listOfUsageSeries }]
+          this.usageOption.xaxis.categories = listOfUsageCategory
+
+          // RESERATION CHART
+          const reservationArrayChart = Object.values(listOfReservationSeries)
+          this.reservationSeries = reservationArrayChart
+          this.reservationOption.xaxis.categories = listOfReservationCategory
+          
+          console.log(this.usageSeries, this.reservationSeries)
+          // this.$refs.reservationChart.refresh()
+          // this.$refs.usageChart.refresh()
+
+          // REFRESH APEXCHART
+          this.$refs.reservationChart.updateSeries(this.reservationSeries)
+          this.$refs.usageChart.updateSeries(this.usageSeries)
+      })
     }
   }
 })

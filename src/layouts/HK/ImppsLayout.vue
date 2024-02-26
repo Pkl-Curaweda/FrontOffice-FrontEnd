@@ -111,7 +111,6 @@ export default defineComponent({
     getNotif() {
       let url = `notif/read`
       this.notifNumber > 0 ? (this.notifNumber = 0) : ''
-      console.log(this.notif.length)
       this.api.post(url, {}, () => {})
     },
     fetchData() {
@@ -124,7 +123,6 @@ export default defineComponent({
             time: nf.time
           }))
 
-          console.log(this.notif)
         }
       })
     }

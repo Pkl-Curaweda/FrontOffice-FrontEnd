@@ -181,8 +181,6 @@ export default defineComponent({
   watch: {
     selectedOption(newVal) {
       this.selectedBank = newVal
-      console.log('method payment ' + this.selectedBank)
-      console.log('method payment ' + this.selectedMethod)
     },
     includeTax() {
       this.calculateTotal()
@@ -200,7 +198,6 @@ export default defineComponent({
   methods: {
     formatRupiah() {
       let number = this.paidmmount;
-      console.log(number)
       this.paidmmount = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(number);
     },
     remainderpay() {
@@ -226,9 +223,7 @@ export default defineComponent({
             ({ status, data, message }) => {
               if (status === 200) {
                 this.loading = false
-                console.log(status)
                 this.trigger('positive', message)
-                console.log('Data berhasil diperbarui:', data)
                 this.$nextTick(() => {
                   this.trigger('ongoing', 'loading')
                   this.redirectpayment(true)
@@ -269,7 +264,6 @@ export default defineComponent({
       this.total = this.priceBook.reduce((accumulator, currentValue) => {
         return accumulator + parseFloat(currentValue.amount) // Mengonversi ke float sebelum penambahan
       }, 0)
-      console.log(this.total)
       if (this.includeTax) {
         this.total += this.DPP
       }
@@ -299,11 +293,9 @@ export default defineComponent({
       // const { currentResvId, currentRoomResvId } = this.$ResvStore
       const { resvId, resvRoomId } = this.$route.params
       const { method } = this.$route.query
-      console.log(method)
 
       // const { selectedbank, selectedmethod } = this.$ResvStore
       // this.selectedBank = selectedbank
-      // console.log(this.selectedBank)
       this.selectedBank = method
 
       // if (this.selectedBank != null && this.selectedBank != '') {
@@ -315,7 +307,6 @@ export default defineComponent({
               this.priceBook = invoices
 
               this.total = total
-              console.log(this.priceBook)
               this.DPP = data.tax
               this.calculateTotal()
               this.data = invoices.rate
@@ -343,7 +334,6 @@ export default defineComponent({
           uniqueId: { data: inv.uniqueId, style: {} }
         })
       })
-      console.log(list)
       this.data = list
     },
     trigger(type, txt) {

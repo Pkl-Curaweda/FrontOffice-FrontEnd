@@ -188,7 +188,6 @@ export default defineComponent({
     },
     fetchData() {
       this.loading = true
-      console.log(this.sortingModel)
       switch (this.sortingModel) {
         case 'Extra Bed':
           this.latestArt = 110
@@ -207,7 +206,6 @@ export default defineComponent({
 
       let url = `amenities/${this.latestArt}?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
 
-      console.log(url)
 
       const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
       if (DateArrival !== undefined && DateArrival !== '') {
@@ -219,7 +217,6 @@ export default defineComponent({
         url += `&to=${DateDeparture}` // Ganti 'arrival' dengan 'departure'
       }
 
-      console.log(this.sortingModel)
 
       this.api.get(url, ({ status, data }) => {
         this.loading = false

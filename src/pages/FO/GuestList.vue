@@ -600,7 +600,6 @@ export default defineComponent({
             }
           ],
           onOptionChange: (val) => {
-            // console.log(val.value)
             if (val?.value == 'King bed')
               this.filterSortOrder = { col: 'BType', val: 'room+bedSetup+KING' }
             else if (val?.value == 'Twin bed')
@@ -737,10 +736,8 @@ export default defineComponent({
     handletoggle(data, state) {
       const roomNo = data['RmNo'].data
       this.datares = data
-      console.log(this.datares)
       this.roomno = roomNo
 
-      console.log(data)
 
       if (state == true) {
         this.dialogeditroom = true
@@ -775,7 +772,6 @@ export default defineComponent({
       const resvId = this.datares['ResNo'].data
       const roomNo = this.datares['ResRoomNo'].data
 
-      // console.log(resvId, roomNo)
       const note = {
         request: this.waitingnote
       }
@@ -786,7 +782,6 @@ export default defineComponent({
           note,
           ({ data, status, message }) => {
             if (status === 200) {
-              // console.log(data)
               this.trigger('positive', message)
               this.fetchData()
             }
@@ -812,7 +807,6 @@ export default defineComponent({
           ({ status, data, message }) => {
             if (status === 200) {
               this.trigger('positive', message)
-              // console.log(data)
               this.fetchData()
             } else {
               this.trigger('negative', message)
@@ -824,17 +818,12 @@ export default defineComponent({
       }
     },
     showhistory(state) {
-      // console.log(state)
       this.state = state
       this.fetchData()
     },
     waitinglist(data, log, state) {
       const roomNo = data['RmNo'].data
-      // console.log(roomNo)
       this.roomno = roomNo
-      console.log(roomNo)
-      // this.dialogeditroom = true
-      // console.log(this.dialogeditroom)
       this.$ResvStore.fix = false
       this.$ResvStore.ds = false
       this.$ResvStore.logc = true
@@ -848,7 +837,6 @@ export default defineComponent({
       } else {
         if (log === true && this.waitingnote != null && this.waitingnote != '') {
           // this.$refs.editRoomDialog.hide();
-          // console.log(this.waitingnote)
           this.$ResvStore.addroom = false
           this.$ResvStore.waitingnote = this.waitingnote
           this.$ResvStore.currentResvId = data['ResNo'].data
@@ -870,12 +858,10 @@ export default defineComponent({
     changereset(data) {
       const resvId = data['ResNo'].data
       const roomNo = data['ResRoomNo'].data
-      // console.log(roomNo)
       this.api.put(`arrival?id=${resvId}-3`, null, ({ status, data, message }) => {
         this.loading = false
         if (status === 200) {
           this.trigger('positive', message)
-          // console.log('Data berhasil diperbarui:', data)
           this.fetchData()
         }
       })
@@ -884,12 +870,10 @@ export default defineComponent({
       try {
         const resvId = data['ResNo'].data
         const roomNo = data['ResRoomNo'].data
-        // console.log(roomNo)
         this.api.put(`arrival?id=${resvId}-1`, null, ({ status, data, message }) => {
           this.loading = false
           if (status === 200) {
             this.trigger('positive', message)
-            // console.log('Data berhasil diperbarui:', data)
             this.fetchData()
           } else {
             console.error('Gagal memperbarui data')
@@ -903,13 +887,11 @@ export default defineComponent({
       try {
         const resvId = data['ResNo'].data
         const roomNo = data['ResRoomNo'].data
-        // console.log(roomNo)
         this.loading = true
         this.api.put(`arrival?id=${resvId}-2`, null, ({ status, data, message }) => {
           this.loading = false
           if (status === 200) {
             this.trigger('positive', message)
-            // console.log('Data berhasil diperbarui:', data)
             this.fetchData()
           } else {
             console.error('Gagal memperbarui data')
@@ -921,9 +903,7 @@ export default defineComponent({
       }
     },
     toggleDropdown() {
-      // console.log(this.showDropdown)
       this.showDropdown = !this.showDropdown
-      // console.log(this.showDropdown)
       this.iconName1 = this.showDropdown ? this.arrowBottom : this.arrowUp
     },
     setSortOrder(val = '') {
@@ -952,13 +932,11 @@ export default defineComponent({
       this.$ResvStore.addroom = false
 
       this.$ResvStore.logc = false
-      // console.log(this.$ResvStore.fix)
     },
     async deleteResv(data, state) {
       try {
         const resvId = data['ResNo'].data
         const roomNo = data['ResRoomNo'].data
-        // console.log(roomNo)
         this.api.delete(`detail/reservation/${resvId}/${roomNo}/delete`, ({ data, message }) => {
           this.trigger('positive', message)
           this.fetchData()
@@ -971,8 +949,6 @@ export default defineComponent({
     onPaginationChange(props) {
       props.pagination.rowsPerPage =
         props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
-      // console.log(props)
-      // console.log(props.rowsPerPage)
       this.pagination = props.pagination
       this.fetchData()
     },
@@ -1014,7 +990,6 @@ export default defineComponent({
             rowsPerPage: data.meta?.perPage
           }
         }
-        // console.log(this.background)
       })
     },
 
@@ -1092,7 +1067,6 @@ export default defineComponent({
         })
       })
       this.data = list
-      // console.log(this.data)
     }
   }
 })

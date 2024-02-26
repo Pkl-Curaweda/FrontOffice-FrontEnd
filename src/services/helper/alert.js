@@ -28,7 +28,6 @@ export default {
           label: 'x',
           color: 'yellow',
           handler: () => {
-            /* console.log('wooow') */
           }
         }
       ]
@@ -46,7 +45,6 @@ export default {
           label: 'x',
           color: 'white',
           handler: () => {
-            /* console.log('wooow') */
           }
         }
       ]

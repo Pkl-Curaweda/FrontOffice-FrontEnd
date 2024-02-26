@@ -113,11 +113,9 @@ export default defineComponent({
       })
     },
     formatData(raw = []) {
-      console.log(raw)
       const list = []
       raw = Object.values(raw)
       raw.forEach((fp) => {
-        console.log(fp)
         list.push(fp.ident)
       })
       this.categories = list
@@ -125,5 +123,4 @@ export default defineComponent({
   }
 })
 
-console.log('hallo')
 </script>

@@ -503,8 +503,6 @@ export default defineComponent({
   watch: {
     selectedOption(newVal) {
       this.selectedBank = newVal
-      console.log('method payment ' + this.selectedBank)
-      console.log('method payment ' + this.selectedMethod)
     }
     // includeTax() {
     //   this.calculateTotal()
@@ -606,7 +604,6 @@ export default defineComponent({
     //   this.total = this.priceBook.reduce((accumulator, currentValue) => {
     //     return accumulator + parseFloat(currentValue.amount) // Mengonversi ke float sebelum penambahan
     //   }, 0)
-    //   console.log(this.total)
 
     //   // Add tax if includeTax is true
     //   if (this.includeTax) {
@@ -652,7 +649,6 @@ export default defineComponent({
             const { invoices, add, total, tax } = data
             this.user = { ...add }
             this.priceBook = invoices
-            console.log(this.user)
             this.DPP = data.tax
             this.total = total
             // this.user = data.add
@@ -682,7 +678,6 @@ export default defineComponent({
           uniqueId: { data: inv.uniqueId, style: {} }
         })
       })
-      console.log(list)
       this.data = list
     }
   }

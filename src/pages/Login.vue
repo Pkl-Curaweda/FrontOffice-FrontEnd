@@ -82,7 +82,6 @@ export default defineComponent({
         },
         ({ status, data, message }) => {
           if (status == 200) {
-            console.log(data)
             this.$AuthStore.setUser(data['user'])
             this.$AuthStore.setAccessToken(data['accessToken'])
             this.$AuthStore.setMainPath(data['path'])

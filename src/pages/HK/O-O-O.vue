@@ -417,7 +417,6 @@ export default defineComponent({
       )
     },
     postDataTable() {
-      console.log(this.roomNo)
       const data = {
         roomId: this.roomNo?.label ? this.roomNo.label : this.roomNo,
         reason: this.reasonRoom,
@@ -428,7 +427,6 @@ export default defineComponent({
         xType: this.buttonLabel
       }
 
-      console.log(data)
 
       let url = `ooo-rooms`
 
@@ -558,7 +556,6 @@ export default defineComponent({
             dept: ooo.department,
             room_type: ooo.roomType.longDesc
           }))
-          console.log(this.tableRows)
         }
       })
     }

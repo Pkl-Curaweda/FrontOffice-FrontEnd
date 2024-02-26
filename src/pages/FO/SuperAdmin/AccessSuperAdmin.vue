@@ -83,7 +83,7 @@
       </q-dialog>
     </q-toolbar> -->
 
-    <div class="my-table multi-panel q-px-md q-py-sm" style="flex-grow: 1">
+    <div class="my-table multi-panel q-px-md q-py-sm" style="height: 100vh">
       <q-table
         :rows="rowsListRole"
         :columns="columnsListRole"

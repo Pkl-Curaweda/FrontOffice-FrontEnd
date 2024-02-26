@@ -255,7 +255,6 @@ export default defineComponent({
     editArt(row) {
       this.titleVoucher = 'Edit Article'
       const artNo = row.articleNumber
-      console.log(row.articleNumber)
       let url = `article?art=${artNo}`
 
       this.api.get(url, ({ status, data, message }) => {
@@ -308,7 +307,6 @@ export default defineComponent({
             price: art.price
           }))
 
-          console.log(this.rows)
         }
       })
     }

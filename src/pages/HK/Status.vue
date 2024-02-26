@@ -528,7 +528,6 @@ export default defineComponent({
           this.statusRoom = latestChange.roomStatus.longDescription
           this.statusRoomNo = latestChange.id
 
-          console.log(this.statusRoomNo)
 
           this.dataRows = roomStatus.map((rs) => ({
             roomno: rs.id,
@@ -553,7 +552,6 @@ export default defineComponent({
             Status: td.mainStatus
           }))
 
-          console.log(this.dataRows2)
         }
       })
     },

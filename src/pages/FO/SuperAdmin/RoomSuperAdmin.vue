@@ -886,7 +886,6 @@ export default defineComponent({
     },
     handleConfirm(data) {
       this.cacheData = data
-      console.log(this.cacheData)
       this.confirmDelete = true
     },
     handleConfirmDetail() {
@@ -921,7 +920,6 @@ export default defineComponent({
       if (type === 'RO') {
         this.isRoSelected = true
         this.isRbSelected = false
-        console.log(type)
       } else if (type === 'RB') {
         this.isRbSelected = true
         this.isRoSelected = false
@@ -986,7 +984,6 @@ export default defineComponent({
             })
           })
           this.roomTypes = roomTypes.map((item) => ({ label: item.id }))
-          console.log(this.roomTypes)
           this.arrangment = arrangment.map((item) => ({ label: item.id }))
           this.listroom = list
           // const index = this.listroom.indexOf(0)
@@ -995,30 +992,22 @@ export default defineComponent({
           //   index = this.listroom.indexOf(0, index + 1)
           // }
 
-          console.log(this.listroom.length)
-          console.log(index)
-
-          // console.log(this.listroom.length - index - 2)
         }
       })
     },
     editRoom(data) {
       this.rowdataSelect = data
-      console.log(this.rowdataSelect)
       this.descriptionInput = this.rowdataSelect.description.data
       this.roomNoInput = this.rowdataSelect.roomNo.data
       this.typeRoomSelect = this.rowdataSelect.roomType.data
       // this.img = this.rowdataSelect.image.data
-      // console.log(this.rowdataSelect.image.data)
       this.floorInput = this.rowdataSelect.floor.data
       this.editroom = true
     },
     postEditRoom() {
       try {
-        console.log(this.typeRoomSelect)
         const pictureExist =
           this.img != null ? { image: this.img } : { picture: this.rowdataSelect.image.data }
-        console.log(pictureExist)
         // if (this.img){}
         this.api.useMultipart(true).post(
           `room/room`,
@@ -1182,7 +1171,6 @@ export default defineComponent({
       )
     },
     deleteDataRoom() {
-      // console.log(data.roomNo.data)
       try {
         const url = `room/room/${this.cacheData.roomNo.data}`
         this.api.delete(url, ({ message, status }) => {

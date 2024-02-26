@@ -173,7 +173,6 @@ export default defineComponent({
   watch: {
     filterColumns: {
       handler(filters) {
-        console.log(filters)
       },
       deep: true
     },
@@ -207,7 +206,6 @@ export default defineComponent({
     getDetailform(resvId, resvRoomId) {
       this.$ResvStore.currentResvId = resvId
       this.$ResvStore.currentRoomResvId = resvRoomId
-      console.log(resvId, resvRoomId)
     },
     searchName(searchInput) {
       // Make an API call to search based on searchInput
@@ -250,7 +248,6 @@ export default defineComponent({
           this.columns = data.roomHeaders
           this.listOfSortTypes = data.sortingType
           this.formatData(data.logData, data.roomAverage)
-          console.log(data)
           this.pagination = {
             page: data.meta?.currPage,
             rowsNumber: data.meta?.total,
@@ -260,7 +257,6 @@ export default defineComponent({
       })
     },
     formatData(raw = [], avg = []) {
-      console.log(raw, avg)
       const list = []
 
       raw.forEach((rh) => {
@@ -276,7 +272,6 @@ export default defineComponent({
         ...avg
       })
       this.data = list
-      console.log('list data after pushing room average:', this.data)
     },
     triggerNegative(data) {
       this.$q.notify(

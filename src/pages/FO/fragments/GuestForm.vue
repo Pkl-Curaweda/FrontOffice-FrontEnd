@@ -754,7 +754,6 @@ export default defineComponent({
   watch: {
     roomType: {
       handler(oldval, newval) {
-        console.log(oldval)
         this.resultRows = this.rows.filter((r) => {
           return r.date == oldval
         })
@@ -762,9 +761,7 @@ export default defineComponent({
     },
       roomNo: {
         handler(newVal) {
-          console.log(newVal)
           this.roomType = this.roomTypeOpts[newVal.index].value
-          console.log(this.roomBedOpts, this.roomTypeOpts)
           this.roomBed = this.roomBedOpts[newVal.index].label
 
           if(this.arrivalDepart.from && this.arrivalDepart.to) this.checkRoomAvailability()
@@ -773,7 +770,6 @@ export default defineComponent({
     'arrivalDepart.from': {
       immediate: true,
       handler() {
-        console.log(this.arrivalDepart.from)
         this.formatArrivalDepart()
         if(this.roomNo && this.arrivalDepart.from) this.checkRoomAvailability()
       }
@@ -781,7 +777,6 @@ export default defineComponent({
     'arrivalDepart.to': {
       immediate: true,
       handler() {
-        console.log(this.arrivalDepart.to)
         this.formatArrivalDepart()
       }
     },
@@ -847,7 +842,6 @@ export default defineComponent({
       if (this.arrivalDepart?.from && this.arrivalDepart?.to) {
         const fromDate = new Date(this.arrivalDepart.from)
         const toDate = new Date(this.arrivalDepart.to)
-        // console.log(this.arrivalDepart.to)
         const options = {
           month: 'numeric',
           day: 'numeric'
@@ -897,13 +891,11 @@ export default defineComponent({
           }
           this.roomNoOpts = roomNos
           this.indexReference = indexOfReference
-          // console.log(data)
         }
       })
     },
     selectRow(row) {
       this.selected = row
-      // console.log(this.selected)
       // this.calculateTotal()
     },
     // calculateTotal() {
@@ -914,7 +906,6 @@ export default defineComponent({
     //       this.balance += this.calculateTax(this.balance)
     //     }
 
-    //     console.log(this.balance)
     //   }
     // },
     trigger(type, txt) {
@@ -948,7 +939,6 @@ export default defineComponent({
           data,
           ({ status, data, message }) => {
             if (status == 200) {
-              // console.log(data)
               this.loading = false
               this.trigger('positive', message)
 
@@ -976,7 +966,6 @@ export default defineComponent({
             this.loading = false
             if (status == 200) {
               this.trigger('positive', message)
-              // console.log(response.data)
               this.refreshData()
             } else {
               this.trigger('negative', message)
@@ -1022,7 +1011,6 @@ export default defineComponent({
         `detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
         ({ status, data, message }) => {
           this.loading = false
-          // console.log('test')
           if (status == 200) {
             this.trigger('positive', message)
 
@@ -1044,7 +1032,6 @@ export default defineComponent({
             this.arrangmentValue = { id: arrangment.id, rate: arrangment.rate }
             this.resvRemark = reservation.reservationRemarks
             this.roomImage = room.roomImage
-            console.log('whatt???', this.indexReference)
             this.roomNo = this.roomNoOpts[this.indexReference[room.id]]
             this.availRooms = [
               ...this.availRooms,
@@ -1061,11 +1048,8 @@ export default defineComponent({
             // this.resultStatus = this.checkData(reservation.description)
             // this.arrangmentCode = { id: arrangment.id, rate: arrangment.rate }
           }
-          // console.log(this.arrangmentValue.id.split('-')[1])
           this.selectRow(this.arrangmentValue)
           this.checkedCode(this.arrangmentValue.id.split('-')[1])
-          // connsole.log(this.rows)
-          // console.log(this.resvStatus.label)
         }
       )
     },
@@ -1073,7 +1057,6 @@ export default defineComponent({
       const rmt = []
       map.forEach((dt) => {
         const { id, rate } = dt
-        // console.log(dt)
         rmt.push({
           id,
           date: id.split('-')[0],
@@ -1081,14 +1064,12 @@ export default defineComponent({
           arrangement: id.split('-')[1]
         })
       })
-      // console.log(rmt)
       return rmt
     },
     formattedStatus(map = []) {
       const rms = []
       map.forEach((dt) => {
         const { id, rate } = dt
-        // console.log(dt)
         rms.push({
           id,
           date: id.split('-')[0],
@@ -1096,7 +1077,6 @@ export default defineComponent({
           arrangement: id.split('-')[1]
         })
       })
-      // console.log(rms)
       return rms
     },
     checkCardIdselect(data) {
@@ -1121,7 +1101,6 @@ export default defineComponent({
                 data.carIdentifier && this.checkCardIdselect(data.carIdentifier)),
               (this.idcardnumber = data.cardId),
               (this.address = data.address)
-            // console.log(data)
             if (this.nameidcard != '') {
               this.trigger('positive', message)
             }
@@ -1134,7 +1113,6 @@ export default defineComponent({
     async createData() {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
       this.resvNo = currentResvId
-      // console.log(this.setRoww(this.selected.id))
       const dataToUpdate = {
         nameContact: this.guestName,
         resourceName: this.resvRecource,
@@ -1142,7 +1120,6 @@ export default defineComponent({
         manyAdult: this.guests.adult,
         manyChild: this.guests.child,
         manyBaby: this.guests.baby,
-        // inHouseIndicator: true,
         arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
         departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
         reservationRemarks: this.resvRemark,
@@ -1162,7 +1139,6 @@ export default defineComponent({
             }
           }
         )
-        // this.refresh()
       } catch (error) {
         console.error(error)
       }
@@ -1201,7 +1177,6 @@ export default defineComponent({
 
               if (status === 200) {
                 this.trigger('positive', message)
-                console.log('Data berhasil diperbarui:', data)
                 this.refreshData()
               } else {
                 console.error('Gagal memperbarui data')
@@ -1221,7 +1196,6 @@ export default defineComponent({
               this.loading = false
               if (status === 200) {
                 this.trigger('positive', message)
-                console.log('Data berhasil diperbarui:', data)
                 this.refreshData()
               } else {
                 this.trigger('negative', message)
@@ -1270,7 +1244,6 @@ export default defineComponent({
             ({ status, data, message }) => {
               this.loading = false
               if (status === 200) {
-                console.log('Data berhasil diperbarui:', data)
                 this.trigger(
                   'positive',
                   this.CardIdselect + ' added successfully' || 'Card not selected'
@@ -1289,13 +1262,11 @@ export default defineComponent({
     },
     KTPSelected() {
       this.CardIdselect = 'KTP'
-      // console.log(this.CardIdselect)
       this.isKtpSelected = !this.isKtpSelected
       this.isSimSelected = false
     },
     SIMSelected() {
       this.CardIdselect = 'SIM'
-      // console.log(this.CardIdselect)
       this.isSimSelected = !this.isSimSelected
       this.isKtpSelected = false
     },
@@ -1303,12 +1274,10 @@ export default defineComponent({
       if (row.split('-')[1] == 'RO') {
         this.isRoSelected = true
         this.isRbSelected = false
-        // console.log(row)
       } else if (row.split('-')[1] == 'RB') {
         this.isRbSelected = true
         this.isRoSelected = false
       } else {
-        // console.log('data tidak sesuai')
       }
     },
     checkedCode(type) {
@@ -1319,8 +1288,6 @@ export default defineComponent({
         this.isRbSelected = true
         this.isRoSelected = false
         this.selected.id.split('-')[1] = '-' + type
-      } else {
-        // console.log('data tidak sesuai')
       }
     }
   }

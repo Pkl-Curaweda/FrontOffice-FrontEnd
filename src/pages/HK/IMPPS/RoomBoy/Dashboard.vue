@@ -182,7 +182,6 @@ export default defineComponent({
   },
   methods: {
     showhistory(state) {
-      console.log(state)
       this.state = state
       this.fetchData()
     },
@@ -236,7 +235,6 @@ export default defineComponent({
         if (status == 200) {
           this.trigger('positive', message)
           const { listTask, performance } = data
-          console.log(listTask)
           this.data = listTask.map((lt) => ({
             roomNo: { data: lt.roomNo, style: { backgroundColor: lt.rowColor } },
             RoomType: { data: lt.roomType.longDesc, style: { backgroundColor: lt.rowColor } },
@@ -257,14 +255,11 @@ export default defineComponent({
       })
     },
     ratingcheck(i) {
-      // console.log(ratingcolor)
-      console.log(i)
       let listRating = []
       for (let rating = 1; rating <= 5; rating++) {
         listRating.push({
           color: rating <= i ? 'yellow-7' : 'light-green-3'
         })
-        console.log(listRating)
       }
       this.ratingcolor = listRating
       this.currentRating = i

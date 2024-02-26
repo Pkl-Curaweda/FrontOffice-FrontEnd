@@ -524,13 +524,10 @@ export default defineComponent({
     onPaginationChange(props) {
       props.pagination.rowsPerPage =
         props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
-      console.log(props)
-      console.log(props.rowsPerPage)
       this.pagination = props.pagination
       this.fetchData()
     },
     onItemClick(label) {
-      console.log(this.mainData)
       switch (label) {
         case 'VC':
           this.vacantLabel = 'Vacant Clean Checked'
@@ -574,13 +571,11 @@ export default defineComponent({
       this.loading = true
 
       let url = `clean-dirty?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}`
-      console.log(this.datePickerArrival)
       const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
       if (DateArrival !== undefined && DateArrival !== '') {
         url += `&arrival=${DateArrival}`
       }
 
-      console.log(url)
 
       const DateDeparture = this.datePickerDeparture?.replace(/\//g, '-')
       if (DateDeparture !== undefined && DateDeparture !== '') {
@@ -596,7 +591,6 @@ export default defineComponent({
         if (status == 200) {
           const { room } = data
 
-          console.log(room)
 
           const arrivalDate = data.arr // Gantilah 'arrival.arr' dengan properti yang benar
           if (this.datePickerArrival == null) {

@@ -962,7 +962,6 @@ export default defineComponent({
     },
     roomBoy: {
       handler(newValue) {
-        console.log(this.shift)
         // SET DROPDOWN VALUE
         this.workShift = newValue.shiftId
         this.alias = newValue.aliases
@@ -977,19 +976,16 @@ export default defineComponent({
     },
     workShift: {
       handler(newValue) {
-        console.log(newValue)
         if (!newValue?.label) this.workShift = this.optionShift[newValue - 1]
       }
     },
     department: {
       handler(data) {
-        console.log(data)
         if (!data?.label) this.department = this.optionDepartment[data - 1]
       }
     },
     isEditingRoomBoy: {
       handler(value) {
-        console.log(value)
         if (value) {
           this.editRoomBoySet = { title: 'Edit Room Maid', button: `Edit Room Maid` }
         } else this.editRoomBoySet = { title: 'Add New Room Maid', button: `Assign as Maid` }
@@ -1008,7 +1004,6 @@ export default defineComponent({
     handleUpload() {
       if (this.img) {
         this.imgURL = URL.createObjectURL(this.img)
-        console.log(this.img)
       }
     },
     trigger(type, txt) {
@@ -1037,7 +1032,7 @@ export default defineComponent({
           }
         )
       } catch (err) {
-        console.log(err.message)
+        console.error(err.message)
       }
     },
     clearFieldRole() {
@@ -1105,7 +1100,6 @@ export default defineComponent({
         //   this.trigger('negative', message)
         //   this.showTable = false
         // }
-        console.log(this.rowsListRole)
       })
     },
     showListUser(row) {
@@ -1368,7 +1362,6 @@ export default defineComponent({
           this.roleIdUser = shownUser.role.id
           this.userId = userId
           this.putIdUser(this.userId, this.roleIdUser)
-          console.log(this.roleIdUser)
         }
       })
     },
@@ -1416,7 +1409,6 @@ export default defineComponent({
       }
     },
     newRoomBoyDialog() {
-      console.log('etagdhsag')
       this.newRoomBoy = true
       this.isEditingRoomBoy = false
       this.setDataRoomBoy()

@@ -70,9 +70,6 @@ export default defineComponent({
       this.api.get(url, ({ status, data }) => {
         if (status == 200) {
           const { hkChart } = data
-
-          console.log(hkChart)
-
           this.seriesData = [
             {
               name: 'Daily Room Usage',

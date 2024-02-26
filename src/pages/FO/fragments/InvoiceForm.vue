@@ -323,7 +323,6 @@ export default defineComponent({
 
       if (resvId === 0 || resvRoomId === 0) {
         this.loading = false
-        console.log(resvId)
         return
       }
 
@@ -331,7 +330,6 @@ export default defineComponent({
 
       this.api.get(url, ({ status, data }) => {
         this.loading = false
-        console.log(data)
 
         if (status == 200) {
           this.formatData(data.invoices)
@@ -353,9 +351,7 @@ export default defineComponent({
           Amount: { data: ip.amount, style: {} }
         })
       })
-      console.log(this.data, list)
       this.data = list
-      console.log(this.data)
     },
     setSortOrder(val = '') {
       this.filterSortOrder = null
@@ -387,7 +383,6 @@ export default defineComponent({
     getDetailForm() {
       const { resvId, resvRoomId } = this.$route.params
       const uniqueId = this.$ResvStore.uniqueId
-      console.log(uniqueId)
       this.loading = true
       this.api.get(
         `detail/invoice/${resvId}/${resvRoomId}/?ids=${uniqueId}`,
@@ -420,7 +415,6 @@ export default defineComponent({
 
       if (resvId === 0 || resvRoomId === 0) {
         this.loading = false
-        console.log(resvId)
         return
       }
 
@@ -441,9 +435,7 @@ export default defineComponent({
               qty: 0
             }))
             // this.uniqueId = response.data.data.invoices.uniqueId
-            // console.log(this.uniqueId)
             // this.uniqueId = response.data.data.invoices.uniqueId
-            // console.log(response.data.data.invoices.uniqueId)
             this.formatData(response.data.data.invoices)
             this.pagination = {
               page: response.data.data.meta?.currPage,
@@ -471,7 +463,6 @@ export default defineComponent({
 
             if (status == 200) {
               this.loading = false
-              console.log(data)
               this.trigger('positive', message)
               // Call setRoomResv with uniqueId after updating data
               this.setRoomResv(uniqueId)
@@ -479,7 +470,7 @@ export default defineComponent({
           }
         )
       } catch (error) {
-        console.log('Terjadi Kesalahan: ' + error)
+        console.error('Terjadi Kesalahan: ' + error)
       }
     }
   }

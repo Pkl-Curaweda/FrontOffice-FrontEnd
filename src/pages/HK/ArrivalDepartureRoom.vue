@@ -566,8 +566,6 @@ export default defineComponent({
     onPaginationChange(props) {
       props.pagination.rowsPerPage =
         props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
-      console.log(props)
-      console.log(props.rowsPerPage)
       this.pagination = props.pagination
       this.fetchData()
     },

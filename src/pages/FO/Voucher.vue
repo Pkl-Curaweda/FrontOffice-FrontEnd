@@ -445,7 +445,6 @@ export default defineComponent({
         url += `&date=${fromDate}T${toDate}`
       }
 
-      console.log(this.isPopupOpen)
 
       this.api.get(url, ({ status, data }) => {
         this.loading = false

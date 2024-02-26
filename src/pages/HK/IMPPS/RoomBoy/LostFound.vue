@@ -113,7 +113,6 @@ export default defineComponent({
     handleUpload() {
       if (this.img) {
         this.imgURL = URL.createObjectURL(this.img)
-        console.log(this.img)
       }
     },
     getDate(d) {

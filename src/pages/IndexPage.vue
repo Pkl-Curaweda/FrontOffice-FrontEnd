@@ -444,7 +444,6 @@ export default {
               data: [hk.vc, hk.vcu, hk.vd, hk.oc, hk.od]
             }
           ]
-          console.log(this.series)
           this.$refs.barChart.updateSeries(this.series)
         }
       })

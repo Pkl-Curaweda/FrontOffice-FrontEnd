@@ -458,7 +458,6 @@ export default defineComponent({
 
       if (resvId === 0 || resvRoomId === 0) {
         this.loading = false
-        console.log(resvId)
         return
       }
 
@@ -496,7 +495,6 @@ export default defineComponent({
 
       if (resvId === 0 || resvRoomId === 0) {
         this.loading = false
-        console.log(resvId)
         window.reload.location()
         return
       }
@@ -537,16 +535,12 @@ export default defineComponent({
     onPaginationChange(props) {
       props.pagination.rowsPerPage =
         props.pagination.rowsPerPage < 1 ? 50 : props.pagination.rowsPerPage
-      console.log(props)
-      console.log(props.rowsPerPage)
       this.pagination = props.pagination
       this.fetchData()
     },
     onPaginationArt() {
       this.paginationArt.rowsPerPage =
         this.paginationArt.rowsPerPage < 1 ? 50 : this.paginationArt.rowsPerPage
-      console.log(props)
-      console.log(props.rowsPerPage)
       this.paginationArt = this.paginationArt
       this.fetchData()
     },
@@ -556,7 +550,6 @@ export default defineComponent({
       const { resvId, resvRoomId } = this.$route.params
 
       if (resvId === 0 || resvRoomId === 0) {
-        console.log(resvId)
         return
       }
 
@@ -605,7 +598,6 @@ export default defineComponent({
     //     })
     //     .catch((error) => {
     //       this.loading = false
-    //       console.error('Error fetching data:', error)
     //     })
     // },
 
@@ -629,7 +621,6 @@ export default defineComponent({
           uniqueId: { data: inv.uniqueId, style: {} }
         })
       })
-      console.log(list[0])
       if (list.length > 0) this.$ResvStore.uniqueId = list[0].uniqueId.data
       this.data = list
     },
@@ -637,9 +628,6 @@ export default defineComponent({
       this.$ResvStore.dateBill = data['BillDate'].data
       this.$ResvStore.Artlb = data['Art'].data
       this.$ResvStore.uniqueId = data.uniqueId.data
-      console.log(data['BillDate'].data)
-      console.log(this.$ResvStore.dateBill)
-      console.log(this.$ResvStore.UniqueId)
     },
     trigger(type, txt) {
       this.$q.notify(

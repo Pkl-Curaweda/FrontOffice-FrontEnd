@@ -209,7 +209,6 @@ export default defineComponent({
     },
     getDetailReport() {
       this.loading = true
-      console.log(this.$refs.demoChart)
       if(this.startUp != false){
         this.startUp = false
         this.getDetailReport()
@@ -230,7 +229,6 @@ export default defineComponent({
       }
 
       this.api.get(url, ({ status, data }) => {
-        console.log(this.series)
         this.loading = false
         if (status == 200) {
           const { total, detail } = data

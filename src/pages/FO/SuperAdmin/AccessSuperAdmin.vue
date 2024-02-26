@@ -106,7 +106,7 @@
           <q-dialog v-model="newRole">
             <q-card style="max-width: 65vw">
               <q-card-section class="row items-center q-pb-none">
-                <div class="text-h6">{{ editRoomBoySet.title }}</div>
+                <div class="text-h6">{{ titleCardRole }}</div>
                 <q-space />
                 <div class="text-h6">Given Access</div>
                 <q-space />
@@ -1184,6 +1184,8 @@ export default defineComponent({
     },
     addNewRole() {
       this.newRole = true
+      this.titleCardRole = 'Add New Role'
+      this.submitRole = 'Add Role'
       this.clearFieldRole()
     },
     updateRole() {
@@ -1213,7 +1215,6 @@ export default defineComponent({
     },
     editRole(row) {
       const roleId = row.id
-      console.log(roleId)
       this.titleCardRole = 'Edit Role'
       this.submitRole = 'Edit Role'
       this.newRole = true

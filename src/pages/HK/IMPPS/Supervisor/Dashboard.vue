@@ -86,15 +86,7 @@
             <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
               <div class="cursor-pointer non-selectable q-px-md">Add Request Task</div>
               <q-space />
-              <q-btn
-                dense
-                flat
-                color="grey"
-                size="sm"
-                outline
-                icon="close"
-                v-close-popup
-              />
+              <q-btn dense flat color="grey" size="sm" outline icon="close" v-close-popup @click="clearData"/>
             </q-bar>
             <div class="q-pa-lg">
               <div style="display: flex; gap: 5px" class="q-pt-lg">
@@ -161,15 +153,7 @@
             <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
               <div class="cursor-pointer non-selectable q-px-md">Add Room Task</div>
               <q-space />
-              <q-btn
-                dense
-                flat
-                color="grey"
-                size="sm"
-                outline
-                icon="close"
-                v-close-popup
-              />
+              <q-btn dense flat color="grey" size="sm" outline icon="close" v-close-popup @click="clearData"/>
             </q-bar>
             <div class="q-pa-lg">
               <q-select
@@ -180,9 +164,13 @@
                 label="RoomNo"
                 dense
               />
-              <div style="display: flex; width: 100%; padding: 8px;">
+              <div style="display: flex; width: 100%; padding: 8px">
                 <div v-if="this.choosenRoom">
-                  <img :src="this.choosenRoom.image" class="cropped-image" style="width: 100px; border-radius: 2px" />
+                  <img
+                    :src="this.choosenRoom.image"
+                    class="cropped-image"
+                    style="width: 100px; border-radius: 2px"
+                  />
                 </div>
                 <div style="padding: 8px; gap: 2px; width: 100%">
                   <div>
@@ -208,9 +196,13 @@
                 label="Assigned"
                 dense
               />
-              <div style="display: flex; width: 100%;">
-                <div v-if="this.maidSelect" style="padding: 8px;">
-                  <img :src="this.choosenMaid.image" class="cropped-image" style="width: 100px; border-radius: 2px" />
+              <div style="display: flex; width: 100%">
+                <div v-if="this.maidSelect" style="padding: 8px">
+                  <img
+                    :src="this.choosenMaid.image"
+                    class="cropped-image"
+                    style="width: 100px; border-radius: 2px"
+                  />
                 </div>
                 <div style="padding: 8px; gap: 2px; width: 100%">
                   <div>
@@ -242,15 +234,7 @@
             <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
               <div class="cursor-pointer non-selectable q-px-md">Change Status to: {{ group }}</div>
               <q-space />
-              <q-btn
-                dense
-                flat
-                color="grey"
-                size="sm"
-                outline
-                icon="close"
-                v-close-popup
-              />
+              <q-btn dense flat color="grey" size="sm" outline icon="close" v-close-popup @click="clearData"/>
             </q-bar>
             <div class="q-pa-md">
               <q-select
@@ -275,22 +259,13 @@
               />
             </q-card-actions>
           </q-card>
-
         </q-dialog>
         <q-dialog v-model="dialog3">
           <q-card style="width: 500px">
             <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
               <div class="cursor-pointer non-selectable q-px-md">Unavailable Room Boy</div>
               <q-space />
-              <q-btn
-                dense
-                flat
-                color="grey"
-                size="sm"
-                outline
-                icon="close"
-                v-close-popup
-              />
+              <q-btn dense flat color="grey" size="sm" outline icon="close" v-close-popup @click="clearData"/>
             </q-bar>
             <div class="q-pa-lg">
               <q-select
@@ -387,19 +362,14 @@
             </div>
             <q-card-actions align="right">
               <q-btn v-close-popup label="Cancel" dense no-caps color="primary" outline="" />
-              <q-btn
-                @click="postUnvailable"
-                dense
-                no-caps
-                label="Submit"
-                color="primary"
-                />
-              </q-card-actions>
-              <!-- v-close-popup="this.roomNoSelect != null" -->
+              <q-btn @click="postUnvailable" dense no-caps label="Submit" color="primary" />
+            </q-card-actions>
+            <!-- v-close-popup="this.roomNoSelect != null" -->
           </q-card>
         </q-dialog>
         <div class="my-table">
           <q-table
+            :rows-per-page-options="[0]"
             class="no-shadow"
             v-model:pagination="pagination"
             @request="onPaginationChange"
@@ -629,6 +599,18 @@ export default defineComponent({
     }
   },
   methods: {
+    clearData() {
+      this.comments = null
+      this.roomNoSelect = null
+      this.currentRating = null
+      this.roomboySelect = null
+      this.roomboySelectSend = null
+      this.maidSelect = null
+      this.requestInput = null
+      this.commentsInput = null
+      this.choosenRoom = null
+      this.roomSelect = null
+    },
     handleacces(state) {
       if (state == 'unavailableRoom') {
         this.unAvailability()
@@ -663,7 +645,8 @@ export default defineComponent({
             if (status == 200) {
               this.trigger('positive', message)
               this.fetchData()
-              window.location.reload()
+              this.clearData()
+              this.dialog2 = false
             } else {
               this.trigger('negative', message)
             }
@@ -742,10 +725,9 @@ export default defineComponent({
             PIC: { data: lt.pic, style: { backgroundColor: lt.rowColor } },
             Comments: { data: lt.comments, style: { backgroundColor: lt.rowColor } },
             taskId: { data: lt.taskId, style: { backgroundColor: lt.rowColor } }
-
           }))
 
-          this.optionsRoom = listRoom.map((item) => ({label: item.id}))
+          this.optionsRoom = listRoom.map((item) => ({ label: item.id }))
           // this.optionsRoom = forEach(1)
           // const roomNo = this.data.map((item) => item.roomNo.data)
           // this.roomNo = roomNo
@@ -837,7 +819,8 @@ export default defineComponent({
             this.roomboySelect = null
             this.roomboySelectSend = null
             this.fetchData()
-            window.location.reload()
+            this.clearData()
+            this.dialog3 = false
           }
         }
       )
@@ -860,7 +843,8 @@ export default defineComponent({
             this.commentsInput = null
             this.choosenRoom.workload = null
             this.fetchData()
-            window.location.reload()
+            this.clearData()
+            this.dialog1 = false
           } else {
             this.trigger('warning', message)
           }
@@ -887,7 +871,7 @@ export default defineComponent({
             this.commentsInput = null
             this.choosenRoom.workload = null
             this.fetchData()
-            window.location.reload()
+            this.clearData()
           } else {
             this.trigger('warning', message)
           }
@@ -908,13 +892,11 @@ export default defineComponent({
       )
     },
     nextnotify(type, txt) {
-      this.$q.notify(
-        {
-          type: 'ongoing',
-          message: 'Loading',
-          timeout: 200
-        },
-      )
+      this.$q.notify({
+        type: 'ongoing',
+        message: 'Loading',
+        timeout: 200
+      })
       setTimeout(() => {
         if (type == 'positive') {
           this.trigger(type, txt)

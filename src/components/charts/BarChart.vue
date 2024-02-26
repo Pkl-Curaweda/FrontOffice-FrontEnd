@@ -1,6 +1,6 @@
 <template>
   <div id="chart">
-    <apexchart type="bar" height="200" :options="chartOptions" :series="series"></apexchart>
+    <apexchart type="bar" height="200" ref="barChart" :options="chartOptions" :series="series"></apexchart>
   </div>
 </template>
 
@@ -87,6 +87,8 @@ export default defineComponent({
               data: [hk.vc, hk.vcu, hk.vd, hk.oc, hk.od]
             }
           ]
+          this.$refs.barChart.updateSeries(this.series)
+
         }
       })
     }

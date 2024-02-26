@@ -162,7 +162,7 @@ const chartOptionsBar = ref({
     colors: ['transparent']
   },
   xaxis: {
-    categories: ['Occ', 'Comp', 'HU', 'OOO', 'OM', 'Est Occ']
+    
   },
   fill: {
     colors: ['#A468D3', '#77CE7F']

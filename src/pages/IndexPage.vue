@@ -199,7 +199,13 @@
             <div class="q-pa-md bg-white rounded shadow-3 col-grow">
               <h5 class="text-bold q-ma-none">Housekeeping</h5>
               <div class="q-mt-md">
-                <BarChart />
+                <apexchart
+                  type="bar"
+                  height="200"
+                  ref="barChart"
+                  :options="chartOptions"
+                  :series="series"
+                ></apexchart>
               </div>
             </div>
           </div>
@@ -220,15 +226,60 @@ import { getCurrentTime } from 'src/utils/time'
 
 const UsageChart = defineAsyncComponent(() => import('components/charts/UsageChart.vue'))
 
-const BarChart = defineAsyncComponent(() => import('components/charts/BarChart.vue'))
-
+// const BarChart = defineAsyncComponent(() => import('components/charts/BarChart.vue'))
+const chartOptions = {
+  chart: {
+    type: 'bar',
+    height: 430
+  },
+  plotOptions: {
+    bar: {
+      horizontal: true,
+      dataLabels: {
+        position: 'top'
+      }
+    }
+  },
+  dataLabels: {
+    enabled: true,
+    offsetX: -6,
+    style: {
+      fontSize: '12px',
+      colors: ['#fff']
+    }
+  },
+  stroke: {
+    show: true,
+    width: 1,
+    colors: ['#fff']
+  },
+  tooltip: {
+    shared: true,
+    intersect: false
+  },
+  xaxis: {
+    categories: [
+      'Vacant Clean',
+      'Vacant Clean Unchecked',
+      'Vacant Dirty',
+      'Occupied Clean',
+      'Occupied Dirty'
+    ]
+  }
+}
 export default {
   setup() {
     const slide = ref('style')
     const leftDrawerOpen = ref(false),
       currentClock = '-',
       currentDate = '-'
-      // const shouldShowSidebar = !frontoffice_routes.path.startsWith('/fo/super-admin')
+
+    const series = ref([
+      {
+        data: []
+      }
+    ])
+    // const shouldShowSidebar = !frontoffice_routes.path.startsWith('/fo/super-admin')
 
     return {
       newReservation: ref(''),
@@ -239,6 +290,8 @@ export default {
       occupancyRate: ref(''),
       leftDrawerOpen,
       currentClock,
+      series,
+      chartOptions,
       currentDate,
       columns: [
         { name: 'ResNo', label: 'ResNo', align: 'left', field: 'ResNo' },
@@ -284,7 +337,8 @@ export default {
           }
         }
       }),
-      reservationSeriesEntry: []
+      reservationSeriesEntry: [],
+      seriesData: ref([])
     }
   },
   data() {
@@ -309,8 +363,9 @@ export default {
   },
   mounted() {
     this.getValueDashboard()
+    this.getStatistic()
   },
-  components: { SideBar, ProfileFloat, MessengerFloat, UsageChart, BarChart },
+  components: { SideBar, ProfileFloat, MessengerFloat, UsageChart },
   created() {
     this.updateTime()
 
@@ -374,6 +429,25 @@ export default {
       })
 
       this.data = list
+    },
+    getStatistic() {
+      this.api.get(`dashboard`, ({ data, status, message }) => {
+        if (status == 200) {
+          const { hk } = data
+          const Data = [
+            {
+              data: [hk.vc, hk.vcu, hk.vd, hk.oc, hk.od]
+            }
+          ]
+          this.series = [
+            {
+              data: [hk.vc, hk.vcu, hk.vd, hk.oc, hk.od]
+            }
+          ]
+          console.log(this.series)
+          this.$refs.barChart.updateSeries(this.series)
+        }
+      })
     }
   }
 }

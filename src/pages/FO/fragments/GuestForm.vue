@@ -773,15 +773,13 @@ export default defineComponent({
     'arrivalDepart.from': {
       immediate: true,
       handler() {
-        console.log(this.arrivalDepart.from)
         this.formatArrivalDepart()
-        if(this.roomNo && this.arrivalDepart.from) this.checkRoomAvailability()
+        if(this.roomNo && this.arrivalDepart?.from) this.checkRoomAvailability()
       }
     },
     'arrivalDepart.to': {
       immediate: true,
       handler() {
-        console.log(this.arrivalDepart.to)
         this.formatArrivalDepart()
       }
     },

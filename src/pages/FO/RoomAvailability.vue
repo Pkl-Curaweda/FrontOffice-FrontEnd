@@ -69,7 +69,7 @@
               <q-tr class="table-head">
                 <q-th style="padding-top: 0px; padding-bottom: 0px">
                   <template v-slot:header="props">
-                    <q-tr class="table-head" :props="props" style="position: sticky">
+                    <q-tr class="table-head" :props="props">
                       <q-th
                         v-for="(col, i) in props.cols.label"
                         :key="i"

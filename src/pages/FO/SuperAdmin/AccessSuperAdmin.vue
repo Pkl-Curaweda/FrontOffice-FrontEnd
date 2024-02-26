@@ -151,20 +151,20 @@
                   </div>
 
                   <div class="q-mt-md">
-                    <label class="text-bold">Admin Page</label>
+                    <label class="text-bold">Room Boy Page</label>
                     <div>
-                      <q-checkbox v-model="checkboxReaderAdmin" label="Reader" />
-                      <q-checkbox v-model="checkboxEditorAdmin" label="Editor" />
+                      <q-checkbox v-model="checkboxReaderRoomboy" label="Reader" />
+                      <q-checkbox v-model="checkboxEditorRoomboy" label="Editor" />
                     </div>
                   </div>
                 </HKCard>
 
                 <HKCard :style="`border-radius: 5px`">
                   <div>
-                    <label class="text-bold">Room Boy Page</label>
+                    <label class="text-bold">Admin Page</label>
                     <div>
-                      <q-checkbox v-model="checkboxReaderRoomboy" label="Reader" />
-                      <q-checkbox v-model="checkboxEditorRoomboy" label="Editor" />
+                      <q-checkbox v-model="checkboxReaderAdmin" label="Reader" />
+                      <q-checkbox v-model="checkboxEditorAdmin" label="Editor" />
                     </div>
                   </div>
 
@@ -484,9 +484,7 @@
                         <div style="display: flex; gap: 10px">
                           <HKCard class="col-grow" :style="`border-radius: 5px`">
                             <div>
-                              <label class="text-bold" style="color: cornflowerblue"
-                                >Super Admin Page</label
-                              >
+                              <label class="text-bold">Super Admin Page</label>
                               <div style="display: flex">
                                 <q-checkbox
                                   :disable="true"
@@ -503,7 +501,7 @@
                           </HKCard>
                           <HKCard class="col-grow" :style="`border-radius: 5px`">
                             <div>
-                              <label class="text-bold" style="color: blueviolet">Admin Page</label>
+                              <label class="text-bold">Admin Page</label>
                               <div style="display: flex">
                                 <q-checkbox
                                   :disable="true"
@@ -522,7 +520,7 @@
                         <div style="display: flex; gap: 10px" class="q-mt-sm">
                           <HKCard class="col-grow" :style="`border-radius: 5px`">
                             <div>
-                              <label class="text-bold" style="color: crimson">Room Boy Page</label>
+                              <label class="text-bold">Room Boy Page</label>
                               <div style="display: flex">
                                 <q-checkbox
                                   :disable="true"
@@ -539,9 +537,7 @@
                           </HKCard>
                           <HKCard class="col-grow" :style="`border-radius: 5px`">
                             <div>
-                              <label class="text-bold" style="color: darkorange"
-                                >Supervisor Page</label
-                              >
+                              <label class="text-bold">Supervisor Page</label>
                               <div style="display: flex">
                                 <q-checkbox
                                   :disable="true"

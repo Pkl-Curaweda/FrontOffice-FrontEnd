@@ -201,7 +201,7 @@
           </q-tr>
         </template>
         <template v-slot:body="props">
-          <q-tr :props="props" class="q-d-xs q-d-sm q-d-md" >
+          <q-tr :props="props" class="q-d-xs q-d-sm q-d-md">
             <q-td key="Nama" :props="props" @click="showListUser(props.row)" class="cursor-pointer">
               {{ props.row.nama }}
             </q-td>
@@ -235,7 +235,7 @@
               @click="showListUser(props.row)"
               class="cursor-pointer"
               :style="{ backgroundColor: props.row.editorAdmin }"
-              >
+            >
             </q-td>
             <q-td
               key="Reader Room Boy"
@@ -243,15 +243,15 @@
               @click="showListUser(props.row)"
               class="cursor-pointer"
               :style="{ backgroundColor: props.row.readerRoomboy }"
-              >
+            >
             </q-td>
             <q-td
               key="Editor Room Boy"
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
-              :style="{ backgroundColor: props.row.editorRoomboy }"           
-              >
+              :style="{ backgroundColor: props.row.editorRoomboy }"
+            >
             </q-td>
             <q-td
               key="Reader Supervisor"
@@ -259,15 +259,15 @@
               @click="showListUser(props.row)"
               class="cursor-pointer"
               :style="{ backgroundColor: props.row.readerSupervisor }"
-              >
+            >
             </q-td>
             <q-td
               key="Editor Supervisor"
               :props="props"
               @click="showListUser(props.row)"
               class="cursor-pointer"
-              :style="{ backgroundColor: props.row.editorSupervisor }"            
-              >
+              :style="{ backgroundColor: props.row.editorSupervisor }"
+            >
             </q-td>
             <q-td key="Action" :props="props" style="width: 10px">
               <q-btn flat rounded size="13px" style="color: #008444" @click="editRole(props.row)"
@@ -284,7 +284,12 @@
                   />
                 </svg>
               </q-btn>
-              <q-btn flat rounded size="13px" style="color: #008444" @click="handleConfirm('role', props.row.id, props.row.nama)"
+              <q-btn
+                flat
+                rounded
+                size="13px"
+                style="color: #008444"
+                @click="handleConfirm('role', props.row.id, props.row.nama)"
                 ><svg
                   width="19"
                   height="19"
@@ -311,25 +316,259 @@
           <q-btn auto-close flat round icon="more_vert">
             <q-menu>
               <q-list>
-                <!-- <q-item clickable v-close-popup style="display: flex">
+                <q-item clickable @click="newUserDialog" style="display: flex">
                   <q-btn flat rounded size="13px" style="color: #008444">
                     <svg
-                      width="19"
-                      height="19"
-                      viewBox="0 0 19 19"
-                      fill="none"
                       xmlns="http://www.w3.org/2000/svg"
+                      width="19"
+                      height="20"
+                      viewBox="0 0 19 20"
+                      fill="none"
                     >
                       <path
-                        d="M8 13C8.8 13 9.57 12.93 10.31 12.82L13.22 9.91C11.89 10.59 10 11 8 11C5.58 11 3.3 10.4 2 9.45V6.64C3.47 7.47 5.61 8 8 8C10.39 8 12.53 7.47 14 6.64V9.13L15.39 7.74C15.57 7.56 15.78 7.42 16 7.3V4C16 1.79 12.42 0 8 0C3.58 0 0 1.79 0 4V14C0 16.04 3.06 17.72 7 17.97V16.13L7.17 15.96C3.84 15.76 2 14.46 2 14V11.77C3.61 12.55 5.72 13 8 13ZM8 2C11.87 2 14 3.5 14 4C14 4.5 11.87 6 8 6C4.13 6 2 4.5 2 4C2 3.5 4.13 2 8 2ZM15.13 10.83L17.17 12.87L11.04 19H9V16.96L15.13 10.83ZM18.85 11.19L17.87 12.17L15.83 10.13L16.81 9.15C17 8.95 17.33 8.95 17.53 9.15L18.85 10.47C19.05 10.67 19.05 11 18.85 11.19Z"
+                        d="M16 10.09V4C16 1.79 12.42 0 8 0C3.58 0 0 1.79 0 4V14C0 16.21 3.59 18 8 18C8.46 18 8.9 18 9.33 17.94C9.1129 17.3162 9.00137 16.6605 9 16V15.95C8.68 16 8.35 16 8 16C4.13 16 2 14.5 2 14V11.77C3.61 12.55 5.72 13 8 13C8.65 13 9.27 12.96 9.88 12.89C10.4127 12.0085 11.1638 11.2794 12.0607 10.7731C12.9577 10.2668 13.9701 10.0005 15 10C15.34 10 15.67 10.04 16 10.09ZM14 9.45C12.7 10.4 10.42 11 8 11C5.58 11 3.3 10.4 2 9.45V6.64C3.47 7.47 5.61 8 8 8C10.39 8 12.53 7.47 14 6.64V9.45ZM8 6C4.13 6 2 4.5 2 4C2 3.5 4.13 2 8 2C11.87 2 14 3.5 14 4C14 4.5 11.87 6 8 6ZM19 15V17H16V20H14V17H11V15H14V12H16V15H19Z"
                         fill="#008444"
                       />
                     </svg>
                   </q-btn>
                   <q-item-section>
-                    <q-item-label>Edit User</q-item-label>
+                    <q-item-label>Add New User</q-item-label>
                   </q-item-section>
-                </q-item> -->
+                </q-item>
+                <q-dialog v-model="newUser" full-width>
+                  <q-card>
+                    <q-card-section class="row items-center q-pb-none">
+                      <div class="text-h6">{{ editRoomBoySet.title }}</div>
+                      <q-space />
+                      <div class="text-h6 q-mx-md">Access</div>
+                      <q-btn class="text-capitalize q-mx-md" color="primary" @click="saveUser">{{
+                        editRoomBoySet.button
+                      }}</q-btn>
+                      <q-btn icon="close" flat round dense v-close-popup @click="clearFieldRole" />
+                    </q-card-section>
+
+                    <q-card-section style="display: flex; gap: 10px; width: 100%" class="col">
+                      <div>
+                        <q-file
+                          dense
+                          outlined
+                          clearable
+                          :placeholder="img"
+                          v-model="img"
+                          bg-color="primary"
+                          label-color="white"
+                          label="Add Picture"
+                          style="width: 150px"
+                          class="ellipsis"
+                          type="file"
+                          @update:model-value="handleUpload()"
+                        />
+                        <q-img class="q-mt-sm" :src="imgURL" v-if="imgURL" />
+                        <div
+                          class="justify-center items-center q-mt-md"
+                          v-else
+                          style="display: flex"
+                        >
+                          <q-icon
+                            name="account_circle"
+                            color="grey"
+                            size="100px"
+                            style="border: 1px solid rgb(83, 83, 83)8, 78, 78)"
+                            class="q-pa-md"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <div style="display: flex; gap: 10px">
+                          <q-input
+                            dense
+                            outlined
+                            v-model="name"
+                            label="Name"
+                            class="col-grow text-bold"
+                          />
+                          <q-input
+                            dense
+                            outlined
+                            v-model="email"
+                            label="Email"
+                            class="col-grow text-bold"
+                          />
+                          <q-input
+                            dense
+                            outlined
+                            type="number"
+                            v-model="numberPhone"
+                            label="Number Phone"
+                            class="col-grow"
+                          />
+                        </div>
+                        <div class="q-mt-md" style="display: flex; gap: 10px">
+                          <q-input outlined v-model="input" readonly dense label="Birthday">
+                            <template v-slot:append>
+                              <q-icon name="event" color="primary" class="cursor-pointer">
+                                <q-popup-proxy>
+                                  <q-date v-model="input" mask="YYYY-MM-DD" style="width: 300px" />
+                                </q-popup-proxy>
+                              </q-icon>
+                            </template>
+                          </q-input>
+                          <q-input
+                            dense
+                            outlined
+                            v-model="nik"
+                            type="number"
+                            label="NIK"
+                            class="col-grow text-bold"
+                          />
+                          <q-select
+                            outlined
+                            dense
+                            v-model="gender"
+                            :options="optionsGender"
+                            label="Gender"
+                            class="col-grow"
+                          />
+                        </div>
+                        <div class="q-mt-md" style="display: flex; gap: 10px">
+                          <q-input
+                            dense
+                            outlined
+                            v-model="username"
+                            label="Username"
+                            class="col-grow text-bold"
+                          />
+                          <q-input
+                            v-model="password"
+                            v-if="!isEditingUser"
+                            outlined
+                            dense
+                            label="Password"
+                            :type="isPwd ? 'password' : 'text'"
+                          >
+                            <template v-slot:append>
+                              <q-icon
+                                :name="isPwd ? 'visibility_off' : 'visibility'"
+                                class="cursor-pointer"
+                                @click="isPwd = !isPwd"
+                              />
+                            </template>
+                          </q-input>
+                          <q-input
+                            v-if="!isEditingUser"
+                            v-model="confirmPassword"
+                            outlined
+                            dense
+                            label="Confirm Password"
+                            :type="isConfirmPwd ? 'password' : 'text'"
+                          >
+                            <template v-slot:append>
+                              <q-icon
+                                :name="isConfirmPwd ? 'visibility_off' : 'visibility'"
+                                class="cursor-pointer"
+                                @click="isConfirmPwd = !isConfirmPwd"
+                              />
+                            </template>
+                          </q-input>
+                        </div>
+                        <q-select
+                          outlined
+                          dense
+                          v-model="user"
+                          :options="optionUser"
+                          class="q-mt-md"
+                          label="Select Role"
+                        />
+                      </div>
+                      <div class="col-grow">
+                        <div style="display: flex; gap: 10px">
+                          <HKCard class="col-grow" :style="`border-radius: 5px`">
+                            <div>
+                              <label class="text-bold" style="color: cornflowerblue"
+                                >Super Admin Page</label
+                              >
+                              <div style="display: flex">
+                                <q-checkbox
+                                  :disable="true"
+                                  v-model="checkboxReaderSuperAdminUser"
+                                  label="Reader"
+                                />
+                                <q-checkbox
+                                  :disable="true"
+                                  v-model="checkboxEditorSuperAdminUser"
+                                  label="Editor"
+                                />
+                              </div>
+                            </div>
+                          </HKCard>
+                          <HKCard class="col-grow" :style="`border-radius: 5px`">
+                            <div>
+                              <label class="text-bold" style="color: blueviolet">Admin Page</label>
+                              <div style="display: flex">
+                                <q-checkbox
+                                  :disable="true"
+                                  v-model="checkboxReaderAdminUser"
+                                  label="Reader"
+                                />
+                                <q-checkbox
+                                  :disable="true"
+                                  v-model="checkboxEditorAdminUser"
+                                  label="Editor"
+                                />
+                              </div>
+                            </div>
+                          </HKCard>
+                        </div>
+                        <div style="display: flex; gap: 10px" class="q-mt-sm">
+                          <HKCard class="col-grow" :style="`border-radius: 5px`">
+                            <div>
+                              <label class="text-bold" style="color: crimson">Room Boy Page</label>
+                              <div style="display: flex">
+                                <q-checkbox
+                                  :disable="true"
+                                  v-model="checkboxReaderRoomboyUser"
+                                  label="Reader"
+                                />
+                                <q-checkbox
+                                  :disable="true"
+                                  v-model="checkboxEditorRoomboyUser"
+                                  label="Editor"
+                                />
+                              </div>
+                            </div>
+                          </HKCard>
+                          <HKCard class="col-grow" :style="`border-radius: 5px`">
+                            <div>
+                              <label class="text-bold" style="color: darkorange"
+                                >Supervisor Page</label
+                              >
+                              <div style="display: flex">
+                                <q-checkbox
+                                  :disable="true"
+                                  v-model="checkboxReaderSupervisorUser"
+                                  label="Reader"
+                                />
+                                <q-checkbox
+                                  :disable="true"
+                                  v-model="checkboxEditorSupervisorUser"
+                                  label="Editor"
+                                />
+                              </div>
+                            </div>
+                          </HKCard>
+                        </div>
+                        <!-- <q-select
+                          outlined
+                          dense
+                          v-model="user"
+                          :options="optionUser"
+                          class="q-mt-md"
+                          label="Select Role"
+                        /> -->
+                      </div>
+                    </q-card-section>
+                  </q-card>
+                </q-dialog>
                 <q-item clickable @click="newRoomBoyDialog" class="flex">
                   <q-btn flat rounded size="13px" style="color: #008444">
                     <svg
@@ -346,7 +585,7 @@
                     </svg>
                   </q-btn>
                   <q-item-section>
-                    <q-item-label>Add New Room Boy</q-item-label>
+                    <q-item-label>Add New Room Maid</q-item-label>
                   </q-item-section>
                 </q-item>
                 <q-item clickable style="display: flex" @click="editRoomboy">
@@ -365,7 +604,7 @@
                     </svg>
                   </q-btn>
                   <q-item-section>
-                    <q-item-label>Edit Room Boy</q-item-label>
+                    <q-item-label>Edit Room Maid</q-item-label>
                   </q-item-section>
                 </q-item>
                 <q-dialog v-model="newRoomBoy">
@@ -382,7 +621,7 @@
                           dense
                           v-model="roomBoy"
                           :options="optionRoomBoy"
-                          label="Gender"
+                          label="User"
                         />
                         <div style="display: flex">
                           <q-img
@@ -465,9 +704,12 @@
                             class="q-mt-sm col-grow"
                           />
                         </div>
-                        <q-btn class="text-capitalize" color="primary" @click="sendRoomBoyRequest">{{
-                          editRoomBoySet.button
-                        }}</q-btn>
+                        <q-btn
+                          class="text-capitalize"
+                          color="primary"
+                          @click="sendRoomBoyRequest"
+                          >{{ editRoomBoySet.button }}</q-btn
+                        >
                       </div>
                     </q-card-section>
                   </q-card>
@@ -497,7 +739,7 @@
               :dense="$q.screen.lt.md"
               v-if="showTable"
             >
-              <template v-slot:top-right>
+              <!-- <template v-slot:top-right>
                 <q-btn
                   flat
                   size="13px"
@@ -506,195 +748,7 @@
                 >
                   +
                 </q-btn>
-                <q-dialog v-model="newUser" full-width>
-                  <q-card>
-                    <q-card-section class="row items-center q-pb-none">
-                      <div class="text-h6">{{ editRoomBoySet.title  }}</div>
-                      <q-space />
-                      <div class="text-h6 q-mx-xl">Access</div>
-                      <q-btn class="text-capitalize q-mx-md" color="primary" @click="saveUser">{{
-                        editRoomBoySet.button
-                      }}</q-btn>
-                      <q-btn icon="close" flat round dense v-close-popup @click="clearFieldRole" />
-                    </q-card-section>
-
-                    <q-card-section style="display: flex; gap: 10px; width: 100%" class="col">
-                      <div>
-                        <q-file
-                          dense
-                          outlined
-                          clearable
-                          :placeholder="img"
-                          v-model="img"
-                          bg-color="primary"
-                          label-color="white"
-                          label="Add Picture"
-                          style="width: 150px"
-                          class="ellipsis"
-                          type="file"
-                          @update:model-value="handleUpload()"
-                        />
-                        <q-img class="q-mt-sm" :src="imgURL" v-if="imgURL" />
-                        <div
-                          class="justify-center items-center q-mt-md"
-                          v-else
-                          style="display: flex"
-                        >
-                          <q-icon
-                            name="account_circle"
-                            color="grey"
-                            size="100px"
-                            style="border: 1px solid rgb(83, 83, 83)8, 78, 78)"
-                            class="q-pa-md"
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <div style="display: flex; gap: 10px">
-                          <q-input
-                            dense
-                            outlined
-                            v-model="name"
-                            label="Name"
-                            class="col-grow text-bold"
-                          />
-                          <q-input
-                            dense
-                            outlined
-                            v-model="email"
-                            label="Email"
-                            class="col-grow text-bold"
-                          />
-                          <q-input
-                            dense
-                            outlined
-                            v-model="numberPhone"
-                            label="Number Phone"
-                            class="col-grow"
-                          />
-                        </div>
-                        <div class="q-mt-md" style="display: flex; gap: 10px">
-                          <q-input outlined v-model="input" readonly dense label="Expire at">
-                            <template v-slot:append>
-                              <q-icon name="event" color="primary" class="cursor-pointer">
-                                <q-popup-proxy>
-                                  <q-date v-model="input" mask="YYYY-MM-DD" style="width: 300px" />
-                                </q-popup-proxy>
-                              </q-icon>
-                            </template>
-                          </q-input>
-                          <q-input
-                            dense
-                            outlined
-                            v-model="nik"
-                            label="NIK"
-                            class="col-grow text-bold"
-                          />
-                          <q-select
-                            outlined
-                            dense
-                            v-model="gender"
-                            :options="optionsGender"
-                            label="Gender"
-                            class="col-grow"
-                          />
-                        </div>
-                        <div class="q-mt-md" style="display: flex; gap: 10px">
-                          <q-input
-                            dense
-                            outlined
-                            v-model="username"
-                            label="Username"
-                            class="col-grow text-bold"
-                          />
-                          <q-input
-                            v-model="password"
-                            v-if="!isEditingUser"
-                            outlined
-                            dense
-                            label="Password"
-                            :type="isPwd ? 'password' : 'text'"
-                          >
-                            <template v-slot:append>
-                              <q-icon
-                                :name="isPwd ? 'visibility_off' : 'visibility'"
-                                class="cursor-pointer"
-                                @click="isPwd = !isPwd"
-                              />
-                            </template>
-                          </q-input>
-                          <q-input
-                            v-if="!isEditingUser"
-                            v-model="confirmPassword"
-                            outlined
-                            dense
-                            label="Confirm Password"
-                            :type="isConfirmPwd ? 'password' : 'text'"
-                          >
-                            <template v-slot:append>
-                              <q-icon
-                                :name="isConfirmPwd ? 'visibility_off' : 'visibility'"
-                                class="cursor-pointer"
-                                @click="isConfirmPwd = !isConfirmPwd"
-                              />
-                            </template>
-                          </q-input>
-                        </div>
-                      </div>
-                      <div class="col-grow">
-                        <div style="display: flex; gap: 10px">
-                          <HKCard class="col-grow" :style="`border-radius: 5px`">
-                            <div>
-                              <label class="text-bold">Super Admin Page</label>
-                              <div style="display: flex">
-                                <q-checkbox :disable="true" v-model="checkboxReaderSuperAdminUser" label="Reader" />
-                                <q-checkbox :disable="true" v-model="checkboxEditorSuperAdminUser" label="Editor" />
-                              </div>
-                            </div>
-                          </HKCard>
-                          <HKCard class="col-grow" :style="`border-radius: 5px`">
-                            <div>
-                              <label class="text-bold">Admin Page</label>
-                              <div style="display: flex">
-                                <q-checkbox :disable="true" v-model="checkboxReaderAdminUser" label="Reader" />
-                                <q-checkbox :disable="true" v-model="checkboxEditorAdminUser" label="Editor" />
-                              </div>
-                            </div>
-                          </HKCard>
-                        </div>
-                        <div style="display: flex; gap: 10px" class="q-mt-sm">
-                          <HKCard class="col-grow" :style="`border-radius: 5px`">
-                            <div>
-                              <label class="text-bold">Room Boy Page</label>
-                              <div style="display: flex">
-                                <q-checkbox :disable="true" v-model="checkboxReaderRoomboyUser" label="Reader" />
-                                <q-checkbox :disable="true" v-model="checkboxEditorRoomboyUser" label="Editor" />
-                              </div>
-                            </div>
-                          </HKCard>
-                          <HKCard class="col-grow" :style="`border-radius: 5px`">
-                            <div>
-                              <label class="text-bold">Supervisor Page</label>
-                              <div style="display: flex">
-                                <q-checkbox :disable="true" v-model="checkboxReaderSupervisorUser" label="Reader" />
-                                <q-checkbox :disable="true" v-model="checkboxEditorSupervisorUser" label="Editor" />
-                              </div>
-                            </div>
-                          </HKCard>
-                        </div>
-                        <q-select
-                          outlined
-                          dense
-                          v-model="user"
-                          :options="optionUser"
-                          class="q-mt-md"
-                          label="Select Role"
-                        />
-                      </div>
-                    </q-card-section>
-                  </q-card>
-                </q-dialog>
-              </template>
+              </template> -->
               <template v-slot:body="props">
                 <q-tr :props="props" class="q-d-xs q-d-sm q-d-md">
                   <q-td key="Name" :props="props">
@@ -762,35 +816,35 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="confirmDelete">
-          <q-card style="width: 300px; justify-content: center">
-            <div class="q-pa-sm col" style="display: block; width: 100%; gap: 5px">
-              <div style="width: 100%; text-align: center">
-                Do you want to delete {{ deleteData.name }}?
-              </div>
-              <div class="q-pa-sm col" style="display: flex; width: 100%; gap: 5px">
-                <q-btn
-                  dense
-                  noCaps
-                  color="primary"
-                  v-close-popup
-                  @click="clearFieldRole"
-                  label="Close"
-                  class="q-px-md"
-                  style="border-radius: 10px; width: 100%"
-                />
-                <q-btn
-                  dense
-                  noCaps
-                  color="red"
-                  @click="sendDeletionRequest"
-                  label="Delete"
-                  class="q-px-md"
-                  style="border-radius: 10px; width: 100%"
-                />
-              </div>
-            </div>
-          </q-card>
-        </q-dialog>
+      <q-card style="width: 300px; justify-content: center">
+        <div class="q-pa-sm col" style="display: block; width: 100%; gap: 5px">
+          <div style="width: 100%; text-align: center">
+            Do you want to delete {{ deleteData.name }}?
+          </div>
+          <div class="q-pa-sm col" style="display: flex; width: 100%; gap: 5px">
+            <q-btn
+              dense
+              noCaps
+              color="primary"
+              v-close-popup
+              @click="clearFieldRole"
+              label="Close"
+              class="q-px-md"
+              style="border-radius: 10px; width: 100%"
+            />
+            <q-btn
+              dense
+              noCaps
+              color="red"
+              @click="sendDeletionRequest"
+              label="Delete"
+              class="q-px-md"
+              style="border-radius: 10px; width: 100%"
+            />
+          </div>
+        </div>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -928,28 +982,28 @@ export default defineComponent({
     workShift: {
       handler(newValue) {
         console.log(newValue)
-        if(!newValue?.label) this.workShift = this.optionShift[newValue - 1]
+        if (!newValue?.label) this.workShift = this.optionShift[newValue - 1]
       }
     },
     department: {
-      handler(data){
+      handler(data) {
         console.log(data)
-        if(!data?.label) this.department = this.optionDepartment[data - 1]
+        if (!data?.label) this.department = this.optionDepartment[data - 1]
       }
     },
     isEditingRoomBoy: {
-      handler(value){
+      handler(value) {
         console.log(value)
-        if(value){
-          this.editRoomBoySet = { title: "Edit Room Boy", button: `Edit Room Boy` }
-        } else this.editRoomBoySet = { title: "Add New Room Boy", button: `Assign as Maid` }
+        if (value) {
+          this.editRoomBoySet = { title: 'Edit Room Maid', button: `Edit Room Maid` }
+        } else this.editRoomBoySet = { title: 'Add New Room Maid', button: `Assign as Maid` }
       }
     },
     isEditingUser: {
-      handler(value){
-        if(value){
-          this.editRoomBoySet = { title: "Edit User", button: `Edit User` }
-        } else this.editRoomBoySet = { title: "Add New User", button: `Add User` }
+      handler(value) {
+        if (value) {
+          this.editRoomBoySet = { title: 'Edit User', button: `Edit User` }
+        } else this.editRoomBoySet = { title: 'Add New User', button: `Add User` }
       }
     }
   },
@@ -976,14 +1030,17 @@ export default defineComponent({
       this.confirmDelete = true
     },
     sendDeletionRequest() {
-      try{
-        this.api.delete(`access/${this.deleteData.ident}/${this.deleteData.id}`, ({ message, status }) =>  {
-          if(status != 200) return this.trigger('negative', message) 
-          this.trigger('positive', message)
-          this.fetchData()
-          this.confirmDelete = false
-        })
-      }catch(err){
+      try {
+        this.api.delete(
+          `access/${this.deleteData.ident}/${this.deleteData.id}`,
+          ({ message, status }) => {
+            if (status != 200) return this.trigger('negative', message)
+            this.trigger('positive', message)
+            this.fetchData()
+            this.confirmDelete = false
+          }
+        )
+      } catch (err) {
         console.log(err.message)
       }
     },
@@ -1036,7 +1093,7 @@ export default defineComponent({
             editorSupervisor: lr.supervisor.editor
           }))
 
-          if(listUser.length > 0){
+          if (listUser.length > 0) {
             this.rowsListUser = listUser.map((lu) => ({
               id: lu.id,
               name: lu.name,
@@ -1044,8 +1101,8 @@ export default defineComponent({
               role: lu.role,
               roomBoy: lu.isRoomBoy
             }))
-          }else{
-          this.trigger('negative', 'No User Assign To This Role')
+          } else {
+            this.trigger('negative', 'No User Assign To This Role')
           }
         }
         // else {
@@ -1058,15 +1115,15 @@ export default defineComponent({
     showListUser(row) {
       this.nameRole = row.id
       this.loading = true
-      
+
       let url = `access?roleId=${this.nameRole}`
-      
+
       this.api.get(url, ({ status, data }) => {
         this.loading = false
-        
+
         if (status == 200) {
           const { listRole, listUser } = data
-          
+
           this.rowsListRole = listRole.map((lr) => ({
             id: lr.id,
             nama: lr.name,
@@ -1080,7 +1137,7 @@ export default defineComponent({
             editorSupervisor: lr.supervisor.editor
           }))
 
-          if(listUser.length > 0){
+          if (listUser.length > 0) {
             this.rowsListUser = listUser.map((lu) => ({
               id: lu.id,
               name: lu.name,
@@ -1089,7 +1146,7 @@ export default defineComponent({
               roomBoy: lu.isRoomBoy
             }))
             this.dialogListUser = true
-          }else{
+          } else {
             this.trigger('negative', 'No User Assign To This Role')
             this.dialogListUser = false
           }
@@ -1185,7 +1242,7 @@ export default defineComponent({
         }
       })
     },
-    
+
     // ADD OR EDIT USER
     putDataUser() {
       let url = `access/helper/user/0/add/${this.roleIdUser || this.nameRole}`
@@ -1199,7 +1256,7 @@ export default defineComponent({
             value: lrs.id
           }))
 
-          if(!this.user) this.user = { label: shownRoles.name, value: shownRoles.id }
+          if (!this.user) this.user = { label: shownRoles.name, value: shownRoles.id }
           this.checkboxReaderSuperAdminUser = shownRoles.access.showSuperAdmin
           this.checkboxEditorSuperAdminUser = shownRoles.access.createSuperAdmin
           this.checkboxReaderAdminUser = shownRoles.access.showAdmin
@@ -1232,7 +1289,8 @@ export default defineComponent({
         password: this.password,
         roleId: parseInt(this.roleIdUser)
       }
-      if(this.password != this.confirmPassword) return this.trigger('warning', 'Password didnt match')
+      if (this.password != this.confirmPassword)
+        return this.trigger('warning', 'Password didnt match')
       let url = `access/user/add`
       this.api.useMultipart(true).post(url, data, ({ status, message }) => {
         if (status == 200) {
@@ -1240,7 +1298,7 @@ export default defineComponent({
           this.trigger('positive', message)
           this.clearFieldRole()
           this.fetchData()
-        }else this.trigger('negative', message)
+        } else this.trigger('negative', message)
       })
     },
     updateUser() {
@@ -1248,12 +1306,16 @@ export default defineComponent({
       this.name != this.prevUser.name ? (DataToUpdate['name'] = this.name) : ''
       this.email != this.prevUser.email ? (DataToUpdate['email'] = this.email) : ''
       this.numberPhone != this.prevUser.phone ? (DataToUpdate['phone'] = this.numberPhone) : ''
-      new Date(this.input).toISOString() != this.prevUser.birthday ? (DataToUpdate['birthday'] = new Date(this.input).toISOString()) : ''
+      new Date(this.input).toISOString() != this.prevUser.birthday
+        ? (DataToUpdate['birthday'] = new Date(this.input).toISOString())
+        : ''
       this.nik != this.prevUser.nik ? (DataToUpdate['nik'] = this.nik) : ''
       this.gender != this.prevUser.gender ? (DataToUpdate['gender'] = this.gender) : ''
       this.username != this.prevUser.username ? (DataToUpdate['username'] = this.username) : ''
-      this.user.value != this.prevUser.roleIdUserEdit ? (DataToUpdate['roleId'] = this.user.value) : ''
-      this.img ? DataToUpdate['picture'] = this.img : '' 
+      this.user.value != this.prevUser.roleIdUserEdit
+        ? (DataToUpdate['roleId'] = this.user.value)
+        : ''
+      this.img ? (DataToUpdate['picture'] = this.img) : ''
 
       let url = `access/user/edit/${this.userId}`
       this.api.useMultipart(true).post(url, DataToUpdate, ({ status, message }) => {
@@ -1339,17 +1401,17 @@ export default defineComponent({
         departmentId: this.department.value,
         aliases: this.alias
       }
-      if(this.isEditingRoomBoy){
+      if (this.isEditingRoomBoy) {
         delete data.userId
-        this.api.put(`access/rb/${this.roomBoy.value}`, data, ({ status, message  }) => {
-          if(status != 200) return this.trigger('negative', message)
+        this.api.put(`access/rb/${this.roomBoy.value}`, data, ({ status, message }) => {
+          if (status != 200) return this.trigger('negative', message)
           this.newRoomBoy = false
           this.trigger('positive', message)
           this.fetchData()
         })
-      }else{
+      } else {
         this.api.post('access/rb', data, ({ status, message }) => {
-          if(status != 200) return this.trigger('negative', message)
+          if (status != 200) return this.trigger('negative', message)
           this.newRoomBoy = false
           this.trigger('positive', message)
           this.fetchData()
@@ -1368,14 +1430,14 @@ export default defineComponent({
       this.setDataRoomBoy('edit')
     },
     setDataRoomBoy(act) {
-      if(act != "edit") act = "add"
+      if (act != 'edit') act = 'add'
       let url = `access/helper/room-boy/0/${act}`
 
       this.api.get(url, ({ status, data }) => {
         if (status == 200) {
-          const { listUser, listShift, listDepartment , listMaid} = data
-          if(listMaid){
-            this.optionRoomBoy = listMaid.map(maid => ({
+          const { listUser, listShift, listDepartment, listMaid } = data
+          if (listMaid) {
+            this.optionRoomBoy = listMaid.map((maid) => ({
               label: `${maid.user.name} | ${maid.aliases}`,
               value: maid.id,
               email: maid.user.email,
@@ -1385,7 +1447,7 @@ export default defineComponent({
               departmentId: maid.departmentId,
               shiftId: maid.shiftId
             }))
-          }else{
+          } else {
             this.optionRoomBoy = listUser.map((lu) => ({
               label: lu.name,
               value: lu.id,
@@ -1406,10 +1468,10 @@ export default defineComponent({
           }))
 
           //Set Default
-          this.roomBoy =  this.optionRoomBoy[0]
+          this.roomBoy = this.optionRoomBoy[0]
         }
       })
-    },
+    }
   }
 })
 </script>

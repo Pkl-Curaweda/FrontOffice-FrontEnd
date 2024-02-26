@@ -12,7 +12,7 @@
         >
           <q-list v-for="(type, i) in listOfSortTypes" :key="i">
             <q-item clickable v-close-popup @click="setSortingDisplay(type.id)">
-              <q-item-section>{{type.label}}</q-item-section>
+              <q-item-section>{{ type.label }}</q-item-section>
             </q-item>
           </q-list>
         </q-btn-dropdown>
@@ -69,7 +69,7 @@
               <q-tr class="table-head">
                 <q-th style="padding-top: 0px; padding-bottom: 0px">
                   <template v-slot:header="props">
-                    <q-tr class="table-head" :props="props">
+                    <q-tr class="table-head" :props="props" style="position: sticky">
                       <q-th
                         v-for="(col, i) in props.cols.label"
                         :key="i"
@@ -192,7 +192,7 @@ export default defineComponent({
       deep: true,
       handler(newDateRange) {
         this.$router.push({
-          name: "room-availability",
+          name: 'room-availability',
           query: { from: this.datePicker.from, to: this.datePicker.to }
         })
         this.fetchData()

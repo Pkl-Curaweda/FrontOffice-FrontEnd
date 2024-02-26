@@ -513,6 +513,7 @@ export default defineComponent({
             message: 'Row deleted successfully.',
             timeout: 1000
           })
+          this.confirmDelete = false
           this.fetchData()
         }
       )

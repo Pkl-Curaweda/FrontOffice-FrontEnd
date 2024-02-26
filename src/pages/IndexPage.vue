@@ -434,11 +434,7 @@ export default {
       this.api.get(`dashboard`, ({ data, status, message }) => {
         if (status == 200) {
           const { hk } = data
-          const Data = [
-            {
-              data: [hk.vc, hk.vcu, hk.vd, hk.oc, hk.od]
-            }
-          ]
+         
           this.series = [
             {
               data: [hk.vc, hk.vcu, hk.vd, hk.oc, hk.od]

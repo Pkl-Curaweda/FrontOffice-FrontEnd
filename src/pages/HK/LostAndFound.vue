@@ -6,18 +6,15 @@
       style="column-gap: 24px; width: 100%"
       :style="$q.screen.lt.md ? 'flex-direction: column' : ''"
     >
-      <!-- Pie Chart (Mobile) -->
-      <HKChart
-        v-if="$q.screen.lt.md"
-        ref="hkChartMobile"
-        :series="series"
-        :options="chartOptions"
-        class="mobileChart"
-      />
-
       <!-- Pie Chart (Desktop) -->
-      <div style="flex: 1 1 0%">
-        <apexchart type="donut" ref="hkChartDesktop" width="400" :options="chartOptions" :series="series"></apexchart>
+      <div style="display: flex; justify-content: center; align-items: center">
+        <apexchart
+          type="donut"
+          ref="hkChartDesktop"
+          width="400"
+          :options="chartOptions"
+          :series="series"
+        ></apexchart>
       </div>
 
       <!-- Found & Lost -->
@@ -281,7 +278,6 @@
 
 <script>
 import HKCard from 'src/components/HK/Card/HKCard.vue'
-import HKChart from 'src/components/charts/HKChart.vue'
 import { defineComponent, ref } from 'vue'
 
 const columns = [
@@ -529,7 +525,7 @@ export default defineComponent({
 
       this.api.post(url, null, ({ status, message }) => {
         if (status == 200) {
-          this.trigger('possitive', message)
+          this.trigger('positive', message)
           this.fetchData()
         }
       })
@@ -541,7 +537,7 @@ export default defineComponent({
 
       this.api.post(url, null, ({ status, message }) => {
         if (status == 200) {
-          this.trigger('possitive', message)
+          this.trigger('positive', message)
           this.fetchData()
         }
       })
@@ -553,7 +549,7 @@ export default defineComponent({
 
       this.api.delete(url, ({ status, message }) => {
         if (status == 200) {
-          this.trigger('possitive', message)
+          this.trigger('positive', message)
           this.fetchData()
         }
       })
@@ -565,7 +561,9 @@ export default defineComponent({
         this.fetchData()
       }
 
-      let url = `lostfound?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}&search=${this.searchData ? this.searchData : ''}`
+      let url = `lostfound?page=${this.pagination.page}&perPage=${
+        this.pagination.rowsPerPage
+      }&search=${this.searchData ? this.searchData : ''}`
       if (this.filterDisplay !== null) url += `&sortOrder=${this.filterDisplay}`
 
       const DateArrival = this.datePickerArrival?.replace(/\//g, '-')

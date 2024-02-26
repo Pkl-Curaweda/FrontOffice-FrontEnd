@@ -117,10 +117,24 @@
           style="width: 80px"
           class="text-bold q-mt-sm"
         />
-        <q-input dense outlined type="number" v-model="price" label="Price" class="q-mt-sm col-grow text-bold" />
+        <q-input
+          dense
+          outlined
+          type="number"
+          v-model="price"
+          label="Price"
+          class="q-mt-sm col-grow text-bold"
+        />
       </div>
       <div class="q-mt-sm" style="display: flex; gap: 10px">
-        <q-input dense outlined v-model="stock" label="Stock" class="col-grow text-bold" style="width: 100px;">
+        <q-input
+          dense
+          outlined
+          v-model="stock"
+          label="Stock"
+          class="col-grow text-bold"
+          style="width: 100px"
+        >
           <template v-slot:append>
             <q-icon name="error">
               <q-tooltip> Ignore if unlimited </q-tooltip>
@@ -226,7 +240,7 @@ export default defineComponent({
 
       this.api.post(url, data, ({ status, message }) => {
         if (status == 200) {
-          this.trigger('possitive', message)
+          this.trigger('positive', message)
           this.fetchData()
         } else {
           this.trigger('negative', message)
@@ -245,7 +259,7 @@ export default defineComponent({
 
       this.api.post(url, data, ({ status, message }) => {
         if (status == 200) {
-          this.trigger('possitive', message)
+          this.trigger('positive', message)
           this.fetchData()
         } else {
           this.trigger('negative', message)
@@ -267,6 +281,8 @@ export default defineComponent({
           this.stock = detail.stock
           this.description = detail.description
           this.trigger('possitve', message)
+        } else {
+          this.trigger('negative', message)
         }
       })
     },
@@ -277,8 +293,10 @@ export default defineComponent({
 
       this.api.delete(url, ({ status, message }) => {
         if (status == 200) {
-          this.trigger('possitive', message)
+          this.trigger('positive', message)
           this.fetchData()
+        } else {
+          this.trigger('negative', message)
         }
       })
     },

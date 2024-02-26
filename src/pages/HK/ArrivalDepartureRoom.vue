@@ -488,7 +488,7 @@ export default defineComponent({
       tableRowsHistory: ref(),
       guestHistoryModel: ref(false),
       searchInput: ref(''),
-      listOfSortTypes: ref()
+      listOfSortTypes: ref([])
     }
   },
   data() {
@@ -667,7 +667,9 @@ export default defineComponent({
             created_date: row.created
           }))
 
-          this.listOfSortTypes = data.sortingList
+          console.log(this.listOfSortTypes)
+          this.listOfSortTypes =
+            this.listOfSortTypes.length < 1 ? data.sortingList : this.listOfSortTypes
         }
       })
     }

@@ -72,6 +72,7 @@
           :title="title"
           @request="onPaginationChange"
           v-model:pagination="pagination"
+          style="height: 300px"
         />
       </div>
     </HKCard>

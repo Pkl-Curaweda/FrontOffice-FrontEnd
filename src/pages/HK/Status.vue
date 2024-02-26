@@ -73,19 +73,35 @@
                 >
                   <template v-slot:body="props">
                     <q-tr :props="props" class="q-d-xs q-d-sm q-d-md">
-                      <q-td key="room-no" :props="props" @click="handleClick(props.row.roomno)">
+                      <q-td
+                        key="room-no"
+                        :props="props"
+                        @click="handleClick(props.row.roomno)"
+                        class="cursor-pointer"
+                      >
                         {{ props.row.roomno }}
                       </q-td>
-                      <q-td key="roomtype" :props="props" @click="handleClick(props.row.roomno)">
+                      <q-td
+                        key="roomtype"
+                        :props="props"
+                        @click="handleClick(props.row.roomno)"
+                        class="cursor-pointer"
+                      >
                         {{ props.row.roomtype }}
                       </q-td>
-                      <q-td key="btype" :props="props" @click="handleClick(props.row.roomno)">
+                      <q-td
+                        key="btype"
+                        :props="props"
+                        @click="handleClick(props.row.roomno)"
+                        class="cursor-pointer"
+                      >
                         {{ props.row.btype }}
                       </q-td>
                       <q-td
                         key="statusdescription"
                         :props="props"
                         @click="handleClick(props.row.roomno)"
+                        class="cursor-pointer"
                       >
                         {{ props.row.statusdescription }}
                       </q-td>

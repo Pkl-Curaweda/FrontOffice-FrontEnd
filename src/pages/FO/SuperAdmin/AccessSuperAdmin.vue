@@ -83,7 +83,7 @@
       </q-dialog>
     </q-toolbar> -->
 
-    <div class="my-table multi-panel q-px-md q-py-sm" style="height: 100vh">
+    <div class="my-table multi-panel q-px-md q-py-sm" style="height: 590px">
       <q-table
         :rows="rowsListRole"
         :columns="columnsListRole"
@@ -316,7 +316,7 @@
           <q-btn auto-close flat round icon="more_vert">
             <q-menu>
               <q-list>
-                <q-item clickable @click="newUserDialog" style="display: flex">
+                <!-- <q-item clickable @click="newUserDialog" style="display: flex">
                   <q-btn flat rounded size="13px" style="color: #008444">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -334,7 +334,186 @@
                   <q-item-section>
                     <q-item-label>Add New User</q-item-label>
                   </q-item-section>
+                </q-item> -->
+                <q-item clickable @click="newRoomBoyDialog" class="flex">
+                  <q-btn flat rounded size="13px" style="color: #008444">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="19"
+                      height="20"
+                      viewBox="0 0 19 20"
+                      fill="none"
+                    >
+                      <path
+                        d="M16 10.09V4C16 1.79 12.42 0 8 0C3.58 0 0 1.79 0 4V14C0 16.21 3.59 18 8 18C8.46 18 8.9 18 9.33 17.94C9.1129 17.3162 9.00137 16.6605 9 16V15.95C8.68 16 8.35 16 8 16C4.13 16 2 14.5 2 14V11.77C3.61 12.55 5.72 13 8 13C8.65 13 9.27 12.96 9.88 12.89C10.4127 12.0085 11.1638 11.2794 12.0607 10.7731C12.9577 10.2668 13.9701 10.0005 15 10C15.34 10 15.67 10.04 16 10.09ZM14 9.45C12.7 10.4 10.42 11 8 11C5.58 11 3.3 10.4 2 9.45V6.64C3.47 7.47 5.61 8 8 8C10.39 8 12.53 7.47 14 6.64V9.45ZM8 6C4.13 6 2 4.5 2 4C2 3.5 4.13 2 8 2C11.87 2 14 3.5 14 4C14 4.5 11.87 6 8 6ZM19 15V17H16V20H14V17H11V15H14V12H16V15H19Z"
+                        fill="#008444"
+                      />
+                    </svg>
+                  </q-btn>
+                  <q-item-section>
+                    <q-item-label>Add New Room Maid</q-item-label>
+                  </q-item-section>
                 </q-item>
+                <q-item clickable style="display: flex" @click="editRoomboy">
+                  <q-btn flat rounded size="13px" style="color: #008444">
+                    <svg
+                      width="19"
+                      height="19"
+                      viewBox="0 0 19 19"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M8 13C8.8 13 9.57 12.93 10.31 12.82L13.22 9.91C11.89 10.59 10 11 8 11C5.58 11 3.3 10.4 2 9.45V6.64C3.47 7.47 5.61 8 8 8C10.39 8 12.53 7.47 14 6.64V9.13L15.39 7.74C15.57 7.56 15.78 7.42 16 7.3V4C16 1.79 12.42 0 8 0C3.58 0 0 1.79 0 4V14C0 16.04 3.06 17.72 7 17.97V16.13L7.17 15.96C3.84 15.76 2 14.46 2 14V11.77C3.61 12.55 5.72 13 8 13ZM8 2C11.87 2 14 3.5 14 4C14 4.5 11.87 6 8 6C4.13 6 2 4.5 2 4C2 3.5 4.13 2 8 2ZM15.13 10.83L17.17 12.87L11.04 19H9V16.96L15.13 10.83ZM18.85 11.19L17.87 12.17L15.83 10.13L16.81 9.15C17 8.95 17.33 8.95 17.53 9.15L18.85 10.47C19.05 10.67 19.05 11 18.85 11.19Z"
+                        fill="#008444"
+                      />
+                    </svg>
+                  </q-btn>
+                  <q-item-section>
+                    <q-item-label>Edit Room Maid</q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-dialog v-model="newRoomBoy">
+                  <q-card style="width: 700px; max-width: 80vw">
+                    <q-card-section class="row items-center q-pb-none">
+                      <div class="text-h6">{{ editRoomBoySet.title }}</div>
+                      <q-space />
+                      <q-btn icon="close" flat round dense v-close-popup />
+                    </q-card-section>
+                    <q-card-section style="display: flex; justify-content: space-between">
+                      <div>
+                        <q-select
+                          outlined
+                          dense
+                          v-model="roomBoy"
+                          :options="optionRoomBoy"
+                          label="User"
+                        />
+                        <div style="display: flex">
+                          <q-img
+                            :src="imgRoomBoy"
+                            style="width: 150px"
+                            class="q-mt-sm"
+                            v-if="imgRoomBoy"
+                          />
+                          <div
+                            v-else
+                            class="justify-center items-center q-mt-md"
+                            style="display: flex"
+                          >
+                            <q-icon
+                              name="o_person"
+                              size="100px"
+                              style="border: 1px solid black"
+                              class="q-pa-md"
+                            />
+                          </div>
+                          <div class="q-mt-sm q-ml-md col-grow q-mr-xl">
+                            <div class="q-mt-sm">
+                              <q-input
+                                dense
+                                outlined
+                                v-model="nameRoomBoy"
+                                label="Name"
+                                disable
+                                class="col-grow text-bold"
+                              />
+                              <q-input
+                                dense
+                                outlined
+                                v-model="emailRoomBoy"
+                                label="Email"
+                                disable
+                                class="q-mt-sm col-grow text-bold"
+                              />
+                              <q-input
+                                dense
+                                outlined
+                                v-model="roleRoomBoy"
+                                label="Role"
+                                disable
+                                class="q-mt-sm col-grow text-bold"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        style="
+                          display: flex;
+                          flex-direction: column;
+                          justify-content: space-between;
+                        "
+                      >
+                        <div>
+                          <q-select
+                            outlined
+                            dense
+                            v-model="workShift"
+                            :options="optionShift"
+                            label="Shift"
+                            class="col-grow"
+                          />
+                          <q-input
+                            dense
+                            outlined
+                            v-model="alias"
+                            label="Aliases"
+                            class="q-mt-sm col-grow text-bold"
+                          />
+                          <q-select
+                            outlined
+                            dense
+                            v-model="department"
+                            :options="optionDepartment"
+                            label="Deparment"
+                            class="q-mt-sm col-grow"
+                          />
+                        </div>
+                        <q-btn
+                          class="text-capitalize"
+                          color="primary"
+                          @click="sendRoomBoyRequest"
+                          >{{ editRoomBoySet.button }}</q-btn
+                        >
+                      </div>
+                    </q-card-section>
+                  </q-card>
+                </q-dialog>
+              </q-list>
+            </q-menu>
+          </q-btn>
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section>
+          <div :class="`tableComp ${gapColorClass}`" class="my-table q-mt-md" style="width: 100%">
+            <q-table
+              :rows="rowsListUser"
+              :columns="columnsListUser"
+              row-key="name"
+              square
+              :table-header-style="{
+                backgroundColor: '#069550',
+                color: '#ffffff',
+                padding: '9px'
+              }"
+              :card-style="{ boxShadow: 'none' }"
+              rows-per-page-label="Show"
+              :rows-per-page-options="[0]"
+              hide-bottom
+              :dense="$q.screen.lt.md"
+              v-if="showTable"
+            >
+              <template v-slot:top-right>
+                <q-btn
+                  flat
+                  size="13px"
+                  style="background-color: #008444; color: white"
+                  @click="newUserDialog"
+                >
+                  +
+                </q-btn>
                 <q-dialog v-model="newUser" full-width>
                   <q-card>
                     <q-card-section class="row items-center q-pb-none">
@@ -565,186 +744,7 @@
                     </q-card-section>
                   </q-card>
                 </q-dialog>
-                <q-item clickable @click="newRoomBoyDialog" class="flex">
-                  <q-btn flat rounded size="13px" style="color: #008444">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="19"
-                      height="20"
-                      viewBox="0 0 19 20"
-                      fill="none"
-                    >
-                      <path
-                        d="M16 10.09V4C16 1.79 12.42 0 8 0C3.58 0 0 1.79 0 4V14C0 16.21 3.59 18 8 18C8.46 18 8.9 18 9.33 17.94C9.1129 17.3162 9.00137 16.6605 9 16V15.95C8.68 16 8.35 16 8 16C4.13 16 2 14.5 2 14V11.77C3.61 12.55 5.72 13 8 13C8.65 13 9.27 12.96 9.88 12.89C10.4127 12.0085 11.1638 11.2794 12.0607 10.7731C12.9577 10.2668 13.9701 10.0005 15 10C15.34 10 15.67 10.04 16 10.09ZM14 9.45C12.7 10.4 10.42 11 8 11C5.58 11 3.3 10.4 2 9.45V6.64C3.47 7.47 5.61 8 8 8C10.39 8 12.53 7.47 14 6.64V9.45ZM8 6C4.13 6 2 4.5 2 4C2 3.5 4.13 2 8 2C11.87 2 14 3.5 14 4C14 4.5 11.87 6 8 6ZM19 15V17H16V20H14V17H11V15H14V12H16V15H19Z"
-                        fill="#008444"
-                      />
-                    </svg>
-                  </q-btn>
-                  <q-item-section>
-                    <q-item-label>Add New Room Maid</q-item-label>
-                  </q-item-section>
-                </q-item>
-                <q-item clickable style="display: flex" @click="editRoomboy">
-                  <q-btn flat rounded size="13px" style="color: #008444">
-                    <svg
-                      width="19"
-                      height="19"
-                      viewBox="0 0 19 19"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M8 13C8.8 13 9.57 12.93 10.31 12.82L13.22 9.91C11.89 10.59 10 11 8 11C5.58 11 3.3 10.4 2 9.45V6.64C3.47 7.47 5.61 8 8 8C10.39 8 12.53 7.47 14 6.64V9.13L15.39 7.74C15.57 7.56 15.78 7.42 16 7.3V4C16 1.79 12.42 0 8 0C3.58 0 0 1.79 0 4V14C0 16.04 3.06 17.72 7 17.97V16.13L7.17 15.96C3.84 15.76 2 14.46 2 14V11.77C3.61 12.55 5.72 13 8 13ZM8 2C11.87 2 14 3.5 14 4C14 4.5 11.87 6 8 6C4.13 6 2 4.5 2 4C2 3.5 4.13 2 8 2ZM15.13 10.83L17.17 12.87L11.04 19H9V16.96L15.13 10.83ZM18.85 11.19L17.87 12.17L15.83 10.13L16.81 9.15C17 8.95 17.33 8.95 17.53 9.15L18.85 10.47C19.05 10.67 19.05 11 18.85 11.19Z"
-                        fill="#008444"
-                      />
-                    </svg>
-                  </q-btn>
-                  <q-item-section>
-                    <q-item-label>Edit Room Maid</q-item-label>
-                  </q-item-section>
-                </q-item>
-                <q-dialog v-model="newRoomBoy">
-                  <q-card style="width: 700px; max-width: 80vw">
-                    <q-card-section class="row items-center q-pb-none">
-                      <div class="text-h6">{{ editRoomBoySet.title }}</div>
-                      <q-space />
-                      <q-btn icon="close" flat round dense v-close-popup />
-                    </q-card-section>
-                    <q-card-section style="display: flex; justify-content: space-between">
-                      <div>
-                        <q-select
-                          outlined
-                          dense
-                          v-model="roomBoy"
-                          :options="optionRoomBoy"
-                          label="User"
-                        />
-                        <div style="display: flex">
-                          <q-img
-                            :src="imgRoomBoy"
-                            style="width: 150px"
-                            class="q-mt-sm"
-                            v-if="imgRoomBoy"
-                          />
-                          <div
-                            v-else
-                            class="justify-center items-center q-mt-md"
-                            style="display: flex"
-                          >
-                            <q-icon
-                              name="o_person"
-                              size="100px"
-                              style="border: 1px solid black"
-                              class="q-pa-md"
-                            />
-                          </div>
-                          <div class="q-mt-sm q-ml-md col-grow q-mr-xl">
-                            <div class="q-mt-sm">
-                              <q-input
-                                dense
-                                outlined
-                                v-model="nameRoomBoy"
-                                label="Name"
-                                disable
-                                class="col-grow text-bold"
-                              />
-                              <q-input
-                                dense
-                                outlined
-                                v-model="emailRoomBoy"
-                                label="Email"
-                                disable
-                                class="q-mt-sm col-grow text-bold"
-                              />
-                              <q-input
-                                dense
-                                outlined
-                                v-model="roleRoomBoy"
-                                label="Role"
-                                disable
-                                class="q-mt-sm col-grow text-bold"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        style="
-                          display: flex;
-                          flex-direction: column;
-                          justify-content: space-between;
-                        "
-                      >
-                        <div>
-                          <q-select
-                            outlined
-                            dense
-                            v-model="workShift"
-                            :options="optionShift"
-                            label="Shift"
-                            class="col-grow"
-                          />
-                          <q-input
-                            dense
-                            outlined
-                            v-model="alias"
-                            label="Aliases"
-                            class="q-mt-sm col-grow text-bold"
-                          />
-                          <q-select
-                            outlined
-                            dense
-                            v-model="department"
-                            :options="optionDepartment"
-                            label="Deparment"
-                            class="q-mt-sm col-grow"
-                          />
-                        </div>
-                        <q-btn
-                          class="text-capitalize"
-                          color="primary"
-                          @click="sendRoomBoyRequest"
-                          >{{ editRoomBoySet.button }}</q-btn
-                        >
-                      </div>
-                    </q-card-section>
-                  </q-card>
-                </q-dialog>
-              </q-list>
-            </q-menu>
-          </q-btn>
-          <q-btn icon="close" flat round dense v-close-popup />
-        </q-card-section>
-
-        <q-card-section>
-          <div :class="`tableComp ${gapColorClass}`" class="my-table q-mt-md" style="width: 100%">
-            <q-table
-              :rows="rowsListUser"
-              :columns="columnsListUser"
-              row-key="name"
-              square
-              :table-header-style="{
-                backgroundColor: '#069550',
-                color: '#ffffff',
-                padding: '9px'
-              }"
-              :card-style="{ boxShadow: 'none' }"
-              rows-per-page-label="Show"
-              :rows-per-page-options="[0]"
-              hide-bottom
-              :dense="$q.screen.lt.md"
-              v-if="showTable"
-            >
-              <!-- <template v-slot:top-right>
-                <q-btn
-                  flat
-                  size="13px"
-                  style="background-color: #008444; color: white"
-                  @click="newUserDialog"
-                >
-                  +
-                </q-btn>
-              </template> -->
+              </template>
               <template v-slot:body="props">
                 <q-tr :props="props" class="q-d-xs q-d-sm q-d-md">
                   <q-td key="Name" :props="props">
@@ -1178,7 +1178,7 @@ export default defineComponent({
         if (status == 200) {
           this.fetchData()
           this.clearFieldRole()
-          this.trigger('possitive', message)
+          this.trigger('positive', message)
         }
       })
     },
@@ -1207,7 +1207,7 @@ export default defineComponent({
       let url = `access/role/${this.roleId}`
       this.api.put(url, data, ({ status, message }) => {
         if (status == 200) {
-          this.trigger('possitive', message)
+          this.trigger('positive', message)
           this.clearFieldRole()
           this.fetchData()
         }
@@ -1235,7 +1235,7 @@ export default defineComponent({
           this.checkboxEditorSupervisor = data.access.createSupervisor
           this.roleId = roleId
           this.putIdRole(this.roleId)
-          this.trigger('possitive', message)
+          this.trigger('positive', message)
         }
       })
     },
@@ -1368,6 +1368,7 @@ export default defineComponent({
           this.roleIdUser = shownUser.role.id
           this.userId = userId
           this.putIdUser(this.userId, this.roleIdUser)
+          this.trigger('positive', message)
           console.log(this.roleIdUser)
         }
       })

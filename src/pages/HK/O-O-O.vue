@@ -115,7 +115,7 @@
           :rows="tableRows"
           :columns="tableColumns"
           :pagination="pagination"
-          :rows-per-page-options="[0]"
+          :rows-per-page-options="[100000000000000000000000]"
           row-key="name"
           square
           :table-header-style="{
@@ -434,7 +434,7 @@ export default defineComponent({
 
       this.api.post(url, data, ({ status, message }) => {
         if (status === 200) {
-          this.trigger('possitive', message)
+          this.trigger('positive', message)
           this.fetchData()
         }
       })

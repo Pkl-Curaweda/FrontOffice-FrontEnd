@@ -55,14 +55,13 @@
         </div>
       </q-card-section>
       <q-card-section
-        :class="` ${$q.screen.lt.md ? 'column q-gutter-lg' : 'row items-center'} justify-between`"
+        :class="` ${$q.screen.lt.md ? 'column q-gutter-lg' : 'flex justify-center items-center'} `"
       >
-        <div :class="` ${$q.screen.lt.md ? 'col-12' : 'col-7'} `" style="height: 300px">
+        <div :class="` ${$q.screen.lt.md ? 'col-12' : 'col-70'} `" style="height: 300px">
           <!-- bar chart -->
           <apexchart
-            style="padding: 0 20px"
+            style="padding: 0 20px; width: 500px"
             type="bar"
-            width="100%"
             height="300px"
             ref="barChart"
             :options="chartOptionsBar"
@@ -139,7 +138,7 @@ import HKCard from 'src/components/HK/Card/HKCard.vue'
 
 const chartOptionsBar = ref({
   chart: {
-    type: 'bar',
+    type: 'bar'
   },
   responsive: [
     {
@@ -189,23 +188,14 @@ const chartOptionsDonut = {
     enabled: false
   },
   fill: {
-    colors: [
-      '#a468d3',
-      '#77ce7f'
-    ]
+    colors: ['#a468d3', '#77ce7f']
   },
-  labels: [
-    'Room',
-    'Person'
-  ],
+  labels: ['Room', 'Person'],
   legend: {
     position: 'left',
     show: false,
     markers: {
-      fillColors: [
-      '#a468d3',
-      '#77ce7f'
-      ]
+      fillColors: ['#a468d3', '#77ce7f']
     }
   }
 }
@@ -230,14 +220,18 @@ const tableRow = ref([])
 
 const radio_opt = ref([])
 
-const selectOption = [{ label: 'Show by Week', value: "week" }, { label: 'Show by Month', value: "month" }, { label: 'Show by Year', value: "year" }]
+const selectOption = [
+  { label: 'Show by Week', value: 'week' },
+  { label: 'Show by Month', value: 'month' },
+  { label: 'Show by Year', value: 'year' }
+]
 
 export default defineComponent({
   name: 'RoomOccupancyPage',
   components: { HKCard },
   setup() {
     return {
-      r_group: ref("ALL"),
+      r_group: ref('ALL'),
       model: ref(null),
       options: selectOption,
       roomData,
@@ -274,7 +268,7 @@ export default defineComponent({
       }
     },
     model: {
-      handler(value){
+      handler(value) {
         this.filter = value.value
         this.fetchData()
       }

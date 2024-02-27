@@ -5,7 +5,12 @@ import {
   hkroomboy_routes,
   hksupervisor_routes
 } from './housekeeping.router'
-import { inroomservice_routes } from './inroomservice.router'
+import {
+  inroomservice_routes,
+  irsuser_routes,
+  irsmitra_routes,
+  irsadmin_routes
+} from './inroomservice.router'
 
 const routes = [
   {
@@ -37,8 +42,7 @@ const routes = [
           title: 'Login In Room',
           protected: false
         }
-      },
-
+      }
     ]
   },
 
@@ -47,7 +51,7 @@ const routes = [
     component: () => import('layouts/FOLayout.vue'),
     children: frontoffice_routes,
     meta: {
-      protected: true 
+      protected: true
     }
   },
 
@@ -100,6 +104,33 @@ const routes = [
     path: '/irs',
     component: () => import('layouts/IRS/IRSLayout.vue'),
     children: inroomservice_routes
+  },
+
+  {
+    path: '/irs/user',
+    component: () => import('layouts/IRS/IRSLayout.vue'),
+    children: irsuser_routes,
+    meta: {
+      protected: true
+    }
+  },
+
+  {
+    path: '/irs/mitra',
+    component: () => import('layouts/IRS/IRSLayout.vue'),
+    children: irsmitra_routes,
+    meta: {
+      protected: true
+    }
+  },
+
+  {
+    path: '/irs/admin',
+    component: () => import('layouts/IRS/IRSLayout.vue'),
+    children: irsadmin_routes,
+    meta: {
+      protected: true
+    }
   },
 
   {

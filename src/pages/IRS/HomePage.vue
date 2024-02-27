@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div class="text-center text-h5 text-bold q-mt-xl">Welcome, Your Name</div>
+    <div class="text-center text-h5 text-bold q-mt-xl">Welcome, {{ user.name }}</div>
     <div class="text-center text-bold q-mt-sm">What do you need today?</div>
 
     <div class="flex justify-center items-center">
@@ -16,9 +16,8 @@
         <q-card class="my-card">
           <q-card-section horizontal class="items-center">
             <div class="q-mx-lg q-my-sm">
-              <div>9 Desember 2023</div>
-              <div class="text-h6 text-bold q-mt-lg">Mini Market</div>
-              <div class="q-mt-md">10 am - 12 am</div>
+              <div class="text-h6 text-bold">Mini Market</div>
+              <div class="q-mt-xl">10 am - 12 am</div>
             </div>
             <img style="height: 90px" src="../../assets/img/information.png" />
           </q-card-section>
@@ -39,9 +38,8 @@
         <q-card class="my-card">
           <q-card-section horizontal class="items-center">
             <div class="q-mx-lg q-my-sm">
-              <div>9 Desember 2023</div>
-              <div class="text-h6 text-bold q-mt-lg">Mini Market</div>
-              <div class="q-mt-md">10 am - 12 am</div>
+              <div class="text-h6 text-bold">Mini Market</div>
+              <div class="q-mt-xl">10 am - 12 am</div>
             </div>
             <img style="height: 90px" src="../../assets/img/information.png" />
           </q-card-section>
@@ -96,7 +94,8 @@ export default defineComponent({
   },
   data() {
     return {
-      api: new this.$Api('inroomservice')
+      api: new this.$Api('inroomservice'),
+      user: this.$AuthStore.getUser()
     }
   },
   mounted() {

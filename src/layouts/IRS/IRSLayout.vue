@@ -6,7 +6,7 @@
           class="text-weight-bold"
           style="display: flex; justify-content: space-between; align-items: center"
         >
-          <img src="../../assets/img/lingian-logo.png" style="width: 50px" />
+          <img src="../../assets/img/lingian-logo.png" style="width: 50px; padding:5px;" />
 
           <!-- notification -->
           <q-btn round dense flat icon="o_notifications">

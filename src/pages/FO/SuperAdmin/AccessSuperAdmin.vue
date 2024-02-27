@@ -1138,7 +1138,7 @@ export default defineComponent({
             this.dialogListUser = true
           } else {
             this.trigger('negative', 'No User Assign To This Role')
-            this.dialogListUser = false
+            this.dialogListUser = true
           }
         }
       })

@@ -389,6 +389,7 @@
                 <q-input
                   type="number"
                   v-model="priceRBInput"
+                v-if="!this.editType"
                   dense
                   outlined
                   style="width: 50%"
@@ -397,6 +398,7 @@
                 <q-input
                   type="number"
                   v-model="priceROInput"
+                v-if="!this.editType"
                   dense
                   outlined
                   style="width: 50%"

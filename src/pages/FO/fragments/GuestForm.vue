@@ -764,7 +764,7 @@ export default defineComponent({
           this.roomType = this.roomTypeOpts[newVal.index].value
           this.roomBed = this.roomBedOpts[newVal.index].label
 
-          if(this.arrivalDepart.from && this.arrivalDepart.to) this.checkRoomAvailability()
+          if(this.arrivalDepart.from && this.arrivalDepart.to ) this.checkRoomAvailability()
         }
       },
     'arrivalDepart.from': {

@@ -42,9 +42,6 @@
                       >
                         <q-item-section>Bed Type</q-item-section>
                       </q-item>
-                      <q-item clickable v-close-popup @click="setFilterDisplay(null, 'All')">
-                        <q-item-section>All</q-item-section>
-                      </q-item>
                     </q-list>
                   </q-btn-dropdown>
                   <q-btn flat @click="printStatus" color="primary">
@@ -73,19 +70,35 @@
                 >
                   <template v-slot:body="props">
                     <q-tr :props="props" class="q-d-xs q-d-sm q-d-md">
-                      <q-td key="room-no" :props="props" @click="handleClick(props.row.roomno)">
+                      <q-td
+                        key="room-no"
+                        :props="props"
+                        @click="handleClick(props.row.roomno)"
+                        class="cursor-pointer"
+                      >
                         {{ props.row.roomno }}
                       </q-td>
-                      <q-td key="roomtype" :props="props" @click="handleClick(props.row.roomno)">
+                      <q-td
+                        key="roomtype"
+                        :props="props"
+                        @click="handleClick(props.row.roomno)"
+                        class="cursor-pointer"
+                      >
                         {{ props.row.roomtype }}
                       </q-td>
-                      <q-td key="btype" :props="props" @click="handleClick(props.row.roomno)">
+                      <q-td
+                        key="btype"
+                        :props="props"
+                        @click="handleClick(props.row.roomno)"
+                        class="cursor-pointer"
+                      >
                         {{ props.row.btype }}
                       </q-td>
                       <q-td
                         key="statusdescription"
                         :props="props"
                         @click="handleClick(props.row.roomno)"
+                        class="cursor-pointer"
                       >
                         {{ props.row.statusdescription }}
                       </q-td>
@@ -493,9 +506,6 @@ export default defineComponent({
           break
         case 'bedType':
           this.filterDisplayLabel = 'Bed Type'
-          break
-        case null:
-          this.filterDisplayLabel = 'All'
           break
         // Add other cases as needed
         default:

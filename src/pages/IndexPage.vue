@@ -209,7 +209,7 @@ const chartOptions = {
       colors: ['#fff']
     }
   },
-  series: [ 67, 89 ],
+  series: [ ],
   stroke: {
     show: true,
     width: 1,
@@ -231,6 +231,10 @@ const chartOptions = {
 }
 
 const series = ref([
+  { data: [] }
+])
+
+const reservationSeries = ref([
   { data: [] }
 ])
 
@@ -300,7 +304,6 @@ const reservationOptionEntry = ref({
 
 export default defineComponent({
   setup() {
-    const slide = ref('style')
     const leftDrawerOpen = ref(false),
       currentClock = '-',
       currentDate = '-'
@@ -324,9 +327,10 @@ export default defineComponent({
         { name: 'ResResource', label: 'Reserve Resource', align: 'left', field: 'ResResource' },
         { name: 'CreatedDate', label: 'Created Date', align: 'left', field: 'CreatedDate' }
     ],
-      slide,
+      slide: ref('style'),
+      reservationSeries,
       reservationEnrty: ref([]),
-      usageEntry: ref([ 90, 90]),
+      usageEntry: ref([]),
       reservationOptionEntry,
       usageOptionEntry
     }
@@ -341,7 +345,6 @@ export default defineComponent({
         rowsPerPage: 20
       },
       reservationOption: this.reservationOptionEntry,
-      reservationSeries: this.reservationEnrty,
       usageOption: this.usageOptionEntry,
       usageSeries: this.usageEntry,
       startUp: true
@@ -357,8 +360,8 @@ export default defineComponent({
   },
   mounted() {
     this.getValueDashboard()
-    this.getStatistic()
     this.getChart()
+    this.getStatistic()
   },
   components: { SideBar, ProfileFloat, MessengerFloat },
   created() {
@@ -443,6 +446,11 @@ export default defineComponent({
       })
     },
     getChart() {
+      console.log(this.reservationSeries)
+      if(this.startUp != false){
+        this.startUp = false
+        this.getChart()
+      }
       this.api.get('dashboard', ({ data, status, message }) => {
         if(status != 200) return
         const { hkChart, resvChart } = data
@@ -459,7 +467,6 @@ export default defineComponent({
           })
           
           for (let usage of hkChart) {
-            console.log(usage)
             listOfUsageCategory.push(usage.label)
             listOfUsageSeries.push(usage.value)
           }

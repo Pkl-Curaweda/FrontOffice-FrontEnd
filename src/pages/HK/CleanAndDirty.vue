@@ -280,13 +280,6 @@
               <q-item
                 clickable
                 v-close-popup
-                @click="setFilterDisplay('roomType+asc', 'Room Type')"
-              >
-                <q-item-section>Room Type</q-item-section>
-              </q-item>
-              <q-item
-                clickable
-                v-close-popup
                 @click="setFilterDisplay('guestName+asc', 'Guest Name')"
               >
                 <q-item-section>Guest Name</q-item-section>
@@ -501,9 +494,6 @@ export default defineComponent({
       switch (option) {
         case 'roomId+asc':
           this.filterDisplayLabel = 'Room Number'
-          break
-        case 'roomType+asc':
-          this.filterDisplayLabel = 'Room Type'
           break
         case 'guestName+asc':
           this.filterDisplayLabel = 'Guest Name'

@@ -340,7 +340,7 @@
                             <q-item
                               clickable
                               v-close-popup
-                              @click="confirmDelete = true"
+                              @click="handleDelete(props.row)"
                               style="display: flex"
                             >
                               <q-btn
@@ -348,7 +348,7 @@
                                 rounded
                                 size="14px"
                                 style="color: #269861"
-                                @click="confirmDelete = true"
+                                @click="handleDelete(props.row)"
                                 ><svg
                                   width="19"
                                   height="19"
@@ -373,7 +373,7 @@
                             <div class="q-pa-sm col" style="display: block; width: 100%; gap: 5px">
                               <div style="width: 100%; text-align: center">
                                 Do you want to delete reservation number data
-                                {{ props.row.ResNo.data }}
+                                {{ cacheData.ResNo.data }}
                               </div>
                               <div class="q-pa-sm col" style="display: flex; width: 100%; gap: 5px">
                                 <q-btn
@@ -389,7 +389,7 @@
                                   dense
                                   noCaps
                                   color="red"
-                                  @click="deleteResv(props.row)"
+                                  @click="deleteResv"
                                   label="Delete"
                                   class="q-px-md"
                                   style="width: 100%"
@@ -733,6 +733,10 @@ export default defineComponent({
     }
   },
   methods: {
+    handleDelete(data){
+      this.cacheData = data
+      this.confirmDelete = true
+    },
     handletoggle(data, state) {
       const roomNo = data['RmNo'].data
       this.datares = data
@@ -933,10 +937,10 @@ export default defineComponent({
 
       this.$ResvStore.logc = false
     },
-    async deleteResv(data, state) {
+    async deleteResv() {
       try {
-        const resvId = data['ResNo'].data
-        const roomNo = data['ResRoomNo'].data
+        const resvId = this.cacheData['ResNo'].data
+        const roomNo = this.cacheData['ResRoomNo'].data
         this.api.delete(`detail/reservation/${resvId}/${roomNo}/delete`, ({ data, message }) => {
           this.trigger('positive', message)
           this.fetchData()
@@ -994,7 +998,7 @@ export default defineComponent({
     },
 
     getUniqueRoomBoys(roomBoys) {
-      return roomBoys.map((boy) => boy.name)
+      return roomBoys.map((boy) => boy.user.name)
     },
     trigger(type, txt) {
       this.$q.notify(

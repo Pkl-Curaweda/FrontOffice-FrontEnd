@@ -34,37 +34,55 @@ const routes = [
   {
     path: '/fo',
     component: () => import('layouts/FOLayout.vue'),
-    children: frontoffice_routes
+    children: frontoffice_routes,
+    meta: {
+      protected: true 
+    }
   },
 
   {
     path: '/fo/super-admin',
     component: () => import('layouts/FOLayout.vue'),
-    children: fosuperadmin_routes
+    children: fosuperadmin_routes,
+    meta: {
+      protected: true
+    }
   },
 
   {
     path: '/hk',
     component: () => import('layouts/HK/HKLayout.vue'),
-    children: housekeeping_routes
+    children: housekeeping_routes,
+    meta: {
+      protected: true
+    }
   },
 
   {
     path: '/hk/reports',
     component: () => import('layouts/HK/HKLayout.vue'),
-    children: hkreports_routes
+    children: hkreports_routes,
+    meta: {
+      protected: true
+    }
   },
 
   {
     path: '/hk/rb',
     component: () => import('layouts/HK/ImppsLayout.vue'),
-    children: hkroomboy_routes
+    children: hkroomboy_routes,
+    meta: {
+      protected: true
+    }
   },
 
   {
     path: '/hk/spv',
     component: () => import('layouts/HK/ImppsLayout.vue'),
-    children: hksupervisor_routes
+    children: hksupervisor_routes,
+    meta: {
+      protected: true
+    }
   },
 
   {

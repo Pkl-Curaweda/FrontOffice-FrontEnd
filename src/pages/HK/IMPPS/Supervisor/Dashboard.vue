@@ -97,7 +97,6 @@
                   :options="listRoomNo"
                   label="RoomNo"
                   dense
-                  class="q-mb-md"
                 />
                 <q-select
                   outlined
@@ -106,10 +105,9 @@
                   :options="listMaid"
                   label="Assigned"
                   dense
-                  class="q-mb-md"
                 />
               </div>
-              <div style="display: flex" v-if="this.choosenRoom">
+              <div style="display: flex; padding-top: 20px;" v-if="this.choosenRoom">
                 <div>
                   <img :src="this.choosenRoom.image" style="width: 100px; border-radius: 2px" />
                 </div>
@@ -120,13 +118,25 @@
                   </div>
                 </div>
               </div>
+              <div style="display: flex; gap: 5px">
               <q-input
                 filled
+                dense
                 placeholder="Request"
+                  style="width: 100%"
                 type="text"
                 v-model="requestInput"
                 class="q-my-md"
               />
+              <q-input
+                filled
+                style="width: 100%"
+                dense
+                placeholder="Finish in (Minute)"
+                type="number"
+                v-model="workloadInput"
+                class="q-my-md"
+              /></div>
               <q-input
                 filled
                 placeholder="Add Comment"
@@ -223,7 +233,7 @@
                 dense
                 no-caps
                 v-close-popup="this.maidSelect != null"
-                label="Change Room"
+                label="Add Task"
                 color="primary"
               />
             </q-card-actions>
@@ -254,7 +264,7 @@
                 dense
                 no-caps
                 v-close-popup
-                label="Add Task"
+                label="Change Status"
                 color="primary"
               />
             </q-card-actions>
@@ -545,6 +555,7 @@ export default defineComponent({
       choosenMaid: ref([]),
       roomboySelect: ref(''),
       roomSelect: ref(),
+      workloadInput: ref(),
       maidSelect: ref(''),
       roomboySelectSend: ref(''),
       dialog1: ref(false),
@@ -832,11 +843,12 @@ export default defineComponent({
           maidId: this.maidSelect.value,
           request: this.requestInput,
           comment: this.commentsInput,
-          customWorkload: this.choosenRoom.workload
+          customWorkload: this.workloadInput
         }
         this.api.post(`spv/task`, change, ({ message, status }) => {
           if (status == 200) {
             this.trigger('positive', message)
+            this.dialog1 = false
             this.roomSelect.label = null
             this.maidSelect.value = null
             this.requestInput = null
@@ -844,7 +856,6 @@ export default defineComponent({
             this.choosenRoom.workload = null
             this.fetchData()
             this.clearData()
-            this.dialog1 = false
           } else {
             this.trigger('warning', message)
           }
@@ -865,6 +876,7 @@ export default defineComponent({
         this.api.post(`spv/task`, change, ({ message, status }) => {
           if (status == 200) {
             this.trigger('positive', message)
+            this.dialog1 = false
             this.roomSelect.label = null
             this.maidSelect.value = null
             this.requestInput = null

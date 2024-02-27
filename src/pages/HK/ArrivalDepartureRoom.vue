@@ -183,7 +183,7 @@
               {{ props.row.guest_name }}
             </q-td>
             <q-td key="nik" :props="props">
-              {{ props.row.nik }}
+              {{ props.row.nik.cardId }}
             </q-td>
             <q-td key="arr" :props="props">
               {{ props.row.arr }}
@@ -488,7 +488,7 @@ export default defineComponent({
       tableRowsHistory: ref(),
       guestHistoryModel: ref(false),
       searchInput: ref(''),
-      listOfSortTypes: ref()
+      listOfSortTypes: ref([])
     }
   },
   data() {
@@ -665,7 +665,9 @@ export default defineComponent({
             created_date: row.created
           }))
 
-          this.listOfSortTypes = data.sortingList
+          console.log(this.listOfSortTypes)
+          this.listOfSortTypes =
+            this.listOfSortTypes.length < 1 ? data.sortingList : this.listOfSortTypes
         }
       })
     }

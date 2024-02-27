@@ -33,12 +33,14 @@
         </q-toolbar>
 
         <div class="q-gutter-sm row items-center no-wrap">
-          <ProfileFloat />
+          <q-avatar size="26px">
+            <img :src="user.picture" />
+          </q-avatar>
         </div>
       </q-toolbar>
     </q-header>
 
-    <q-page-container style="overflow: hidden">
+    <q-page-container>
       <Transition name="slide-fade" appear mode="out-in">
         <router-view :key="$route.fullPath" />
       </Transition>
@@ -47,16 +49,20 @@
 </template>
 
 <script>
-import ProfileFloat from 'src/components/ProfileFloat.vue'
 import { useRouter } from 'vue-router'
 
 export default {
-  components: { ProfileFloat },
   setup() {
     const router = useRouter()
     return {}
   },
-  data() {}
+  data() {
+    return {
+      api: new this.$Api('root'),
+      user: this.$AuthStore.getUser()
+    }
+  },
+  methods: {}
 }
 </script>
 

@@ -44,6 +44,9 @@
 
         <!-- <a href="" class="self-end q-mb-sm">Forgot password?</a> -->
         <q-btn label="login" type="submit" class="width-full" color="primary" :loading="loading" />
+        <div style="cursor: pointer" @click="moveChange" to="/auth/login/InRoom">
+          Move to In Room Page
+        </div>
       </q-form>
     </div>
   </q-page>
@@ -93,6 +96,11 @@ export default defineComponent({
           this.loading = false
         }
       )
+    },
+    moveChange() {
+      this.$router.push({
+        name: 'Login-InRoom'
+      })
     }
   }
 })

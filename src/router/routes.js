@@ -27,7 +27,17 @@ const routes = [
           title: 'Login',
           protected: false
         }
-      }
+      },
+      {
+        name: 'Login-InRoom',
+        path: '/auth/login/InRoom',
+        component: () => import('pages/LoginInRoom.vue'),
+        meta: {
+          title: 'Login In Room',
+          protected: false
+        }
+      },
+
     ]
   },
 

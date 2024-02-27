@@ -18,8 +18,8 @@ export const Config = {
     const hostname = window.location.hostname
 
     if (module == 'inroomservice') {
-      url = 'http://localhost:3000/' // production
-      if (hostname === 'localhost') url = 'http://localhost:3000/' // development
+      url = 'http://localhost:3000/irs/' // production
+      if (hostname === 'localhost') url = 'http://localhost:3000/irs/' // development
     } else if (module == 'housekeeping') {
       url = 'http://localhost:3000/hk/' // production
       if (hostname === 'localhost') url = 'http://localhost:3000/hk/' // development

@@ -5,6 +5,7 @@ import {
   hkroomboy_routes,
   hksupervisor_routes
 } from './housekeeping.router'
+import { inroomservice_routes } from './inroomservice.router'
 
 const routes = [
   {
@@ -83,6 +84,12 @@ const routes = [
     meta: {
       protected: true
     }
+  },
+
+  {
+    path: '/irs',
+    component: () => import('layouts/IRS/IRSLayout.vue'),
+    children: inroomservice_routes
   },
 
   {

@@ -1,11 +1,4 @@
 export const housekeeping_routes = [
-  // {
-  //   path: '/hk/dashboard',
-  //   component: () => import('pages/HK/Dashboard.vue'),
-  //   meta: {
-  //     title: 'Dashboard'
-  //   }
-  // },
   {
     path: '/hk/arrival',
     component: () => import('pages/HK/ArrivalDepartureRoom.vue'),

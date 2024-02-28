@@ -15,7 +15,7 @@ export default inroomservice_routes
 export const irsuser_routes = [
   {
     name: 'MinimarketUser',
-    path: '/irs/user/minimarket',
+    path: '/irs/minimarket/user',
     component: () => import('src/pages/IRS/User/MinimarketPage.vue'),
     meta: {
       title: 'Minimarket',
@@ -24,7 +24,7 @@ export const irsuser_routes = [
   },
   {
     name: 'FoodBeverageUser',
-    path: '/irs/user/food-beverage',
+    path: '/irs/food-beverage/user',
     component: () => import('pages/IRS/user/FoodBeverageUser.vue'),
     meta: {
       title: 'Food & Beverage',
@@ -33,7 +33,7 @@ export const irsuser_routes = [
   },
   {
     name: 'LaundryUser',
-    path: '/irs/user/laundry',
+    path: '/irs/laundry/user',
     component: () => import('pages/IRS/user/LaundryUser.vue'),
     meta: {
       title: 'Laundry',
@@ -43,7 +43,7 @@ export const irsuser_routes = [
 
   {
     name: 'InformationUser',
-    path: '/irs/user/information',
+    path: '/irs/information/user',
     component: () => import('pages/IRS/user/InformationUser.vue'),
     meta: {
       title: 'Hotel Information',

@@ -3,8 +3,8 @@
     <div class="text-center text-h5 text-bold q-mt-xl">Welcome, {{ user.name }}</div>
     <div class="text-center text-bold q-mt-sm">What do you need today?</div>
 
-    <div class="flex justify-center items-center">
-      <div style="display: flex" class="q-mt-md">
+    <div class="flex justify-center items-center" style="flex-direction: column">
+      <div style="display: flex" class="q-mt-md" v-for="(item, index) in cardHome" :key="index">
         <div
           style="
             width: 7px;
@@ -13,19 +13,23 @@
             border-radius: 10px;
           "
         ></div>
-        <q-card class="my-card">
-          <q-card-section horizontal class="items-center">
-            <div class="q-mx-lg q-my-sm">
-              <div class="text-h6 text-bold">Mini Market</div>
-              <div class="q-mt-xl">10 am - 12 am</div>
+        <q-card class="my-card" style="width: 250px" @click="toRoute(item.route)">
+          <q-card-section
+            horizontal
+            class="items-center q-mx-lg"
+            style="display: flex; justify-content: space-between"
+          >
+            <div class="q-my-sm">
+              <div class="text-h6 text-bold">{{ item.title || 'hallo' }}</div>
+              <div class="q-mt-xl">{{ item.time || 'hallo' }}</div>
             </div>
-            <img style="height: 90px" src="../../assets/img/information.png" />
+            <img style="height: 90px" :src="item.picture" />
           </q-card-section>
         </q-card>
       </div>
     </div>
 
-    <div class="flex justify-center items-center">
+    <div class="flex justify-center items-center q-pb-lg" style="flex-direction: column">
       <div style="display: flex" class="q-mt-md">
         <div
           style="
@@ -35,8 +39,12 @@
             border-radius: 10px;
           "
         ></div>
-        <q-card class="my-card">
-          <q-card-section horizontal class="items-center">
+        <q-card class="my-card" style="width: 250px" @click="toRouteInformation()">
+          <q-card-section
+            horizontal
+            class="items-center"
+            style="display: flex; justify-content: space-between"
+          >
             <div class="q-mx-lg q-my-sm">
               <div class="text-h6 text-bold">Mini Market</div>
               <div class="q-mt-xl">10 am - 12 am</div>
@@ -84,13 +92,17 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'HomeInRoomService',
 
   setup() {
-    return {}
+    return {
+      cardHome: ref([]),
+      router: useRouter()
+    }
   },
   data() {
     return {
@@ -102,12 +114,25 @@ export default defineComponent({
     this.fetchData()
   },
   methods: {
+    toRouteInformation() {
+      this.router.push('/irs/information/user')
+    },
+    toRoute(path) {
+      this.router.push(path)
+    },
     fetchData() {
-      let url = ``
+      let url = `menu`
 
       this.api.get(url, ({ status, data }) => {
         if (status == 200) {
-          const {} = data
+          this.cardHome = data.map((dh) => ({
+            title: dh.name,
+            time: dh.schedule,
+            picture: dh.picture,
+            route: dh.path
+          }))
+
+          console.log(this.cardHome)
         }
       })
     }

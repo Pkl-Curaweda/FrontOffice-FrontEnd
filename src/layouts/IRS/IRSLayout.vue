@@ -1,12 +1,12 @@
 <template>
   <q-layout view="lHh LpR fFf">
-    <q-header bordered class="bg-white text-black">
+    <q-header bordered v-if="$route.path != '/irs/home/profile'" class="bg-white text-black">
       <q-toolbar class="items-center text-white bg-primary">
         <q-toolbar
           class="text-weight-bold"
           style="display: flex; justify-content: space-between; align-items: center"
         >
-          <img src="../../assets/img/lingian-logo.png" style="width: 50px; padding:5px;" />
+          <img src="../../assets/img/lingian-logo.png" style="width: 50px; padding: 5px" />
 
           <!-- notification -->
           <q-btn round dense flat icon="o_notifications">
@@ -32,7 +32,7 @@
           </q-btn>
         </q-toolbar>
 
-        <div class="q-gutter-sm row items-center no-wrap">
+        <div class="q-gutter-sm row items-center no-wrap" @click="moveProfile()">
           <q-avatar size="26px">
             <img :src="user.picture" />
           </q-avatar>
@@ -60,9 +60,16 @@ export default {
     return {
       api: new this.$Api('root'),
       user: this.$AuthStore.getUser()
+
     }
   },
-  methods: {}
+  methods: {
+    moveProfile() {
+      this.$router.push({
+        name: 'Profile'
+      })
+    }
+  }
 }
 </script>
 

@@ -82,7 +82,7 @@ export class Api {
 
     if (response.status == 400) console.log('api_res_error: bad request')
     else if (response.status == 403) console.log('api_res_error: forbidden')
-    else if (response.status == 404) Helper.showNotif(message || 'Data not found', '', 'warning')
+    // else if (response.status == 404) Helper.showNotif(message || 'Data not found', '', 'warning')
     else if (response.status >= 500) console.log('api_res_error: server error')
   }
 }

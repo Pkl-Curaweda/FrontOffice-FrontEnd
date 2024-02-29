@@ -7,6 +7,15 @@ export const inroomservice_routes = [
       icon: 'task',
       protected: true
     }
+  },
+  {
+    name: 'Profile',
+    path: '/irs/home/profile',
+    component: () => import('pages/IRS/Profile.vue'),
+    meta: {
+      title: 'Profile',
+      protected: true
+    }
   }
 ]
 

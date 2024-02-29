@@ -2,7 +2,7 @@
   <q-btn round dense flat>
     <q-avatar size="26px">
       <img :src="user.picture" />
-    </q-avatar>
+    </q-avatar> 
     <q-menu fit anchor="bottom left" self="top left" style="max-width: 320px">
       <q-item>
         <q-item-section>

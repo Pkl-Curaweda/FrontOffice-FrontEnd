@@ -11,7 +11,8 @@
       <h6 class="text-bold q-ma-none text-center">Welcome to <br />Management System</h6>
       <p class="text-center">Lingian Hotel & Convention</p>
       <q-form @submit.prevent="login" class="column q-mt-md q-gutter-sm" style="min-width: 280px">
-        <q-input
+        <q-input outlined dense v-model="dataModel.email" label="Email" lazy-rules />
+        <!-- <q-input
           outlined
           type="email"
           dense
@@ -22,7 +23,7 @@
             (val) => (val && val.length > 0) || 'Please type something',
             (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || 'Invalid email format'
           ]"
-        />
+        /> -->
 
         <q-input
           outlined

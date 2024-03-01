@@ -4,7 +4,8 @@ export const inroomservice_routes = [
     component: () => import('pages/IRS/HomePage.vue'),
     meta: {
       title: 'Home',
-      icon: 'task',
+      icon: 'home',
+      main_route: true,
       protected: true
     }
   },
@@ -14,6 +15,8 @@ export const inroomservice_routes = [
     component: () => import('pages/IRS/Profile.vue'),
     meta: {
       title: 'Profile',
+      icon: 'person',
+      main_route: true,
       protected: true
     }
   }
@@ -28,6 +31,8 @@ export const irsuser_routes = [
     component: () => import('src/pages/IRS/User/MinimarketPage.vue'),
     meta: {
       title: 'Minimarket',
+      icon: 'Storefront',
+      main_route: true,
       protected: true
     }
   },
@@ -37,6 +42,8 @@ export const irsuser_routes = [
     component: () => import('pages/IRS/user/FoodBeverageUser.vue'),
     meta: {
       title: 'Food & Beverage',
+      icon: 'sports_bar',
+      main_route: true,
       protected: true
     }
   },
@@ -46,6 +53,8 @@ export const irsuser_routes = [
     component: () => import('pages/IRS/user/LaundryUser.vue'),
     meta: {
       title: 'Laundry',
+      icon: 'local_laundry_service',
+      main_route: true,
       protected: true
     }
   },
@@ -56,6 +65,30 @@ export const irsuser_routes = [
     component: () => import('pages/IRS/user/InformationUser.vue'),
     meta: {
       title: 'Hotel Information',
+      icon: 'info',
+      main_route: true,
+      protected: true
+    }
+  },
+  {
+    name: 'cart',
+    path: '/irs/cart',
+    component: () => import('pages/IRS/user/cart.vue'),
+    meta: {
+      title: 'Cart',
+      icon: 'shopping_cart',
+      main_route: false,
+      protected: true
+    }
+  },
+  {
+    name: 'maps',
+    path: '/irs/maps',
+    component: () => import('pages/IRS/user/estimated.vue'),
+    meta: {
+      title: 'Estimated',
+      icon: 'map',
+      main_route: false,
       protected: true
     }
   }
@@ -68,6 +101,7 @@ export const irsmitra_routes = [
     component: () => import('src/pages/IRS/Mitra/MitraMinimarket.vue'),
     meta: {
       title: 'Minimarket',
+      main_route: false,
       protected: true
     }
   },
@@ -77,6 +111,7 @@ export const irsmitra_routes = [
     component: () => import('pages/IRS/mitra/MitraReport.vue'),
     meta: {
       title: 'Report Data',
+      main_route: false,
       protected: true
     }
   },
@@ -86,6 +121,7 @@ export const irsmitra_routes = [
     component: () => import('pages/IRS/Mitra/MitraInformation.vue'),
     meta: {
       title: 'Hotel Information',
+      main_route: false,
       protected: true
     }
   }

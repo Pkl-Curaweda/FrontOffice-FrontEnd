@@ -44,7 +44,7 @@
         </q-input>
 
         <!-- <a href="" class="self-end q-mb-sm">Forgot password?</a> -->
-        <div
+       <div
           style="cursor: pointer; transition: all 0.2s"
           @click="moveChange"
           to="/auth/login/InRoom"
@@ -102,7 +102,7 @@ export default defineComponent({
               this.$Helper.showNotif("You don't have access", '', 'negative')
             }
           } else {
-            this.$Helper.showNotif(message, '', 'negative')
+            this.$Helper.showNotif(message || 'Please try again', '', 'negative')
           }
 
           this.loading = false

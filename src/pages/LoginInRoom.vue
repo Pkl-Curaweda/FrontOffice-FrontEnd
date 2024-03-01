@@ -26,9 +26,8 @@
     <div v-if="openCamera" class="q-my-auto q-mx-auto" style="min-width: 280px">
       <h6 class="text-white font-extrabold text-sm">Scan the QR code to access Lingin Hotel</h6>
 
-      <StreamBarcodeReader @decode="onDecode" @loaded="onLoad" v-if="openCamera">
-      </StreamBarcodeReader>
-      <ImageBarcodeReader @decode="onDecoded"></ImageBarcodeReader>
+      <StreamBarcodeReader @decode="onDecode" @loaded="onLoad" v-if="openCamera"></StreamBarcodeReader>
+      <!-- <ImageBarcodeReader @decode="onDecoded"></ImageBarcodeReader> -->
 
       <div class="flex flex-col items-center justify-center">
         <h8 class="text-white font-extrabold text-sm">Powered By:</h8>
@@ -97,12 +96,11 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
-// import { StreamBarcodeReader, ImageBarcodeReader } from 'vue-barcode-reader';
-// import VueBarcode from 'vue-barcode'
+import { StreamBarcodeReader, ImageBarcodeReader } from 'vue-barcode-reader';
 
 export default defineComponent({
   name: 'Login-InRoom',
-
+  components: { StreamBarcodeReader },
   setup() {
     return {
       showPwd: ref(false),
@@ -123,6 +121,7 @@ export default defineComponent({
   methods: {
     toggleCamera() {
       this.openCamera = !this.openCamera
+      console.log(this.openCamera)
     },
     login() {
       this.loading = true
@@ -153,7 +152,16 @@ export default defineComponent({
           this.loading = false
         }
       )
-    }
+    },
+  onDecode(Text) {
+    console.log(Text)
+    // console.log(`Decode text from QR code is ${Text}`)
+    tex = Text.value
+    // window.location.replace(Text)
+  },
+ onLoad(Text) {
+    console.log(`Ready to start scanning barcodes`)
+  }
   }
 })
 </script>

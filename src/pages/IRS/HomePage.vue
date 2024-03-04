@@ -29,6 +29,36 @@
       </div>
     </div>
 
+    <div
+      class="flex justify-center items-center"
+      style="flex-direction: column"
+      v-if="user.role.name === 'Admin'"
+    >
+      <div style="display: flex" class="q-mt-md">
+        <div
+          style="
+            width: 7px;
+            background-color: #0985ba;
+            border: 0.5px solid black;
+            border-radius: 10px;
+          "
+        ></div>
+        <q-card class="my-card" style="width: 250px" @click="toRouteInformation()">
+          <q-card-section
+            horizontal
+            class="items-center"
+            style="display: flex; justify-content: space-between"
+          >
+            <div class="q-mx-lg q-my-sm">
+              <div class="text-h6 text-bold">Report Data</div>
+              <div class="q-mt-xl">10 am - 12 am</div>
+            </div>
+            <img style="height: 90px" src="../../assets/img/information.png" />
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+
     <div class="flex justify-center items-center q-pb-lg" style="flex-direction: column">
       <div style="display: flex" class="q-mt-md">
         <div
@@ -46,7 +76,7 @@
             style="display: flex; justify-content: space-between"
           >
             <div class="q-mx-lg q-my-sm">
-              <div class="text-h6 text-bold">Mini Market</div>
+              <div class="text-h6 text-bold">Information Hotel</div>
               <div class="q-mt-xl">10 am - 12 am</div>
             </div>
             <img style="height: 90px" src="../../assets/img/information.png" />

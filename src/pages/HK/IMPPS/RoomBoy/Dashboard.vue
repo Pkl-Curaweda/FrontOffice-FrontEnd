@@ -233,7 +233,6 @@ export default defineComponent({
         this.loading = false
 
         if (status == 200) {
-          this.trigger('positive', message)
           const { listTask, performance } = data
           this.data = listTask.map((lt) => ({
             roomNo: { data: lt.roomNo, style: { backgroundColor: lt.rowColor } },

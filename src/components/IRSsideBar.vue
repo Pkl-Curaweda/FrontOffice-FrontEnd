@@ -11,7 +11,7 @@
         <q-item-section avatar>
           <q-icon size="2rem" class="material-symbols-outlined" :name="r.meta.icon" />
         </q-item-section>
-        <q-item-section style="text-align: left;">
+        <q-item-section style="text-align: left">
           {{ r.meta.title }}
         </q-item-section>
       </q-item>
@@ -22,7 +22,7 @@
         <q-item-section avatar>
           <q-icon size="2rem" class="material-symbols-outlined" :name="r.meta.icon" />
         </q-item-section>
-        <q-item-section style="text-align: left;">
+        <q-item-section style="text-align: left">
           {{ r.meta.title }}
         </q-item-section>
       </q-item>
@@ -52,7 +52,7 @@
 
     <!-- <q-separator class="q-my-md" /> -->
 
-    <!-- <q-item clickable class="text-negative">
+    <q-item clickable class="text-negative" @click="logout()">
       <q-item-section avatar class="q-pa-none">
         <q-icon name="o_logout" />
       </q-item-section>
@@ -60,12 +60,12 @@
       <q-item-section>
         <q-item-label class="rounded-borders">Logout</q-item-label>
       </q-item-section>
-    </q-item> -->
+    </q-item>
   </q-scroll-area>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import {
   inroomservice_routes,
   irsuser_routes,
@@ -79,6 +79,31 @@ export default defineComponent({
       irsmitra_routes,
       inroomservice_routes,
       irsuser_routes
+    }
+  },
+  data() {
+    return {
+      api: new this.$Api('root'),
+      user: this.$AuthStore.getUser()
+    }
+  },
+  methods: {
+    logout() {
+      this.logout_loading = true
+
+      this.api.useToken(false).post('auth/user/logout', {}, ({ status }) => {
+        if (status == 200) {
+          this.$Config.logout()
+          this.$AuthStore.clearData()
+          this.$Helper.showNotif('Logout Success', '', 'positive')
+
+          this.$router.go('/auth/login')
+        } else {
+          this.$Helper.showNotif('Logout unsuccess', '', 'negative')
+        }
+
+        this.logout_loading = false
+      })
     }
   }
 })

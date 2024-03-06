@@ -2,7 +2,14 @@
   <q-page>
     <div style="height: 160px">
       <div style="height: 160px" class="bg-primary">
-        <q-btn icon="arrow_back" flat color="white" rounded @click="backPage" style="margin-top:10px;"/>
+        <q-btn
+          icon="arrow_back"
+          flat
+          color="white"
+          rounded
+          @click="backPage"
+          style="margin-top: 10px"
+        />
         <q-card
           class="my-card text-black center-container"
           style="background: radial-gradient(circle, #ffffff 0%, #fdfdfd 100%); width: 80%"
@@ -37,7 +44,7 @@
         <q-form
           @submit.prevent="postProfile"
           class="column q-pt-lg"
-          style="text-overflow: ellipsis; gap: 10px; overflow: hidden; white-space: nowrap"
+          style="text-overflow: ellipsis; gap: 10px; overflow: hidden; white-space: nowrap; "
         >
           <div class="col" style="display: flex; gap: 10px">
             <q-input
@@ -48,7 +55,24 @@
               label="Name"
               standout
             />
-            <q-input color="dark" style="width: 40%" v-model="gender" label="Gender" standout />
+            <q-select
+              v-model="gender"
+              :options="genderOpt"
+              :dropdown-icon="'expand_more'"
+              label="Gender"
+              color="dark"
+              stack-label
+              style="
+                text-overflow: ellipsis;
+                gap: 10px;
+                overflow: hidden;
+                white-space: nowrap;
+                width: 30%;
+                display: flex;
+              "
+              standout
+              class="col-grow text-center q-my-auto"
+            ></q-select>
           </div>
           <q-input
             color="dark"
@@ -115,7 +139,8 @@ export default defineComponent({
       proxyDate: ref(),
       formattedDate: ref(),
       username: ref(),
-      phone: ref()
+      phone: ref(),
+      genderOpt: [{ label: 'Male' }, { label: 'Female' }]
     }
   },
   mounted() {
@@ -149,7 +174,11 @@ export default defineComponent({
       this.loading = true
       this.api.put(
         `profile`,
-        { birthday: this.formattedDate, phone: this.phone },
+        {
+          birthday: this.formattedDate,
+          phone: this.phone,
+          gender: this.gender.label.toUpperCase()
+        },
         ({ data, message, status }) => {
           if (status == 200) {
             this.loading = false
@@ -169,7 +198,7 @@ export default defineComponent({
         50
       )
     },
-    backPage(){
+    backPage() {
       this.$router.go(-1)
     }
   }

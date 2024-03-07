@@ -1,73 +1,43 @@
 <template>
-  <q-page class="flex q-pa-md">
-    <div class="q-my-auto q-mx-auto rounded-borders shadow-3 q-pt-lg q-pb-xl q-px-xl bg-white">
-      <div class="flex">
-        <q-img
-          src="../assets/img/lingian-logo-colored.png"
-          class="q-my-md q-mx-auto"
-          style="width: 150px"
-        />
+  <q-page class="container">
+    <!-- <div style="width: 100%; justify-content: center; padding: 40px; display: flex">
+      <q-icon name="qr_code_scanner" size="xl" style="margin-top: auto; margin-bottom: auto" />
+      <h4>Barcode</h4>
+    </div> -->
+    <div style="display: block; justify-content: center; gap: 10px; padding: 40px">
+      <div style="font-weight: bolder">Pengingat!</div>
+      <div>Pastikan scan barcode sesuai dengan posisinya dan pastikan koneksi internet lancar</div>
+    </div>
+    <div class="q-mx-auto q-my-auto items-center justify-center z-10 flex flex-col">
+      <StreamBarcodeReader @decode="onDecode" @loaded="onLoad"></StreamBarcodeReader>
+    </div>
+    <q-page-container class="flex items-center justify-center" :class="{ hidden: openCamera }">
+      <router-view />
+    </q-page-container>
+
+    <div style="display: block; justify-content: center; padding: 40px; gap: 5px">
+      <div style="font-weight: bolder">Powered By:</div>
+      <div class="flex flex-col" style="gap: 5px">
+        <img src="../assets/img/lingian-logo-colored.png" width="50" />
+        <img src="../assets/img/curaweda.png" height="40" />
       </div>
-      <h6 class="text-bold q-ma-none text-center">Welcome to <br />Management System</h6>
-      <p class="text-center">Lingian Hotel & Convention</p>
-      <q-form @submit.prevent="login" class="column q-mt-md q-gutter-sm" style="min-width: 280px">
-        <q-input outlined dense v-model="dataModel.email" label="Email" lazy-rules />
-        <!-- <q-input
-          outlined
-          type="email"
-          dense
-          v-model="dataModel.email"
-          label="Email"
-          lazy-rules
-          :rules="[
-            (val) => (val && val.length > 0) || 'Please type something',
-            (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || 'Invalid email format'
-          ]"
-        /> -->
-
-        <q-input
-          outlined
-          dense
-          :type="showPwd ? 'text' : 'password'"
-          v-model="dataModel.password"
-          label="Password"
-          lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Please type something']"
-        >
-          <template v-slot:append>
-            <q-icon
-              :name="showPwd ? 'visibility_off' : 'visibility'"
-              class="cursor-pointer"
-              @click="showPwd = !showPwd"
-            />
-          </template>
-        </q-input>
-
-        <!-- <a href="" class="self-end q-mb-sm">Forgot password?</a> -->
-       <div
-          style="cursor: pointer; transition: all 0.2s"
-          @click="moveChange"
-          to="/auth/login/InRoom"
-          onmouseover="this.style.color='#45a049'"
-          onmouseout="this.style.color='#000000'"
-        >
-          Move to In Room Page
-        </div>
-        <q-btn label="login" type="submit" class="width-full" color="primary" :loading="loading" />
-      </q-form>
     </div>
   </q-page>
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
-
+import { defineComponent, ref, watch } from 'vue'
+import { StreamBarcodeReader } from 'vue-barcode-reader'
+import { useQuasar, QSpinnerGears } from 'quasar'
 export default defineComponent({
-  name: 'LoginPage',
+  name: 'LoginInroom',
+  components: { StreamBarcodeReader },
 
   setup() {
+    const $q = useQuasar()
     return {
-      showPwd: ref(false)
+      showPwd: ref(false),
+      openCamera: ref(true)
     }
   },
   data() {
@@ -92,15 +62,15 @@ export default defineComponent({
         },
         ({ status, data, message }) => {
           if (status == 200) {
-            if (data['path'] != '/irs/home') {
-              console.log(data['path'])
-              this.$AuthStore.setUser(data['user'])
-              this.$AuthStore.setAccessToken(data['accessToken'])
-              this.$AuthStore.setMainPath(data['path'])
-              this.$router.go({ path: data['path']})
-            } else {
-              this.$Helper.showNotif("You don't have access", '', 'negative')
-            }
+            // if (data['path'] === '/irs/home') {
+            console.log(data['path'])
+            this.$AuthStore.setUser(data['user'])
+            this.$AuthStore.setAccessToken(data['accessToken'])
+            this.$AuthStore.setMainPath(data['path'])
+            this.$router.go({ path: data['path'] })
+            // } else {
+            //   this.$Helper.showNotif("You don't have access", '', 'negative')
+            // }
           } else {
             this.$Helper.showNotif(message || 'Please try again', '', 'negative')
           }
@@ -113,7 +83,62 @@ export default defineComponent({
       this.$router.push({
         name: 'Login-InRoom'
       })
+    },
+    notify(type, txt) {
+      this.$q.notify(
+        {
+          type: type,
+          message: txt || 'data not found',
+          timeout: 1000
+        },
+        1000
+      )
+    },
+    onDecode(Text) {
+      console.log(Text)
+      this.$q.loading.show({
+        // spinner: QSpinnerGears,
+        delay: 400 // ms
+      })
+      this.api.post(`auth/user/login/${Text}`, null, ({ data, message, status }) => {
+        if (status == 200) {
+          this.notify('positive', message)
+          this.$AuthStore.setUser(data['user'])
+          this.$AuthStore.setAccessToken(data['accessToken'])
+          this.$AuthStore.setMainPath(data['path'])
+          this.$q.loading.hide()
+          this.$router.push({
+            path: data['path']
+          })
+        } else {
+          this.$q.loading.hide()
+          this.notify('warning', message)
+        }
+      })
+    },
+    onLoad(Text) {
+      console.log(`Ready to start scanning barcodes`)
     }
   }
 })
 </script>
+<style>
+.full-height {
+  height: 100vh;
+  display: flex;
+}
+
+.container {
+  width: 100%;
+  display: block;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (min-width: 400px) {
+  .container {
+    width: 400px;
+    margin-inline: auto;
+  }
+}
+</style>

@@ -2,11 +2,10 @@
   <q-layout view="lHh Lpr lFf">
     <q-page-container
       style="overflow-x: auto"
-      :class="$route.meta.title == 'Login In Room' ? 'background-image' : 'bg-default'"
+      :class="$route.name == 'Login' ? 'inroom' : 'bg-default'"
     >
-
-    <router-view />
-  </q-page-container>
+      <router-view />
+    </q-page-container>
   </q-layout>
 </template>
 
@@ -21,7 +20,7 @@ export default defineComponent({
 </script>
 
 <style>
-.bg-default{
+.bg-default {
   background-color: #cfd8dd;
 }
 /* .my-bg {
@@ -52,8 +51,7 @@ export default defineComponent({
   filter: brightness(90%);
   z-index: -30;
 }
-.inroom{
-
-  background-color: #000000;
+.inroom {
+  background-color: #ffffff;
 }
 </style>

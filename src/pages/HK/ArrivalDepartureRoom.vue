@@ -124,6 +124,7 @@
             <q-input
               outlined
               dense
+              type="number"
               v-model="searchInput"
               class="input-border"
               label="Search ResNo/NIK"
@@ -560,6 +561,7 @@ export default defineComponent({
       //     console.error('Error searching data')
       //   }
       // })
+      if(searchInput === "") this.searchData = ""
       this.searchData = searchInput
       this.fetchData()
     },

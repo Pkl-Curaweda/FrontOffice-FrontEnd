@@ -484,11 +484,6 @@ export default defineComponent({
     },
     handleClick(id) {
       this.idRoom = id
-      this.$q.notify({
-        type: 'positive',
-        message: 'Get data successfully.',
-        timeout: 1000
-      })
     },
     setFilterDisplay(option, label) {
       this.filterDisplay = option
@@ -534,7 +529,7 @@ export default defineComponent({
 
         if (status == 200) {
           const { roomStatus, latestChange } = data
-
+          this.idRoom = roomStatus[0].id
           this.statusRoom = latestChange.roomStatus.longDescription
           this.statusRoomNo = latestChange.id
 

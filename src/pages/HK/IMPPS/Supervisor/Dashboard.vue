@@ -668,7 +668,6 @@ export default defineComponent({
       }
     },
     dialogalert(roomNo) {
-      this.nextnotify('positive', 'success')
       this.roomNo = roomNo['roomNo'].data
       this.roomId = roomNo['taskId'].data
       this.comments = roomNo['Comments'].data

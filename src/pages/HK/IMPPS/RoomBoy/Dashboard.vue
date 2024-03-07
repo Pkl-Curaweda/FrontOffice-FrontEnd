@@ -219,7 +219,6 @@ export default defineComponent({
     Stop() {
       this.api.post(`roomboy/${this.roomId}/end-task`, null, ({ status, message }) => {
         if (status == 200) {
-          this.trigger('positive', message)
           this.fetchData()
         } else {
           this.trigger('negative', message)

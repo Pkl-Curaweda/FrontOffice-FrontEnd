@@ -476,7 +476,7 @@ export default defineComponent({
       }
 
       // Melakukan POST ke API
-      this.api.post(`invoice/${resvId}/${resvRoomId}/article`, postData, ({ status }) => {
+      this.api.post(`invoice/${resvId}/${resvRoomId}/article`, postData, ({ status, message }) => {
         if (status == 200) {
           this.selected = []
           this.$q.notify({
@@ -484,6 +484,8 @@ export default defineComponent({
             message: 'Articles added successfully.',
             timeout: 1000
           })
+        }else{
+          this.trigger('negative', message)
         }
 
         this.fetchData()
@@ -578,7 +580,6 @@ export default defineComponent({
             description: inv.description,
             qty: 0
           }))
-          this.trigger('positive', message)
           this.formatData({ added, invoices })
           this.pagination = {
             page: data.meta?.currPage,

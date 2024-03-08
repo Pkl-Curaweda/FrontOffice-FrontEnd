@@ -1,11 +1,20 @@
 <template>
-  <q-layout view="lHh LpR fFf" class="bg-white">
+  <q-layout view="lHh LpR fFf">
+    <!--   :class="
+  "
+$route.path == '/irs/minimarket/user'
+    ? 'container'
+    : $route.path == '/irs/laundry/user'
+    ? 'containerlaundry'
+    : $route.path == '/irs/food-beverage/user'
+    ? 'containerfood'
+    : '' -->
     <q-header
       v-if="$route.path != '/irs/home/profile'"
-      class="bg-transparent text-black"
-      >
+      :class="$route.path != '/irs/home/profile' ? 'bg-transparent text-white' : 'text-black'"
+    >
       <q-toolbar
-      style="width: 100%;"
+        style="width: 100%"
         class="items-center text-white q-py-xs"
         :class="$route.path == '/irs/home' ? ' bg-primary ' : 'text-black'"
       >
@@ -20,66 +29,75 @@
             round
             icon="menu"
             @click="toggleLeftDrawer"
+            color="black"
           />
 
           <div
             v-if="$route.path != '/irs/home'"
             class="q-my-auto"
-            style="width: 100%; text-align: center"
+            style="width: 100%; text-align: center; color: black"
           >
             {{ $route.meta.title }}
           </div>
-          <div style="display: flex">
-            <div v-if="$route.path != '/irs/home'" style="display: flex">
-              <template v-for="(r, index) in irsuser_routes" :key="index">
-                <q-item :to="r.path" v-if="r.meta.main_route == false">
-                  <q-item-section avatar>
-                    <q-icon size="2rem" class="material-symbols-outlined" :name="r.meta.icon" />
-                  </q-item-section>
-                </q-item>
-              </template>
-            </div>
+          <div v-if="$route.path != '/irs/home'" style="display: flex">
+            <template v-for="(r, index) in irsuser_routes" :key="index">
+              <q-item :to="r.path" v-if="r.meta.main_route == false" class="center-icon">
+                <q-item-section avatar>
+                  <q-icon
+                    class="material-symbols-outlined"
+                    color="black"
+                    style="width: 100%"
+                    :name="r.meta.icon"
+                  />
+                </q-item-section>
+              </q-item>
+            </template>
           </div>
           <div
-              v-if="$route.path == '/irs/home'"
-              style="display: flex; justify-content: space-between; width: 100%;align-items: center;"
-            >
-              <img src="../../assets/img/lingian-logo.png" style="width: 40px" />
+            v-if="$route.path == '/irs/home'"
+            style="display: flex; justify-content: space-between; width: 100%; align-items: center"
+          >
+            <img src="../../assets/img/lingian-logo.png" style="width: 40px" />
 
-              <!-- notification -->
-              <div
-                v-if="$route.path == '/irs/home'"
-                style="display: flex; justify-content: end; width: 100%; gap: 10px; align-items: center;"
-              >
-                <q-btn round dense flat icon="o_notifications">
-                  <q-badge color="negative" text-color="white" floating> 2</q-badge>
-                  <q-tooltip>Notifications</q-tooltip>
-                  <q-menu fit anchor="bottom left" self="top left" style="width: 300px">
-                    <q-item class="bg-primary text-white">
-                      <q-item-section>Messages</q-item-section>
-                    </q-item>
-                    <q-item clickable>
-                      <q-item-section>
-                        <div class="row items-center justify-between">
-                          <div>
-                            <div class="row items-center">
-                              <div class="q-ma-none">hallo</div>
-                            </div>
-                            <p class="text-body2 q-ma-none">hallo</p>
+            <!-- notification -->
+            <div
+              v-if="$route.path == '/irs/home'"
+              style="
+                display: flex;
+                justify-content: end;
+                width: 100%;
+                gap: 10px;
+                align-items: center;
+              "
+            >
+              <q-btn round dense flat icon="o_notifications">
+                <q-badge color="negative" text-color="white" floating> 2</q-badge>
+                <q-tooltip>Notifications</q-tooltip>
+                <q-menu fit anchor="bottom left" self="top left" style="width: 300px">
+                  <q-item class="bg-primary text-white">
+                    <q-item-section>Messages</q-item-section>
+                  </q-item>
+                  <q-item clickable>
+                    <q-item-section>
+                      <div class="row items-center justify-between">
+                        <div>
+                          <div class="row items-center">
+                            <div class="q-ma-none">hallo</div>
                           </div>
+                          <p class="text-body2 q-ma-none">hallo</p>
                         </div>
-                      </q-item-section>
-                    </q-item>
-                  </q-menu>
-                </q-btn>
-                <div class="q-gutter-sm row items-center no-wrap" @click="moveProfile()">
-                  <q-avatar size="26px">
-                    <img :src="user.picture" />
-                  </q-avatar>
-                </div>
+                      </div>
+                    </q-item-section>
+                  </q-item>
+                </q-menu>
+              </q-btn>
+              <div class="q-gutter-sm row items-center no-wrap" @click="moveProfile()">
+                <q-avatar size="26px">
+                  <img :src="user.picture" />
+                </q-avatar>
               </div>
             </div>
-
+          </div>
         </q-toolbar>
       </q-toolbar>
     </q-header>
@@ -140,5 +158,37 @@ export default defineComponent({
 <style>
 .breadcrumb-bg {
   background-color: #c9f4c9;
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-image: url('../../assets/img/minimarket.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.containerlaundry {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-image: url('../../assets/img/laundry.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.containerfood {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-image: url('../../assets/img/food.png');
+  background-size: cover;
+  background-position: center;
+}
+.center-icon {
+  display: flex;
+  justify-content: center;
+  margin: auto;
 }
 </style>

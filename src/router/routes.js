@@ -14,6 +14,14 @@ import {
 
 const routes = [
   {
+    path: '/tes',
+    component: () => import('pages/Test.vue'),
+    meta: {
+      title: 'Dashboard',
+    }
+  },
+
+  {
     path: '/',
     component: () => import('pages/IndexPage.vue'),
     meta: {
@@ -27,6 +35,7 @@ const routes = [
     component: () => import('layouts/BlankLayout.vue'),
     children: [
       {
+        name: 'Login',
         path: '/auth/login',
         component: () => import('pages/Login.vue'),
         meta: {
@@ -36,10 +45,10 @@ const routes = [
       },
       {
         name: 'Login-InRoom',
-        path: '/auth/login/InRoom',
+        path: '/auth/login/admin',
         component: () => import('pages/LoginInRoom.vue'),
         meta: {
-          title: 'Login In Room',
+          title: 'Login - Admin',
           protected: false
         }
       }

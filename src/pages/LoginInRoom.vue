@@ -1,78 +1,22 @@
 <template>
   <q-page class="flex q-pa-md">
-    <q-header class="bg-transparent border-0 border-transparent">
-      <q-toolbar class="flex items-center justify-end">
-        <q-btn
-          dense
-          flat
-          round
-          @click="toggleCamera"
-          v-if="!openCamera"
-          icon="qr_code_scanner"
-          class="text-white"
-        />
-        <q-btn
-          dense
-          flat
-          round
-          @click="toggleCamera"
-          v-if="openCamera"
-          icon="arrow_back"
-          class="text-white"
-        />
-      </q-toolbar>
-    </q-header>
-    <!-- open -->
-    <div v-if="openCamera" class="q-my-auto q-mx-auto" style="min-width: 280px">
-      <h6 class="text-white font-extrabold text-sm">Scan the QR code to access Lingin Hotel</h6>
-
-      <StreamBarcodeReader @decode="onDecode" @loaded="onLoad" v-if="openCamera">
-      </StreamBarcodeReader>
-      <ImageBarcodeReader @decode="onDecoded"></ImageBarcodeReader>
-
-      <div class="flex flex-col items-center justify-center">
-        <h8 class="text-white font-extrabold text-sm">Powered By:</h8>
-        <q-img
-          src="../assets/img/lingian-logo-colored.png"
-          class="q-my-md q-mx-auto"
-          style="width: 60px"
-        />
-      </div>
-    </div>
-    <q-page-container
-      class="flex items-center justify-center h-fit py-10"
-      :class="{ hidden: openCamera }"
-    >
-      <router-view />
-    </q-page-container>
-    <div class="q-my-auto q-mx-auto" v-if="!openCamera">
+    <div class="q-my-auto q-mx-auto rounded-borders shadow-3 q-pt-lg q-pb-xl q-px-xl bg-white">
       <div class="flex">
         <q-img
           src="../assets/img/lingian-logo-colored.png"
           class="q-my-md q-mx-auto"
-          style="width: 180px"
+          style="width: 150px"
         />
       </div>
+      <h6 class="text-bold q-ma-none text-center">Welcome to <br />Management System</h6>
+      <p class="text-center">Lingian Hotel & Convention</p>
       <q-form @submit.prevent="login" class="column q-mt-md q-gutter-sm" style="min-width: 280px">
-        <q-input
-          dense
-          outlined
-          bg-color="white"
-          color="dark"
-          v-model="dataModel.email"
-          label="Email"
-          standout
-          :rules="[
-            (val) => (val && val.length > 0) || 'Please type something',
-            (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || 'Invalid email format'
-          ]"
-        />
+        <q-input outlined dense v-model="dataModel.email" label="Email" lazy-rules />
 
         <q-input
           outlined
           dense
-          bg-color="white"
-          color="dark"
+          class="q-mt-md"
           :type="showPwd ? 'text' : 'password'"
           v-model="dataModel.password"
           label="Password"
@@ -89,6 +33,15 @@
         </q-input>
 
         <!-- <a href="" class="self-end q-mb-sm">Forgot password?</a> -->
+        <!-- <div
+          style="cursor: pointer; transition: all 0.2s"
+          @click="moveChange"
+          to="/auth/login/InRoom"
+          onmouseover="this.style.color='#45a049'"
+          onmouseout="this.style.color='#000000'"
+        >
+          Move to In Room Page
+        </div> -->
         <q-btn label="login" type="submit" class="width-full" color="primary" :loading="loading" />
       </q-form>
     </div>
@@ -97,16 +50,14 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
-// import { StreamBarcodeReader, ImageBarcodeReader } from 'vue-barcode-reader';
-// import VueBarcode from 'vue-barcode'
 
 export default defineComponent({
-  name: 'Login-InRoom',
+  name: 'LoginPage',
 
   setup() {
     return {
       showPwd: ref(false),
-      openCamera: ref(false)
+      openCamera: ref(true)
     }
   },
   data() {
@@ -116,14 +67,10 @@ export default defineComponent({
       dataModel: {
         email: ref(null),
         password: ref(null)
-      },
-      barcodeValue: 'test'
+      }
     }
   },
   methods: {
-    toggleCamera() {
-      this.openCamera = !this.openCamera
-    },
     login() {
       this.loading = true
 
@@ -134,28 +81,29 @@ export default defineComponent({
           password: this.dataModel.password
         },
         ({ status, data, message }) => {
-          console.log(data)
           if (status == 200) {
-            if (data['path'] === '/irs/home') {
+            if (data['path'] != '/irs/home') {
+              console.log(data['path'])
               this.$AuthStore.setUser(data['user'])
               this.$AuthStore.setAccessToken(data['accessToken'])
               this.$AuthStore.setMainPath(data['path'])
-              this.$router.push({
-                path: data['path']
-              })
+              this.$router.push({ path: data['path'] })
             } else {
               this.$Helper.showNotif("You don't have access", '', 'negative')
             }
           } else {
-            this.$Helper.showNotif(message, '', 'negative')
+            this.$Helper.showNotif(message || 'Please try again', '', 'negative')
           }
 
           this.loading = false
         }
       )
+    },
+    moveChange() {
+      this.$router.push({
+        name: 'Login-InRoom'
+      })
     }
   }
 })
 </script>
-
-<style></style>

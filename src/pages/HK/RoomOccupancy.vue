@@ -24,7 +24,7 @@
             class="text-center text-h4 q-pa-xs text-weight-bolder"
             style="width: 50%; border-right: 1.5px solid black"
           >
-            {{ data.person }}
+            {{ data.room }}
           </div>
           <div class="text-center text-h4 q-pa-xs text-weight-bolder" style="width: 50%">
             {{ data.person }}
@@ -212,7 +212,7 @@ const tableCol = [
     sortable: true
   },
   { name: 'r_type', align: 'center', label: 'Room Type', field: 'r_type', sortable: true },
-  { name: 'status', label: 'status', field: 'status', sortable: true }
+  { name: 'status', label: 'Status', field: 'status', sortable: true, align: 'center', }
 ]
 
 const tableRow = ref([])
@@ -314,7 +314,8 @@ export default defineComponent({
             label: lot.label,
             value: lot.id
           }))
-
+          
+          console.log(currData)
           this.roomData = [
             {
               id: 1,
@@ -353,6 +354,7 @@ export default defineComponent({
               person: currData.estOcc.person || 0
             }
           ]
+          console.log(this.roomData)
 
           this.tableRow = roomStatus.map((rs) => ({
             name: rs.id,

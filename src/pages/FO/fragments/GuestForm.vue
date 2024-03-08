@@ -928,7 +928,7 @@ export default defineComponent({
       try {
         const { currentResvId, currentRoomResvId } = this.$ResvStore
         const data = {
-          arrangmentCode: this.selected.id,
+          arrangmentCode: this. selected.id,
           roomId: this.roomNo.value,
           voucher: this.voucherId || ''
         }

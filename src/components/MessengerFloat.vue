@@ -5,7 +5,7 @@
     >
     <q-tooltip>Notifications</q-tooltip>
     <q-menu fit anchor="bottom left" self="top left" style="width: 300px">
-      <q-item class="bg-primary text-white">
+      <q-item v-if="show" class="bg-primary text-white">
         <q-item-section>Messages</q-item-section>
       </q-item>
       <q-item clickable v-for="(data, key, i) in notif" :key="i">
@@ -64,6 +64,8 @@ export default defineComponent({
 
       this.api.get(url, ({ status, data }) => {
         if (status == 200) {
+          if(data.length < 1) { this.show = false
+          } else this.show = true
           this.notif = data.map((nf) => ({
             content: nf.content,
             time: nf.time

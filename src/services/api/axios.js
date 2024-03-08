@@ -10,6 +10,11 @@ myAxios.interceptors.response.use(
   (res) => res,
   async (err) => {
     const { response } = err
+    
+    if (response.status == 410){
+      Config.logout()
+      window.location.reload()
+    } 
 
     if (response.status == 403) {
       const mainPath = authStore().getMainPath()
@@ -31,6 +36,7 @@ myAxios.interceptors.response.use(
           window.location.reload()
         }
     }
+
   }
 
     throw err

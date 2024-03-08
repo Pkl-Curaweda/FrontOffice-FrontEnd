@@ -131,6 +131,7 @@
                 animated
                 control-color="grey"
                 arrows
+                ref="carousel"
                 style="height: 100%"
               >
                 <q-carousel-slide name="style" >
@@ -327,7 +328,7 @@ export default defineComponent({
         { name: 'ResResource', label: 'Reserve Resource', align: 'left', field: 'ResResource' },
         { name: 'CreatedDate', label: 'Created Date', align: 'left', field: 'CreatedDate' }
     ],
-      slide: ref('style'),
+      slide: ref('tv'),
       reservationSeries,
       reservationEnrty: ref([]),
       usageEntry: ref([]),
@@ -451,6 +452,7 @@ export default defineComponent({
         this.startUp = false
         this.getChart()
       }
+      console.log('Test')
       this.api.get('dashboard', ({ data, status, message }) => {
         if(status != 200) return
         const { hkChart, resvChart } = data
@@ -480,14 +482,18 @@ export default defineComponent({
           this.reservationSeries = reservationArrayChart
           this.reservationOption.xaxis.categories = listOfReservationCategory
           
-          console.log(this.usageSeries, this.reservationSeries)
+          // console.log(this.usageSeries, this.reservationSeries)
           // this.$refs.reservationChart.refresh()
           // this.$refs.usageChart.refresh()
 
           // REFRESH APEXCHART
+          this.slide = "style"
           this.$refs.reservationChart.updateSeries(this.reservationSeries)
           this.$refs.usageChart.updateSeries(this.usageSeries)
+          console.log(this.slide)
+          console.log(this.slide)
       })
+      console.log('Test 2')
     }
   }
 })

@@ -190,6 +190,8 @@
     <div class="row q-mt-sm" style="gap: 7px">
       <q-expansion-item
         dense
+        default-opened="true"
+        disabled
         style="font-weight: bold"
         label="Bill Address"
         class="padding-expansion col-grow"
@@ -207,6 +209,8 @@
       </q-expansion-item>
       <q-expansion-item
         dense
+        default-opened="true"
+        disabled
         style="font-weight: bold"
         label="Comments"
         class="padding-expansion col-grow"
@@ -246,6 +250,7 @@ export default defineComponent({
       guestName: ref(),
       allObjectsInArray,
       comments: ref(''),
+      billAddress: ref(''),
       viewBill: ref(false),
       columns: [
         { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
@@ -390,7 +395,6 @@ export default defineComponent({
           this.loading = false
 
           if (status === 200) {
-            this.trigger('positive', message)
             this.formatData()
             const { detail } = data
 

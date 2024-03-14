@@ -159,7 +159,7 @@
         }"
         :card-style="{ boxShadow: 'none' }"
         rows-per-page-label="Show"
-        :rows-per-page-options="[1,3,5,7,10,15,20,25,30]"
+        :rows-per-page-options="[1, 3, 5, 7, 10, 15, 20, 25, 30]"
         :dense="$q.screen.lt.md"
         v-model:pagination="pagination"
         @request="onPaginationChange"
@@ -238,12 +238,124 @@
                           <q-item-label>Lost</q-item-label>
                         </q-item-section>
                       </q-item>
-                      <q-item clickable @click="foundItem(props.row)">
+                      <q-item clickable @click="foundItem = true">
                         <q-btn flat rounded size="13px" color="primary">
                           <q-icon name="done" />
                         </q-btn>
                         <q-item-section>
                           <q-item-label>Found</q-item-label>
+                          <q-dialog v-model="foundItem">
+                            <q-card>
+                              <q-card-section class="row items-center q-pb-none">
+                                <div class="text-h6">Item Found</div>
+                                <q-space />
+                                <q-btn
+                                  class="text-capitalize q-mx-md"
+                                  color="primary"
+                                  @click="saveUser"
+                                  >Submit</q-btn
+                                >
+                                <!-- <q-btn
+                                  icon="close"
+                                  flat
+                                  round
+                                  dense
+                                  v-close-popup
+                                  @click="clearFieldRole"
+                                /> -->
+                              </q-card-section>
+
+                              <q-card-section
+                                style="display: flex; gap: 10px; width: 100%"
+                                class="col"
+                              >
+                                <div>
+                                  <q-file
+                                    dense
+                                    outlined
+                                    clearable
+                                    :placeholder="img"
+                                    v-model="img"
+                                    bg-color="primary"
+                                    style="width: 150px"
+                                    label-color="white"
+                                    label="Upload Image"
+                                    class="ellipsis"
+                                    type="file"
+                                  />
+                                  <q-img class="q-mt-sm" :src="imgURL" v-if="imgURL" />
+                                  <div
+                                    class="justify-center items-center q-mt-md"
+                                    v-else
+                                    style="display: flex"
+                                  >
+                                    <q-icon
+                                      name="account_circle"
+                                      color="grey"
+                                      size="100px"
+                                      style="border: 1px solid rgb(83, 83, 83)8, 78, 78)"
+                                      class="q-pa-md"
+                                    />
+                                  </div>
+                                </div>
+                                <div>
+                                  <q-input
+                                    dense
+                                    outlined
+                                    v-model="pickerName"
+                                    label="Picker Name"
+                                    class="col-grow text-bold"
+                                  />
+                                  <q-input
+                                    dense
+                                    outlined
+                                    v-model="email"
+                                    label="Email"
+                                    class="col-grow text-bold q-mt-md"
+                                  />
+                                  <div class="q-mt-md" style="display: flex; gap: 10px">
+                                    <q-input
+                                      dense
+                                      outlined
+                                      v-model="contactNumber"
+                                      label="Contact Number"
+                                      class="col-grow text-bold"
+                                    />
+                                    <q-select
+                                      outlined
+                                      dense
+                                      v-model="gender"
+                                      :options="optionsGender"
+                                      label="Gender"
+                                      class="col-grow"
+                                    />
+                                  </div>
+                                  <q-file
+                                    dense
+                                    outlined
+                                    clearable
+                                    :placeholder="img"
+                                    v-model="img"
+                                    bg-color="primary"
+                                    label-color="white"
+                                    label="Upload KTP"
+                                    class="ellipsis q-mt-md"
+                                    type="file"
+                                  />
+                                  <q-img class="q-mt-sm col-grow" :src="imgURL" v-if="imgURL" />
+                                  <div class="q-mt-md" v-else>
+                                    <q-icon
+                                      name="account_circle"
+                                      color="grey"
+                                      size="100px"
+                                      style="background-color: red"
+                                      class="q-pa-md"
+                                    />
+                                  </div>
+                                </div>
+                              </q-card-section>
+                            </q-card>
+                          </q-dialog>
                         </q-item-section>
                       </q-item>
                       <q-item clickable @click="deleteItem(props.row)">
@@ -410,6 +522,12 @@ export default defineComponent({
   },
   setup() {
     return {
+      pickerName: ref(),
+      email: ref(),
+      contactNumber: ref(),
+      optionsGender: ['MALE', 'FEMALE'],
+      gender: ref(),
+      foundItem: ref(false),
       filterDisplay: ref('roomNum'),
       filterDisplayLabel: ref('Room Number'),
       sortingModel: ref('Room Number'),
@@ -529,18 +647,18 @@ export default defineComponent({
         }
       })
     },
-    foundItem(row) {
-      const rowId = row.id
+    // foundItem(row) {
+    //   const rowId = row.id
 
-      let url = `lostfound/${rowId}/FOUND`
+    //   let url = `lostfound/${rowId}/FOUND`
 
-      this.api.post(url, null, ({ status, message }) => {
-        if (status == 200) {
-          this.trigger('positive', message)
-          this.fetchData()
-        }
-      })
-    },
+    //   this.api.post(url, null, ({ status, message }) => {
+    //     if (status == 200) {
+    //       this.trigger('positive', message)
+    //       this.fetchData()
+    //     }
+    //   })
+    // },
     deleteItem(row) {
       const rowId = row.id
 

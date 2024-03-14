@@ -354,7 +354,7 @@ export default defineComponent({
       const element = this.$refs.pdfContainer
 
       html2pdf(element, {
-        margin: 10,
+        margin: 1,
         filename: `OOO - OM ${new Date().toISOString().split('T')[0]}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },
@@ -426,7 +426,6 @@ export default defineComponent({
         description: 'Sended By Admin',
         xType: this.buttonLabel
       }
-
 
       let url = `ooo-rooms`
 

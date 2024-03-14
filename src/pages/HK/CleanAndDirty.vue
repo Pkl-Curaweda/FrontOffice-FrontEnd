@@ -580,6 +580,7 @@ export default defineComponent({
 
         if (status == 200) {
           const { room } = data
+          console.log(room)
 
 
           const arrivalDate = data.arr // Gantilah 'arrival.arr' dengan properti yang benar

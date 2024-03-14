@@ -457,15 +457,15 @@ export default defineComponent({
         if(status != 200) return
         const { hkChart, resvChart } = data
         let listOfUsageCategory = [], listOfUsageSeries =[], listOfReservationCategory = [], listOfReservationSeries = {
-            arrival: { name: 'Arrival', data: [] },
-            departure: { name: 'Departure', data: [] },
-            occupancy: { name: 'Occupancy', data: [] }
+            new: { name: 'Reservation', data: [] },
+            checkin: { name: 'Check In', data: [] },
+            checkout: { name: 'Check Ouy', data: [] }
         }
         Object.values(resvChart).forEach((chart) => {
             listOfReservationCategory.push(chart.ident)
-            listOfReservationSeries.arrival.data.push(chart.nw)
-            listOfReservationSeries.departure.data.push(chart.ci)
-            listOfReservationSeries.occupancy.data.push(chart.co)
+            listOfReservationSeries.new.data.push(chart.nw)
+            listOfReservationSeries.checkin.data.push(chart.ci)
+            listOfReservationSeries.checkout.data.push(chart.co)
           })
           
           for (let usage of hkChart) {

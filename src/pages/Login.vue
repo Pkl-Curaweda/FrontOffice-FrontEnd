@@ -15,11 +15,21 @@
       <router-view />
     </q-page-container>
 
-    <div style="display: block; justify-content: center; padding: 40px; gap: 5px">
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Memposisikan konten secara vertikal ke tengah */
+        padding: 40px;
+        gap: 5px;
+        width: 100%;
+        text-align: center;
+      "
+    >
       <div style="font-weight: bolder">Powered By:</div>
-      <div class="flex flex-col" style="gap: 5px">
+      <div class="flex flex-col" style="gap: 5px; padding: auto">
         <img src="../assets/img/lingian-logo-colored.png" width="50" />
-        <img src="../assets/img/curaweda.png" height="40" />
+        <img src="../assets/img/ips.png" height="40" />
       </div>
     </div>
   </q-page>

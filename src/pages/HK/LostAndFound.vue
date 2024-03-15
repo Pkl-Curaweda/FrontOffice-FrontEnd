@@ -159,7 +159,7 @@
         }"
         :card-style="{ boxShadow: 'none' }"
         rows-per-page-label="Show"
-        :rows-per-page-options="[1,3,5,7,10,15,20,25,30]"
+        :rows-per-page-options="[1, 3, 5, 7, 10, 15, 20, 25, 30]"
         :dense="$q.screen.lt.md"
         v-model:pagination="pagination"
         @request="onPaginationChange"
@@ -238,12 +238,124 @@
                           <q-item-label>Lost</q-item-label>
                         </q-item-section>
                       </q-item>
-                      <q-item clickable @click="foundItem(props.row)">
+                      <q-item clickable @click="foundItem = true">
                         <q-btn flat rounded size="13px" color="primary">
                           <q-icon name="done" />
                         </q-btn>
                         <q-item-section>
                           <q-item-label>Found</q-item-label>
+                          <q-dialog v-model="foundItem">
+                            <q-card style="width: 700px">
+                              <q-card-section class="row items-center q-pb-none">
+                                <div class="text-h6">Item Found</div>
+                                <q-space />
+                                <q-btn class="text-capitalize" color="primary" @click="saveUser"
+                                  >Submit</q-btn
+                                >
+                                <!-- <q-btn
+                                  icon="close"
+                                  flat
+                                  round
+                                  dense
+                                  v-close-popup
+                                  @click="clearFieldRole"
+                                /> -->
+                              </q-card-section>
+
+                              <q-card-section
+                                style="display: flex; gap: 10px; width: 100%"
+                                class="col-grow"
+                              >
+                                <div>
+                                  <q-file
+                                    dense
+                                    outlined
+                                    clearable
+                                    :placeholder="img"
+                                    v-model="img"
+                                    bg-color="primary"
+                                    style="width: 150px"
+                                    label-color="white"
+                                    :label="labelFile"
+                                    class="ellipsis"
+                                    type="file"
+                                    @update:model-value="handleUpload()"
+                                  />
+                                  <q-img class="q-mt-sm" :src="imgUrl" v-if="imgUrl" />
+                                  <div
+                                    class="justify-center items-center q-mt-md"
+                                    v-else
+                                    style="display: flex"
+                                  >
+                                    <q-icon
+                                      name="account_circle"
+                                      color="grey"
+                                      size="100px"
+                                      style="border: 1px solid rgb(83, 83, 83)8, 78, 78)"
+                                      class="q-pa-md"
+                                    />
+                                  </div>
+                                </div>
+                                <div class="full-width">
+                                  <q-input
+                                    dense
+                                    outlined
+                                    v-model="pickerName"
+                                    label="Picker Name"
+                                    class="col-grow text-bold"
+                                  />
+                                  <q-input
+                                    dense
+                                    outlined
+                                    v-model="email"
+                                    label="Email"
+                                    class="col-grow text-bold q-mt-md"
+                                  />
+                                  <div class="q-mt-md" style="display: flex; gap: 10px">
+                                    <q-input
+                                      dense
+                                      outlined
+                                      v-model="contactNumber"
+                                      label="Contact Number"
+                                      class="col-grow text-bold"
+                                    />
+                                    <q-select
+                                      outlined
+                                      dense
+                                      v-model="gender"
+                                      :options="optionsGender"
+                                      label="Gender"
+                                      class="col-grow"
+                                    />
+                                  </div>
+                                  <q-file
+                                    dense
+                                    outlined
+                                    clearable
+                                    :placeholder="imgKtp"
+                                    v-model="imgKtp"
+                                    bg-color="primary"
+                                    label-color="white"
+                                    :label="labelKtp"
+                                    class="ellipsis q-mt-md"
+                                    type="file"
+                                    @update:model-value="handleUploadKtp()"
+                                  />
+                                  <q-img
+                                    class="q-mt-sm full-width"
+                                    style="height: 100px"
+                                    :src="imgUrlKtp"
+                                    v-if="imgUrlKtp"
+                                  />
+                                  <div
+                                    class="q-mt-md full-width"
+                                    v-else
+                                    style="background-color: gray; height: 100px"
+                                  ></div>
+                                </div>
+                              </q-card-section>
+                            </q-card>
+                          </q-dialog>
                         </q-item-section>
                       </q-item>
                       <q-item clickable @click="deleteItem(props.row)">
@@ -410,6 +522,18 @@ export default defineComponent({
   },
   setup() {
     return {
+      img: ref(null),
+      imgUrl: ref(''),
+      labelFile: ref('Upload Image'),
+      labelKtp: ref('Upload KTP'),
+      imgKtp: ref(null),
+      imgUrlKtp: ref(''),
+      pickerName: ref(),
+      email: ref(),
+      contactNumber: ref(),
+      optionsGender: ['MALE', 'FEMALE'],
+      gender: ref(),
+      foundItem: ref(false),
       filterDisplay: ref('roomNum'),
       filterDisplayLabel: ref('Room Number'),
       sortingModel: ref('Room Number'),
@@ -469,6 +593,18 @@ export default defineComponent({
     }
   },
   methods: {
+    handleUpload() {
+      if (this.img) {
+        this.imgUrl = URL.createObjectURL(this.img)
+        this.labelFile = 'Recapture'
+      }
+    },
+    handleUploadKtp() {
+      if (this.imgKtp) {
+        this.imgUrlKtp = URL.createObjectURL(this.imgKtp)
+        this.labelKtp = 'Recapture'
+      }
+    },
     updateFilterDisplayLabel(option) {
       // Logic to update the label based on the selected option
       switch (option) {
@@ -529,18 +665,18 @@ export default defineComponent({
         }
       })
     },
-    foundItem(row) {
-      const rowId = row.id
+    // foundItem(row) {
+    //   const rowId = row.id
 
-      let url = `lostfound/${rowId}/FOUND`
+    //   let url = `lostfound/${rowId}/FOUND`
 
-      this.api.post(url, null, ({ status, message }) => {
-        if (status == 200) {
-          this.trigger('positive', message)
-          this.fetchData()
-        }
-      })
-    },
+    //   this.api.post(url, null, ({ status, message }) => {
+    //     if (status == 200) {
+    //       this.trigger('positive', message)
+    //       this.fetchData()
+    //     }
+    //   })
+    // },
     deleteItem(row) {
       const rowId = row.id
 

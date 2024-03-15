@@ -121,7 +121,7 @@
                 <q-date v-model="datePickerDeparture" color="green" today-btn />
               </div>
             </q-btn-dropdown>
-            <q-input
+            <!-- <q-input
               outlined
               dense
               type="number"
@@ -133,7 +133,7 @@
               <template v-slot:prepend>
                 <q-icon name="search" />
               </template>
-            </q-input>
+            </q-input> -->
           </div>
         </div>
       </div>
@@ -561,7 +561,7 @@ export default defineComponent({
       //     console.error('Error searching data')
       //   }
       // })
-      if(searchInput === "") this.searchData = ""
+      if (searchInput === '') this.searchData = ''
       this.searchData = searchInput
       this.fetchData()
     },

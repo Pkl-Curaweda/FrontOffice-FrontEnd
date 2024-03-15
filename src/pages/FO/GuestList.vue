@@ -368,7 +368,14 @@
                             </q-item>
                           </q-list>
                         </q-menu>
-                        <q-dialog v-model="confirmDelete" key="" :props="props">
+                      </q-btn>
+                    </div>
+                  </div>
+                </q-td>
+              </q-tr>
+            </template>
+          </q-table>
+          <q-dialog v-model="confirmDelete" key="" :props="props">
                           <q-card style="width: 350px; justify-content: center">
                             <div class="q-pa-sm col" style="display: block; width: 100%; gap: 5px">
                               <div style="width: 100%; text-align: center">
@@ -462,13 +469,6 @@
                             </q-card-section>
                           </q-card>
                         </q-dialog>
-                      </q-btn>
-                    </div>
-                  </div>
-                </q-td>
-              </q-tr>
-            </template>
-          </q-table>
         </div>
       </template>
       <template #lower>

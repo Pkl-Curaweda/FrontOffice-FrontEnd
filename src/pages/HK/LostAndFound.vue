@@ -181,11 +181,14 @@
             <q-td key="item_desc">
               {{ props.row.item_desc }}
             </q-td>
-            <q-td key="reported_by">
-              {{ props.row.reported_by }}
+            <q-td key="pickerName">
+              {{ props.row.pickerName }}
             </q-td>
-            <q-td key="phone_no">
-              {{ props.row.phone_no }}
+            <q-td key="pickerContact]">
+              {{ props.row.pickerContact }}
+            </q-td>
+            <q-td key="pickerEmail">
+              {{ props.row.pickerEmail }}
             </q-td>
             <q-td key="reported_date">
               {{ props.row.reported_date }}
@@ -193,37 +196,24 @@
             <q-td key="location">
               {{ props.row.location }}
             </q-td>
+            <q-td key="status">
+              {{ props.row.status }}
+            </q-td>
             <q-td key="image">
               <!-- View IMG BTN -->
               <q-btn
-                @click="props.row.dialogActive = true"
+                @click="openViewImageDialog(props.row)"
                 flat
                 no-caps
                 dense
                 style="border-radius: 4px; border: 1px solid #d9d9d9"
               >
-                <div class="flex" style="flex-wrap: nowrap; gap: 4px; padding: 0 4px">
-                  <q-icon name="o_image" color="primary" />
-                  <span style="color: black">View</span>
+              <div class="flex" style="flex-wrap: nowrap; gap: 4px; padding: 0 4px">
+                <q-icon name="o_image" color="primary" />
+                <span style="color: black">View</span>
                 </div>
               </q-btn>
 
-              <!-- Modal -->
-              <q-dialog v-model="props.row.dialogActive">
-                <q-card style="max-width: 100vw; max-height: 90vh; border-radius: 20px">
-                  <q-card-section class="text-h6" style="padding-inline: 24px"
-                    >View Image</q-card-section
-                  >
-                  <q-img
-                    :src="props.row.image"
-                    spinner-color="primary"
-                    :ratio="16 / 9"
-                    style="border-radius: 0px"
-                    fit="contain"
-                    :style="$q.screen.lt.sm ? 'width: 85vw;' : 'width: 65vw; margin: 24px;'"
-                  />
-                </q-card>
-              </q-dialog>
             </q-td>
             <q-td key="action" style="width: 10px; gap: 10px">
               <div style="display: flex; gap: 10px">
@@ -238,7 +228,7 @@
                           <q-item-label>Lost</q-item-label>
                         </q-item-section>
                       </q-item>
-                      <q-item clickable @click="foundItem = true">
+                      <q-item clickable @click="openFoundDialog(props.row)">
                         <q-btn flat rounded size="13px" color="primary">
                           <q-icon name="done" />
                         </q-btn>
@@ -249,7 +239,7 @@
                               <q-card-section class="row items-center q-pb-none">
                                 <div class="text-h6">Item Found</div>
                                 <q-space />
-                                <q-btn class="text-capitalize" color="primary" @click="saveUser"
+                                <q-btn class="text-capitalize" color="primary" @click="sendFound"
                                   >Submit</q-btn
                                 >
                                 <!-- <q-btn
@@ -261,7 +251,7 @@
                                   @click="clearFieldRole"
                                 /> -->
                               </q-card-section>
-
+                              
                               <q-card-section
                                 style="display: flex; gap: 10px; width: 100%"
                                 class="col-grow"
@@ -291,7 +281,7 @@
                                       name="account_circle"
                                       color="grey"
                                       size="100px"
-                                      style="border: 1px solid rgb(83, 83, 83)8, 78, 78)"
+                                      style="border: 1px solid rgb(83, 83, 83)"
                                       class="q-pa-md"
                                     />
                                   </div>
@@ -351,7 +341,7 @@
                                     class="q-mt-md full-width"
                                     v-else
                                     style="background-color: gray; height: 100px"
-                                  ></div>
+                                    ></div>
                                 </div>
                               </q-card-section>
                             </q-card>
@@ -368,8 +358,8 @@
                             xmlns="http://www.w3.org/2000/svg"
                           >
                             <path
-                              d="M16 10.59V4.5C16 2.29 12.42 0.5 8 0.5C3.58 0.5 0 2.29 0 4.5V14.5C0 16.71 3.59 18.5 8 18.5C8.46 18.5 8.9 18.5 9.33 18.44C9.1129 17.8162 9.00137 17.1605 9 16.5V16.45C8.68 16.5 8.35 16.5 8 16.5C4.13 16.5 2 15 2 14.5V12.27C3.61 13.05 5.72 13.5 8 13.5C8.65 13.5 9.27 13.46 9.88 13.39C10.4127 12.5085 11.1638 11.7794 12.0607 11.2731C12.9577 10.7668 13.9701 10.5005 15 10.5C15.34 10.5 15.67 10.54 16 10.59ZM14 9.95C12.7 10.9 10.42 11.5 8 11.5C5.58 11.5 3.3 10.9 2 9.95V7.14C3.47 7.97 5.61 8.5 8 8.5C10.39 8.5 12.53 7.97 14 7.14V9.95ZM8 6.5C4.13 6.5 2 5 2 4.5C2 4 4.13 2.5 8 2.5C11.87 2.5 14 4 14 4.5C14 5 11.87 6.5 8 6.5ZM19 15.5V17.5H11V15.5H19Z"
-                              fill="#269861"
+                            d="M16 10.59V4.5C16 2.29 12.42 0.5 8 0.5C3.58 0.5 0 2.29 0 4.5V14.5C0 16.71 3.59 18.5 8 18.5C8.46 18.5 8.9 18.5 9.33 18.44C9.1129 17.8162 9.00137 17.1605 9 16.5V16.45C8.68 16.5 8.35 16.5 8 16.5C4.13 16.5 2 15 2 14.5V12.27C3.61 13.05 5.72 13.5 8 13.5C8.65 13.5 9.27 13.46 9.88 13.39C10.4127 12.5085 11.1638 11.7794 12.0607 11.2731C12.9577 10.7668 13.9701 10.5005 15 10.5C15.34 10.5 15.67 10.54 16 10.59ZM14 9.95C12.7 10.9 10.42 11.5 8 11.5C5.58 11.5 3.3 10.9 2 9.95V7.14C3.47 7.97 5.61 8.5 8 8.5C10.39 8.5 12.53 7.97 14 7.14V9.95ZM8 6.5C4.13 6.5 2 5 2 4.5C2 4 4.13 2.5 8 2.5C11.87 2.5 14 4 14 4.5C14 5 11.87 6.5 8 6.5ZM19 15.5V17.5H11V15.5H19Z"
+                            fill="#269861"
                             />
                           </svg>
                         </q-btn>
@@ -385,6 +375,15 @@
           </q-tr>
         </template>
       </q-table>
+      <!-- Modal View Image -->
+      <q-dialog v-model="viewImage">
+        <q-card>
+          <q-card-section class="text-h6"
+            >View Image</q-card-section
+          >
+
+        </q-card>
+      </q-dialog>
     </div>
   </q-page>
 </template>
@@ -431,16 +430,30 @@ const columns = [
     align: 'left'
   },
   {
-    name: 'reportedBy',
-    label: 'Reported By',
-    field: 'reported_by',
+    name: 'pickerName',
+    label: 'Picker Name',
+    field: 'pickerName',
     sortable: true,
     align: 'left'
   },
   {
-    name: 'phoneNo',
-    label: 'Phone No.',
-    field: 'phone_no',
+    name: 'pickerContactNum',
+    label: 'Picker Contact Number',
+    field: 'pickerContact',
+    sortable: true,
+    align: 'left'
+  },
+  {
+    name: 'pickerEmail',
+    label: 'Picker Email',
+    field: 'pickerEmail',
+    sortable: true,
+    align: 'left'
+  },
+  {
+    name: 'status',
+    label: 'Status',
+    field: 'status',
     sortable: true,
     align: 'left'
   },
@@ -542,10 +555,12 @@ export default defineComponent({
       found: ref(),
       lost: ref(),
       rows,
+      viewImage: ref(false),
       datePickerArrival: ref(),
       formattedArrivalDate: ref(),
       columns,
-      seriesEntry: ref([])
+      seriesEntry: ref([]),
+      listOfImages: ref([])
     }
   },
   data() {
@@ -558,6 +573,7 @@ export default defineComponent({
         rowsNumber: 0,
         rowsPerPage: 20
       },
+      currentShownItemId: 0,
       startUp: true,
       series: this.seriesEntry
     }
@@ -571,8 +587,9 @@ export default defineComponent({
   watch: {
     datePickerArrival: {
       deep: true,
-      handler(newDate) {
-        this.fetchData()
+      handler(newDate, oldDate) {
+        console.log(newDate, oldDate)
+        if(oldDate && newDate != oldDate) this.fetchData()
       }
     },
     filterDisplay(newOption) {
@@ -593,6 +610,47 @@ export default defineComponent({
     }
   },
   methods: {
+    clearInput(){
+      const listOfModels =[]
+      for(let model of listOfModels){
+        this[model] = null
+      }
+    },
+    openViewImageDialog(rowData){
+      this.viewImage = true
+      let listImages = []
+      if(rowData.image) listImages.push(rowData.image)
+      if(rowData.pickerImage) listImages.push(rowData.pickerImage)
+      if(rowData.ktpImage) listImages.push(rowData.ktpImage)
+      this.listOfImages = listImages
+    },
+    openFoundDialog(rowData){
+      this.foundItem = true
+      this.currentShownItemId = rowData.id
+      this['itemDescImage'] = rowData.image,
+      this['foundIn'] = rowData.room_no,
+      this['foundLocation'] = rowData.location,
+      this['itemDesc'] = rowData.item_desc
+    },
+    sendFound(){
+      try{
+        const sendedData = {
+          pickerName: this.pickerName,
+          pickerEmail: this.email,
+          pickerContact: this.contactNumber,
+          pickerGender: this.gender,
+          pickerImage: this.img, 
+          ktpImage: this.imgKtp
+        }
+        this.api.useMultipart(true).post(`lostfound/${this.currentShownItemId}/FOUND`,sendedData , ({ status, data }) => {
+          if(status != 200) throw Error(data.message)
+          this.clearInput()
+          this.foundItem = false
+        })
+      }catch(err){
+        return this.trigger('negative', err.message)
+      }
+    },
     handleUpload() {
       if (this.img) {
         this.imgUrl = URL.createObjectURL(this.img)
@@ -696,9 +754,7 @@ export default defineComponent({
         this.fetchData()
       }
 
-      let url = `lostfound?page=${this.pagination.page}&perPage=${
-        this.pagination.rowsPerPage
-      }&search=${this.searchData ? this.searchData : ''}`
+      let url = `lostfound?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}&search=${this.searchData ? this.searchData : ''}`
       if (this.filterDisplay !== null) url += `&sortOrder=${this.filterDisplay}`
 
       const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
@@ -719,7 +775,7 @@ export default defineComponent({
           this.$refs.hkChartDesktop.updateSeries(this.series)
 
           const arrivalDate = data.searchDate // Gantilah 'arrival.arr' dengan properti yang benar
-          if (this.datePickerArrival == null) {
+          if (!this.datePickerArrival) {
             this.datePickerArrival = arrivalDate
           }
           this.rows = lostFounds.map((lostFound) => ({
@@ -729,8 +785,12 @@ export default defineComponent({
             room_no: lostFound.roomNo,
             pic: lostFound.pic,
             item_desc: lostFound.desc,
-            reported_by: lostFound.reportedBy,
-            phone_no: lostFound.phoneNumber,
+            pickerName: lostFound.pickerName,
+            pickerContact: lostFound.pickerContact,
+            pickerEmail: lostFound.pickerEmail,
+            pickerImage: lostFound.pickerImage,
+            ktpImage: lostFound.ktpImage,
+            status: lostFound.status,
             reported_date: lostFound.reportedDate,
             location: lostFound.location,
             image: lostFound.image,

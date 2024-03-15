@@ -565,7 +565,7 @@ export default defineComponent({
           options: [],
           actToDo: {},
           onOptionChange: (val) => {
-            if(val){
+            if (val) {
               this.filterSortOrder = this.filterColumns.RmNo.actToDo[val]
             } else this.filterSortOrder = { col: '', val: '' }
           }
@@ -575,7 +575,7 @@ export default defineComponent({
           options: [],
           actToDo: {},
           onOptionChange: (val) => {
-            if(val){
+            if (val) {
               this.filterSortOrder = this.filterColumns.RType.actToDo[val]
             } else this.filterSortOrder = { col: '', val: '' }
           }
@@ -733,7 +733,7 @@ export default defineComponent({
     }
   },
   methods: {
-    handleDelete(data){
+    handleDelete(data) {
       this.cacheData = data
       this.confirmDelete = true
     },
@@ -741,7 +741,6 @@ export default defineComponent({
       const roomNo = data['RmNo'].data
       this.datares = data
       this.roomno = roomNo
-
 
       if (state == true) {
         this.dialogeditroom = true
@@ -1010,6 +1009,12 @@ export default defineComponent({
         1000
       )
     },
+    formating(value) {
+      return parseFloat(value).toLocaleString('id-ID', {
+        style: 'currency',
+        currency: 'IDR'
+      })
+    },
     formatData(raw = []) {
       const list = []
 
@@ -1062,7 +1067,10 @@ export default defineComponent({
             },
             Night: { data: rr.reservation.manyNight, style: { backgroundColor, color } },
             RoomBoy: { data: rr.roomMaids.user.name, style: { backgroundColor, color } },
-            RoomRate: { data: rr.arrangment.rate, style: { backgroundColor, color } },
+            RoomRate: {
+              data: this.formating(rr.arrangment.rate),
+              style: { backgroundColor, color }
+            },
             CreatedDate: {
               data: formatDate(rr.reservation.created_at),
               style: { backgroundColor, color }

@@ -485,7 +485,7 @@ export default defineComponent({
             message: 'Articles added successfully.',
             timeout: 1000
           })
-        }else{
+        } else {
           this.trigger('negative', message)
         }
 
@@ -603,7 +603,12 @@ export default defineComponent({
     //       this.loading = false
     //     })
     // },
-
+    formating(value) {
+      return parseFloat(value).toLocaleString('id-ID', {
+        style: 'currency',
+        currency: 'IDR'
+      })
+    },
     formatData({ added, invoices }) {
       const list = []
 
@@ -615,8 +620,8 @@ export default defineComponent({
           },
           Qty: { data: inv.qty, style: { backgroundColor: inv.rowColor } },
           Description: { data: inv.desc, style: { backgroundColor: inv.rowColor } },
-          Rate: { data: inv.rate, style: { backgroundColor: inv.rowColor } },
-          Amount: { data: inv.amount, style: { backgroundColor: inv.rowColor } },
+          Rate: { data: this.formating(inv.rate), style: { backgroundColor: inv.rowColor } },
+          Amount: { data: this.formating(inv.amount), style: { backgroundColor: inv.rowColor } },
           RmNo: { data: inv.roomNo, style: { backgroundColor: inv.rowColor } }, // Akses rmNo dari objek added
           RoomBoy: { data: added.roomBoys, style: { backgroundColor: inv.rowColor } }, // Akses roomBoy dari objek added
           VoucherNumber: { data: added.voucherNo, style: { backgroundColor: inv.rowColor } }, // Akses voucherNumber dari objek added

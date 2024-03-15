@@ -262,7 +262,7 @@ export default defineComponent({
           RmAvail: { data: rp.added.rm_avail, style: {} },
           Rno: { data: rp.added.rno, style: {} },
           tdOcc: { data: rp.added.occ + '%', style: {} },
-          tdRmRevenue: { data: rp.added.rev, style: {} },
+          tdRmRevenue: { data: rp.taxService.unTax, style: {} },
           tdArr: { data: rp.added.arr, style: {} },
           taxSerive: { data: rp.taxService.taxed, style: {} }
         })

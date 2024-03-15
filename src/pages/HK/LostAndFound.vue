@@ -245,14 +245,11 @@
                         <q-item-section>
                           <q-item-label>Found</q-item-label>
                           <q-dialog v-model="foundItem">
-                            <q-card>
+                            <q-card style="width: 700px">
                               <q-card-section class="row items-center q-pb-none">
                                 <div class="text-h6">Item Found</div>
                                 <q-space />
-                                <q-btn
-                                  class="text-capitalize q-mx-md"
-                                  color="primary"
-                                  @click="saveUser"
+                                <q-btn class="text-capitalize" color="primary" @click="saveUser"
                                   >Submit</q-btn
                                 >
                                 <!-- <q-btn
@@ -267,7 +264,7 @@
 
                               <q-card-section
                                 style="display: flex; gap: 10px; width: 100%"
-                                class="col"
+                                class="col-grow"
                               >
                                 <div>
                                   <q-file
@@ -279,11 +276,12 @@
                                     bg-color="primary"
                                     style="width: 150px"
                                     label-color="white"
-                                    label="Upload Image"
+                                    :label="labelFile"
                                     class="ellipsis"
                                     type="file"
+                                    @update:model-value="handleUpload()"
                                   />
-                                  <q-img class="q-mt-sm" :src="imgURL" v-if="imgURL" />
+                                  <q-img class="q-mt-sm" :src="imgUrl" v-if="imgUrl" />
                                   <div
                                     class="justify-center items-center q-mt-md"
                                     v-else
@@ -298,7 +296,7 @@
                                     />
                                   </div>
                                 </div>
-                                <div>
+                                <div class="full-width">
                                   <q-input
                                     dense
                                     outlined
@@ -334,24 +332,26 @@
                                     dense
                                     outlined
                                     clearable
-                                    :placeholder="img"
-                                    v-model="img"
+                                    :placeholder="imgKtp"
+                                    v-model="imgKtp"
                                     bg-color="primary"
                                     label-color="white"
-                                    label="Upload KTP"
+                                    :label="labelKtp"
                                     class="ellipsis q-mt-md"
                                     type="file"
+                                    @update:model-value="handleUploadKtp()"
                                   />
-                                  <q-img class="q-mt-sm col-grow" :src="imgURL" v-if="imgURL" />
-                                  <div class="q-mt-md" v-else>
-                                    <q-icon
-                                      name="account_circle"
-                                      color="grey"
-                                      size="100px"
-                                      style="background-color: red"
-                                      class="q-pa-md"
-                                    />
-                                  </div>
+                                  <q-img
+                                    class="q-mt-sm full-width"
+                                    style="height: 100px"
+                                    :src="imgUrlKtp"
+                                    v-if="imgUrlKtp"
+                                  />
+                                  <div
+                                    class="q-mt-md full-width"
+                                    v-else
+                                    style="background-color: gray; height: 100px"
+                                  ></div>
                                 </div>
                               </q-card-section>
                             </q-card>
@@ -522,6 +522,12 @@ export default defineComponent({
   },
   setup() {
     return {
+      img: ref(null),
+      imgUrl: ref(''),
+      labelFile: ref('Upload Image'),
+      labelKtp: ref('Upload KTP'),
+      imgKtp: ref(null),
+      imgUrlKtp: ref(''),
       pickerName: ref(),
       email: ref(),
       contactNumber: ref(),
@@ -587,6 +593,18 @@ export default defineComponent({
     }
   },
   methods: {
+    handleUpload() {
+      if (this.img) {
+        this.imgUrl = URL.createObjectURL(this.img)
+        this.labelFile = 'Recapture'
+      }
+    },
+    handleUploadKtp() {
+      if (this.imgKtp) {
+        this.imgUrlKtp = URL.createObjectURL(this.imgKtp)
+        this.labelKtp = 'Recapture'
+      }
+    },
     updateFilterDisplayLabel(option) {
       // Logic to update the label based on the selected option
       switch (option) {

@@ -505,7 +505,7 @@
 
               <div style="display: flex; justify-content: space-around; margin: auto; width: 100%">
                 <div>{{ row.id.split('-')[0] }}</div>
-                <div>{{ row.rate }}</div>
+                <div>{{ this.formating(row.rate) }}</div>
                 <div>{{ row.id.split('-')[1] }}</div>
               </div>
             </div>
@@ -878,14 +878,27 @@ export default defineComponent({
           const { arrangmentCode, availableRooms } = data
           const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
           this.rows = formattedRoomRates
+          console.log(formattedRoomRates)
           this.resultRows = formattedRoomRates
-          let formatedType = {}, indexOfReference = {}, roomNos = [], roomTypes = []
+          let formatedType = {},
+            indexOfReference = {},
+            roomNos = [],
+            roomTypes = []
           let index = 0
-          for(let room of availableRooms){
-          roomNos.push({ index, label: room.id, value: room.id })
-            this.roomTypeOpts.push({ index, label: room.roomType.longDesc, value: room.roomType.id, bed: room.roomType.bedSetup })
-            this.roomBedOpts.push({ index, label: room.roomType.bedSetup, value: room.roomType.bedSetup })
-            formatedType[room.roomType.id] = { }
+          for (let room of availableRooms) {
+            roomNos.push({ index, label: room.id, value: room.id })
+            this.roomTypeOpts.push({
+              index,
+              label: room.roomType.longDesc,
+              value: room.roomType.id,
+              bed: room.roomType.bedSetup
+            })
+            this.roomBedOpts.push({
+              index,
+              label: room.roomType.bedSetup,
+              value: room.roomType.bedSetup
+            })
+            formatedType[room.roomType.id] = {}
             indexOfReference[room.id] = index
             index++
           }
@@ -928,7 +941,7 @@ export default defineComponent({
       try {
         const { currentResvId, currentRoomResvId } = this.$ResvStore
         const data = {
-          arrangmentCode: this. selected.id,
+          arrangmentCode: this.selected.id,
           roomId: this.roomNo.value,
           voucher: this.voucherId || ''
         }

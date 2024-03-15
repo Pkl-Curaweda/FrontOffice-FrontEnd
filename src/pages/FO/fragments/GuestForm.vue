@@ -760,18 +760,18 @@ export default defineComponent({
       }
     },
       roomNo: {
-        handler(newVal) {
+        handler(newVal, oldVal) {
           this.roomType = this.roomTypeOpts[newVal.index].value
           this.roomBed = this.roomBedOpts[newVal.index].label
-
-          if(this.arrivalDepart.from && this.arrivalDepart.to ) this.checkRoomAvailability()
+          console.log(newVal, oldVal)
+          if(this.arrivalDepart.from && this.arrivalDepart.to && newVal != oldVal) this.checkRoomAvailability()
         }
       },
     'arrivalDepart.from': {
       immediate: true,
-      handler() {
+      handler(newVal, oldVal) {
         this.formatArrivalDepart()
-        if(this.roomNo && this.arrivalDepart?.from) this.checkRoomAvailability()
+        if(this.roomNo && this.arrivalDepart?.from && oldVal != newVal) this.checkRoomAvailability()
       }
     },
     'arrivalDepart.to': {
@@ -809,7 +809,6 @@ export default defineComponent({
       }
     },
     checkRoomAvailability() {
-      console.log('dujasdjbasdjbas')
       const arrivalDate = this.arrivalDepart.from.split('T')[1] ? this.arrivalDepart.from.split('T')[0] : this.arrivalDepart.from
       const departureDate = this.arrivalDepart.to.split('T')[1] ? this.arrivalDepart.to.split('T')[0] : this.arrivalDepart.to
       this.api.get(`detail/checker/room?roomId=${this.roomNo.value}&range=${arrivalDate}T${departureDate}`, ({ status, message }) => {

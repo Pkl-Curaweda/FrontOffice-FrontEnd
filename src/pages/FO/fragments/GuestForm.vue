@@ -505,7 +505,7 @@
 
               <div style="display: flex; justify-content: space-around; margin: auto; width: 100%">
                 <div>{{ row.id.split('-')[0] }}</div>
-                <div>{{ row.rate }}</div>
+                <div>{{ this.formating(row.rate) }}</div>
                 <div>{{ row.id.split('-')[1] }}</div>
               </div>
             </div>
@@ -759,19 +759,19 @@ export default defineComponent({
         })
       }
     },
-      roomNo: {
-        handler(newVal) {
-          this.roomType = this.roomTypeOpts[newVal.index].value
-          this.roomBed = this.roomBedOpts[newVal.index].label
+    roomNo: {
+      handler(newVal) {
+        this.roomType = this.roomTypeOpts[newVal.index].value
+        this.roomBed = this.roomBedOpts[newVal.index].label
 
-          if(this.arrivalDepart.from && this.arrivalDepart.to ) this.checkRoomAvailability()
-        }
-      },
+        if (this.arrivalDepart.from && this.arrivalDepart.to) this.checkRoomAvailability()
+      }
+    },
     'arrivalDepart.from': {
       immediate: true,
       handler() {
         this.formatArrivalDepart()
-        if(this.roomNo && this.arrivalDepart?.from) this.checkRoomAvailability()
+        if (this.roomNo && this.arrivalDepart?.from) this.checkRoomAvailability()
       }
     },
     'arrivalDepart.to': {
@@ -809,16 +809,19 @@ export default defineComponent({
       }
     },
     checkRoomAvailability() {
-      this.api.get(`detail/checker/room?roomId=${this.roomNo.value}&range=${this.arrivalDepart.from}T${this.arrivalDepart.to}`, ({ status, message }) => {
-        if(status != 200){
-          this. trigger('negative', message)
-          this.arrivalDepart.from = null
-          this.arrivalDepart.to = null
-          this.arrivalDepartLabel = 'Arrival - Depature, 1 Nights'
-        }else{
-          this.trigger('positive', message)
+      this.api.get(
+        `detail/checker/room?roomId=${this.roomNo.value}&range=${this.arrivalDepart.from}T${this.arrivalDepart.to}`,
+        ({ status, message }) => {
+          if (status != 200) {
+            this.trigger('negative', message)
+            this.arrivalDepart.from = null
+            this.arrivalDepart.to = null
+            this.arrivalDepartLabel = 'Arrival - Depature, 1 Nights'
+          } else {
+            this.trigger('positive', message)
+          }
         }
-      })
+      )
     },
     roomBedMapper(bed) {
       let obj = {
@@ -878,14 +881,27 @@ export default defineComponent({
           const { arrangmentCode, availableRooms } = data
           const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
           this.rows = formattedRoomRates
+          console.log(formattedRoomRates)
           this.resultRows = formattedRoomRates
-          let formatedType = {}, indexOfReference = {}, roomNos = [], roomTypes = []
+          let formatedType = {},
+            indexOfReference = {},
+            roomNos = [],
+            roomTypes = []
           let index = 0
-          for(let room of availableRooms){
-          roomNos.push({ index, label: room.id, value: room.id })
-            this.roomTypeOpts.push({ index, label: room.roomType.longDesc, value: room.roomType.id, bed: room.roomType.bedSetup })
-            this.roomBedOpts.push({ index, label: room.roomType.bedSetup, value: room.roomType.bedSetup })
-            formatedType[room.roomType.id] = { }
+          for (let room of availableRooms) {
+            roomNos.push({ index, label: room.id, value: room.id })
+            this.roomTypeOpts.push({
+              index,
+              label: room.roomType.longDesc,
+              value: room.roomType.id,
+              bed: room.roomType.bedSetup
+            })
+            this.roomBedOpts.push({
+              index,
+              label: room.roomType.bedSetup,
+              value: room.roomType.bedSetup
+            })
+            formatedType[room.roomType.id] = {}
             indexOfReference[room.id] = index
             index++
           }
@@ -928,7 +944,7 @@ export default defineComponent({
       try {
         const { currentResvId, currentRoomResvId } = this.$ResvStore
         const data = {
-          arrangmentCode: this. selected.id,
+          arrangmentCode: this.selected.id,
           roomId: this.roomNo.value,
           voucher: this.voucherId || ''
         }

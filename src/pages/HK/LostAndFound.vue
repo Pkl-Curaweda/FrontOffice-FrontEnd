@@ -159,7 +159,7 @@
         }"
         :card-style="{ boxShadow: 'none' }"
         rows-per-page-label="Show"
-        :rows-per-page-options="[1,3,5,7,10,15,20,25,30]"
+        :rows-per-page-options="[1, 3, 5, 7, 10, 15, 20, 25, 30]"
         :dense="$q.screen.lt.md"
         v-model:pagination="pagination"
         @request="onPaginationChange"
@@ -238,7 +238,7 @@
                           <q-item-label>Lost</q-item-label>
                         </q-item-section>
                       </q-item>
-                      <q-item clickable @click="foundItem(props.row)">
+                      <q-item clickable @click="foundDialog = true">
                         <q-btn flat rounded size="13px" color="primary">
                           <q-icon name="done" />
                         </q-btn>
@@ -274,6 +274,115 @@
         </template>
       </q-table>
     </div>
+    <q-dialog v-model="foundDialog">
+      <q-card class="q-pa-md" style="min-width: 700px">
+        <q-bar class="bg-white text-grey rounded-borders q-pa-xs">
+          <div class="cursor-pointer non-selectable q-px-md">Create New User</div>
+          <q-space />
+        </q-bar>
+        <q-form class="q-pa-md q-mx-auto">
+          <div class="row items-center q-mt-sm" style="gap: 42px">
+            <div class="text-caption text-weight-bold">Upload File</div>
+            <q-file
+              dense
+              outlined
+              :placeholder="img"
+              v-model="img"
+              label-color="white"
+              label="Choose File"
+              style="width: 150px"
+              class="ellipsis"
+              type="file"
+              @update:model-value="handleUpload()"
+            >
+              <template v-slot:append> <q-icon name="o_file_upload" color="white" /></template>
+            </q-file>
+            <q-img :src="imgURL" v-if="imgURL" />
+          </div>
+          <div style="width: 100%; gap: 5px; display: block" class="row">
+            <div style="width: 100%; gap: 5px; display: flex; padding: 5px" class="col">
+              <q-input
+                type="text"
+                v-model="inputName"
+                dense
+                outlined
+                style="width: 50%"
+                placeholder="Kontak"
+              />
+
+              <q-select
+                outlined
+                v-model="selectDivisi"
+                :options="DivisiOpt"
+                dense
+                style="width: 50%"
+                :label="'Divisi'"
+                dropdown-icon="expand_more"
+              />
+            </div>
+            <div style="width: 100%; gap: 5px; display: flex; padding: 5px" class="col">
+              <q-input
+                type="email"
+                v-model="inputEmail"
+                dense
+                outlined
+                style="width: 50%"
+                placeholder="Email"
+              />
+              <div style="width: 100%; gap: 5px; display: flex" class="col">
+                <q-select
+                  outlined
+                  v-model="selectJabatan"
+                  :options="JabatanOpt"
+                  dense
+                  style="width: 100%"
+                  :label="'Jabatan'"
+                  dropdown-icon="expand_more"
+                />
+                <q-select
+                  outlined
+                  v-model="selectGender"
+                  :options="genderOpt"
+                  dense
+                  style="width: 100%"
+                  :label="'Gender'"
+                  dropdown-icon="expand_more"
+                />
+              </div>
+            </div>
+            <div style="width: 100%; gap: 5px; display: flex; padding: 5px" class="col">
+              <q-input
+                v-model="password"
+                label="password"
+                dense
+                style="width: 50%"
+                outlined
+                type="password"
+              />
+              <q-input
+                v-model="confirmpassword"
+                label="Confirm Password"
+                dense
+                style="width: 50%"
+                outlined
+                type="password"
+              />
+            </div>
+          </div>
+          <q-card-section class="row items-center q-gutter-sm">
+            <q-btn
+              dense
+              color="primary"
+              @click="postAddUser()"
+              no-caps
+              style="border-radius: 8px"
+              class="q-px-xl"
+              >Create</q-btn
+            >
+          </q-card-section>
+        </q-form>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -402,6 +511,7 @@ const chartOptions = {
     }
   ]
 }
+// foundItem(props.row)
 const rows = ref([])
 export default defineComponent({
   name: 'LostAndFoundPage',
@@ -410,6 +520,7 @@ export default defineComponent({
   },
   setup() {
     return {
+      foundDialog: ref(false),
       filterDisplay: ref('roomNum'),
       filterDisplayLabel: ref('Room Number'),
       sortingModel: ref('Room Number'),
@@ -421,6 +532,8 @@ export default defineComponent({
       datePickerArrival: ref(),
       formattedArrivalDate: ref(),
       columns,
+      imgURL: ref(''),
+      img: ref(null),
       seriesEntry: ref([])
     }
   },
@@ -469,6 +582,11 @@ export default defineComponent({
     }
   },
   methods: {
+    handleUpload() {
+      if (this.img) {
+        this.imgURL = URL.createObjectURL(this.img)
+      }
+    },
     updateFilterDisplayLabel(option) {
       // Logic to update the label based on the selected option
       switch (option) {

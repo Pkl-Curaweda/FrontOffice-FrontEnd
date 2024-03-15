@@ -248,6 +248,12 @@ export default defineComponent({
         }
       })
     },
+    formating(value) {
+      return parseFloat(value).toLocaleString('id-ID', {
+        style: 'currency',
+        currency: 'IDR'
+      })
+    },
     formatData(raw = []) {
       console.log
       const list = []
@@ -257,7 +263,7 @@ export default defineComponent({
           RmAvailable: { data: rp.roomAvailable, style: {} },
           Occupied: { data: rp.occupied, style: {} },
           Occ: { data: rp.occ + '%', style: {} },
-          RmRevenue: { data: rp.roomRevenue, style: {} },
+          RmRevenue: { data: this.formating(rp.roomRevenue), style: {} },
           Arr: { data: rp.arr, style: {} },
           RmAvail: { data: rp.added.rm_avail, style: {} },
           Rno: { data: rp.added.rno, style: {} },

@@ -54,7 +54,7 @@
       </template>
       <template #right>
         <q-separator vertical />
-        <q-btn flat square color="primary" icon="pending_actions" @click="showhistory(!this.state)">
+        <q-btn flat square :color="historyColor" icon="pending_actions" @click="showhistory(!this.state)">
           <q-tooltip>History</q-tooltip>
         </q-btn>
       </template>
@@ -691,6 +691,7 @@ export default defineComponent({
         }
       },
       api: new this.$Api('frontoffice'),
+      historyColor: ref('primary'),
       pagination: {
         page: 1,
         rowsNumber: 0,
@@ -822,6 +823,7 @@ export default defineComponent({
     },
     showhistory(state) {
       this.state = state
+      this.historyColor = state ? "black" : "primary"
       this.fetchData()
     },
     waitinglist(data, log, state) {

@@ -27,7 +27,7 @@
           square
           range
           class="text-capitalize"
-          label="TDate - FDate"
+          :label="datePickerLabel"
           icon="o_event"
           dropdown-icon="o_expand_more"
         >
@@ -131,6 +131,7 @@ export default defineComponent({
       loading: ref(false),
       searchInput: ref(''),
       datePicker: ref({ from: '', to: '' }),
+      datePickerLabel: ref('TDate - FDate'),
       sortingDisplay: ref(''),
       filterDisplay: ref(''),
       columns: [
@@ -181,6 +182,19 @@ export default defineComponent({
     datePicker: {
       deep: true,
       handler(newDateRange) {
+        this.datePickerLabel = 'TDate - FDate'
+        if(newDateRange){
+          this.storedRange = newDateRange
+          function formatDateRange() {
+            const options = { day: 'numeric', month: 'long' };
+            const fromDate = new Date(newDateRange?.from);
+            const toDate = new Date(newDateRange?.to);
+            const formattedFromDate = fromDate.toLocaleDateString('en-US', options);
+            const formattedToDate = toDate.toLocaleDateString('en-US', options);
+            return `${formattedFromDate} - ${formattedToDate}`;
+          }
+          this.datePickerLabel = formatDateRange()
+        }
         this.fetchData()
       }
     }
@@ -268,9 +282,9 @@ export default defineComponent({
           RmAvail: { data: rp.added.rm_avail, style: {} },
           Rno: { data: rp.added.rno, style: {} },
           tdOcc: { data: rp.added.occ + '%', style: {} },
-          tdRmRevenue: { data: rp.taxService.unTax, style: {} },
+          tdRmRevenue: { data:  this.formating(rp.taxService.unTax), style: {} },
           tdArr: { data: rp.added.arr, style: {} },
-          taxSerive: { data: rp.taxService.taxed, style: {} }
+          taxSerive: { data: this.formating(rp.taxService.taxed), style: {} }
         })
       })
       this.data = list

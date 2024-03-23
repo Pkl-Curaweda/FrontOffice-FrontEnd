@@ -6,7 +6,7 @@
           flat
           square
           class="text-capitalize"
-          label="TDate - FDate"
+          :label="datePickerLabel"
           icon="o_event"
           color="primary"
           dropdown-icon="o_expand_more"
@@ -23,7 +23,7 @@
     >
       <!-- ROOMS -->
       <div style="width: 70%; position: relative; overflow: hidden">
-        <q-img src="/src/assets/svg/roomplan_bg.svg" />
+        <q-img src="../../../src/assets/svg/roomplan_bg.svg" />
 
         <!-- LEFT ROOMS -->
         <div
@@ -307,6 +307,7 @@ export default defineComponent({
     return {
       api: new this.$Api('frontoffice'),
       datePicker,
+      datePickerLabel: ref('TDate - FDate'),
       floor,
       statuses,
       subGroupingArray,
@@ -333,6 +334,18 @@ export default defineComponent({
     datePicker: {
       deep: true,
       handler(newDateRange) {
+        this.datePickerLabel = 'TDate - FDate'
+        if(newDateRange){
+          function formatDateRange() {
+            const options = { day: 'numeric', month: 'long' };
+            const fromDate = new Date(newDateRange?.from);
+            const toDate = new Date(newDateRange?.to);
+            const formattedFromDate = fromDate.toLocaleDateString('en-US', options);
+            const formattedToDate = toDate.toLocaleDateString('en-US', options);
+            return `${formattedFromDate} - ${formattedToDate}`;
+          }
+          this.datePickerLabel = formatDateRange()
+        }
         this.backgroundRoom()
       }
     }

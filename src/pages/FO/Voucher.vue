@@ -16,7 +16,7 @@
           flat
           square
           class="text-capitalize date-btn text-black"
-          label="TDate - FDate"
+          :label="datePickerLabel"
           icon="o_event"
           color="primary"
           dropdown-icon="o_expand_more"
@@ -280,6 +280,7 @@ export default defineComponent({
       rows: ref(),
       searchInput: ref(''),
       datePicker: ref({ from: '', to: '' }),
+      datePickerLabel: ref('TDate - FDate'),
       titleVoucher: ref(),
       isPopupOpen: ref(false),
       labelButton: ref(),
@@ -304,14 +305,40 @@ export default defineComponent({
       },
       immediate: true
     },
+    isPopupOpen: {
+      handler(val){
+        if(!val) this.cleanForm()
+      }
+    },
     datePicker: {
       deep: true,
       handler(newDateRange) {
+        this.datePickerLabel = 'TDate - FDate'
+        if(newDateRange){
+          function formatDateRange() {
+            const options = { day: 'numeric', month: 'long' };
+            const fromDate = new Date(newDateRange?.from);
+            const toDate = new Date(newDateRange?.to);
+            const formattedFromDate = fromDate.toLocaleDateString('en-US', options);
+            const formattedToDate = toDate.toLocaleDateString('en-US', options);
+            return `${formattedFromDate} - ${formattedToDate}`;
+          }
+          this.datePickerLabel = formatDateRange()
+        }
         this.fetchData()
       }
     }
   },
   methods: {
+    cleanForm(){
+      const listOfModels = ['voucherName', 'description', 'discount', 'input']
+      for(let model of listOfModels){
+        this[model] = null
+      }
+      this.complimentary = false
+      this.houseUse = false
+
+    },
     searchVouhcer(searchInput) {
       this.searchData = searchInput
       this.fetchData()

@@ -14,14 +14,6 @@ import {
 
 const routes = [
   {
-    path: '/tes',
-    component: () => import('pages/Test.vue'),
-    meta: {
-      title: 'Dashboard',
-    }
-  },
-
-  {
     path: '/',
     component: () => import('pages/IndexPage.vue'),
     meta: {

@@ -82,6 +82,7 @@ export default defineComponent({
             //   this.$Helper.showNotif("You don't have access", '', 'negative')
             // }
           } else {
+            console.log(this.api)
             this.$Helper.showNotif(message || 'Please try again', '', 'negative')
           }
 

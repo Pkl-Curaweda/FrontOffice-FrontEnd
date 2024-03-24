@@ -1,7 +1,12 @@
 <template>
   <div class="spv full-width">
     <div class="q-mt-lg q-px-xs">
-      <UserGreet class="q-mt-md q-px-xs" :name="user.name" role="Supervisor" />
+      <div class="flex justify-between items-center">
+        <UserGreet class="q-mt-md q-px-xs" :name="user.name" role="Supervisor" />
+        <q-btn flat square color="primary" icon="refresh" @click="refreshData" style="">
+          <q-tooltip>Refresh</q-tooltip>
+        </q-btn>
+      </div>
       <div class="q-mt-md q-px-xs">
         <!-- <IMPPSSelectedTable
         :rows="rows"
@@ -55,9 +60,9 @@
               style="width: 100%; white-space: nowrap; border-radius: 10px"
             />
           </div>
-          <q-btn flat square color="primary" icon="refresh" @click="refreshData" style="">
-            <q-tooltip>History</q-tooltip>
-          </q-btn>
+          <!-- <q-btn flat square color="primary" icon="refresh" @click="refreshData" style="">
+            <q-tooltip>Refresh</q-tooltip>
+          </q-btn> -->
         </div>
         <q-dialog v-model="dialog1">
           <q-card style="width: 300px; justify-content: center">

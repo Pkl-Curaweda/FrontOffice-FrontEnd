@@ -160,7 +160,6 @@
         :card-style="{ boxShadow: 'none' }"
         rows-per-page-label="Show"
         :rows-per-page-options="[1, 3, 5, 7, 10, 15, 20, 25, 30]"
-        :rows-per-page-options="[1, 3, 5, 7, 10, 15, 20, 25, 30]"
         :dense="$q.screen.lt.md"
         v-model:pagination="pagination"
         @request="onPaginationChange"
@@ -342,7 +341,7 @@
                                   />
                                   <q-img
                                     class="q-mt-sm full-width"
-                                    :ratio="19 / 10"
+                                    :ratio="19 / 6"
                                     :src="imgUrlKtp"
                                     v-if="imgUrlKtp"
                                   />

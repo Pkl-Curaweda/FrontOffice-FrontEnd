@@ -1141,13 +1141,7 @@ export default defineComponent({
       }
     },
     async createData() {
-      // Reset border color of inputs
-      this.resetInputBorders()
-
-      // Check if all required inputs are filled
       if (!this.isAllInputsFilled()) {
-        // If not all inputs are filled, set border color to red and show notification
-        this.setInvalidInputBorders()
         this.trigger('negative', 'All inputs must be filled.')
         return
       }
@@ -1186,33 +1180,14 @@ export default defineComponent({
         console.error(error)
       }
     },
-
-    resetInputBorders() {
-      // Reset border color of all input fields
-      // Example logic:
-      this.$refs.inputNameContact.outlineColor = '' // Assuming 'inputNameContact' is the ref for the input field
-      this.$refs.inputResvResource.outlineColor = '' // Assuming 'inputResvResource' is the ref for the input field
-      // Reset border color for other input fields similarly
-    },
     isAllInputsFilled() {
       return (
-        this.guestName.trim() !== '' && this.resvRecource.trim() !== ''
-        // Tambahkan pengecekan untuk input lainnya di sini
-        // Misalnya: this.roomNo.value !== null && this.voucherId.trim() !== ''
+        this.guestName.trim() !== '' &&
+        this.resvRecource !== null &&
+        this.roomNo !== null &&
+        this.voucherId.trim() !== ''
       )
     },
-    setInvalidInputBorders() {
-      // Set border color to red for input fields that are not filled
-      // Example logic:
-      if (this.guestName.trim() === '') {
-        this.$refs.inputNameContact.outlineColor = 'red'
-      }
-      if (this.resvRecource.trim() === '') {
-        this.$refs.inputResvResource.outlineColor = 'red'
-      }
-      // Set border color for other input fields similarly
-    },
-
     showNotification(message) {
       // Display notification message
       // Example logic:

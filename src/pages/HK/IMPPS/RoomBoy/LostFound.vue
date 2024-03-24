@@ -132,17 +132,20 @@ export default defineComponent({
         location: this.location,
         roomId: this.model,
         description: this.itemDesc,
-        image: this.img
+        image: this.img || null
       }
-
-      this.api.useMultipart(true).post(`roomboy/lostfound`, data, ({ status, message }) => {
-        if (status == 200) {
-          this.trigger('possitive', message)
-          this.$router.push({
-          name: 'DashboardRBPage'
+      if (data.location === '' || data.description === '' || this.img === null) {
+        this.trigger('negative', 'incomplete data')
+      } else {
+        this.api.useMultipart(true).post(`roomboy/lostfound`, data, ({ status, message }) => {
+          if (status == 200) {
+            this.trigger('positive', message)
+            this.$router.push({
+              name: 'DashboardRBPage'
+            })
+          }
         })
-        }
-      })
+      }
     },
     trigger(type, txt) {
       this.$q.notify(

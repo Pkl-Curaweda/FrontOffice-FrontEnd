@@ -492,9 +492,11 @@
       <q-separator class="q-my-sm bg-grey" size="1px" />
 
       <q-expansion-item
+        ref="showRateExpansionItem"
         :label="selected.id ? 'Room Rate: ' + selected.id : 'Room Rate: '"
         class="padding-expansion q-pa-none"
-        default-opened="true"
+        :hide-expand-icon="true"
+        :default-opened="showRateExpansion"
         dense
         style="font-weight: bold"
       >
@@ -679,6 +681,7 @@ export default defineComponent({
       resvStatusOpts: ref([['DLX', 'FML', 'STD']]),
       indexReference: ref(),
       balance: ref(0),
+      showRateExpansion: ref(false),
       resvRemark: ref(''),
       roomNo: ref(null),
       roomType: ref(null),
@@ -761,9 +764,9 @@ export default defineComponent({
     },
     roomNo: {
       handler(newVal, oldVal) {
+        this.toggleRoomRate('show')
         this.roomType = this.roomTypeOpts[newVal.index].value
         this.roomBed = this.roomBedOpts[newVal.index].label
-        console.log(newVal, oldVal)
         if (this.arrivalDepart.from && this.arrivalDepart.to && newVal != oldVal)
           this.checkRoomAvailability()
       }
@@ -790,14 +793,11 @@ export default defineComponent({
     }
   },
   methods: {
-    validateAndCreateData() {
-      if (this.isAllInputsFilled()) {
-        this.createData()
-      } else {
-        this.showNotification('Please fill in all required fields before proceeding.')
-      }
+    toggleRoomRate(act = 'show') {
+      act != 'show'
+        ? this.$refs.showRateExpansionItem.hide()
+        : this.$refs.showRateExpansionItem.show()
     },
-
     refreshData() {
       window.location.reload()
     },

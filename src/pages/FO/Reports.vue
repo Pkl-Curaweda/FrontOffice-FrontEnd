@@ -6,7 +6,7 @@
           flat
           square
           class="text-capitalize text-black"
-          label="Sorting"
+          :label="sortingLabel"
           color="primary"
           dropdown-icon="o_expand_more"
         >
@@ -133,6 +133,7 @@ export default defineComponent({
       datePicker: ref({ from: '', to: '' }),
       datePickerLabel: ref('TDate - FDate'),
       sortingDisplay: ref(''),
+      sortingLabel: ref('Sorting'),
       filterDisplay: ref(''),
       columns: [
         { name: 'Date', label: 'Date', align: 'left', field: 'Date' },
@@ -171,6 +172,7 @@ export default defineComponent({
   watch: {
     sortingDisplay: {
       handler(sorting) {
+        this.sortingLabel = sorting != 'asc' ? "Most Revenue" : "Less Revenue"
         this.fetchData()
       }
     },

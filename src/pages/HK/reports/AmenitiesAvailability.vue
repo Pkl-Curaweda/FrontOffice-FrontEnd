@@ -170,6 +170,7 @@ export default defineComponent({
     datePickerDeparture: {
       deep: true,
       handler(newDate) {
+        console.log(newDate)
         this.fetchData()
       }
     }

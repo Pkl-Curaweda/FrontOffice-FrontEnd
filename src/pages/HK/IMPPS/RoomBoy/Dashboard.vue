@@ -30,7 +30,9 @@
         :btnEdit="false"
         hidePagination
       /> -->
-      <q-btn flat square color="primary" icon="pending_actions" @click="showhistory(!this.state)" />
+      <q-btn flat square color="primary" icon="pending_actions" @click="showhistory(!this.state)">
+        <q-tooltip>History</q-tooltip>
+      </q-btn>
       <div class="my-table">
         <q-table
           class="no-shadow"
@@ -81,10 +83,13 @@
           noCaps
           label="Start"
           @click="Start"
+          :disable="!this.section"
           class="rb-btn rb-drop-shadow q-py-none text-body1"
           style="border-radius: 8px"
           color="primary"
-        />
+        >
+          <q-tooltip v-if="!this.section">select the task first</q-tooltip>
+        </q-btn>
         <q-btn
           dense
           noCaps
@@ -116,8 +121,11 @@
           style="border-radius: 8px"
           label="Submit"
           color="primary"
+          :disable="!this.section"
           @click="SubmitData"
-        />
+        >
+          <q-tooltip v-if="!this.section">select the task first</q-tooltip>
+        </q-btn>
       </div>
       <div class="q-mt-lg">
         <q-btn
@@ -161,6 +169,7 @@ export default defineComponent({
   setup() {
     return {
       data: ref([]),
+      section: ref(false),
       roomNo: ref(''),
       roomId: ref(),
       comments: ref(''),
@@ -207,6 +216,7 @@ export default defineComponent({
       this.fetchData()
     },
     dialogalert(roomNo) {
+      this.section = true
       this.roomNo = roomNo['roomNo'].data
       this.roomId = roomNo['taskId'].data
       this.comments = roomNo['Comments'].data

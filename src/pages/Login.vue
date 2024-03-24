@@ -36,6 +36,7 @@
 </template>
 
 <script>
+
 import { defineComponent, ref, watch } from 'vue'
 import { StreamBarcodeReader } from 'vue-barcode-reader'
 import { useQuasar, QSpinnerGears } from 'quasar'
@@ -56,7 +57,7 @@ export default defineComponent({
       loading: false,
       dataModel: {
         email: ref(null),
-        password: ref(null)
+      password: ref(null)
       }
     }
   },

@@ -148,6 +148,22 @@
                     <div>Work Load : {{ this.choosenRoom.workload }}</div>
                   </div>
                 </div>
+                <div v-if="this.maidSelect" style="padding: 8px">
+                  <img
+                    :src="this.choosenMaid.image"
+                    class="cropped-image"
+                    style="width: 100px; border-radius: 2px"
+                  />
+                </div>
+                <div style="padding: 8px; gap: 2px; width: 100%">
+                  <div>
+                    <div style="padding: 10px; gap: 2px" v-if="this.maidSelect">
+                      <div>Id : {{ this.choosenMaid.id }}</div>
+                      <div>Aliases : {{ this.choosenMaid.aliases }}</div>
+                      <div>Shift : {{ this.choosenMaid.shift }}</div>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div style="display: flex; gap: 5px">
                 <q-input
@@ -312,7 +328,6 @@
                 @click="changeStatus"
                 dense
                 no-caps
-                v-close-popup
                 label="Change Status"
                 color="primary"
               />
@@ -333,8 +348,7 @@
                 outline
                 icon="close"
                 v-close-popup
-                @click="clearData"
-              />
+                />
             </q-bar>
             <div class="q-pa-lg">
               <q-select
@@ -371,7 +385,7 @@
                   </q-tr>
                 </template></q-table
               > -->
-              <div style="display: flex" v-if="this.roomBoy.image">
+              <div style="display: flex" v-if="this.roomBoy?.image">
                 <div>
                   <img
                     :src="this.roomBoy.image || user.picture"
@@ -408,10 +422,10 @@
                 dense
                 class="q-mb-md"
               />
-              <div style="display: flex" v-if="this.roomBoy2.image">
+              <div style="display: flex" v-if="this.roomBoy2?.image">
                 <div>
                   <img
-                    :src="this.roomBoy2.image || user.picture"
+                    :src="this.roomBoy2?.image || user.picture"
                     style="width: 110px; border-radius: 2px"
                   />
                 </div>
@@ -422,9 +436,9 @@
                     <div>Work Load</div>
                   </div>
                   <div style="display: block">
-                    <div>: {{ this.roomBoy2.aliases }}</div>
-                    <div>: {{ this.roomBoy2.shift }}</div>
-                    <div>: {{ this.roomBoy2.workload }}</div>
+                    <div>: {{ this.roomBoy2?.aliases }}</div>
+                    <div>: {{ this.roomBoy2?.shift }}</div>
+                    <div>: {{ this.roomBoy2?.workload }}</div>
                   </div>
                 </div>
               </div>
@@ -489,21 +503,26 @@
             <q-btn
               dense
               noCaps
+              :disable="!roomId"
               color="primary"
               @click="postOk"
               label="OK"
               class="q-px-lg"
               style="border-radius: 10px"
-            />
-            <q-btn
+              >
+              <q-tooltip v-if="!this.roomId">Select the task first</q-tooltip>
+          </q-btn>
+              <q-btn
               dense
               noCaps
+              :disable="!roomId"
               color="primary"
               @click="reclean"
               label="Re-Clean"
               class="q-px-lg"
               style="border-radius: 10px"
-            />
+            ><q-tooltip v-if="!this.roomId">Select the task first</q-tooltip>
+          </q-btn>
           </div>
         </div>
         <div class="q-mt-lg q-mx-auto" style="width: fit-content">
@@ -524,10 +543,12 @@
               class="text-body1 q-px-md q-py-none"
               label="Submit"
               color="primary"
+              :disable="!roomId"
               @click="SubmitData"
               noCaps
               style="border-radius: 8px"
-            />
+            ><q-tooltip v-if="!this.roomId">Select the task first</q-tooltip>
+          </q-btn>
           </div>
         </div>
         <div class="performance q-my-xl">
@@ -694,7 +715,7 @@ export default defineComponent({
         if(required) if(!modelValue) throw Error(message)
     },
     cleanForm(){
-      const listOfModels = ['roomSelect', 'maidSelect', 'requestInput', 'workloadInput', 'commentsInput', 'roomSelect', 'roomNoSelect', 'group','choosenRoom' , 'roomboySelect', 'roomboySelectSend']
+      const listOfModels = ['roomSelect', 'maidSelect', 'requestInput', 'workloadInput', 'commentsInput', 'roomBoy', 'roomBoy2','roomSelect', 'roomNoSelect', 'group','choosenRoom' , 'roomboySelect', 'roomboySelectSend']
       for(let model of listOfModels){
         this[model] = null
       }
@@ -726,6 +747,7 @@ export default defineComponent({
       }
     },
     ratingcheck(i) {
+      console.log('masuk kntl')
       let listRating = []
       for (let rating = 1; rating <= 5; rating++) {
         listRating.push({
@@ -733,6 +755,7 @@ export default defineComponent({
         })
       }
       this.ratingcolor = listRating
+      console.log(i)
       this.currentRating = i
     },
     showhistory(state) {
@@ -751,7 +774,6 @@ export default defineComponent({
               if (status == 200) {
                 this.trigger('positive', message)
                 this.fetchData()
-                this.clearData()
                 this.dialog2 = false
               } else {
                 this.trigger('negative', message)
@@ -771,18 +793,22 @@ export default defineComponent({
       this.selected = data
     },
     SubmitData() {
-      this.validateInput(this.roomId, "Please specify Room Number", true)
-      const comment = {
-        comment: this.comments || ""
-      }
-      this.api.put(`spv/${this.roomId}`, comment, ({ status, message }) => {
-        if (status == 200) {
-          this.trigger('positive', message)
-          this.fetchData()
-        } else {
-          this.trigger('negative', message)
+      try{
+        this.validateInput(this.roomId, "Please specify Room Number", true)
+        const comment = {
+          comment: this.comments || ""
         }
-      })
+        this.api.put(`spv/${this.roomId}`, comment, ({ status, message }) => {
+          if (status == 200) {
+            this.trigger('positive', message)
+            this.fetchData()
+          } else {
+            this.trigger('negative', message)
+          }
+        })
+      }catch(err){
+        return this.trigger('negative', err.message)
+      }
     },
     postOk() {
       this.validateInput(this.roomId, "Please specify Room Number", true)
@@ -915,31 +941,35 @@ export default defineComponent({
       }
     },
     postUnvailable() {
-      this.validateInput(this.roomboySelect, "Please Specify which Room Boy That's Unavailable")
-      this.validateInput(this.roomboySelectSend, "Please Specify which Room Boy to Assign to")
-      this.api.post(
-        `spv/unavail`,
-        {
-          unAvailableId: this.roomboySelect.value,
-          assigneId: this.roomboySelectSend.value
-        },
-        ({ status, message }) => {
-          if (status === 200) {
-            this.trigger('positive', message)
-            this.roomboySelect = null
-            this.roomboySelectSend = null
-            this.fetchData()
-            this.clearData()
-            this.dialog3 = false
+      try{
+        this.validateInput(this.roomboySelect, "Please Specify which Room Boy That's Unavailable")
+        this.validateInput(this.roomboySelectSend, "Please Specify which Room Boy to Assign to")
+        this.api.post(
+          `spv/unavail`,
+          {
+            unAvailableId: this.roomboySelect.value,
+            assigneId: this.roomboySelectSend.value
+          },
+          ({ status, message }) => {
+            if (status === 200) {
+              this.trigger('positive', message)
+              this.roomboySelect = null
+              this.roomboySelectSend = null
+              this.fetchData()
+              this.clearData()
+              this.dialog3 = false
+            }
           }
-        }
-      )
+        )
+      }catch(err){
+        return this.trigger('negative', err.message)
+      }
     },
     postReqTask() {
       try {
         this.validateInput(this.roomSelect, "Please specify Room Number")
-        this.validateInput(this.requestInput, "Please specify Task Request")
         this.validateInput(this.maidSelect, "Please specify Room Boy that will be assigned to this task")
+        this.validateInput(this.requestInput, "Please specify Task Request")
         this.validateInput(this.workloadInput, "Please specify the workload of this task")
         
         const change = {

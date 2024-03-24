@@ -40,6 +40,7 @@
           @request="onPaginationChange"
           :rows="data"
           :loading="loading"
+          :rows-per-page-options="[0]"
           :columns="columns"
           hide-bottom
           row-key="name"
@@ -88,17 +89,20 @@
           style="border-radius: 8px"
           color="primary"
         >
-          <q-tooltip v-if="!this.section">select the task first</q-tooltip>
+          <q-tooltip v-if="!this.section">Select the task first</q-tooltip>
         </q-btn>
         <q-btn
           dense
           noCaps
           label="End"
+          :disable="!this.section"
           @click="Stop"
           class="rb-btn rb-drop-shadow q-py-none text-body1"
           style="border-radius: 8px"
           color="negative"
-        />
+          >
+          <q-tooltip v-if="!this.section">Select the task first</q-tooltip>
+        </q-btn>
       </div>
       <div class="q-mt-lg row items-center justify-center">
         <div>
@@ -124,7 +128,7 @@
           :disable="!this.section"
           @click="SubmitData"
         >
-          <q-tooltip v-if="!this.section">select the task first</q-tooltip>
+          <q-tooltip v-if="!this.section">Select the task first</q-tooltip>
         </q-btn>
       </div>
       <div class="q-mt-lg">
@@ -250,6 +254,7 @@ export default defineComponent({
     Stop() {
       this.api.post(`roomboy/${this.roomId}/end-task`, null, ({ status, message }) => {
         if (status == 200) {
+          this.trigger('positive', "Task finished")
           this.fetchData()
         } else {
           this.trigger('negative', message)

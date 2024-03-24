@@ -87,7 +87,7 @@
                 class="q-pa-sm flex justify-end q-mt-sm"
                 style="gap: 5px; border-top: 1px solid green"
               >
-                <q-btn size="sm" no-caps outline v-if="!isEditing" @click="clearFields"
+                <q-btn size="sm" no-caps outline v-if="!isEditing" @click="isPopupOpen = false"
                   >Cancel</q-btn
                 >
                 <q-btn size="sm" no-caps color="primary" text-color="white" @click="saveVoucher">
@@ -335,6 +335,8 @@ export default defineComponent({
       for(let model of listOfModels){
         this[model] = null
       }
+      this.titleVoucher = "Add Voucher"
+      this.readVoucherName = false
       this.complimentary = false
       this.houseUse = false
 

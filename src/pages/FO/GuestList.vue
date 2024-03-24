@@ -462,7 +462,7 @@
                                 <q-btn
                                   v-close-popup
                                   label="accept"
-                                  @click="postwaiting(props.row)"
+                                  @click="postwaiting()"
                                   color="primary"
                                 />
                               </div>
@@ -795,7 +795,7 @@ export default defineComponent({
     postwaiting() {
       const resvId = this.datares['ResNo'].data
       const roomNo = this.datares['ResRoomNo'].data
-
+      console.log(resvId, roomNo)
       const note = {
         request: this.waitingnote
       }

@@ -236,6 +236,7 @@ export default defineComponent({
       if(this.startUp != false){
         this.startUp = false
         this.getDetailReport()
+        this.startUp = true
       } 
       
       
@@ -272,7 +273,7 @@ export default defineComponent({
         seriesData.push(room.percent || 0)
       })
       this.seriesEntry = seriesData
-      
+      console.log(seriesData)
       if (seriesData.length > 0) {
         this.showChart = !seriesData.every((value) => value === 0);
       } else {

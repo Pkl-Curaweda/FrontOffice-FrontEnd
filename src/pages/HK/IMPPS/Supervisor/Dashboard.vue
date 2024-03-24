@@ -610,6 +610,9 @@ export default defineComponent({
     }
   },
   methods: {
+    refreshData(){
+      this.fetchData()
+    },
     clearData() {
       this.comments = null
       this.roomNoSelect = null

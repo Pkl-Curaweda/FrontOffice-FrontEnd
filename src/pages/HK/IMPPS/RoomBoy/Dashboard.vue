@@ -181,6 +181,9 @@ export default defineComponent({
     this.fetchData()
   },
   methods: {
+    refreshData(){
+      this.fetchData()
+    },
     showhistory(state) {
       this.state = state
       this.fetchData()

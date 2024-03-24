@@ -492,9 +492,11 @@
       <q-separator class="q-my-sm bg-grey" size="1px" />
 
       <q-expansion-item
+        ref="showRateExpansionItem"
         :label="selected.id ? 'Room Rate: ' + selected.id : 'Room Rate: '"
         class="padding-expansion q-pa-none"
-        default-opened="true"
+        :hide-expand-icon="true"
+        :default-opened="showRateExpansion"
         dense
         style="font-weight: bold"
       >
@@ -679,6 +681,7 @@ export default defineComponent({
       resvStatusOpts: ref([['DLX', 'FML', 'STD']]),
       indexReference: ref(),
       balance: ref(0),
+      showRateExpansion: ref(false),
       resvRemark: ref(''),
       roomNo: ref(null),
       roomType: ref(null),
@@ -759,15 +762,15 @@ export default defineComponent({
         })
       }
     },
-      roomNo: {
-        handler(newVal, oldVal) {
-          this.roomType = this.roomTypeOpts[newVal.index].value
-          this.roomBed = this.roomBedOpts[newVal.index].label
-          console.log(newVal, oldVal)
-          if(this.arrivalDepart.from && this.arrivalDepart.to && newVal != oldVal) this.checkRoomAvailability()
-        }
-      },
-    'arrivalDepart.from': {
+    roomNo: {
+      handler(newVal, oldVal) {
+        this.toggleRoomRate('show')
+        this.roomType = this.roomTypeOpts[newVal.index].value
+        this.roomBed = this.roomBedOpts[newVal.index].label
+        if(this.arrivalDepart.from && this.arrivalDepart.to && newVal != oldVal) this.checkRoomAvailability()
+      }
+  },
+  'arrivalDepart.from': {
       immediate: true,
       handler(newVal, oldVal) {
         this.formatArrivalDepart()
@@ -788,6 +791,9 @@ export default defineComponent({
     }
   },
   methods: {
+    toggleRoomRate(act = 'show'){
+      act != 'show' ? this.$refs.showRateExpansionItem.hide() : this.$refs.showRateExpansionItem.show()
+    },
     refreshData() {
       window.location.reload()
     },
@@ -852,7 +858,7 @@ export default defineComponent({
 
         const diffTime = Math.abs(toDate - fromDate)
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
+        
         this.arrivalDepartLabel = `${formattedFromDate} - ${formattedToDate}, ${diffDays} Nights`
       }
     },
@@ -884,8 +890,8 @@ export default defineComponent({
             indexOfReference = {},
             roomNos = [],
             roomTypes = []
-          let index = 0
-          for (let room of availableRooms) {
+            let index = 0
+            for (let room of availableRooms) {
             roomNos.push({ index, label: room.id, value: room.id })
             this.roomTypeOpts.push({
               index,

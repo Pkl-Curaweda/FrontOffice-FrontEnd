@@ -6,7 +6,7 @@
       :style="`margin-inline: ${$q.screen.lt.md ? '1rem' : '4rem'};`"
       class="q-mt-lg"
     >
-      <q-img src="/src/assets/svg/roomplan_bg.svg" />
+      <q-img src="../../../assets/svg/roomplan_bg.svg" />
 
       <!-- LEFT ROOMS -->
       <div

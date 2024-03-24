@@ -7,11 +7,11 @@
           flat
           square
           class="text-capitalize"
-          label="Sorting"
+          :label="sortingLabel"
           dropdown-icon="o_expand_more"
         >
           <q-list v-for="(type, i) in listOfSortTypes" :key="i">
-            <q-item clickable v-close-popup @click="setSortingDisplay(type.id)">
+            <q-item clickable v-close-popup @click="setSortingDisplay(type)">
               <q-item-section>{{ type.label }}</q-item-section>
             </q-item>
           </q-list>
@@ -150,6 +150,7 @@ export default defineComponent({
       storedRange: storeRoomAvailabilityFromTo,
       sortingDisplay: ref(null),
       columns: ref([]),
+      sortingLabel: ref('Sorting'),
       listOfSortTypes: ref(),
       allObjectsInArray,
       searchInput: ref('')
@@ -189,6 +190,11 @@ export default defineComponent({
         this.searchName(newSearchInput)
       },
       immediate: true
+    },
+    sortingDisplay: {
+      handler(val){
+        this.sortingLabel = val.label
+      }
     },
     datePicker: {
       deep: true,
@@ -250,7 +256,7 @@ export default defineComponent({
 
       // Adjust the condition here
       if (this.sortingDisplay !== null) {
-        url += `&filter=${this.sortingDisplay}`
+        url += `&filter=${this.sortingDisplay.id}`
       }
 
       this.api.get(url, ({ status, data }) => {

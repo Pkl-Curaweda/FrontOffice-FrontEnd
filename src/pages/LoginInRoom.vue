@@ -1,6 +1,8 @@
 <template>
-  <q-page class="flex q-pa-md">
-    <div class="q-my-auto q-mx-auto rounded-borders shadow-3 q-pt-lg q-pb-xl q-px-xl bg-white">
+  <q-page class="flex q-pa-xs">
+    <div
+      class="q-my-auto q-mx-auto rounded-borders shadow-3 q-pt-md q-pb-xl q-px-xl bg-white container"
+    >
       <div class="flex">
         <q-img
           src="../assets/img/lingian-logo-colored.png"
@@ -8,10 +10,17 @@
           style="width: 150px"
         />
       </div>
-      <h6 class="text-bold q-ma-none text-center">Welcome to <br/>Management System</h6>
+      <h6 class="text-bold q-ma-none text-center">Welcome to <br />Management System</h6>
       <p class="text-center">Lingian Hotel & Convention</p>
-      <q-form @submit.prevent="login" class="column q-mt-md q-gutter-sm" style="min-width: 280px">
-        <q-input outlined dense v-model="dataModel.email" label="Email" lazy-rules :rules="[(val) => (val && val.length > 0) || 'Email is required']"/>
+      <q-form @submit.prevent="login" class="column q-mt-md q-gutter-sm" style="min-width: 230px">
+        <q-input
+          outlined
+          dense
+          v-model="dataModel.email"
+          label="Email"
+          lazy-rules
+          :rules="[(val) => (val && val.length > 0) || 'Email is required']"
+        />
 
         <q-input
           outlined
@@ -107,3 +116,11 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+@media (min-width: 640px) {
+  .container {
+    width: 350px;
+    margin-inline: auto;
+  }
+}
+</style>

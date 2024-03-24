@@ -1,11 +1,24 @@
 <template>
   <div class="spv full-width">
     <div class="q-mt-lg q-px-xs">
-      <div class="flex justify-between items-center">
+      <div class="flex justify-between items-center q-pa-md q-mt-md">
         <UserGreet class="q-mt-md q-px-xs" :name="user.name" role="Supervisor" />
-        <q-btn flat square color="primary" icon="refresh" @click="refreshData" style="">
-          <q-tooltip>Refresh</q-tooltip>
-        </q-btn>
+        <div style="padding: 5px">
+          <q-btn
+            dense
+            color="primary"
+            outline
+            rounded
+            class="q-pr-sm"
+            @click="refreshData"
+            style="width: 100%; height: 100%"
+            no-caps
+            icon="refresh"
+            label="refresh"
+          >
+            <q-tooltip>Refresh</q-tooltip>
+          </q-btn>
+        </div>
       </div>
       <div class="q-mt-md q-px-xs">
         <!-- <IMPPSSelectedTable
@@ -655,7 +668,7 @@ export default defineComponent({
     }
   },
   methods: {
-    refreshData(){
+    refreshData() {
       this.fetchData()
     },
     clearData() {

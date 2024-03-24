@@ -19,7 +19,7 @@ const routes = [
     meta: {
       title: "IHMS",
       protected: true,
-      redirect: true
+      redirect: false
     }
   },
   {

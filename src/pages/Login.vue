@@ -77,8 +77,7 @@ export default defineComponent({
             this.$AuthStore.setUser(data['user'])
             this.$AuthStore.setAccessToken(data['accessToken'])
             this.$AuthStore.setMainPath(data['path'])
-            // console.log(data)
-            // this.$router.go({ path: data['path'] })
+            this.$router.go({ path: data['path'] })
             // } else {
             //   this.$Helper.showNotif("You don't have access", '', 'negative')
             // }
@@ -147,7 +146,7 @@ export default defineComponent({
   align-items: center;
 }
 
-@media (min-width: 400px) {
+@media (min-width: 640px) {
   .container {
     width: 400px;
     margin-inline: auto;

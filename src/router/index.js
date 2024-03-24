@@ -50,6 +50,7 @@ export default route(function (/* { store, ssrContext } */) {
     } else if (to.path === '/auth/login' && isAuthenticated()) {
       next(redirectTo())
     } else {
+      if(to.meta.redirect) next(redirectTo())
       next()
     }
     document.title = (to.meta.title || 'Hotel Management System') + ' - Lingian Hotel'

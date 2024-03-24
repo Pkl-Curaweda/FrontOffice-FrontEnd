@@ -15,13 +15,13 @@ import {
 const routes = [
   {
     path: '/',
-    component: () => import('pages/IndexPage.vue'),
+    component: () => import('pages/LoadPage.vue'),
     meta: {
-      title: 'Dashboard',
-      protected: true
+      title: "IHMS",
+      protected: true,
+      redirect: true
     }
   },
-
   {
     path: '/auth',
     component: () => import('layouts/BlankLayout.vue'),
@@ -46,7 +46,14 @@ const routes = [
       }
     ]
   },
-
+  {
+    path: '/fo/dashboard',
+    component: () => import('pages/IndexPage.vue'),
+    meta: {
+      title: 'Dashboard',
+      protected: true
+    }
+  },
   {
     path: '/fo',
     component: () => import('layouts/FOLayout.vue'),

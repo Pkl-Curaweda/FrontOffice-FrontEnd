@@ -77,7 +77,8 @@ export default defineComponent({
             this.$AuthStore.setUser(data['user'])
             this.$AuthStore.setAccessToken(data['accessToken'])
             this.$AuthStore.setMainPath(data['path'])
-            this.$router.go({ path: data['path'] })
+            // console.log(data)
+            // this.$router.go({ path: data['path'] })
             // } else {
             //   this.$Helper.showNotif("You don't have access", '', 'negative')
             // }

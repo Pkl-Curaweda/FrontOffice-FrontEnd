@@ -368,6 +368,9 @@ export default defineComponent({
         this.showInput = false
       }
     },
+    validateInput(modelValue, message, required){
+        if(required) if(!modelValue) throw Error(message)
+    },
     setFilterDisplay(option, label) {
       this.filterDisplay = option
       this.updateFilterDisplayLabel(option)
@@ -417,24 +420,33 @@ export default defineComponent({
       )
     },
     postDataTable() {
-      const data = {
-        roomId: this.roomNo?.label ? this.roomNo.label : this.roomNo,
-        reason: this.reasonRoom,
-        from: new Date(this.datePickerArrival),
-        until: new Date(this.datePickerDeparture),
-        departmentId: this.dept.value,
-        description: 'Sended By Admin',
-        xType: this.buttonLabel
-      }
+      try{
+        //Validate
+        this.validateInput(this.reasonRoom, 'Need a Reason', true)
+        this.validateInput(this.datePickerFrom, 'Date From is needed', true)
+        this.validateInput(this.datePickerUntil, 'Date Until is needed', true)
+        this.validateInput(this.dept.value, 'Please specify the Department', true)
 
-      let url = `ooo-rooms`
-
-      this.api.post(url, data, ({ status, message }) => {
-        if (status === 200) {
-          this.trigger('positive', message)
-          this.fetchData()
+        const data = {
+          roomId: this.roomNo?.label ? this.roomNo.label : this.roomNo,
+          reason: this.reasonRoom,
+          from: new Date(this.datePickerFrom),
+          until: new Date(this.datePickerUntil),
+          departmentId: this.dept.value,
+          description: 'Sended By Admin',
+          xType: this.buttonLabel
         }
-      })
+  
+        let url = `ooo-rooms`
+        this.api.post(url, data, ({ status, message }) => {
+          if (status === 200) {
+            this.trigger('positive', message)
+            this.fetchData()
+          }
+        })
+      }catch(err){
+        return this.trigger('negative', err.message)
+      }
     },
     fetchData() {
       this.loading = true
@@ -474,16 +486,6 @@ export default defineComponent({
           const departureDate = data.dep // Gantilah 'data.dep' dengan properti yang benar
           if (this.datePickerDeparture == null) {
             this.datePickerDeparture = departureDate
-          }
-
-          const fromDate = this.datePickerFrom // Gantilah 'arrival.arr' dengan properti yang benar
-          if (this.datePickerFrom == null) {
-            this.datePickerFrom = fromDate
-          }
-
-          const untilDate = this.datePickerUntil // Gantilah 'arrival.arr' dengan properti yang benar
-          if (this.datePickerUntil == null) {
-            this.datePickerUntil = untilDate
           }
 
           this.roomNoOptions = listOfRoom.map((lof) => ({

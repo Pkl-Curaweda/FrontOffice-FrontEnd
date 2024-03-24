@@ -6,7 +6,7 @@
       </q-toolbar-title>
     </q-toolbar>
 
-    <q-item to="/" clickable>
+    <q-item to="/fo/dashboard" clickable>
       <q-item-section avatar>
         <q-icon size="2rem" name="o_dashboard" />
       </q-item-section>

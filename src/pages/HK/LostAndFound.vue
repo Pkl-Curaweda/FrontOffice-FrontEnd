@@ -12,6 +12,7 @@
           type="donut"
           ref="hkChartDesktop"
           width="400"
+          v-if="showChart"
           :options="chartOptions"
           :series="series"
         ></apexchart>
@@ -313,6 +314,7 @@
                                     <q-input
                                       dense
                                       outlined
+                                      type='number'
                                       v-model="contactNumber"
                                       label="Phone Number"
                                       class="col-grow text-bold"
@@ -705,6 +707,7 @@ export default defineComponent({
       labelKtp: ref('Upload KTP'),
       imgKtp: ref(null),
       imgUrlKtp: ref(''),
+      showChart: ref(true),
       pickerName: ref(),
       email: ref(),
       contactNumber: ref(),
@@ -767,6 +770,11 @@ export default defineComponent({
       },
       immediate: true
     },
+    foundItem: {
+      handler(value){
+        this.clearForm()
+      }
+    },
     filterDisplay: {
       handler(option) {
         this.fetchData()
@@ -774,6 +782,17 @@ export default defineComponent({
     }
   },
   methods: {
+    clearForm(){
+      const listOfModels = ['pickerName', 'email', 'contactNumber', 'img', 'gender', 'imgKtp', 'imgUrl', 'imgUrlKtp']
+      for(let model of listOfModels){
+        this[model] = null
+      }
+      this.labelFile = 'Upload Image'
+      this.labelKtp = 'Upload KTP'
+    },
+    validateInput(modelValue, message, required){
+        if(required) if(!modelValue) throw Error(message)
+    },
     clearInput() {
       const listOfModels = []
       for (let model of listOfModels) {
@@ -800,6 +819,13 @@ export default defineComponent({
     },
     sendFound() {
       try {
+        this.validateInput(this.pickerName, 'Picker Name must be filled', true)
+        this.validateInput(this.email, 'Picker Email must be filled', true)
+        this.validateInput(this.contactNumber, 'Picker Contact Number must be filled', true)
+        this.validateInput(this.gender, 'Gender must be specified', true)
+        this.validateInput(this.img, 'Picker Image must be included', true)
+        this.validateInput(this.imgKtp, 'Picker KTP Image must be included', true)
+
         const sendedData = {
           pickerName: this.pickerName,
           pickerEmail: this.email,
@@ -808,15 +834,13 @@ export default defineComponent({
           pickerImage: this.img,
           ktpImage: this.imgKtp
         }
-        console.log(sendedData)
-        this.api
-          .useMultipart(true)
-          .post(`lostfound/${this.currentShownItemId}/FOUND`, sendedData, ({ status, data }) => {
+        this.api.useMultipart(true).post(`lostfound/${this.currentShownItemId}/FOUND`, sendedData, ({ status, data }) => {
             if (status != 200) throw Error(data.message)
             this.clearInput()
             this.fetchData()
+            this.trigger('positive', "Data Updated Successfully")
             this.foundItem = false
-          })
+        })
       } catch (err) {
         return this.trigger('negative', err.message)
       }
@@ -912,8 +936,11 @@ export default defineComponent({
 
       this.api.delete(url, ({ status, message }) => {
         if (status == 200) {
+          console.log(message)
           this.trigger('positive', message)
           this.fetchData()
+        }else{
+          this.trigger('negative', message)
         }
       })
     },
@@ -943,6 +970,7 @@ export default defineComponent({
           // this.formatData(lostFounds)
           this.found = graph.found // Isi nilai found50
           this.lost = graph.lost // Isi nilai lost
+          if(this.found === 0 && this.lost === 0) this.showChart = false
           this.series = [graph.lost, graph.found]
           this.$refs.hkChartDesktop.updateSeries(this.series)
 

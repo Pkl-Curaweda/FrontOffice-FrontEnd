@@ -1,6 +1,11 @@
 <template>
   <div class="rb full-width">
-    <UserGreet class="q-mt-md q-px-xs" />
+    <div class="flex justify-between items-center">
+        <UserGreet class="q-mt-md q-px-xs"/>
+        <q-btn flat square color="primary" icon="refresh" @click="refreshData" style="">
+          <q-tooltip>Refresh</q-tooltip>
+        </q-btn>
+      </div>
     <div class="q-mt-md q-px-xs">
       <!-- <IMPPSSelectedTable
         :rows="rows"

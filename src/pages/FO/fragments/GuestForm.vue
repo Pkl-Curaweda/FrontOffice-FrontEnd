@@ -587,7 +587,7 @@
           color="primary"
           dense
           class="text-capitalize col-grow"
-          @click="validateAndCreateData"
+          @click="createData"
           :disabled="this.$ResvStore.fix || this.$ResvStore.addroom || this.$ResvStore.logc"
           v-if="!this.$ResvStore.fix"
         />
@@ -635,14 +635,13 @@ export default defineComponent({
     const $q = useQuasar()
     const columns = [
       {
-        required: true,
         name: 'date',
         label: 'Date',
         align: 'center',
         field: 'date'
       },
-      { required: true, name: 'rate', align: 'center', label: 'Rate', field: 'rate' },
-      { required: true, name: 'arrangement', label: 'Arrangement', field: 'arrangement' }
+      {  name: 'rate', align: 'center', label: 'Rate', field: 'rate' },
+      {  name: 'arrangement', label: 'Arrangement', field: 'arrangement' }
     ]
 
     const rows = []
@@ -1141,14 +1140,17 @@ export default defineComponent({
       }
     },
     async createData() {
-      if (!this.isAllInputsFilled()) {
-        this.trigger('negative', 'All inputs must be filled.')
-        return
-      }
-
-      // If all inputs are filled, proceed with reservation creation
+      try {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
       this.resvNo = currentResvId
+
+      this.validateInput(this.guestName, "Please send Guest Name and Phone Number", true, 'include', '/', "Please send a correct format [Guest Name]/[Phone Number]")
+      this.validateInput(this.resvRecource, "Please specify Reservation Resource", true)
+      this.validateInput(this.roomNo, "Please Specify Room Number", true)
+      this.validateInput(this.selected.id, "Please specify the Arrangment Code", true)
+      this.validateInput(this.guests.adult + this.guests.baby + this.guests.child,  "Atleast 1 Person is required", true, 'count')
+      this.validateInput(this.arrivalDepart?.from, "Please specify The Reservation Date", true)
+
       const dataToUpdate = {
         nameContact: this.guestName,
         resourceName: this.resvRecource,
@@ -1162,7 +1164,6 @@ export default defineComponent({
         resvStatusId: parseInt(this.resvStatus.id || '1')
       }
 
-      try {
         await this.api.post(
           `detail/reservation/${currentResvId}/${currentRoomResvId}/create`,
           dataToUpdate,
@@ -1177,16 +1178,19 @@ export default defineComponent({
           }
         )
       } catch (error) {
-        console.error(error)
+        return this.trigger('negative', error.message)
       }
     },
-    isAllInputsFilled() {
-      return (
-        this.guestName.trim() !== '' &&
-        this.resvRecource !== null &&
-        this.roomNo !== null &&
-        this.voucherId.trim() !== ''
-      )
+    validateInput(modelValue, message, required, action, option, scndMessage){
+        if(required) if(!modelValue) throw Error(message)
+        switch(action){
+          case "count":
+            if(modelValue ===  0) throw Error(message)
+            break;
+          case "include":
+            if(!(modelValue.split(option)[1])) throw Error(scndMessage)
+            break;
+        }
     },
     showNotification(message) {
       // Display notification message

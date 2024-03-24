@@ -585,7 +585,7 @@
           color="primary"
           dense
           class="text-capitalize col-grow"
-          @click="createData"
+          @click="validateAndCreateData"
           :disabled="this.$ResvStore.fix || this.$ResvStore.addroom || this.$ResvStore.logc"
           v-if="!this.$ResvStore.fix"
         />
@@ -790,6 +790,14 @@ export default defineComponent({
     }
   },
   methods: {
+    validateAndCreateData() {
+      if (this.isAllInputsFilled()) {
+        this.createData()
+      } else {
+        this.showNotification('Please fill in all required fields before proceeding.')
+      }
+    },
+
     refreshData() {
       window.location.reload()
     },
@@ -1133,6 +1141,12 @@ export default defineComponent({
       }
     },
     async createData() {
+      if (!this.isAllInputsFilled()) {
+        this.trigger('negative', 'All inputs must be filled.')
+        return
+      }
+
+      // If all inputs are filled, proceed with reservation creation
       const { currentResvId, currentRoomResvId } = this.$ResvStore
       this.resvNo = currentResvId
       const dataToUpdate = {
@@ -1147,6 +1161,7 @@ export default defineComponent({
         reservationRemarks: this.resvRemark,
         resvStatusId: parseInt(this.resvStatus.id || '1')
       }
+
       try {
         await this.api.post(
           `detail/reservation/${currentResvId}/${currentRoomResvId}/create`,
@@ -1164,6 +1179,19 @@ export default defineComponent({
       } catch (error) {
         console.error(error)
       }
+    },
+    isAllInputsFilled() {
+      return (
+        this.guestName.trim() !== '' &&
+        this.resvRecource !== null &&
+        this.roomNo !== null &&
+        this.voucherId.trim() !== ''
+      )
+    },
+    showNotification(message) {
+      // Display notification message
+      // Example logic:
+      this.trigger('info', message) // Assuming 'trigger' method is available to display notifications
     },
     async updateData() {
       const { currentResvId, currentRoomResvId, waitingnote } = this.$ResvStore

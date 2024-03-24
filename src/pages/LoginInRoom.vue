@@ -8,10 +8,10 @@
           style="width: 150px"
         />
       </div>
-      <h6 class="text-bold q-ma-none text-center">Welcome to <br />Management System</h6>
+      <h6 class="text-bold q-ma-none text-center">Welcome to <br/>Management System</h6>
       <p class="text-center">Lingian Hotel & Convention</p>
       <q-form @submit.prevent="login" class="column q-mt-md q-gutter-sm" style="min-width: 280px">
-        <q-input outlined dense v-model="dataModel.email" label="Email" lazy-rules />
+        <q-input outlined dense v-model="dataModel.email" label="Email" lazy-rules :rules="[(val) => (val && val.length > 0) || 'Email is required']"/>
 
         <q-input
           outlined
@@ -21,7 +21,7 @@
           v-model="dataModel.password"
           label="Password"
           lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Please type something']"
+          :rules="[(val) => (val && val.length > 0) || 'Password is required']"
         >
           <template v-slot:append>
             <q-icon
@@ -83,7 +83,6 @@ export default defineComponent({
         ({ status, data, message }) => {
           if (status == 200) {
             if (data['path'] != '/irs/home') {
-              console.log(data['path'])
               this.$AuthStore.setUser(data['user'])
               this.$AuthStore.setAccessToken(data['accessToken'])
               this.$AuthStore.setMainPath(data['path'])
@@ -92,6 +91,7 @@ export default defineComponent({
               this.$Helper.showNotif("You don't have access", '', 'negative')
             }
           } else {
+            console.log(status, data, message)
             this.$Helper.showNotif(message || 'Please try again', '', 'negative')
           }
 

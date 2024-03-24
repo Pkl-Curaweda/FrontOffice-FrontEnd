@@ -29,7 +29,7 @@
           flat
           square
           class="text-capitalize date-btn text-black"
-          label="TDate - FDate"
+          :label="datePickerLabel"
           icon="o_event"
           color="primary"
           dropdown-icon="o_expand_more"
@@ -45,7 +45,7 @@
           flat
           square
           class="text-capitalize text-black"
-          label="Display Option"
+          :label="displayOptionLabel"
           color="primary"
           dropdown-icon="o_expand_more"
         >
@@ -54,7 +54,7 @@
       </template>
       <template #right>
         <q-separator vertical />
-        <q-btn flat square color="primary" icon="pending_actions" @click="showhistory(!this.state)">
+        <q-btn flat square :color="historyColor" icon="pending_actions" @click="showhistory(!this.state)">
           <q-tooltip>History</q-tooltip>
         </q-btn>
       </template>
@@ -512,7 +512,7 @@ export default defineComponent({
       cacheData: ref([]),
 
       filterDisplayOptions: [
-        { label: 'All', value: null },
+        { label: 'All', value: null, l:'' },
         { label: 'Reservation', value: 'reservation' },
         { label: 'In-House Guest', value: 'inhouse' },
         { label: 'Arrival-Today', value: 'arrival' },
@@ -691,6 +691,9 @@ export default defineComponent({
         }
       },
       api: new this.$Api('frontoffice'),
+      historyColor: ref('primary'),
+      datePickerLabel: ref('TDate - FDate'),
+      displayOptionLabel: ref('All'),
       pagination: {
         page: 1,
         rowsNumber: 0,
@@ -723,11 +726,29 @@ export default defineComponent({
     datePicker: {
       deep: true,
       handler(newDateRange) {
+        this.datePickerLabel = 'TDate - FDate'
+        if(newDateRange){
+          function formatDateRange() {
+            const options = { day: 'numeric', month: 'long' };
+            const fromDate = new Date(newDateRange?.from);
+            const toDate = new Date(newDateRange?.to);
+            const formattedFromDate = fromDate.toLocaleDateString('en-US', options);
+            const formattedToDate = toDate.toLocaleDateString('en-US', options);
+            return `${formattedFromDate} - ${formattedToDate}`;
+          }
+          this.datePickerLabel = formatDateRange()
+        }
         this.fetchData()
       }
     },
     filterDisplay: {
       handler(option) {
+        if(option != null){
+          function formatDisplayOption() {
+            return option.charAt(0).toUpperCase() + option.slice(1);
+          }
+          this.displayOptionLabel = formatDisplayOption()
+        }else this.displayOptionLabel = 'All'
         this.fetchData()
       }
     }
@@ -822,6 +843,7 @@ export default defineComponent({
     },
     showhistory(state) {
       this.state = state
+      this.historyColor = state ? "black" : "primary"
       this.fetchData()
     },
     waitinglist(data, log, state) {

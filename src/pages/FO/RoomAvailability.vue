@@ -39,7 +39,7 @@
           square
           range
           class="text-capitalize"
-          label="TDate - FDate"
+          :label="datePickerLabel"
           icon="o_event"
           dropdown-icon="o_expand_more"
         >
@@ -135,6 +135,7 @@ import MultiPane from 'src/layouts/MultiPane.vue'
 import { useQuasar } from 'quasar'
 import GuestForm from './fragments/GuestForm.vue'
 import { allObjectsInArray } from 'src/utils/datatype'
+import { storeRoomAvailabilityFromTo } from '../../stores/roomAvailStore'
 import { list } from 'postcss'
 
 export default defineComponent({
@@ -145,6 +146,8 @@ export default defineComponent({
     return {
       selectedSorting: ref(''),
       datePicker: ref({ from: '', to: '' }),
+      datePickerLabel: ref('TDate - FDate'),
+      storedRange: storeRoomAvailabilityFromTo,
       sortingDisplay: ref(null),
       columns: ref([]),
       listOfSortTypes: ref(),
@@ -190,10 +193,19 @@ export default defineComponent({
     datePicker: {
       deep: true,
       handler(newDateRange) {
-        this.$router.push({
-          name: 'room-availability',
-          query: { from: this.datePicker.from, to: this.datePicker.to }
-        })
+        this.datePickerLabel = 'TDate - FDate'
+        if(newDateRange){
+          this.storedRange = newDateRange
+          function formatDateRange() {
+            const options = { day: 'numeric', month: 'long' };
+            const fromDate = new Date(newDateRange?.from);
+            const toDate = new Date(newDateRange?.to);
+            const formattedFromDate = fromDate.toLocaleDateString('en-US', options);
+            const formattedToDate = toDate.toLocaleDateString('en-US', options);
+            return `${formattedFromDate} - ${formattedToDate}`;
+          }
+          this.datePickerLabel = formatDateRange()
+        }
         this.fetchData()
       }
     }
@@ -228,7 +240,7 @@ export default defineComponent({
 
       let url = `roomavail?page=${this.pagination.page}&perPage=${this.pagination.rowsPerPage}&search=${this.searchData}`
 
-      let { from, to } = this.$route.query
+      let { from, to } = this.storedRange
       const fromDate = from != undefined ? from.replace(/\//g, '-') : ''
       const toDate = to != null ? to.replace(/\//g, '-') : ''
 

@@ -7,7 +7,7 @@
         square
         style="border: 1px #00000030 solid"
         class="text-capitalize text-black rounded-borders"
-        label="Display Option"
+        :label="displayOptionLabel"
         color="primary"
         dropdown-icon="o_expand_more"
       >
@@ -32,7 +32,7 @@
         square
         style="border: 1px #00000030 solid"
         class="text-capitalize date-btn text-black rounded-borders"
-        label="Date"
+        :label="dateLabel"
         icon="o_event"
         color="primary"
         dropdown-icon="o_expand_more"
@@ -108,6 +108,8 @@ export default defineComponent({
       datePicker: ref(),
       displayOption: ref('day'),
       filterDisplay: ref('day'),
+      dateLabel: ref('Date'),
+      displayOptionLabel: ref('Day'),
       deluxeRoom: ref(),
       standardRoom: ref(),
       familyRoom: ref(),
@@ -184,13 +186,35 @@ export default defineComponent({
   watch: {
     filterDisplay: {
       handler(option) {
+        this.displayOptionLabel = option
         this.getDetailReport()
       }
     },
     datePicker: {
       deep: true,
       handler(newDateRange) {
-        this.setDatePicker()
+        this.dateLabel = 'Date'
+        const currentDisplay = this.filterDisplay
+        if(newDateRange){
+          function formatDateRange() {
+            let options
+            switch(currentDisplay){
+              case "month": 
+                options = { month: 'long' } 
+                break;
+              case "year":
+                options = { year: 'numeric' }
+                break;
+              default:
+                options = { day: 'numeric', month: 'long' }
+                break;
+            }
+            const fromDate = new Date(newDateRange);
+            const formattedFromDate = fromDate.toLocaleDateString('en-US', options);
+            return `${formattedFromDate}`;
+          }
+          this.dateLabel = formatDateRange()
+        }
         this.getDetailReport()
       }
     }

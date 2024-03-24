@@ -109,15 +109,7 @@
             <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
               <div class="cursor-pointer non-selectable q-px-md">Add Request Task</div>
               <q-space />
-              <q-btn
-                dense
-                flat
-                color="grey"
-                size="sm"
-                outline
-                icon="close"
-                v-close-popup
-              />
+              <q-btn dense flat color="grey" size="sm" outline icon="close" v-close-popup />
             </q-bar>
             <div class="q-pa-lg">
               <div style="display: flex; gap: 5px" class="q-pt-lg">
@@ -177,14 +169,8 @@
                 class="q-mb-md"
               />
               <q-card-actions align="right">
-                <q-btn v-close-popup label="Cancel" dense no-caps color="primary" outline=""/>
-                <q-btn
-                  @click="postReqTask"
-                  dense
-                  no-caps
-                  label="Add Task"
-                  color="primary"
-                />
+                <q-btn v-close-popup label="Cancel" dense no-caps color="primary" outline="" />
+                <q-btn @click="postReqTask" dense no-caps label="Add Task" color="primary" />
               </q-card-actions>
             </div>
           </q-card>
@@ -195,15 +181,7 @@
             <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
               <div class="cursor-pointer non-selectable q-px-md">Add Room Task</div>
               <q-space />
-              <q-btn
-                dense
-                flat
-                color="grey"
-                size="sm"
-                outline
-                icon="close"
-                v-close-popup
-              />
+              <q-btn dense flat color="grey" size="sm" outline icon="close" v-close-popup />
             </q-bar>
             <div class="q-pa-lg">
               <q-select
@@ -268,13 +246,7 @@
             </div>
             <q-card-actions align="right">
               <q-btn label="Cancel" v-close-popup dense no-caps color="primary" outline="" />
-              <q-btn
-                dense
-                no-caps
-                @click="postCleanTask"
-                label="Add Task"
-                color="primary"
-              />
+              <q-btn dense no-caps @click="postCleanTask" label="Add Task" color="primary" />
             </q-card-actions>
           </q-card>
         </q-dialog>
@@ -662,26 +634,26 @@ export default defineComponent({
         this.getDataRoomboy(2)
       }
     },
-    Request:{
-      handler(value){
-        if(!value) this.cleanForm()
+    Request: {
+      handler(value) {
+        if (!value) this.cleanForm()
       }
     },
-    CleanRoom:{
-      handler(value){
-        if(!value) this.cleanForm()
+    CleanRoom: {
+      handler(value) {
+        if (!value) this.cleanForm()
       }
     },
-    dialog2:{
-      handler(value){
-        if(!value) this.cleanForm()
+    dialog2: {
+      handler(value) {
+        if (!value) this.cleanForm()
       }
     },
     dialog3: {
-      handler(value){
-        if(!value) this.cleanForm()
+      handler(value) {
+        if (!value) this.cleanForm()
       }
-    },    
+    },
     roomSelect() {
       this.roomSelect ? this.getDataTask(1) : ''
     },
@@ -690,12 +662,24 @@ export default defineComponent({
     }
   },
   methods: {
-    validateInput(modelValue, message, required = true){
-        if(required) if(!modelValue) throw Error(message)
+    validateInput(modelValue, message, required = true) {
+      if (required) if (!modelValue) throw Error(message)
     },
-    cleanForm(){
-      const listOfModels = ['roomSelect', 'maidSelect', 'requestInput', 'workloadInput', 'commentsInput', 'roomSelect', 'roomNoSelect', 'group','choosenRoom' , 'roomboySelect', 'roomboySelectSend']
-      for(let model of listOfModels){
+    cleanForm() {
+      const listOfModels = [
+        'roomSelect',
+        'maidSelect',
+        'requestInput',
+        'workloadInput',
+        'commentsInput',
+        'roomSelect',
+        'roomNoSelect',
+        'group',
+        'choosenRoom',
+        'roomboySelect',
+        'roomboySelectSend'
+      ]
+      for (let model of listOfModels) {
         this[model] = null
       }
     },
@@ -740,25 +724,25 @@ export default defineComponent({
       this.fetchData()
     },
     changeStatus() {
-      try{
-        this.validateInput(this.roomNoSelect, "Please specify the Room Number", true)
-        this.validateInput(this.group, "Please specify the Status", true)
+      try {
+        this.validateInput(this.roomNoSelect, 'Please specify the Room Number', true)
+        this.validateInput(this.group, 'Please specify the Status', true)
 
-          this.api.post(
-            `spv/change-status/${this.roomNoSelect.label}/${this.group}`,
-            null,
-            ({ status, message }) => {
-              if (status == 200) {
-                this.trigger('positive', message)
-                this.fetchData()
-                this.clearData()
-                this.dialog2 = false
-              } else {
-                this.trigger('negative', message)
-              }
+        this.api.post(
+          `spv/change-status/${this.roomNoSelect.label}/${this.group}`,
+          null,
+          ({ status, message }) => {
+            if (status == 200) {
+              this.trigger('positive', message)
+              this.fetchData()
+              this.clearData()
+              this.dialog2 = false
+            } else {
+              this.trigger('negative', message)
             }
-          )
-      }catch(err){
+          }
+        )
+      } catch (err) {
         return this.trigger('negative', err.message)
       }
     },
@@ -771,9 +755,9 @@ export default defineComponent({
       this.selected = data
     },
     SubmitData() {
-      this.validateInput(this.roomId, "Please specify Room Number", true)
+      this.validateInput(this.roomId, 'Please specify Room Number', true)
       const comment = {
-        comment: this.comments || ""
+        comment: this.comments || ''
       }
       this.api.put(`spv/${this.roomId}`, comment, ({ status, message }) => {
         if (status == 200) {
@@ -785,8 +769,8 @@ export default defineComponent({
       })
     },
     postOk() {
-      this.validateInput(this.roomId, "Please specify Room Number", true)
-      
+      this.validateInput(this.roomId, 'Please specify Room Number', true)
+
       const data = {
         performance: this.currentRating,
         comment: this.comments
@@ -801,7 +785,7 @@ export default defineComponent({
       })
     },
     reclean() {
-      this.validateInput(this.roomId, "Please specify Room Number", true)
+      this.validateInput(this.roomId, 'Please specify Room Number', true)
       this.api.post(`spv/${this.roomId}/re-clean`, null, ({ status, message }) => {
         if (status == 200) {
           this.trigger('positive', message)
@@ -850,7 +834,7 @@ export default defineComponent({
         if (status === 200) {
           const { listRoomBoy } = data
           this.listRoomboy = listRoomBoy.map((item) => ({ label: item.name, value: item.id }))
-        }else{
+        } else {
           this.trigger('negative', message)
         }
       })
@@ -916,7 +900,7 @@ export default defineComponent({
     },
     postUnvailable() {
       this.validateInput(this.roomboySelect, "Please Specify which Room Boy That's Unavailable")
-      this.validateInput(this.roomboySelectSend, "Please Specify which Room Boy to Assign to")
+      this.validateInput(this.roomboySelectSend, 'Please Specify which Room Boy to Assign to')
       this.api.post(
         `spv/unavail`,
         {
@@ -937,11 +921,14 @@ export default defineComponent({
     },
     postReqTask() {
       try {
-        this.validateInput(this.roomSelect, "Please specify Room Number")
-        this.validateInput(this.requestInput, "Please specify Task Request")
-        this.validateInput(this.maidSelect, "Please specify Room Boy that will be assigned to this task")
-        this.validateInput(this.workloadInput, "Please specify the workload of this task")
-        
+        this.validateInput(this.roomSelect, 'Please specify Room Number')
+        this.validateInput(this.requestInput, 'Please specify Task Request')
+        this.validateInput(
+          this.maidSelect,
+          'Please specify Room Boy that will be assigned to this task'
+        )
+        this.validateInput(this.workloadInput, 'Please specify the workload of this task')
+
         const change = {
           roomNo: this.roomSelect.label,
           maidId: this.maidSelect.value,
@@ -971,8 +958,11 @@ export default defineComponent({
     },
     postCleanTask() {
       try {
-        this.validateInput(this.roomSelect, "Please specify Room Number")
-        this.validateInput(this.maidSelect, "Please specify Room Boy that will be assigned to this task")
+        this.validateInput(this.roomSelect, 'Please specify Room Number')
+        this.validateInput(
+          this.maidSelect,
+          'Please specify Room Boy that will be assigned to this task'
+        )
         const change = {
           roomNo: this.roomSelect.label,
           maidId: this.maidSelect.value,

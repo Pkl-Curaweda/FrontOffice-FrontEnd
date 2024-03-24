@@ -341,7 +341,7 @@
                                   />
                                   <q-img
                                     class="q-mt-sm full-width"
-                                    :ratio="19 / 10"
+                                    :ratio="19 / 6"
                                     :src="imgUrlKtp"
                                     v-if="imgUrlKtp"
                                   />

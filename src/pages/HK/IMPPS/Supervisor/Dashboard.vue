@@ -13,20 +13,20 @@
         :btnEdit="false"
         hidePagination
       /> -->
-        <div style="display: flex">
-          <q-btn
-            flat
-            square
-            color="primary"
-            icon="pending_actions"
-            @click="showhistory(!this.state)"
-            style=""
-          >
-            <q-tooltip>History</q-tooltip>
-          </q-btn>
+        <div style="display: flex; justify-content: space-between; align-items: center">
           <div
             style="scrollbar-width: none; gap: 10px; display: flex; padding: 10px; overflow-x: auto"
           >
+            <q-btn
+              flat
+              square
+              color="primary"
+              icon="pending_actions"
+              @click="showhistory(!this.state)"
+              style=""
+            >
+              <q-tooltip>History</q-tooltip>
+            </q-btn>
             <q-btn
               dense
               noCaps
@@ -55,6 +55,9 @@
               style="width: 100%; white-space: nowrap; border-radius: 10px"
             />
           </div>
+          <q-btn flat square color="primary" icon="refresh" @click="refreshData" style="">
+            <q-tooltip>History</q-tooltip>
+          </q-btn>
         </div>
         <q-dialog v-model="dialog1">
           <q-card style="width: 300px; justify-content: center">
@@ -86,7 +89,16 @@
             <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
               <div class="cursor-pointer non-selectable q-px-md">Add Request Task</div>
               <q-space />
-              <q-btn dense flat color="grey" size="sm" outline icon="close" v-close-popup @click="clearData"/>
+              <q-btn
+                dense
+                flat
+                color="grey"
+                size="sm"
+                outline
+                icon="close"
+                v-close-popup
+                @click="clearData"
+              />
             </q-bar>
             <div class="q-pa-lg">
               <div style="display: flex; gap: 5px" class="q-pt-lg">
@@ -107,7 +119,7 @@
                   dense
                 />
               </div>
-              <div style="display: flex; padding-top: 20px;" v-if="this.choosenRoom">
+              <div style="display: flex; padding-top: 20px" v-if="this.choosenRoom">
                 <div>
                   <img :src="this.choosenRoom.image" style="width: 100px; border-radius: 2px" />
                 </div>
@@ -119,24 +131,25 @@
                 </div>
               </div>
               <div style="display: flex; gap: 5px">
-              <q-input
-                filled
-                dense
-                placeholder="Request"
+                <q-input
+                  filled
+                  dense
+                  placeholder="Request"
                   style="width: 100%"
-                type="text"
-                v-model="requestInput"
-                class="q-my-md"
-              />
-              <q-input
-                filled
-                style="width: 100%"
-                dense
-                placeholder="Finish in (Minute)"
-                type="number"
-                v-model="workloadInput"
-                class="q-my-md"
-              /></div>
+                  type="text"
+                  v-model="requestInput"
+                  class="q-my-md"
+                />
+                <q-input
+                  filled
+                  style="width: 100%"
+                  dense
+                  placeholder="Finish in (Minute)"
+                  type="number"
+                  v-model="workloadInput"
+                  class="q-my-md"
+                />
+              </div>
               <q-input
                 filled
                 placeholder="Add Comment"
@@ -163,7 +176,16 @@
             <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
               <div class="cursor-pointer non-selectable q-px-md">Add Room Task</div>
               <q-space />
-              <q-btn dense flat color="grey" size="sm" outline icon="close" v-close-popup @click="clearData"/>
+              <q-btn
+                dense
+                flat
+                color="grey"
+                size="sm"
+                outline
+                icon="close"
+                v-close-popup
+                @click="clearData"
+              />
             </q-bar>
             <div class="q-pa-lg">
               <q-select
@@ -244,7 +266,16 @@
             <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
               <div class="cursor-pointer non-selectable q-px-md">Change Status to: {{ group }}</div>
               <q-space />
-              <q-btn dense flat color="grey" size="sm" outline icon="close" v-close-popup @click="clearData"/>
+              <q-btn
+                dense
+                flat
+                color="grey"
+                size="sm"
+                outline
+                icon="close"
+                v-close-popup
+                @click="clearData"
+              />
             </q-bar>
             <div class="q-pa-md">
               <q-select
@@ -275,7 +306,16 @@
             <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
               <div class="cursor-pointer non-selectable q-px-md">Unavailable Room Boy</div>
               <q-space />
-              <q-btn dense flat color="grey" size="sm" outline icon="close" v-close-popup @click="clearData"/>
+              <q-btn
+                dense
+                flat
+                color="grey"
+                size="sm"
+                outline
+                icon="close"
+                v-close-popup
+                @click="clearData"
+              />
             </q-bar>
             <div class="q-pa-lg">
               <q-select

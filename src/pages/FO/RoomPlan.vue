@@ -23,7 +23,7 @@
     >
       <!-- ROOMS -->
       <div style="width: 70%; position: relative; overflow: hidden">
-        <q-img src="../../../src/assets/svg/roomplan_bg.svg" />
+        <q-img src="../../assets/svg/roomplan_bg.svg" />
 
         <!-- LEFT ROOMS -->
         <div

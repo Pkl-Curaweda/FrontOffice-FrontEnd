@@ -17,10 +17,14 @@
           outlined
           dense
           v-model="dataModel.email"
+          class="q-mt-md"
           label="Email"
           lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Email is required']"
         />
+        <div v-if="dataModel.email === ''" style="color: rgb(208, 2, 2)">
+          <q-icon name="error" />
+          Email is required
+        </div>
 
         <q-input
           outlined
@@ -29,7 +33,6 @@
           v-model="dataModel.password"
           label="Password"
           lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Password is required']"
         >
           <template v-slot:append>
             <q-icon
@@ -39,6 +42,10 @@
             />
           </template>
         </q-input>
+        <div v-if="dataModel.password === ''" style="color: rgb(208, 2, 2)">
+          <q-icon name="error" />
+          Password is required
+        </div>
 
         <!-- <a href="" class="self-end q-mb-sm">Forgot password?</a> -->
         <!-- <div
@@ -50,7 +57,13 @@
         >
           Move to In Room Page
         </div> -->
-        <q-btn label="login" type="submit" class="width-full" color="primary" :loading="loading" />
+        <q-btn
+          label="login"
+          type="submit"
+          color="primary"
+          class="q-mt-md width-full"
+          :loading="loading"
+        />
       </q-form>
     </div>
   </q-page>

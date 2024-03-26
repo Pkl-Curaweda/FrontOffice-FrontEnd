@@ -40,7 +40,7 @@
           flat
           square
           class="text-capitalize text-black"
-          label="Display Option"
+          :label="displayOptionLabel"
           color="primary"
           dropdown-icon="o_expand_more"
         >
@@ -133,6 +133,7 @@ export default defineComponent({
       datePicker: ref({ from: '', to: '' }),
       datePickerLabel: ref('TDate - FDate'),
       sortingDisplay: ref(''),
+      displayOptionLabel: ref('Display Option'),
       sortingLabel: ref('Sorting'),
       filterDisplay: ref(''),
       columns: [
@@ -178,6 +179,7 @@ export default defineComponent({
     },
     filterDisplay: {
       handler(display) {
+        this.displayOptionLabel = display
         this.fetchData()
       }
     },

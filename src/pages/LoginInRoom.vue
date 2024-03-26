@@ -29,7 +29,6 @@
         <q-input
           outlined
           dense
-          class="q-mt-md"
           :type="showPwd ? 'text' : 'password'"
           v-model="dataModel.password"
           label="Password"

@@ -123,9 +123,6 @@ export default defineComponent({
     },
     backdashboard() {
       this.$router.go(-1)
-      this.$nextTick(() => {
-        this.trigger('ongoing', 'loading')
-      })
     },
     postData() {
       const data = {

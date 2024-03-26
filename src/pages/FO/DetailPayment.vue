@@ -244,11 +244,11 @@ export default defineComponent({
       const { resvId, resvRoomId } = this.$route.params
 
       if (state === true) {
-        this.$router.push({
+        this.$router.replace({
           name: 'guest-invoice'
         })
       } else {
-        this.$router.push({
+        this.$router.replace({
           name: 'guest-invoice',
           params: { resvId: resvId, resvRoomId: resvRoomId }
         })

@@ -191,14 +191,14 @@
             <q-td key="pickerEmail">
               {{ props.row.pickerEmail }}
             </q-td>
+            <q-td key="status">
+            {{ props.row.status }}
+          </q-td>
             <q-td key="reported_date">
               {{ props.row.reported_date }}
             </q-td>
             <q-td key="location">
               {{ props.row.location }}
-            </q-td>
-            <q-td key="status">
-              {{ props.row.status }}
             </q-td>
             <q-td key="image">
               <!-- View IMG BTN -->

@@ -7,7 +7,10 @@
       >
         <!-- style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)" -->
         <q-card-section>
-          <div :class="classname + 'row items-center q-gutter-md'" style="display: flex">
+          <div
+            :class="classname + 'row items-center q-gutter-md'"
+            style="display: flex; flex-wrap: wrap"
+          >
             <img :src="user.picture" style="width: 100px; border-radius: 100%" />
             <div style="white-space: nowrap">
               <div>{{ time }}</div>
@@ -35,13 +38,21 @@
           <div class="auto">Room</div>
         </div>
       </q-btn>
-      <q-btn class="child-card text-white"  @click="changeroute('access')" to="/fo/super-admin/access">
-        <div style="display: block; align: center; justify-content: center" >
+      <q-btn
+        class="child-card text-white"
+        @click="changeroute('access')"
+        to="/fo/super-admin/access"
+      >
+        <div style="display: block; align: center; justify-content: center">
           <q-icon name="account_tree" size="xl" class="auto" />
           <div class="auto">Access</div>
         </div>
       </q-btn>
-      <q-btn class="child-card text-white"  @click="changeroute('article')" to="/fo/super-admin/article">
+      <q-btn
+        class="child-card text-white"
+        @click="changeroute('article')"
+        to="/fo/super-admin/article"
+      >
         <div style="display: block; align: center; justify-content: center">
           <q-icon name="article" size="xl" class="auto" />
           <div class="auto">Article</div>
@@ -76,13 +87,13 @@ export default defineComponent({
           params: { resvId: resvId, resvRoomId: resvRoomId },
           query: { line: 'room' }
         })
-      } else       if (state == 'article') {
+      } else if (state == 'article') {
         this.$router.push({
           name: 'article-admin',
           params: { resvId: resvId, resvRoomId: resvRoomId },
           query: { line: 'room' }
         })
-      } else       if (state == 'access') {
+      } else if (state == 'access') {
         this.$router.push({
           name: 'access-admin',
           params: { resvId: resvId, resvRoomId: resvRoomId },

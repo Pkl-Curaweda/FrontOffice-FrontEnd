@@ -161,7 +161,7 @@
           </div>
           <div class="q-mt-xl">
             <div class="row">
-              <div class="text-weight-bold col-4 rstatus">Newest Changes</div>
+              <div class="text-weight-bold col-4 rstatus">Recent Changes</div>
               <div
                 class="text-center flex flex-center text-weight-bold"
                 style="

@@ -139,7 +139,7 @@
               </div>
               <q-input dense outlined v-model="nameidcard" class="q-mt-sm" style="width: " />
               <div class="q-mt-sm">Id Card Number</div>
-              <q-input dense outlined v-model="idcardnumber" class="q-mt-sm" style="width: 360px" />
+              <q-input dense type='number' outlined v-model="idcardnumber" class="q-mt-sm" style="width: 360px" />
 
               <div class="q-mt-sm">Address</div>
               <q-input dense outlined v-model="address" class="q-mt-sm" style="width: 360px" />
@@ -1198,8 +1198,10 @@ export default defineComponent({
       this.trigger('info', message) // Assuming 'trigger' method is available to display notifications
     },
     async updateData() {
+      try {
       const { currentResvId, currentRoomResvId, waitingnote } = this.$ResvStore
       this.resvNo = currentResvId
+      
       const dataToUpdate = {
         nameContact: this.guestName,
         resourceName: this.resvRecource,
@@ -1222,7 +1224,6 @@ export default defineComponent({
       }
 
       if (this.$ResvStore.logc === true) {
-        try {
           await this.api.post(
             `/detail/reservation/${currentResvId}/${currentRoomResvId}/change-room`,
             datachangeroom,
@@ -1238,11 +1239,13 @@ export default defineComponent({
               }
             }
           )
-        } catch (error) {
-          console.error(error)
-        }
       } else {
-        try {
+        this.validateInput(this.guestName, "Please send Guest Name and Phone Number", true, 'include', '/', "Please send a correct format [Guest Name]/[Phone Number]")
+        this.validateInput(this.resvRecource, "Please specify Reservation Resource", true)
+        this.validateInput(this.roomNo, "Please Specify Room Number", true)
+        this.validateInput(this.selected.id, "Please specify the Arrangment Code", true)
+        this.validateInput(this.guests.adult + this.guests.baby + this.guests.child,  "Atleast 1 Person is required", true, 'count')
+        this.validateInput(this.arrivalDepart?.from, "Please specify The Reservation Date", true)
           await this.api.put(
             `detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
             dataToUpdate,
@@ -1256,10 +1259,10 @@ export default defineComponent({
               }
             }
           )
-        } catch (error) {
-          console.error(error)
+        } 
+      }catch (error) {
+        return this.trigger('negative', error.message)
         }
-      }
     },
     formatDate(date) {
       return new Date(date)
@@ -1281,7 +1284,13 @@ export default defineComponent({
       window.location.reload()
     },
     CardId() {
+      try {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
+      this.validateInput(this.nameidcard, "Please Specify Name On ID Card", true)
+      this.validateInput(this.CardIdselect, "Please Specify KTP or SIM", true)
+      this.validateInput(this.idcardnumber, "Please Specify ID Card Number", true)
+      this.validateInput(this.address, "Please Specify ID Card Address", true)
+
       const cardData = {
         name: this.nameidcard,
         cardIdentifier: this.CardIdselect,
@@ -1291,7 +1300,6 @@ export default defineComponent({
       if (this.nameidcard == '' && this.idcardnumber == '' && this.address == '') {
         this.trigger('warning', 'data is missing')
       } else {
-        try {
           this.api.post(
             `detail/reservation/${currentResvId}/${currentRoomResvId}/add-idcard`,
             cardData,
@@ -1309,10 +1317,10 @@ export default defineComponent({
               }
             }
           )
+          }
         } catch (error) {
-          console.error('error:' + error)
+          return this.trigger('negative', error.message)
         }
-      }
     },
     KTPSelected() {
       this.CardIdselect = 'KTP'

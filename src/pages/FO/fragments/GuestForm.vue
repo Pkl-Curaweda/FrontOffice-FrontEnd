@@ -904,7 +904,15 @@ export default defineComponent({
         this.loading = false
         if (status === 200) {
           const { arrangmentCode, availableRooms } = data
+          const { checkoutDate } = data.reservation.reservation
           const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
+          if (checkoutDate != null) {
+            this.infoCheckout = true
+            this.guestForm = false
+          } else {
+            this.infoCheckout = false
+            this.guestForm = true
+          }
           this.rows = formattedRoomRates
           console.log(formattedRoomRates)
           this.resultRows = formattedRoomRates
@@ -1041,12 +1049,7 @@ export default defineComponent({
       }
     },
     getDetailResvRoom() {
-      const { currentResvId, currentRoomResvId, fix, detail, borderColor } = this.$ResvStore
-
-      if (borderColor == '#fe0001') {
-        this.infoCheckout = true
-        this.guestForm = false
-      }
+      const { currentResvId, currentRoomResvId, fix, detail } = this.$ResvStore
 
       if (currentResvId == 0 || currentRoomResvId == 0) return
       this.fix = true ? (this.fix = fix) : false
@@ -1061,7 +1064,16 @@ export default defineComponent({
             this.trigger('positive', message)
 
             const { reservation, room, arrangment, balance, voucherId } = data.reservation
-            const { reservationStatus, arrangmentCode, availableRooms } = data.data
+            const { checkoutDate } = data.reservation.reservation
+            // const { reservationStatus, arrangmentCode, availableRooms } = data.data
+
+            if (checkoutDate != null) {
+              this.infoCheckout = true
+              this.guestForm = false
+            } else {
+              this.infoCheckout = false
+              this.guestForm = true
+            }
 
             this.guestName = `${reservation.reserver.guest.name}/${reservation.reserver.guest.contact}`
             this.resvRecource = reservation.reserver.resourceName

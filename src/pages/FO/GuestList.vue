@@ -943,7 +943,6 @@ export default defineComponent({
       this.$ResvStore.ds = false
       this.$ResvStore.logc = false
       this.$ResvStore.addroom = false
-
       this.$ResvStore.detail = true
     },
     fixDetail(data) {

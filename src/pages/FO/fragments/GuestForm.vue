@@ -1,5 +1,8 @@
 <template>
-  <div class="q-my-lg row no-wrap q-gutter-md">
+  <div class="full-width full-height text-center text-h2" style="z-index: 200" v-if="infoCheckout">
+    This Reservation already checkout
+  </div>
+  <div class="q-my-lg row no-wrap q-gutter-md" v-if="guestForm">
     <div class="">
       <q-img
         :src="roomImage || '/src/assets/img/thumbnaul-form.png'"
@@ -139,7 +142,14 @@
               </div>
               <q-input dense outlined v-model="nameidcard" class="q-mt-sm" style="width: " />
               <div class="q-mt-sm">Id Card Number</div>
-              <q-input dense type='number' outlined v-model="idcardnumber" class="q-mt-sm" style="width: 360px" />
+              <q-input
+                dense
+                type="number"
+                outlined
+                v-model="idcardnumber"
+                class="q-mt-sm"
+                style="width: 360px"
+              />
 
               <div class="q-mt-sm">Address</div>
               <q-input dense outlined v-model="address" class="q-mt-sm" style="width: 360px" />
@@ -640,8 +650,8 @@ export default defineComponent({
         align: 'center',
         field: 'date'
       },
-      {  name: 'rate', align: 'center', label: 'Rate', field: 'rate' },
-      {  name: 'arrangement', label: 'Arrangement', field: 'arrangement' }
+      { name: 'rate', align: 'center', label: 'Rate', field: 'rate' },
+      { name: 'arrangement', label: 'Arrangement', field: 'arrangement' }
     ]
 
     const rows = []
@@ -668,6 +678,8 @@ export default defineComponent({
     }
 
     return {
+      infoCheckout: ref(false),
+      guestForm: ref(true),
       fix: false,
       includeTax: false,
       roomImage: ref(''),
@@ -1029,7 +1041,12 @@ export default defineComponent({
       }
     },
     getDetailResvRoom() {
-      const { currentResvId, currentRoomResvId, fix, detail } = this.$ResvStore
+      const { currentResvId, currentRoomResvId, fix, detail, borderColor } = this.$ResvStore
+
+      if (borderColor == '#fe0001') {
+        this.infoCheckout = true
+        this.guestForm = false
+      }
 
       if (currentResvId == 0 || currentRoomResvId == 0) return
       this.fix = true ? (this.fix = fix) : false
@@ -1141,28 +1158,40 @@ export default defineComponent({
     },
     async createData() {
       try {
-      const { currentResvId, currentRoomResvId } = this.$ResvStore
-      this.resvNo = currentResvId
+        const { currentResvId, currentRoomResvId } = this.$ResvStore
+        this.resvNo = currentResvId
 
-      this.validateInput(this.guestName, "Please send Guest Name and Phone Number", true, 'include', '/', "Please send a correct format [Guest Name]/[Phone Number]")
-      this.validateInput(this.resvRecource, "Please specify Reservation Resource", true)
-      this.validateInput(this.roomNo, "Please Specify Room Number", true)
-      this.validateInput(this.selected.id, "Please specify the Arrangment Code", true)
-      this.validateInput(this.guests.adult + this.guests.baby + this.guests.child,  "Atleast 1 Person is required", true, 'count')
-      this.validateInput(this.arrivalDepart?.from, "Please specify The Reservation Date", true)
+        this.validateInput(
+          this.guestName,
+          'Please send Guest Name and Phone Number',
+          true,
+          'include',
+          '/',
+          'Please send a correct format [Guest Name]/[Phone Number]'
+        )
+        this.validateInput(this.resvRecource, 'Please specify Reservation Resource', true)
+        this.validateInput(this.roomNo, 'Please Specify Room Number', true)
+        this.validateInput(this.selected.id, 'Please specify the Arrangment Code', true)
+        this.validateInput(
+          this.guests.adult + this.guests.baby + this.guests.child,
+          'Atleast 1 Person is required',
+          true,
+          'count'
+        )
+        this.validateInput(this.arrivalDepart?.from, 'Please specify The Reservation Date', true)
 
-      const dataToUpdate = {
-        nameContact: this.guestName,
-        resourceName: this.resvRecource,
-        room: this.setRoww(this.roomNo.value, this.selected.id, this.voucherId), //row
-        manyAdult: this.guests.adult,
-        manyChild: this.guests.child,
-        manyBaby: this.guests.baby,
-        arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
-        departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
-        reservationRemarks: this.resvRemark,
-        resvStatusId: parseInt(this.resvStatus.id || '1')
-      }
+        const dataToUpdate = {
+          nameContact: this.guestName,
+          resourceName: this.resvRecource,
+          room: this.setRoww(this.roomNo.value, this.selected.id, this.voucherId), //row
+          manyAdult: this.guests.adult,
+          manyChild: this.guests.child,
+          manyBaby: this.guests.baby,
+          arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
+          departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
+          reservationRemarks: this.resvRemark,
+          resvStatusId: parseInt(this.resvStatus.id || '1')
+        }
 
         await this.api.post(
           `detail/reservation/${currentResvId}/${currentRoomResvId}/create`,
@@ -1181,16 +1210,16 @@ export default defineComponent({
         return this.trigger('negative', error.message)
       }
     },
-    validateInput(modelValue, message, required, action, option, scndMessage){
-        if(required) if(!modelValue) throw Error(message)
-        switch(action){
-          case "count":
-            if(modelValue ===  0) throw Error(message)
-            break;
-          case "include":
-            if(!(modelValue.split(option)[1])) throw Error(scndMessage)
-            break;
-        }
+    validateInput(modelValue, message, required, action, option, scndMessage) {
+      if (required) if (!modelValue) throw Error(message)
+      switch (action) {
+        case 'count':
+          if (modelValue === 0) throw Error(message)
+          break
+        case 'include':
+          if (!modelValue.split(option)[1]) throw Error(scndMessage)
+          break
+      }
     },
     showNotification(message) {
       // Display notification message
@@ -1199,31 +1228,31 @@ export default defineComponent({
     },
     async updateData() {
       try {
-      const { currentResvId, currentRoomResvId, waitingnote } = this.$ResvStore
-      this.resvNo = currentResvId
-      
-      const dataToUpdate = {
-        nameContact: this.guestName,
-        resourceName: this.resvRecource,
-        arrangmentCode: this.selected.id,
-        manyAdult: this.guests.adult,
-        manyChild: this.guests.child,
-        manyBaby: this.guests.baby,
-        // inHouseIndicator: true,
-        arrivalDate: this.arrivalDepart.from.split('T')[0],
-        departureDate: this.arrivalDepart.to.split('T')[0],
-        reservationRemarks: this.resvRemark,
-        voucher: this.voucherId || '',
-        resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id)
-      }
+        const { currentResvId, currentRoomResvId, waitingnote } = this.$ResvStore
+        this.resvNo = currentResvId
 
-      const datachangeroom = {
-        roomId: this.roomNo.value,
-        arrangmentCodeId: this.selected.id,
-        note: waitingnote
-      }
+        const dataToUpdate = {
+          nameContact: this.guestName,
+          resourceName: this.resvRecource,
+          arrangmentCode: this.selected.id,
+          manyAdult: this.guests.adult,
+          manyChild: this.guests.child,
+          manyBaby: this.guests.baby,
+          // inHouseIndicator: true,
+          arrivalDate: this.arrivalDepart.from.split('T')[0],
+          departureDate: this.arrivalDepart.to.split('T')[0],
+          reservationRemarks: this.resvRemark,
+          voucher: this.voucherId || '',
+          resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id)
+        }
 
-      if (this.$ResvStore.logc === true) {
+        const datachangeroom = {
+          roomId: this.roomNo.value,
+          arrangmentCodeId: this.selected.id,
+          note: waitingnote
+        }
+
+        if (this.$ResvStore.logc === true) {
           await this.api.post(
             `/detail/reservation/${currentResvId}/${currentRoomResvId}/change-room`,
             datachangeroom,
@@ -1239,13 +1268,25 @@ export default defineComponent({
               }
             }
           )
-      } else {
-        this.validateInput(this.guestName, "Please send Guest Name and Phone Number", true, 'include', '/', "Please send a correct format [Guest Name]/[Phone Number]")
-        this.validateInput(this.resvRecource, "Please specify Reservation Resource", true)
-        this.validateInput(this.roomNo, "Please Specify Room Number", true)
-        this.validateInput(this.selected.id, "Please specify the Arrangment Code", true)
-        this.validateInput(this.guests.adult + this.guests.baby + this.guests.child,  "Atleast 1 Person is required", true, 'count')
-        this.validateInput(this.arrivalDepart?.from, "Please specify The Reservation Date", true)
+        } else {
+          this.validateInput(
+            this.guestName,
+            'Please send Guest Name and Phone Number',
+            true,
+            'include',
+            '/',
+            'Please send a correct format [Guest Name]/[Phone Number]'
+          )
+          this.validateInput(this.resvRecource, 'Please specify Reservation Resource', true)
+          this.validateInput(this.roomNo, 'Please Specify Room Number', true)
+          this.validateInput(this.selected.id, 'Please specify the Arrangment Code', true)
+          this.validateInput(
+            this.guests.adult + this.guests.baby + this.guests.child,
+            'Atleast 1 Person is required',
+            true,
+            'count'
+          )
+          this.validateInput(this.arrivalDepart?.from, 'Please specify The Reservation Date', true)
           await this.api.put(
             `detail/reservation/${currentResvId}/${currentRoomResvId}/edit`,
             dataToUpdate,
@@ -1259,10 +1300,10 @@ export default defineComponent({
               }
             }
           )
-        } 
-      }catch (error) {
-        return this.trigger('negative', error.message)
         }
+      } catch (error) {
+        return this.trigger('negative', error.message)
+      }
     },
     formatDate(date) {
       return new Date(date)
@@ -1285,21 +1326,21 @@ export default defineComponent({
     },
     CardId() {
       try {
-      const { currentResvId, currentRoomResvId } = this.$ResvStore
-      this.validateInput(this.nameidcard, "Please Specify Name On ID Card", true)
-      this.validateInput(this.CardIdselect, "Please Specify KTP or SIM", true)
-      this.validateInput(this.idcardnumber, "Please Specify ID Card Number", true)
-      this.validateInput(this.address, "Please Specify ID Card Address", true)
+        const { currentResvId, currentRoomResvId } = this.$ResvStore
+        this.validateInput(this.nameidcard, 'Please Specify Name On ID Card', true)
+        this.validateInput(this.CardIdselect, 'Please Specify KTP or SIM', true)
+        this.validateInput(this.idcardnumber, 'Please Specify ID Card Number', true)
+        this.validateInput(this.address, 'Please Specify ID Card Address', true)
 
-      const cardData = {
-        name: this.nameidcard,
-        cardIdentifier: this.CardIdselect,
-        cardId: this.idcardnumber,
-        address: this.address
-      }
-      if (this.nameidcard == '' && this.idcardnumber == '' && this.address == '') {
-        this.trigger('warning', 'data is missing')
-      } else {
+        const cardData = {
+          name: this.nameidcard,
+          cardIdentifier: this.CardIdselect,
+          cardId: this.idcardnumber,
+          address: this.address
+        }
+        if (this.nameidcard == '' && this.idcardnumber == '' && this.address == '') {
+          this.trigger('warning', 'data is missing')
+        } else {
           this.api.post(
             `detail/reservation/${currentResvId}/${currentRoomResvId}/add-idcard`,
             cardData,
@@ -1317,10 +1358,10 @@ export default defineComponent({
               }
             }
           )
-          }
-        } catch (error) {
-          return this.trigger('negative', error.message)
         }
+      } catch (error) {
+        return this.trigger('negative', error.message)
+      }
     },
     KTPSelected() {
       this.CardIdselect = 'KTP'

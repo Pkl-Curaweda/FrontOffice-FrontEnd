@@ -127,6 +127,7 @@
           :card-style="{ boxShadow: 'none' }"
           :dense="$q.screen.lt.md"
           :title="title"
+          style="height: 300px"
         >
           <template v-slot:top-row v-if="showInput">
             <q-tr>
@@ -368,8 +369,8 @@ export default defineComponent({
         this.showInput = false
       }
     },
-    validateInput(modelValue, message, required){
-        if(required) if(!modelValue) throw Error(message)
+    validateInput(modelValue, message, required) {
+      if (required) if (!modelValue) throw Error(message)
     },
     setFilterDisplay(option, label) {
       this.filterDisplay = option
@@ -420,7 +421,7 @@ export default defineComponent({
       )
     },
     postDataTable() {
-      try{
+      try {
         //Validate
         this.validateInput(this.reasonRoom, 'Need a Reason', true)
         this.validateInput(this.datePickerFrom, 'Date From is needed', true)
@@ -436,7 +437,7 @@ export default defineComponent({
           description: 'Sended By Admin',
           xType: this.buttonLabel
         }
-  
+
         let url = `ooo-rooms`
         this.api.post(url, data, ({ status, message }) => {
           if (status === 200) {
@@ -444,7 +445,7 @@ export default defineComponent({
             this.fetchData()
           }
         })
-      }catch(err){
+      } catch (err) {
         return this.trigger('negative', err.message)
       }
     },
@@ -476,7 +477,7 @@ export default defineComponent({
         if (status == 200) {
           const { OOORoom, ident, listOfRoom, listOfDepartment } = data
 
-          this.CreatedBy = this.user.username
+          this.CreatedBy = this.user.name
 
           const arrivalDate = data.arr // Gantilah 'arrival.arr' dengan properti yang benar
           if (this.datePickerArrival == null) {

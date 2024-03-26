@@ -112,8 +112,6 @@ export default defineComponent({
   margin-inline: auto;
 }
 .container {
-  overflow-x: auto;
-  scrollbar-width: none;
   display: flex;
   justify-content: center;
   gap: 20px;
@@ -136,7 +134,6 @@ export default defineComponent({
   .container {
     display: block;
     text-align: center;
-    /* justify-content: left; */
     width: 100%;
   }
   .child-card {

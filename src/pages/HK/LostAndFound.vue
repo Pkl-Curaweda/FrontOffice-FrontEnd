@@ -108,7 +108,7 @@
             </q-btn-dropdown>
           </div>
 
-          <div class="flex items-center" style="gap: 8px">
+          <!-- <div class="flex items-center" style="gap: 8px">
             <span style="font-size: 16px; font-weight: 500">Date :</span>
             <q-btn-dropdown
               flat
@@ -129,7 +129,7 @@
                 />
               </div>
             </q-btn-dropdown>
-          </div>
+          </div> -->
         </div>
 
         <div>
@@ -192,8 +192,8 @@
               {{ props.row.pickerEmail }}
             </q-td>
             <q-td key="status">
-            {{ props.row.status }}
-          </q-td>
+              {{ props.row.status }}
+            </q-td>
             <q-td key="reported_date">
               {{ props.row.reported_date }}
             </q-td>
@@ -314,7 +314,7 @@
                                     <q-input
                                       dense
                                       outlined
-                                      type='number'
+                                      type="number"
                                       v-model="contactNumber"
                                       label="Phone Number"
                                       class="col-grow text-bold"
@@ -771,7 +771,7 @@ export default defineComponent({
       immediate: true
     },
     foundItem: {
-      handler(value){
+      handler(value) {
         this.clearForm()
       }
     },
@@ -782,16 +782,25 @@ export default defineComponent({
     }
   },
   methods: {
-    clearForm(){
-      const listOfModels = ['pickerName', 'email', 'contactNumber', 'img', 'gender', 'imgKtp', 'imgUrl', 'imgUrlKtp']
-      for(let model of listOfModels){
+    clearForm() {
+      const listOfModels = [
+        'pickerName',
+        'email',
+        'contactNumber',
+        'img',
+        'gender',
+        'imgKtp',
+        'imgUrl',
+        'imgUrlKtp'
+      ]
+      for (let model of listOfModels) {
         this[model] = null
       }
       this.labelFile = 'Upload Image'
       this.labelKtp = 'Upload KTP'
     },
-    validateInput(modelValue, message, required){
-        if(required) if(!modelValue) throw Error(message)
+    validateInput(modelValue, message, required) {
+      if (required) if (!modelValue) throw Error(message)
     },
     clearInput() {
       const listOfModels = []
@@ -834,13 +843,15 @@ export default defineComponent({
           pickerImage: this.img,
           ktpImage: this.imgKtp
         }
-        this.api.useMultipart(true).post(`lostfound/${this.currentShownItemId}/FOUND`, sendedData, ({ status, data }) => {
+        this.api
+          .useMultipart(true)
+          .post(`lostfound/${this.currentShownItemId}/FOUND`, sendedData, ({ status, data }) => {
             if (status != 200) throw Error(data.message)
             this.clearInput()
             this.fetchData()
-            this.trigger('positive', "Data Updated Successfully")
+            this.trigger('positive', 'Data Updated Successfully')
             this.foundItem = false
-        })
+          })
       } catch (err) {
         return this.trigger('negative', err.message)
       }
@@ -939,7 +950,7 @@ export default defineComponent({
           console.log(message)
           this.trigger('positive', message)
           this.fetchData()
-        }else{
+        } else {
           this.trigger('negative', message)
         }
       })
@@ -970,7 +981,7 @@ export default defineComponent({
           // this.formatData(lostFounds)
           this.found = graph.found // Isi nilai found50
           this.lost = graph.lost // Isi nilai lost
-          if(this.found === 0 && this.lost === 0) this.showChart = false
+          if (this.found === 0 && this.lost === 0) this.showChart = false
           this.series = [graph.lost, graph.found]
           this.$refs.hkChartDesktop.updateSeries(this.series)
 

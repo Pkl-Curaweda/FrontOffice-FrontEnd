@@ -17,6 +17,7 @@ export const resvStore = defineStore({
     selectedmethod: '',
     detail: false,
     addroom: false,
+    borderColor: '#fe0001'
   }),
   actions: {
     setCurrentResvId(id = 0) {
@@ -40,22 +41,22 @@ export const resvStore = defineStore({
     setlogc(value) {
       this.logc = value
     },
-    setds(value){
+    setds(value) {
       this.ds = value
     },
-    setwaitingnote(value){
+    setwaitingnote(value) {
       this.waitingnote = value
     },
-    setBank(value){
+    setBank(value) {
       this.selectedbank = value
     },
-    setMethod(value){
+    setMethod(value) {
       this.selectedmethod = value
     },
-    detailresv(value){
+    detailresv(value) {
       this.detail = value
     },
-    setaddroom(value){
+    setaddroom(value) {
       this.addroom = value
     },
     clearData() {
@@ -72,7 +73,7 @@ export const resvStore = defineStore({
         selectedbank: '',
         selectedmethod: '',
         detail: false,
-        addroom: false,
+        addroom: false
       }
       this.$state = data
     }

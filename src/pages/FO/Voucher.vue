@@ -306,22 +306,22 @@ export default defineComponent({
       immediate: true
     },
     isPopupOpen: {
-      handler(val){
-        if(!val) this.cleanForm()
+      handler(val) {
+        if (!val) this.cleanForm()
       }
     },
     datePicker: {
       deep: true,
       handler(newDateRange) {
         this.datePickerLabel = 'TDate - FDate'
-        if(newDateRange){
+        if (newDateRange) {
           function formatDateRange() {
-            const options = { day: 'numeric', month: 'long' };
-            const fromDate = new Date(newDateRange?.from);
-            const toDate = new Date(newDateRange?.to);
-            const formattedFromDate = fromDate.toLocaleDateString('en-US', options);
-            const formattedToDate = toDate.toLocaleDateString('en-US', options);
-            return `${formattedFromDate} - ${formattedToDate}`;
+            const options = { day: 'numeric', month: 'long' }
+            const fromDate = new Date(newDateRange?.from)
+            const toDate = new Date(newDateRange?.to)
+            const formattedFromDate = fromDate.toLocaleDateString('en-US', options)
+            const formattedToDate = toDate.toLocaleDateString('en-US', options)
+            return `${formattedFromDate} - ${formattedToDate}`
           }
           this.datePickerLabel = formatDateRange()
         }
@@ -330,16 +330,26 @@ export default defineComponent({
     }
   },
   methods: {
-    cleanForm(){
+    validateInput(modelValue, message, required, action, option, scndMessage) {
+      if (required) if (!modelValue) throw Error(message)
+      switch (action) {
+        case 'count':
+          if (modelValue === 0) throw Error(message)
+          break
+        case 'include':
+          if (!modelValue.split(option)[1]) throw Error(scndMessage)
+          break
+      }
+    },
+    cleanForm() {
       const listOfModels = ['voucherName', 'description', 'discount', 'input']
-      for(let model of listOfModels){
+      for (let model of listOfModels) {
         this[model] = null
       }
-      this.titleVoucher = "Add Voucher"
+      this.titleVoucher = 'Add Voucher'
       this.readVoucherName = false
       this.complimentary = false
       this.houseUse = false
-
     },
     searchVouhcer(searchInput) {
       this.searchData = searchInput
@@ -363,37 +373,34 @@ export default defineComponent({
       }
     },
     addVoucher() {
-      // if (this.discount > 100) {
-      //   this.$q.notify(
-      //     {
-      //       type: 'negative',
-      //       message: 'Cant set discount many than 100',
-      //       timeout: 1000
-      //     },
-      //     1000
-      //   )
-      // }
-      const data = {
-        voucherName: this.voucherName,
-        description: this.description,
-        discount: parseInt(this.discount),
-        complimentary: this.complimentary,
-        houseUse: this.houseUse,
-        expireAt: new Date(this.input)
-      }
-      if(this.input === null) data.expireAt = null
+      try {
+        this.validateInput(this.voucherName, 'Please fill the voucher name', true)
+        this.validateInput(this.description, 'Please fill the description', true)
+        this.validateInput(this.discount, 'Please fill the discount', true)
+        this.validateInput(this.input, 'Please fill the date', true)
 
-      let url = `voucher/add`
-
-      this.api.post(url, data, ({ status, message }) => {
-        if (status === 200) {
-          this.trigger('positive', message)
-          this.clearFields()
-          this.fetchData()
-        }else{
-          this.trigger('negative', message)
+        const data = {
+          voucherName: this.voucherName,
+          description: this.description,
+          discount: parseInt(this.discount),
+          complimentary: this.complimentary,
+          houseUse: this.houseUse,
+          expireAt: new Date(this.input)
         }
-      })
+        if (this.input === null) data.expireAt = null
+
+        let url = `voucher/add`
+
+        this.api.post(url, data, ({ status, message }) => {
+          if (status === 200) {
+            this.trigger('positive', message)
+            this.clearFields()
+            this.fetchData()
+          }
+        })
+      } catch (error) {
+        return this.trigger('negative', error.message)
+      }
     },
     updateVoucher() {
       const data = {
@@ -404,7 +411,7 @@ export default defineComponent({
         houseUse: this.houseUse,
         expireAt: new Date(this.input)
       }
-      if(this.input === null) data.expireAt = null
+      if (this.input === null) data.expireAt = null
 
       let url = `voucher`
 
@@ -412,7 +419,7 @@ export default defineComponent({
         if (status === 200) {
           this.trigger('positive', message)
           this.fetchData()
-        }else{
+        } else {
           this.trigger('negative', message)
         }
       })
@@ -473,7 +480,6 @@ export default defineComponent({
       if (fromDate !== '' && toDate !== '') {
         url += `&date=${fromDate}T${toDate}`
       }
-
 
       this.api.get(url, ({ status, data }) => {
         this.loading = false

@@ -54,7 +54,13 @@
       </template>
       <template #right>
         <q-separator vertical />
-        <q-btn flat square :color="historyColor" icon="pending_actions" @click="showhistory(!this.state)">
+        <q-btn
+          flat
+          square
+          :color="historyColor"
+          icon="pending_actions"
+          @click="showhistory(!this.state)"
+        >
           <q-tooltip>History</q-tooltip>
         </q-btn>
       </template>
@@ -376,99 +382,88 @@
             </template>
           </q-table>
           <q-dialog v-model="confirmDelete" key="" :props="props">
-                          <q-card style="width: 350px; justify-content: center">
-                            <div class="q-pa-sm col" style="display: block; width: 100%; gap: 5px">
-                              <div style="width: 100%; text-align: center">
-                                Do you want to delete reservation number data
-                                {{ cacheData.ResNo.data }}
-                              </div>
-                              <div class="q-pa-sm col" style="display: flex; width: 100%; gap: 5px">
-                                <q-btn
-                                  dense
-                                  noCaps
-                                  color="primary"
-                                  v-close-popup
-                                  label="Close"
-                                  class="q-px-md"
-                                  style="width: 100%"
-                                />
-                                <q-btn
-                                  dense
-                                  noCaps
-                                  color="red"
-                                  @click="deleteResv"
-                                  label="Delete"
-                                  class="q-px-md"
-                                  style="width: 100%"
-                                />
-                              </div>
-                            </div>
-                          </q-card>
-                        </q-dialog>
-                        <q-dialog v-model="dialogeditroom" ref="editRoomDialog">
-                          <q-card>
-                            <q-card-section>
-                              <div class="text-h6">Change Room</div>
-                              <q-separator horizontal class="q-ma-xs" />
-                              <div class="q-mt-sm">
-                                Do you want to request something for room number {{ this.roomno
-                                }}<br />Please Give Us Your Request
-                              </div>
-                              <q-input
-                                v-model="waitingnote"
-                                class="q-my-md"
-                                label="Note..."
-                                dense
-                                outlined
-                                type="textarea"
-                              />
-                              <div
-                                class="row items-center"
-                                style="width: 100%; justify-content: space-between"
-                              >
-                                <q-btn v-close-popup label="Cancel" outline color="primary" />
-                                <q-btn
-                                  v-close-popup="this.waitingnote != null"
-                                  label="accept"
-                                  @click="changeRoom"
-                                  color="primary"
-                                />
-                              </div>
-                            </q-card-section>
-                          </q-card>
-                        </q-dialog>
-                        <q-dialog v-model="dialog2">
-                          <q-card>
-                            <q-card-section>
-                              <div class="text-h6">Waiting List</div>
-                              <q-separator horizontal class="q-ma-xs" />
-                              <div class="q-mt-sm">
-                                Do you want to request something for room number {{ this.roomno
-                                }}<br />Please Give Us Your Request
-                              </div>
-                              <q-input
-                                v-model="waitingnote"
-                                class="q-my-md"
-                                label="Note..."
-                                dense
-                                outlined
-                                type="textarea"
-                              />
-                              <div
-                                class="row items-center"
-                                style="width: 100%; justify-content: space-between"
-                              >
-                                <q-btn v-close-popup label="Cancel" outline color="primary" />
-                                <q-btn
-                                  v-close-popup
-                                  label="accept"
-                                  @click="postwaiting()"
-                                  color="primary"
-                                />
-                              </div>
-                            </q-card-section>
-                          </q-card>
-                        </q-dialog>
+            <q-card style="width: 350px; justify-content: center">
+              <div class="q-pa-sm col" style="display: block; width: 100%; gap: 5px">
+                <div style="width: 100%; text-align: center">
+                  Do you want to delete reservation number data
+                  {{ cacheData.ResNo.data }}
+                </div>
+                <div class="q-pa-sm col" style="display: flex; width: 100%; gap: 5px">
+                  <q-btn
+                    dense
+                    noCaps
+                    color="primary"
+                    v-close-popup
+                    label="Close"
+                    class="q-px-md"
+                    style="width: 100%"
+                  />
+                  <q-btn
+                    dense
+                    noCaps
+                    color="red"
+                    @click="deleteResv"
+                    label="Delete"
+                    class="q-px-md"
+                    style="width: 100%"
+                  />
+                </div>
+              </div>
+            </q-card>
+          </q-dialog>
+          <q-dialog v-model="dialogeditroom" ref="editRoomDialog">
+            <q-card>
+              <q-card-section>
+                <div class="text-h6">Change Room</div>
+                <q-separator horizontal class="q-ma-xs" />
+                <div class="q-mt-sm">
+                  Do you want to request something for room number {{ this.roomno }}<br />Please
+                  Give Us Your Request
+                </div>
+                <q-input
+                  v-model="waitingnote"
+                  class="q-my-md"
+                  label="Note..."
+                  dense
+                  outlined
+                  type="textarea"
+                />
+                <div class="row items-center" style="width: 100%; justify-content: space-between">
+                  <q-btn v-close-popup label="Cancel" outline color="primary" />
+                  <q-btn
+                    v-close-popup="this.waitingnote != null"
+                    label="accept"
+                    @click="changeRoom"
+                    color="primary"
+                  />
+                </div>
+              </q-card-section>
+            </q-card>
+          </q-dialog>
+          <q-dialog v-model="dialog2">
+            <q-card>
+              <q-card-section>
+                <div class="text-h6">Waiting List</div>
+                <q-separator horizontal class="q-ma-xs" />
+                <div class="q-mt-sm">
+                  Do you want to request something for room number {{ this.roomno }}<br />Please
+                  Give Us Your Request
+                </div>
+                <q-input
+                  v-model="waitingnote"
+                  class="q-my-md"
+                  label="Note..."
+                  dense
+                  outlined
+                  type="textarea"
+                />
+                <div class="row items-center" style="width: 100%; justify-content: space-between">
+                  <q-btn v-close-popup label="Cancel" outline color="primary" />
+                  <q-btn v-close-popup label="accept" @click="postwaiting()" color="primary" />
+                </div>
+              </q-card-section>
+            </q-card>
+          </q-dialog>
         </div>
       </template>
       <template #lower>
@@ -512,7 +507,7 @@ export default defineComponent({
       cacheData: ref([]),
 
       filterDisplayOptions: [
-        { label: 'All', value: null, l:'' },
+        { label: 'All', value: null, l: '' },
         { label: 'Reservation', value: 'reservation' },
         { label: 'In-House Guest', value: 'inhouse' },
         { label: 'Arrival-Today', value: 'arrival' },
@@ -529,7 +524,7 @@ export default defineComponent({
         { name: 'Arrival', label: 'Arrival', align: 'left', field: 'Arrival' },
         { name: 'Depart', label: 'Depart', align: 'left', field: 'Depart' },
         { name: 'Night', label: 'Night', align: 'left', field: 'Night' },
-        { name: 'RoomBoy', label: 'RoomBoy', align: 'left', field: 'RoomBoy' },
+        // { name: 'RoomBoy', label: 'RoomBoy', align: 'left', field: 'RoomBoy' },
         { name: 'RoomRate', label: 'RoomRate', align: 'left', field: 'RoomRate' },
         { name: 'CreatedDate', label: 'CreatedDate', align: 'left', field: 'CreatedDate' },
         { name: '', label: 'Action', align: 'center', field: '' }
@@ -659,14 +654,14 @@ export default defineComponent({
             else this.filterSortOrder = { col: '', val: '' }
           }
         },
-        RoomBoy: {
-          data: '',
-          options: [],
-          onOptionChange: (val) => {
-            if (val == null) this.filterSortOrder = { col: '', val: '' }
-            else this.filterSortOrder = { col: 'RoomBoy', val: 'room+name+' + val }
-          }
-        },
+        // RoomBoy: {
+        //   data: '',
+        //   options: [],
+        //   onOptionChange: (val) => {
+        //     if (val == null) this.filterSortOrder = { col: '', val: '' }
+        //     else this.filterSortOrder = { col: 'RoomBoy', val: 'room+name+' + val }
+        //   }
+        // },
         RoomRate: {
           data: '',
           options: ['High Price', 'Low Price'],
@@ -727,14 +722,14 @@ export default defineComponent({
       deep: true,
       handler(newDateRange) {
         this.datePickerLabel = 'TDate - FDate'
-        if(newDateRange){
+        if (newDateRange) {
           function formatDateRange() {
-            const options = { day: 'numeric', month: 'long' };
-            const fromDate = new Date(newDateRange?.from);
-            const toDate = new Date(newDateRange?.to);
-            const formattedFromDate = fromDate.toLocaleDateString('en-US', options);
-            const formattedToDate = toDate.toLocaleDateString('en-US', options);
-            return `${formattedFromDate} - ${formattedToDate}`;
+            const options = { day: 'numeric', month: 'long' }
+            const fromDate = new Date(newDateRange?.from)
+            const toDate = new Date(newDateRange?.to)
+            const formattedFromDate = fromDate.toLocaleDateString('en-US', options)
+            const formattedToDate = toDate.toLocaleDateString('en-US', options)
+            return `${formattedFromDate} - ${formattedToDate}`
           }
           this.datePickerLabel = formatDateRange()
         }
@@ -743,12 +738,12 @@ export default defineComponent({
     },
     filterDisplay: {
       handler(option) {
-        if(option != null){
+        if (option != null) {
           function formatDisplayOption() {
-            return option.charAt(0).toUpperCase() + option.slice(1);
+            return option.charAt(0).toUpperCase() + option.slice(1)
           }
           this.displayOptionLabel = formatDisplayOption()
-        }else this.displayOptionLabel = 'All'
+        } else this.displayOptionLabel = 'All'
         this.fetchData()
       }
     }
@@ -843,7 +838,7 @@ export default defineComponent({
     },
     showhistory(state) {
       this.state = state
-      this.historyColor = state ? "black" : "primary"
+      this.historyColor = state ? 'black' : 'primary'
       this.fetchData()
     },
     waitinglist(data, log, state) {
@@ -877,8 +872,11 @@ export default defineComponent({
       this.$ResvStore.fix = false
       this.$ResvStore.ds = true
       this.$ResvStore.logc = false
+      this.$ResvStore.borderColor = '#fe0001'
       this.$ResvStore.detail = false
       this.$ResvStore.addroom = false
+
+      console.log(data['ResNo'].data)
     },
     changereset(data) {
       const resvId = data['ResNo'].data
@@ -1000,9 +998,9 @@ export default defineComponent({
 
         if (status == 200) {
           // const { reservations } = data.reservation
-          const roomBoys = this.getUniqueRoomBoys(data.roomBoys)
+          // const roomBoys = this.getUniqueRoomBoys(data.roomBoys)
           const { sortingRoomNo, sortingRoomType } = data
-          this.filterColumns.RoomBoy.options = roomBoys
+          // this.filterColumns.RoomBoy.options = roomBoys
           this.filterColumns.RmNo.options = sortingRoomNo.options
           this.filterColumns.RmNo.actToDo = sortingRoomNo.toChange
           this.filterColumns.RType.options = sortingRoomType.options
@@ -1018,9 +1016,9 @@ export default defineComponent({
       })
     },
 
-    getUniqueRoomBoys(roomBoys) {
-      return roomBoys.map((boy) => boy.user.name)
-    },
+    // getUniqueRoomBoys(roomBoys) {
+    //   return roomBoys.map((boy) => boy.user.name)
+    // },
     trigger(type, txt) {
       this.$q.notify(
         {
@@ -1088,7 +1086,7 @@ export default defineComponent({
               style: { backgroundColor, color }
             },
             Night: { data: rr.reservation.manyNight, style: { backgroundColor, color } },
-            RoomBoy: { data: rr.roomMaids.user.name, style: { backgroundColor, color } },
+            // RoomBoy: { data: rr.roomMaids.user.name, style: { backgroundColor, color } },
             RoomRate: {
               data: this.formating(rr.arrangment.rate),
               style: { backgroundColor, color }

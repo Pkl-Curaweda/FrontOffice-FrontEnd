@@ -1,11 +1,6 @@
 <template>
   <q-page class="flex flex-center q-px-lg q-py-xl">
-    <HKCard
-      title="Guest Room Change List"
-      radius="25px"
-      card_class="full-width q-px-lg"
-      style="max-height: 719px"
-    >
+    <HKCard title="Guest Room Change List" radius="25px" card_class="full-width q-px-lg">
       <div>
         <div class="row q-ml-auto">
           <div class="row q-pr-lg q-gutter-sm arrival">
@@ -243,7 +238,6 @@ export default defineComponent({
             resNo: rcd.resvNo,
             guestName: rcd.guestName
           }))
-
         }
       })
     }

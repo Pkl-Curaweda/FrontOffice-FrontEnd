@@ -43,14 +43,24 @@
       </q-btn-dropdown>
     </div>
 
-    <div class="no-wrap q-my-lg" style="gap: 16px; display: flex; justify-content: center; align-items: center;">
-      <apexchart type="donut" ref="demoChart" width="400" :options="chartOptions" :series="series" v-if="showChart"></apexchart>
+    <div
+      class="no-wrap q-my-lg"
+      style="gap: 16px; display: flex; justify-content: center; align-items: center"
+    >
+      <apexchart
+        type="donut"
+        ref="demoChart"
+        width="400"
+        :options="chartOptions"
+        :series="series"
+        v-if="showChart"
+      ></apexchart>
       <div class="dashboard-box column">
         <div class="row q-py-sm q-mt-lg" style="gap: 10px">
           <div class="icon">
             <q-icon name="o_diamond" />
           </div>
-          <p class="text-h6 text-bold">OCCUPIED</p>
+          <p class="text-h6 text-bold">ROOM SALES</p>
         </div>
         <div class="">
           <p class="text-h2 data text-center q-pb-lg">{{ deluxeRoom || 0 }}</p>
@@ -62,7 +72,7 @@
           <div class="icon">
             <q-icon name="o_bed" />
           </div>
-          <p class="text-h6 text-bold">OCCUPIED</p>
+          <p class="text-h6 text-bold">ROOM SALES</p>
         </div>
         <div class="">
           <p class="text-h2 data text-center q-pb-lg">{{ standardRoom || 0 }}</p>
@@ -74,7 +84,7 @@
           <div class="icon">
             <q-icon name="o_groups" />
           </div>
-          <p class="text-h6 text-bold">OCCUPIED</p>
+          <p class="text-h6 text-bold">ROOM SALES</p>
         </div>
         <div class="">
           <p class="text-h2 data text-center q-pb-lg">{{ familyRoom || 0 }}</p>
@@ -86,7 +96,7 @@
           <div class="icon">
             <q-icon name="o_trending_up" />
           </div>
-          <p class="text-h6 text-bold">OCCUPIED</p>
+          <p class="text-h6 text-bold">ROOM SALES</p>
         </div>
         <div class="">
           <p class="text-h2 data text-center q-pb-lg">{{ roomRes || 0 }}</p>
@@ -156,7 +166,9 @@ export default defineComponent({
         legend: {
           position: 'left',
           markers: {
-            fillColors: ['#77CE7F','#00FFE0',
+            fillColors: [
+              '#77CE7F',
+              '#00FFE0',
               '#2B8DFF',
               '#688CD3',
               '#A468D3',
@@ -168,7 +180,7 @@ export default defineComponent({
             ]
           }
         }
-      },
+      }
     }
   },
   data() {
@@ -195,23 +207,23 @@ export default defineComponent({
       handler(newDateRange) {
         this.dateLabel = 'Date'
         const currentDisplay = this.filterDisplay
-        if(newDateRange){
+        if (newDateRange) {
           function formatDateRange() {
             let options
-            switch(currentDisplay){
-              case "month": 
-                options = { month: 'long' } 
-                break;
-              case "year":
+            switch (currentDisplay) {
+              case 'month':
+                options = { month: 'long' }
+                break
+              case 'year':
                 options = { year: 'numeric' }
-                break;
+                break
               default:
                 options = { day: 'numeric', month: 'long' }
-                break;
+                break
             }
-            const fromDate = new Date(newDateRange);
-            const formattedFromDate = fromDate.toLocaleDateString('en-US', options);
-            return `${formattedFromDate}`;
+            const fromDate = new Date(newDateRange)
+            const formattedFromDate = fromDate.toLocaleDateString('en-US', options)
+            return `${formattedFromDate}`
           }
           this.dateLabel = formatDateRange()
         }
@@ -225,7 +237,7 @@ export default defineComponent({
       this.filterDisplay = option
       this.getDetailReport()
     },
-    setDatePicker(option){
+    setDatePicker(option) {
       this.getDetailReport()
     },
     formatAverage(num) {
@@ -233,16 +245,20 @@ export default defineComponent({
     },
     getDetailReport() {
       this.loading = true
-      if(this.startUp != false){
+      if (this.startUp != false) {
         this.startUp = false
         this.getDetailReport()
         this.startUp = true
-      } 
-      
-      
+      }
+
       //Handle Chart
-      if(this.$refs.demoChart != null || this.$refs.demoChart != undefined || this.series.length > 1) this.showChart = true
-      
+      if (
+        this.$refs.demoChart != null ||
+        this.$refs.demoChart != undefined ||
+        this.series.length > 1
+      )
+        this.showChart = true
+
       let url = `detail/report?`
       const Date = this.datePicker?.replace(/\//g, '-')
       if (Date !== undefined && Date !== '') {
@@ -266,7 +282,7 @@ export default defineComponent({
         }
       })
     },
-    formatData(raw= {}) {
+    formatData(raw = {}) {
       const seriesData = []
 
       Object.values(raw).forEach((room) => {
@@ -275,9 +291,9 @@ export default defineComponent({
       this.seriesEntry = seriesData
       console.log(seriesData)
       if (seriesData.length > 0) {
-        this.showChart = !seriesData.every((value) => value === 0);
+        this.showChart = !seriesData.every((value) => value === 0)
       } else {
-        this.showChart = false;
+        this.showChart = false
       }
       this.$refs.demoChart.updateSeries(seriesData)
     }

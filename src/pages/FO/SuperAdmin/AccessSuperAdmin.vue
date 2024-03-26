@@ -125,13 +125,21 @@
                     label="Role Name"
                     class="q-mt-sm col-grow text-bold"
                   />
-                  <q-input
+                  <q-select
+                    outlined
+                    dense
+                    v-model="rolePath"
+                    :options="optionsPath"
+                    label="Gender"
+                    class="col-grow"
+                  />
+                  <!-- <q-input
                     dense
                     outlined
                     v-model="path"
                     label="Path"
                     class="q-mt-sm col-grow text-bold"
-                  />
+                  /> -->
                   <q-btn
                     class="text-capitalize"
                     style="width: fit-content"
@@ -854,6 +862,8 @@ export default defineComponent({
 
   setup() {
     return {
+      rolePath: ref(),
+      optionsPath: [],
       user: ref(),
       optionUser: ref(),
       imgURL: ref(),

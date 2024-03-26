@@ -12,7 +12,7 @@
       </div>
       <h6 class="text-bold q-ma-none text-center">Welcome to <br />Management System</h6>
       <p class="text-center">Lingian Hotel & Convention</p>
-      <q-form @submit.prevent="login" class="column q-mt-md q-gutter-sm" style="min-width: 230px">
+      <q-form @submit.prevent="login" class="column q-mt-md q-gutter-xs" style="min-width: 230px">
         <q-input
           outlined
           dense

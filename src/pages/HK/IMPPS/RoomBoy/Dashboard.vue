@@ -100,7 +100,7 @@
           class="rb-btn rb-drop-shadow q-py-none text-body1"
           style="border-radius: 8px"
           color="negative"
-          >
+        >
           <q-tooltip v-if="!this.section">Select the task first</q-tooltip>
         </q-btn>
       </div>
@@ -197,6 +197,7 @@ export default defineComponent({
         { name: 'Standard', label: 'Standard', align: 'left', field: 'Standard' },
         { name: 'Actual', label: 'Actual', align: 'left', field: 'Actual' },
         { name: 'Remarks', label: 'Remarks', align: 'left', field: 'Remarks' },
+        { name: 'Priority', label: 'Priority', align: 'center', field: 'Priority' },
         { name: 'Status', label: 'Status', align: 'center', field: 'Status' },
         { name: 'Comments', label: 'Comments', align: 'center', field: 'Comments' }
       ],
@@ -254,7 +255,7 @@ export default defineComponent({
     Stop() {
       this.api.post(`roomboy/${this.roomId}/end-task`, null, ({ status, message }) => {
         if (status == 200) {
-          this.trigger('positive', "Task finished")
+          this.trigger('positive', 'Task finished')
           this.fetchData()
         } else {
           this.trigger('negative', message)
@@ -276,6 +277,7 @@ export default defineComponent({
             Standard: { data: lt.standard, style: { backgroundColor: lt.rowColor } },
             Actual: { data: lt.actual, style: { backgroundColor: lt.rowColor } },
             Remarks: { data: lt.remarks, style: { backgroundColor: lt.rowColor } },
+            Priority: { data: lt.remarks, style: { backgroundColor: lt.rowColor } },
             Status: { data: lt.status, style: { backgroundColor: lt.rowColor } },
             Comments: { data: lt.comments, style: { backgroundColor: lt.rowColor } },
             taskId: { data: lt.taskId, style: { backgroundColor: lt.rowColor } }

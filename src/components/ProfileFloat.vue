@@ -2,7 +2,7 @@
   <q-btn round dense flat>
     <q-avatar size="26px">
       <img :src="user.picture" />
-    </q-avatar> 
+    </q-avatar>
     <q-menu fit anchor="bottom left" self="top left" style="max-width: 320px">
       <q-item>
         <q-item-section>
@@ -11,7 +11,7 @@
             class="q-my-md q-mx-auto"
             style="width: 100px; border-radius: 100px"
           />
-          <h5 class="q-mt-none q-mb-md text-center">Halo, {{ user.username }}</h5>
+          <h5 class="q-mt-none q-mb-md text-center">Halo, {{ user.name }}</h5>
         </q-item-section>
       </q-item>
 
@@ -54,7 +54,7 @@ export default defineComponent({
           this.$Helper.showNotif('Logout Success', '', 'positive')
 
           this.$router.go('/auth/login')
-        }else{
+        } else {
           this.$Helper.showNotif('Logout unsuccess', '', 'negative')
         }
 

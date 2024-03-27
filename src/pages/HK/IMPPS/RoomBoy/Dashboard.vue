@@ -162,6 +162,7 @@
 <script>
 import UserGreet from 'src/components/HK/IMPPS/General/UserGreet.vue'
 import { defineComponent, ref } from 'vue'
+import socket from '../../../../services/socket/socket'
 
 const rows = ref([])
 
@@ -210,9 +211,19 @@ export default defineComponent({
     }
   },
   mounted() {
+    this.socket()
     this.fetchData()
   },
+  beforeUnmount(){
+    socket.disconnect()
+  },
   methods: {
+    socket(){
+      socket.connect()
+      socket.on('refreshTask', data => {
+        this.fetchData()
+      })
+    },
     refreshData() {
       this.fetchData()
     },
@@ -234,6 +245,7 @@ export default defineComponent({
         comment: this.comments
       }
       this.api.put(`roomboy/${this.roomId}`, comment, ({ status, message }) => {
+        socket.emit('refreshTask', { message: "Nigas" })
         if (status == 200) {
           this.trigger('positive', message)
           this.fetchData()
@@ -244,6 +256,7 @@ export default defineComponent({
     },
     Start() {
       this.api.post(`roomboy/${this.roomId}/start-task`, null, ({ status, message }) => {
+        socket.emit('refreshTask', { message: "Nigas" })
         if (status == 200) {
           this.trigger('positive', message)
           this.fetchData()
@@ -254,6 +267,7 @@ export default defineComponent({
     },
     Stop() {
       this.api.post(`roomboy/${this.roomId}/end-task`, null, ({ status, message }) => {
+        socket.emit('refreshTask', { message: "Nigas" })
         if (status == 200) {
           this.trigger('positive', 'Task finished')
           this.fetchData()
@@ -264,7 +278,6 @@ export default defineComponent({
     },
     fetchData() {
       this.loading = true
-
       this.api.get(`roomboy?history=${this.state}`, ({ status, data, message }) => {
         this.loading = false
 

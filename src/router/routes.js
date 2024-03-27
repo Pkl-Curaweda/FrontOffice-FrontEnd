@@ -18,8 +18,6 @@ const routes = [
     component: () => import('pages/LoadPage.vue'),
     meta: {
       title: "IHMS",
-      protected: true,
-      redirect: true
     }
   },
   {

@@ -26,6 +26,7 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
+import socket from '../services/socket/socket'
 
 export default defineComponent({
   name: 'MessengerFloat',
@@ -46,7 +47,17 @@ export default defineComponent({
     this.getValue()
     this.fetchData()
   },
+  beforeUnmount(){
+    socket.disconnect()
+  },
   methods: {
+    socket(){
+      socket.connect()
+      socket.on('notif', () => {
+        this.getValue()
+        this.fetchData()
+      })
+    },
     getValue() {
       this.api.get('notif/value', ({ status, data }) => {
         if (status == 200) {

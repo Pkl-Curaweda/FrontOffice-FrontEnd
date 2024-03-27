@@ -1405,6 +1405,17 @@ export default defineComponent({
         this.isRoSelected = false
         this.selected.id.split('-')[1] = '-' + type
       }
+    },
+    clearData() {
+      const { currentResvId, currentRoomResvId } = this.$ResvStore
+      this.$store.resvStore.clearData()
+      currentResvId = this.resvRecource = ''
+      this.selected = null
+      this.guests = { adult: 0, child: 0, baby: 0 }
+      this.arrivalDepart = { from: null, to: null }
+      this.resvRemark = ''
+      this.voucherId = ''
+      this.resvStatus = { value: null, id: null }
     }
   }
 })

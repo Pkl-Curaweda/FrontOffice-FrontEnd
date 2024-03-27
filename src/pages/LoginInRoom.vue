@@ -92,33 +92,42 @@ export default defineComponent({
     }
   },
   methods: {
+    validateInput(modelValue, message, required = true) {
+      if (required) if (!modelValue) throw Error(message)
+    },
     login() {
-      this.loading = true
-
-      this.api.post(
-        'auth/user/login',
-        {
-          email: this.dataModel.email,
-          password: this.dataModel.password
-        },
-        ({ status, data, message }) => {
-          if (status == 200) {
-            if (data['path'] != '/irs/home') {
-              this.$AuthStore.setUser(data['user'])
-              this.$AuthStore.setAccessToken(data['accessToken'])
-              this.$AuthStore.setMainPath(data['path'])
-              this.$router.push({ path: data['path'] })
+      try{
+        this.loading = true
+        this.validateInput(this.dataModel.email, 'Email is required', true)
+        this.validateInput(this.dataModel.password, 'Password is required', true)
+        this.api.post(
+          'auth/user/login',
+          {
+            email: this.dataModel.email,
+            password: this.dataModel.password
+          },
+          ({ status, data, message }) => {
+            if (status == 200) {
+              if (data['path'] != '/irs/home') {
+                this.$AuthStore.setUser(data['user'])
+                this.$AuthStore.setAccessToken(data['accessToken'])
+                this.$AuthStore.setMainPath(data['path'])
+                this.$router.push({ path: data['path'] })
+              } else {
+                this.$Helper.showNotif("You don't have access", '', 'negative')
+              }
             } else {
-              this.$Helper.showNotif("You don't have access", '', 'negative')
+              console.log(status, data, message)
+              this.$Helper.showNotif(message || 'Please try again', '', 'negative')
             }
-          } else {
-            console.log(status, data, message)
-            this.$Helper.showNotif(message || 'Please try again', '', 'negative')
+  
+            this.loading = false
           }
-
-          this.loading = false
-        }
-      )
+        )
+      }catch(err){
+        this.loading = false
+        this.$Helper.showNotif(err.message || 'Please try again', '', 'negative')
+      }
     },
     moveChange() {
       this.$router.push({

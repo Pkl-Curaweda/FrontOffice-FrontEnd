@@ -376,8 +376,8 @@
               <q-td key="Departure" :props="props">
                 {{ props.row.Departure }}
               </q-td>
-              <q-td key="Personinchange" :props="props">
-                {{ props.row.Personinchange }}
+              <q-td key="ResvStatus" :props="props">
+                {{ props.row.resvStatus }}
               </q-td>
               <!-- <q-td key="Action" :props="props" style="width: 10px">
                 <q-btn flat rounded size="13px" style="color: #008444"
@@ -426,7 +426,8 @@ const columns = [
   { name: 'Guestname', label: 'Guest Name', align: 'left', field: 'Guestname' },
   { name: 'Arrival', label: 'Arrival', align: 'left', field: 'Arrival' },
   { name: 'Departure', label: 'Departure', align: 'left', field: 'Departure' },
-  { name: 'Personinchange', label: 'Person In Change', align: 'left', field: 'Personinchange' }
+  { name: 'ResvStatus', label: 'Reservation Status', align: 'left', field: 'resvStatus' }
+
   // { name: 'Action', label: 'Action', align: 'center', field: 'Action' }
 ]
 
@@ -566,7 +567,6 @@ export default defineComponent({
         url += `&arrival=${DateArrival}`
       }
 
-
       const DateDeparture = this.datePickerDeparture?.replace(/\//g, '-')
       if (DateDeparture !== undefined && DateDeparture !== '') {
         url += `&depart=${DateDeparture}` // Ganti 'arrival' dengan 'departure'
@@ -581,7 +581,6 @@ export default defineComponent({
         if (status == 200) {
           const { room } = data
           console.log(room)
-
 
           const arrivalDate = data.arr // Gantilah 'arrival.arr' dengan properti yang benar
           if (this.datePickerArrival == null) {
@@ -605,7 +604,7 @@ export default defineComponent({
             Guestname: rm.guestName,
             Arrival: rm.arrival,
             Departure: rm.departure,
-            Personinchange: rm.pic
+            resvStatus: rm.status
           }))
         }
       })

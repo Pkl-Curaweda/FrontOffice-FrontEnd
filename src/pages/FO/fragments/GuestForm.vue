@@ -5,7 +5,7 @@
   <div class="q-my-lg row no-wrap q-gutter-md" v-if="guestForm">
     <div class="">
       <q-img
-        :src="roomImage || '/src/assets/img/thumbnaul-form.png'"
+        :src="roomImage || '../../../../src/assets/img/thumbnaul-form.png'"
         class="width-image rounded-borders"
       />
     </div>
@@ -623,12 +623,74 @@
           color="grey"
           dense
           class="text-capitalize col-grow"
-          @click="postcheckout"
+          @click="handleCheckout"
           v-if="!this.$ResvStore.fix && this.$ResvStore.currentRoomResvId && this.$ResvStore.detail"
         />
       </div>
     </div>
   </div>
+
+  <q-dialog v-model="dialogCheckout">
+    <q-card style="width: 300px">
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6">Balance Still Left:</div>
+        <q-space />
+        <q-btn icon="close" flat round dense v-close-popup />
+      </q-card-section>
+
+      <q-card-section>
+        <div class="text-h4">
+          Rp. <span class="text-h4">{{ remainingBalance }}</span>
+        </div>
+        <p class="q-mt-md text-center text-h6">Please select next action</p>
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn label="Pay with Bill" color="primary" v-close-popup @click="makeSureCheckout" />
+        <q-btn label="Cancel" color="primary" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="dialogMakeSureCheckout">
+    <q-card style="width: 300px">
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6">Balance Still Left:</div>
+        <q-space />
+        <q-btn icon="close" flat round dense v-close-popup />
+      </q-card-section>
+
+      <q-card-section>
+        <q-input
+          dense
+          outlined
+          readonly
+          v-model="nameReservation"
+          label="Name Reservation"
+          class="col-grow"
+        />
+        <q-input
+          dense
+          outlined
+          readonly
+          v-model="noReservation"
+          label="No Reservation"
+          class="col-grow q-mt-sm"
+        />
+        <div class="q-mt-md text-semibold">To confirm, type "{{ nameReservation }}" in the box below</div>
+        <q-input dense outlined v-model="typeConfirm" class="col-grow q-mt-sm" />
+      </q-card-section>
+
+      <q-card-actions>
+        <q-btn
+          label="Checkout this reservation"
+          color="primary"
+          class="col-grow"
+          @click="confirmCheckout"
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script>
@@ -679,6 +741,10 @@ export default defineComponent({
     }
 
     return {
+      typeConfirm: ref(''),
+      noReservation: ref(),
+      nameReservation: ref(''),
+      remainingBalance: ref(''),
       infoCheckout: ref(false),
       guestForm: ref(true),
       fix: false,
@@ -704,9 +770,10 @@ export default defineComponent({
       roomTypeOpts: ref([]),
       shownBedOpts: ref(),
       roomBedOpts: ref([]),
-
+      storeReservationData: ref(),
       loading: ref(false),
       isRbSelected,
+      forceCheckout: ref(false),
       isRoSelected,
       toggleRbSelected,
       toggleRoSelected,
@@ -742,7 +809,9 @@ export default defineComponent({
       resvStatus: ref([]),
       descSelect: ref(''),
       arrangmentValue: ref([]),
-      voucherId: ref('')
+      voucherId: ref(''),
+      dialogCheckout: ref(false),
+      dialogMakeSureCheckout: ref(false)
     }
   },
   data() {
@@ -779,7 +848,7 @@ export default defineComponent({
         this.toggleRoomRate('show')
         this.roomType = this.roomTypeOpts[newVal.index].value
         this.roomBed = this.roomBedOpts[newVal.index].label
-        if (this.arrivalDepart.from && this.arrivalDepart.to && newVal != oldVal)
+        if (this.arrivalDepart.from && this.arrivalDepart.to && newVal != oldVal && newVal.value != this.storeReservationData?.room.id)
           this.checkRoomAvailability()
       }
     },
@@ -787,7 +856,8 @@ export default defineComponent({
       immediate: true,
       handler(newVal, oldVal) {
         this.formatArrivalDepart()
-        if (this.roomNo && this.arrivalDepart?.from && oldVal != newVal)
+        console.log(newVal, oldVal)
+        if (this.roomNo && this.arrivalDepart?.from && oldVal != newVal && newVal != this.storeReservationData?.reservation.arrivalDate)
           this.checkRoomAvailability()
       }
     },
@@ -805,6 +875,20 @@ export default defineComponent({
     }
   },
   methods: {
+    confirmCheckout() {
+      if(this.typeConfirm != this.nameReservation) return this.trigger('negative', 'Please type it correctly')
+      this.postcheckout()
+    },
+    makeSureCheckout() {
+      this.dialogMakeSureCheckout = true
+      this.forceCheckout = true
+    },
+    handleCheckout() {
+      if(!this.storeReservationData.reservation.checkInDate) return this.trigger('negative', "Reservation hasn't Check In yet")
+      if(this.remainingBalance != 0){
+        this.dialogCheckout = true
+      } else this.dialogMakeSureCheckout = true
+    },
     toggleRoomRate(act = 'show') {
       act != 'show'
         ? this.$refs.showRateExpansionItem.hide()
@@ -837,8 +921,10 @@ export default defineComponent({
       const departureDate = this.arrivalDepart.to.split('T')[1]
         ? this.arrivalDepart.to.split('T')[0]
         : this.arrivalDepart.to
-      this.api.get(
-        `detail/checker/room?roomId=${this.roomNo.value}&range=${arrivalDate}T${departureDate}`,
+
+      let url = `detail/checker/room?roomId=${this.roomNo.value}&range=${arrivalDate}T${departureDate}`
+      if (this.$ResvStore.currentRoomResvId) url += `&id=${this.$ResvStore.currentRoomResvId}`
+      this.api.get( url,
         ({ status, message }) => {
           if (status != 200) {
             this.trigger('negative', message)
@@ -901,11 +987,12 @@ export default defineComponent({
     //   }
     // },
     getResvProps() {
+      let checkoutDate
       this.api.get(`detail/reservation/1/1/create`, ({ status, data }) => {
         this.loading = false
         if (status === 200) {
           const { arrangmentCode, availableRooms } = data
-          const { checkoutDate } = data.reservation.reservation
+          if(data.reservation) checkoutDate= data.reservation.reservation.checkoutDate
           const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
           if (checkoutDate != null) {
             this.infoCheckout = true
@@ -915,13 +1002,13 @@ export default defineComponent({
             this.guestForm = true
           }
           this.rows = formattedRoomRates
-          console.log(formattedRoomRates)
           this.resultRows = formattedRoomRates
           let formatedType = {},
             indexOfReference = {},
             roomNos = [],
             roomTypes = []
           let index = 0
+          
           for (let room of availableRooms) {
             roomNos.push({ index, label: room.id, value: room.id })
             this.roomTypeOpts.push({
@@ -1032,8 +1119,10 @@ export default defineComponent({
         if (currentResvId == 0 || currentRoomResvId == 0) return
 
         this.loading = true
-        await this.api.post(
-          `detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkout`,
+        let url = `detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkout`
+        if(this.forceCheckout) url += '?force=true'
+
+        await this.api.post( url,
           null,
           ({ status, data, message }) => {
             this.loading = false
@@ -1051,7 +1140,6 @@ export default defineComponent({
     },
     getDetailResvRoom() {
       const { currentResvId, currentRoomResvId, fix, detail } = this.$ResvStore
-
       if (currentResvId == 0 || currentRoomResvId == 0) return
       this.fix = true ? (this.fix = fix) : false
       this.detail = true ? (this.detail = detail) : false
@@ -1065,7 +1153,8 @@ export default defineComponent({
             this.trigger('positive', message)
 
             const { reservation, room, arrangment, balance, voucherId } = data.reservation
-            const { checkoutDate } = data.reservation.reservation
+            const { checkoutDate, reserver, id } = data.reservation.reservation
+            this.storeReservationData = data.reservation
             // const { reservationStatus, arrangmentCode, availableRooms } = data.data
 
             if (checkoutDate != null) {
@@ -1075,7 +1164,9 @@ export default defineComponent({
               this.infoCheckout = false
               this.guestForm = true
             }
-
+            this.noReservation = id
+            this.nameReservation = reserver.guest.name
+            this.remainingBalance = balance.balance
             this.guestName = `${reservation.reserver.guest.name}/${reservation.reserver.guest.contact}`
             this.resvRecource = reservation.reserver.resourceName
             this.arrivalDepart = { from: reservation.arrivalDate, to: reservation.departureDate }
@@ -1091,7 +1182,9 @@ export default defineComponent({
             this.arrangmentValue = { id: arrangment.id, rate: arrangment.rate }
             this.resvRemark = reservation.reservationRemarks
             this.roomImage = room.roomImage
+            console.log(this.roomNoOpts)
             this.roomNo = this.roomNoOpts[this.indexReference[room.id]]
+            console.log(this.roomNoOpts)
             this.availRooms = [
               ...this.availRooms,
               { id: room.id, roomType: room.roomType, bedSetup: room.bedSetup }
@@ -1241,23 +1334,23 @@ export default defineComponent({
     },
     async updateData() {
       try {
-        const { currentResvId, currentRoomResvId, waitingnote } = this.$ResvStore
-        this.resvNo = currentResvId
-
-        const dataToUpdate = {
-          nameContact: this.guestName,
-          resourceName: this.resvRecource,
-          arrangmentCode: this.selected.id,
-          manyAdult: this.guests.adult,
-          manyChild: this.guests.child,
-          manyBaby: this.guests.baby,
-          // inHouseIndicator: true,
-          arrivalDate: this.arrivalDepart.from.split('T')[0],
-          departureDate: this.arrivalDepart.to.split('T')[0],
-          reservationRemarks: this.resvRemark,
-          voucher: this.voucherId || '',
-          resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id)
-        }
+      const { currentResvId, currentRoomResvId, waitingnote } = this.$ResvStore
+      this.resvNo = currentResvId
+      
+      const dataToUpdate = {
+        nameContact: this.guestName,
+        resourceName: this.resvRecource,
+        arrangmentCode: this.selected.id,
+        manyAdult: this.guests.adult,
+        manyChild: this.guests.child,
+        manyBaby: this.guests.baby,
+        // inHouseIndicator: true,
+        arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
+        departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
+        reservationRemarks: this.resvRemark,
+        voucher: this.voucherId || '',
+        resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id)
+      }
 
         const datachangeroom = {
           roomId: this.roomNo.value,

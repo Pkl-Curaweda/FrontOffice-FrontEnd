@@ -260,6 +260,7 @@ import FOMenubar from 'src/components/FOMenubar.vue'
 import MultiPane from 'src/layouts/MultiPane.vue'
 import InvoiceForm from './fragments/InvoiceForm.vue'
 import { allObjectsInArray } from 'src/utils/datatype'
+import socket from '../../services/socket/socket'
 
 const columns2 = [
   {
@@ -411,6 +412,8 @@ export default defineComponent({
   },
   mounted() {
     this.fetchData()
+    this.socket()
+
     // if (this.$ResvStore.resvRoomId) {
     //   this.fetchData()
     // }
@@ -466,6 +469,12 @@ export default defineComponent({
     }
   },
   methods: {
+    socket() {
+      socket.connect()
+      socket.on('refreshTask', (data) => {
+        this.fetchData()
+      })
+    },
     addArticles() {
       const { resvId, resvRoomId } = this.$route.params
 
@@ -491,6 +500,7 @@ export default defineComponent({
       // Melakukan POST ke API
       this.api.post(`invoice/${resvId}/${resvRoomId}/article`, postData, ({ status, message }) => {
         if (status == 200) {
+          socket.emit('notif', { message: 'Nigas' })
           this.selected = []
           this.$q.notify({
             type: 'positive',

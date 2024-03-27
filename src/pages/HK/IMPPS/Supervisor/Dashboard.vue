@@ -672,9 +672,9 @@ export default defineComponent({
     }
   },
   methods: {
-    socket(){
+    socket() {
       socket.connect()
-      socket.on('refreshTask', data => {
+      socket.on('refreshTask', (data) => {
         this.fetchData()
       })
     },
@@ -781,7 +781,7 @@ export default defineComponent({
         }
         this.api.put(`spv/${this.roomId}`, comment, ({ status, message }) => {
           if (status == 200) {
-            socket.emit('refreshTask', { message: "Nigas" })
+            socket.emit('refreshTask', { message: 'Nigas' })
             this.trigger('positive', message)
             this.fetchData()
           } else {
@@ -794,14 +794,14 @@ export default defineComponent({
     },
     postOk() {
       this.validateInput(this.roomId, 'Please specify Room Number', true)
-      
+
       const data = {
         performance: this.currentRating,
         comment: this.comments
       }
       this.api.post(`spv/${this.roomId}/ok`, data, ({ status, message }) => {
         if (status == 200) {
-          socket.emit('refreshTask', { message: "Nigas" })
+          socket.emit('refreshTask', { message: 'Nigas' })
           this.trigger('positive', message)
           this.fetchData()
         } else {
@@ -813,7 +813,7 @@ export default defineComponent({
       this.validateInput(this.roomId, 'Please specify Room Number', true)
       this.api.post(`spv/${this.roomId}/re-clean`, null, ({ status, message }) => {
         if (status == 200) {
-          socket.emit('refreshTask', { message: "Nigas" })
+          socket.emit('refreshTask', { message: 'Nigas' })
           this.trigger('positive', message)
           this.fetchData()
         } else {
@@ -968,7 +968,7 @@ export default defineComponent({
         }
         this.api.post(`spv/task`, change, ({ message, status }) => {
           if (status == 200) {
-            socket.emit('refreshTask', { message: "Nigas" })
+            socket.emit('refreshTask', { message: 'Nigas' })
             this.trigger('positive', message)
             this.dialog1 = false
             this.Request = false
@@ -1003,7 +1003,7 @@ export default defineComponent({
         }
         this.api.post(`spv/task`, change, ({ message, status }) => {
           if (status == 200) {
-            socket.emit('refreshTask', { message: "Nigas" })
+            socket.emit('refreshTask', { message: 'Nigas' })
             this.trigger('positive', message)
             this.dialog1 = false
             this.CleanRoom = false

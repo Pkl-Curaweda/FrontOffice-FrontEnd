@@ -108,7 +108,7 @@
             </q-btn-dropdown>
           </div>
 
-          <!-- <div class="flex items-center" style="gap: 8px">
+          <div class="flex items-center" style="gap: 8px">
             <span style="font-size: 16px; font-weight: 500">Date :</span>
             <q-btn-dropdown
               flat
@@ -129,7 +129,7 @@
                 />
               </div>
             </q-btn-dropdown>
-          </div> -->
+          </div>
         </div>
 
         <div>
@@ -723,7 +723,7 @@ export default defineComponent({
       lost: ref(),
       rows,
       viewImage: ref(false),
-      datePickerArrival: ref(),
+      datePickerArrival: ref('Date'),
       formattedArrivalDate: ref(),
       columns,
       seriesEntry: ref([]),

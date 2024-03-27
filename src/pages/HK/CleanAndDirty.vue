@@ -604,7 +604,7 @@ export default defineComponent({
             Guestname: rm.guestName,
             Arrival: rm.arrival,
             Departure: rm.departure,
-            resvStatus: rm.resvStatus
+            resvStatus: rm.status
           }))
         }
       })

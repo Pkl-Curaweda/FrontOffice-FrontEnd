@@ -312,7 +312,6 @@ export default defineComponent({
         { name: 'Rate', label: 'Rate', align: 'left', field: 'Rate' },
         { name: 'Amount', label: 'Amount', align: 'left', field: 'Amount' },
         { name: 'RmNo', label: 'RmNo', align: 'left', field: 'RmNo' },
-        { name: 'RoomBoy', label: 'Room Boy', field: 'RoomBoy', align: 'left' },
         { name: 'VoucherNumber', label: 'Voucher Number', align: 'left', field: 'VoucherNumber' },
         { name: 'BillDate', label: 'BillDate', align: 'left', field: 'BillDate' },
         { name: '', label: 'Action', align: 'center', field: '' }
@@ -440,14 +439,14 @@ export default defineComponent({
       deep: true,
       handler(newDateRange) {
         this.datePickerLabel = 'TDate - FDate'
-        if(newDateRange){
+        if (newDateRange) {
           function formatDateRange() {
-            const options = { day: 'numeric', month: 'long' };
-            const fromDate = new Date(newDateRange?.from);
-            const toDate = new Date(newDateRange?.to);
-            const formattedFromDate = fromDate.toLocaleDateString('en-US', options);
-            const formattedToDate = toDate.toLocaleDateString('en-US', options);
-            return `${formattedFromDate} - ${formattedToDate}`;
+            const options = { day: 'numeric', month: 'long' }
+            const fromDate = new Date(newDateRange?.from)
+            const toDate = new Date(newDateRange?.to)
+            const formattedFromDate = fromDate.toLocaleDateString('en-US', options)
+            const formattedToDate = toDate.toLocaleDateString('en-US', options)
+            return `${formattedFromDate} - ${formattedToDate}`
           }
           this.datePickerLabel = formatDateRange()
         }
@@ -636,7 +635,6 @@ export default defineComponent({
           Rate: { data: this.formating(inv.rate), style: { backgroundColor: inv.rowColor } },
           Amount: { data: this.formating(inv.amount), style: { backgroundColor: inv.rowColor } },
           RmNo: { data: inv.roomNo, style: { backgroundColor: inv.rowColor } }, // Akses rmNo dari objek added
-          RoomBoy: { data: added.roomBoys, style: { backgroundColor: inv.rowColor } }, // Akses roomBoy dari objek added
           VoucherNumber: { data: added.voucherNo, style: { backgroundColor: inv.rowColor } }, // Akses voucherNumber dari objek added
           BillDate: { data: inv.billDate, style: { backgroundColor: inv.rowColor } },
           uniqueId: { data: inv.uniqueId, style: {} }

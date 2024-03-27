@@ -622,12 +622,74 @@
             !this.$ResvStore.currentRoomResvId || this.$ResvStore.addroom || this.$ResvStore.logc
           "
           class="text-capitalize col-grow"
-          @click="postcheckout"
+          @click="handleCheckout"
           v-if="!this.$ResvStore.fix"
         />
       </div>
     </div>
   </div>
+
+  <q-dialog v-model="dialogCheckout">
+    <q-card style="width: 300px">
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6">Balance Still Left:</div>
+        <q-space />
+        <q-btn icon="close" flat round dense v-close-popup />
+      </q-card-section>
+
+      <q-card-section>
+        <div class="text-h4">
+          Rp. <span class="text-h4">{{ remainingBalance }}</span>
+        </div>
+        <p class="q-mt-md text-center text-h6">Please select next action</p>
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn label="Pay with Bill" color="primary" v-close-popup @click="makeSureCheckout" />
+        <q-btn label="Cancel" color="primary" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="dialogMakeSureCheckout">
+    <q-card style="width: 300px">
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6">Balance Still Left:</div>
+        <q-space />
+        <q-btn icon="close" flat round dense v-close-popup />
+      </q-card-section>
+
+      <q-card-section>
+        <q-input
+          dense
+          outlined
+          readonly
+          v-model="nameReservation"
+          label="Name Reservation"
+          class="col-grow"
+        />
+        <q-input
+          dense
+          outlined
+          readonly
+          v-model="noReservation"
+          label="No Reservation"
+          class="col-grow q-mt-sm"
+        />
+        <div class="q-mt-md text-semibold">To confirm, type "checkout" in the box below</div>
+        <q-input dense outlined v-model="typeConfirm" class="col-grow q-mt-sm" />
+      </q-card-section>
+
+      <q-card-actions>
+        <q-btn
+          label="Checkout this reservation"
+          color="primary"
+          class="col-grow"
+          @click="confirmCheckout"
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script>
@@ -678,6 +740,10 @@ export default defineComponent({
     }
 
     return {
+      typeConfirm: ref(''),
+      noReservation: ref(),
+      nameReservation: ref(''),
+      remainingBalance: ref(''),
       infoCheckout: ref(false),
       guestForm: ref(true),
       fix: false,
@@ -741,7 +807,9 @@ export default defineComponent({
       resvStatus: ref([]),
       descSelect: ref(''),
       arrangmentValue: ref([]),
-      voucherId: ref('')
+      voucherId: ref(''),
+      dialogCheckout: ref(false),
+      dialogMakeSureCheckout: ref(false)
     }
   },
   data() {
@@ -804,6 +872,20 @@ export default defineComponent({
     }
   },
   methods: {
+    confirmCheckout() {
+      console.log(this.typeConfirm)
+      if (this.typeConfirm == 'checkout') {
+        this.postcheckout()
+      } else {
+        this.trigger('negative', 'Please type checkout correctly')
+      }
+    },
+    makeSureCheckout() {
+      this.dialogMakeSureCheckout = true
+    },
+    handleCheckout() {
+      this.dialogCheckout = true
+    },
     toggleRoomRate(act = 'show') {
       act != 'show'
         ? this.$refs.showRateExpansionItem.hide()
@@ -1064,7 +1146,7 @@ export default defineComponent({
             this.trigger('positive', message)
 
             const { reservation, room, arrangment, balance, voucherId } = data.reservation
-            const { checkoutDate } = data.reservation.reservation
+            const { checkoutDate, reserver, id } = data.reservation.reservation
             // const { reservationStatus, arrangmentCode, availableRooms } = data.data
 
             if (checkoutDate != null) {
@@ -1074,7 +1156,9 @@ export default defineComponent({
               this.infoCheckout = false
               this.guestForm = true
             }
-
+            this.noReservation = id
+            this.nameReservation = reserver.guest.name
+            this.remainingBalance = arrangment.rate
             this.guestName = `${reservation.reserver.guest.name}/${reservation.reserver.guest.contact}`
             this.resvRecource = reservation.reserver.resourceName
             this.arrivalDepart = { from: reservation.arrivalDate, to: reservation.departureDate }

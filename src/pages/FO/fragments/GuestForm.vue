@@ -677,7 +677,7 @@
           label="No Reservation"
           class="col-grow q-mt-sm"
         />
-        <div class="q-mt-md text-semibold">To confirm, type "checkout" in the box below</div>
+        <div class="q-mt-md text-semibold">To confirm, type "{{ nameReservation }}" in the box below</div>
         <q-input dense outlined v-model="typeConfirm" class="col-grow q-mt-sm" />
       </q-card-section>
 
@@ -773,6 +773,7 @@ export default defineComponent({
       storeReservationData: ref(),
       loading: ref(false),
       isRbSelected,
+      forceCheckout: ref(false),
       isRoSelected,
       toggleRbSelected,
       toggleRoSelected,
@@ -875,18 +876,18 @@ export default defineComponent({
   },
   methods: {
     confirmCheckout() {
-      console.log(this.typeConfirm)
-      if (this.typeConfirm == 'checkout') {
-        this.postcheckout()
-      } else {
-        this.trigger('negative', 'Please type checkout correctly')
-      }
+      if(this.typeConfirm != this.nameReservation) return this.trigger('negative', 'Please type it correctly')
+      this.postcheckout()
     },
     makeSureCheckout() {
       this.dialogMakeSureCheckout = true
+      this.forceCheckout = true
     },
     handleCheckout() {
-      this.dialogCheckout = true
+      if(!this.storeReservationData.reservation.checkInDate) return this.trigger('negative', "Reservation hasn't Check In yet")
+      if(this.remainingBalance != 0){
+        this.dialogCheckout = true
+      } else this.dialogMakeSureCheckout = true
     },
     toggleRoomRate(act = 'show') {
       act != 'show'
@@ -1118,8 +1119,10 @@ export default defineComponent({
         if (currentResvId == 0 || currentRoomResvId == 0) return
 
         this.loading = true
-        await this.api.post(
-          `detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkout`,
+        let url = `detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkout`
+        if(this.forceCheckout) url += '?force=true'
+
+        await this.api.post( url,
           null,
           ({ status, data, message }) => {
             this.loading = false
@@ -1163,7 +1166,7 @@ export default defineComponent({
             }
             this.noReservation = id
             this.nameReservation = reserver.guest.name
-            this.remainingBalance = arrangment.rate
+            this.remainingBalance = balance.balance
             this.guestName = `${reservation.reserver.guest.name}/${reservation.reserver.guest.contact}`
             this.resvRecource = reservation.reserver.resourceName
             this.arrivalDepart = { from: reservation.arrivalDate, to: reservation.departureDate }

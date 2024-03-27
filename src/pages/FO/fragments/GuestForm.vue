@@ -16,17 +16,18 @@
         <q-btn
           flat
           square
+          dense
           color="primary"
-          class="border-button rounded-borders"
+          class="border-button rounded-borders q-px-md"
           @click="refreshData"
-          v-if="!this.$ResvStore.fix"
-          :disabled="!this.$ResvStore.currentRoomResvId || this.$ResvStore.addroom"
+          no-caps
+          v-if="!this.$ResvStore.fix && this.$ResvStore.currentRoomResvId"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="19"
-            height="20"
-            viewBox="0 0 19 20"
+            width="18"
+            height="19"
+            viewBox="0 0 18 19"
             fill="none"
           >
             <path
@@ -34,10 +35,11 @@
               fill="#008444"
             />
           </svg>
+          <div class="q-pl-sm">Add</div>
         </q-btn>
 
         <!-- edit reservation  -->
-        <q-btn
+        <!-- <q-btn
           flat
           square
           color="primary"
@@ -58,7 +60,7 @@
               fill="#008444"
             />
           </svg>
-        </q-btn>
+        </q-btn> -->
 
         <q-space />
 
@@ -70,10 +72,9 @@
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
           @click="newResvroom()"
-          :disabled="
-            !this.$ResvStore.currentRoomResvId || !this.$ResvStore.addroom || !this.$ResvStore.logc
+          v-if="
+            !this.$ResvStore.fix && this.$ResvStore.currentRoomResvId && this.$ResvStore.addroom
           "
-          v-if="!this.$ResvStore.fix"
         />
 
         <!-- show modal to create card's credential: KTP, SIM, address  -->
@@ -85,10 +86,12 @@
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
           @click="getdataCard(true)"
-          :disabled="
-            !this.$ResvStore.currentRoomResvId || this.$ResvStore.addroom || this.$ResvStore.logc
+          v-if="
+            !this.$ResvStore.fix &&
+            this.$ResvStore.currentRoomResvId &&
+            !this.$ResvStore.addroom &&
+            !this.$ResvStore.logc
           "
-          v-if="!this.$ResvStore.fix"
         />
 
         <q-dialog v-model="dialogpayment">
@@ -559,11 +562,16 @@
       <q-btn
         color="primary"
         dense
-        class="q-ma-sm q-px-sm"
+        class="q-ma-sm q-px-md q-py-xs"
         @click="updateData"
-        :disabled="!this.$ResvStore.currentRoomResvId || this.$ResvStore.addroom"
-        v-if="!this.$ResvStore.fix"
-        size="xs"
+        v-if="
+          !this.$ResvStore.fix &&
+          this.$ResvStore.currentRoomResvId &&
+          !this.$ResvStore.addroom &&
+          !this.$ResvStore.logc
+        "
+        size="sm"
+        outline
         no-caps
         label="Change"
         icon="edit"
@@ -598,32 +606,25 @@
           dense
           class="text-capitalize col-grow"
           @click="createData"
-          :disabled="this.$ResvStore.fix || this.$ResvStore.addroom || this.$ResvStore.logc"
-          v-if="!this.$ResvStore.fix"
+          v-if="!this.$ResvStore.fix && !this.$ResvStore.currentRoomResvId"
         />
         <q-btn
           label="Check-In"
           unelevated
           color="primary"
           dense
-          :disabled="
-            !this.$ResvStore.currentRoomResvId || this.$ResvStore.addroom || this.$ResvStore.logc
-          "
           class="text-capitalize col-grow"
           @click="postcheckin"
-          v-if="!this.$ResvStore.fix"
+          v-if="!this.$ResvStore.fix && this.$ResvStore.currentRoomResvId && this.$ResvStore.detail"
         />
         <q-btn
           label="Check-Out"
           outline
           color="grey"
           dense
-          :disabled="
-            !this.$ResvStore.currentRoomResvId || this.$ResvStore.addroom || this.$ResvStore.logc
-          "
           class="text-capitalize col-grow"
           @click="postcheckout"
-          v-if="!this.$ResvStore.fix"
+          v-if="!this.$ResvStore.fix && this.$ResvStore.currentRoomResvId && this.$ResvStore.detail"
         />
       </div>
     </div>

@@ -100,7 +100,7 @@
         </div>
         <div class="">
           <p class="text-h2 data text-center q-pb-lg">{{ roomRes || 0 }}</p>
-          <p class="text-h6 text-bold">ROOM RES</p>
+          <p class="text-h6 text-bold">TOTAL</p>
         </div>
       </div>
     </div>

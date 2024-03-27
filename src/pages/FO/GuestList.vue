@@ -480,6 +480,7 @@ import GuestForm from 'src/pages/FO/fragments/GuestForm.vue'
 import { formatDate } from 'src/utils/time'
 import { defineComponent, ref } from 'vue'
 import { allObjectsInArray } from 'src/utils/datatype'
+import socket from '../../services/socket/socket'
 
 export default defineComponent({
   name: 'GuestList',
@@ -699,6 +700,7 @@ export default defineComponent({
   },
   mounted() {
     this.fetchData()
+    this.socket()
   },
   watch() {
     searchName(this.searchInput)
@@ -749,6 +751,12 @@ export default defineComponent({
     }
   },
   methods: {
+    socket() {
+      socket.connect()
+      socket.on('refreshTask', (data) => {
+        this.fetchData()
+      })
+    },
     handleDelete(data) {
       this.cacheData = data
       this.confirmDelete = true
@@ -801,6 +809,7 @@ export default defineComponent({
           note,
           ({ data, status, message }) => {
             if (status === 200) {
+              socket.emit('notif', { message: 'Nigas' })
               this.trigger('positive', message)
               this.fetchData()
             }
@@ -825,6 +834,7 @@ export default defineComponent({
           articledata,
           ({ status, data, message }) => {
             if (status === 200) {
+              socket.emit('notif', { message: 'Nigas' })
               this.trigger('positive', message)
               this.fetchData()
             } else {

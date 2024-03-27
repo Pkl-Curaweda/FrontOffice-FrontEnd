@@ -1,7 +1,15 @@
 <template>
-  <div class="full-width full-height text-center text-h2" style="z-index: 200" v-if="infoCheckout">
-    This Reservation already checkout
+  <div v-if="infoCheckout">
+    <div class="full-width full-height text-center text-h2 q-mt-xl" style="z-index: 200">
+      This Reservation already checkout
+    </div>
+    <div class="flex justify-center items-center q-mt-md">
+      <q-btn outline color="primary" dense outlined no-caps @click="resetCheckIn"
+        >Reset Check-In</q-btn
+      >
+    </div>
   </div>
+
   <div class="q-my-lg row no-wrap q-gutter-md" v-if="guestForm">
     <div class="">
       <q-img
@@ -677,7 +685,9 @@
           label="No Reservation"
           class="col-grow q-mt-sm"
         />
-        <div class="q-mt-md text-semibold">To confirm, type "{{ nameReservation }}" in the box below</div>
+        <div class="q-mt-md text-semibold">
+          To confirm, type "{{ nameReservation }}" in the box below
+        </div>
         <q-input dense outlined v-model="typeConfirm" class="col-grow q-mt-sm" />
       </q-card-section>
 
@@ -696,6 +706,7 @@
 <script>
 import { defineComponent, ref, watch, provide, inject } from 'vue'
 import { useQuasar } from 'quasar'
+import socket from '../../service/socket/socket'
 
 export default defineComponent({
   name: 'GuestForm',
@@ -821,6 +832,7 @@ export default defineComponent({
     }
   },
   mounted() {
+    this.socket()
     this.getResvProps()
 
     if (this.$ResvStore.currentRoomResvId) {
@@ -848,7 +860,12 @@ export default defineComponent({
         this.toggleRoomRate('show')
         this.roomType = this.roomTypeOpts[newVal.index].value
         this.roomBed = this.roomBedOpts[newVal.index].label
-        if (this.arrivalDepart.from && this.arrivalDepart.to && newVal != oldVal && newVal.value != this.storeReservationData?.room.id)
+        if (
+          this.arrivalDepart.from &&
+          this.arrivalDepart.to &&
+          newVal != oldVal &&
+          newVal.value != this.storeReservationData?.room.id
+        )
           this.checkRoomAvailability()
       }
     },
@@ -857,7 +874,12 @@ export default defineComponent({
       handler(newVal, oldVal) {
         this.formatArrivalDepart()
         console.log(newVal, oldVal)
-        if (this.roomNo && this.arrivalDepart?.from && oldVal != newVal && newVal != this.storeReservationData?.reservation.arrivalDate)
+        if (
+          this.roomNo &&
+          this.arrivalDepart?.from &&
+          oldVal != newVal &&
+          newVal != this.storeReservationData?.reservation.arrivalDate
+        )
           this.checkRoomAvailability()
       }
     },
@@ -874,9 +896,29 @@ export default defineComponent({
       deep: true
     }
   },
+  socket() {
+    socket.connect()
+    socket.on('refreshTask', (data) => {
+      this.fetchData()
+    })
+  },
   methods: {
+    resetCheckIn() {
+      const { currentResvId, currentRoomResvId } = this.$ResvStore
+      if (currentResvId == 0 || currentRoomResvId == 0) return
+
+      let url = `detail/reservation/${currentResvId}/${currentRoomResvId}/reset-checkin`
+      this.api.get(url, ({ status, message }) => {
+        if (status === 200) {
+          socket.emit('refreshTask', { message: 'Nigas' })
+          this.trigger('positive', message)
+          this.refreshData()
+        }
+      })
+    },
     confirmCheckout() {
-      if(this.typeConfirm != this.nameReservation) return this.trigger('negative', 'Please type it correctly')
+      if (this.typeConfirm != this.nameReservation)
+        return this.trigger('negative', 'Please type it correctly')
       this.postcheckout()
     },
     makeSureCheckout() {
@@ -884,8 +926,9 @@ export default defineComponent({
       this.forceCheckout = true
     },
     handleCheckout() {
-      if(!this.storeReservationData.reservation.checkInDate) return this.trigger('negative', "Reservation hasn't Check In yet")
-      if(this.remainingBalance != 0){
+      if (!this.storeReservationData.reservation.checkInDate)
+        return this.trigger('negative', "Reservation hasn't Check In yet")
+      if (this.remainingBalance != 0) {
         this.dialogCheckout = true
       } else this.dialogMakeSureCheckout = true
     },
@@ -924,15 +967,13 @@ export default defineComponent({
 
       let url = `detail/checker/room?roomId=${this.roomNo.value}&range=${arrivalDate}T${departureDate}`
       if (this.$ResvStore.currentRoomResvId) url += `&id=${this.$ResvStore.currentRoomResvId}`
-      this.api.get( url,
-        ({ status, message }) => {
-          if (status != 200) {
-            this.trigger('negative', message)
-          } else {
-            this.trigger('positive', message)
-          }
+      this.api.get(url, ({ status, message }) => {
+        if (status != 200) {
+          this.trigger('negative', message)
+        } else {
+          this.trigger('positive', message)
         }
-      )
+      })
     },
     roomBedMapper(bed) {
       let obj = {
@@ -992,7 +1033,7 @@ export default defineComponent({
         this.loading = false
         if (status === 200) {
           const { arrangmentCode, availableRooms } = data
-          if(data.reservation) checkoutDate= data.reservation.reservation.checkoutDate
+          if (data.reservation) checkoutDate = data.reservation.reservation.checkoutDate
           const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
           if (checkoutDate != null) {
             this.infoCheckout = true
@@ -1008,7 +1049,7 @@ export default defineComponent({
             roomNos = [],
             roomTypes = []
           let index = 0
-          
+
           for (let room of availableRooms) {
             roomNos.push({ index, label: room.id, value: room.id })
             this.roomTypeOpts.push({
@@ -1120,20 +1161,17 @@ export default defineComponent({
 
         this.loading = true
         let url = `detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkout`
-        if(this.forceCheckout) url += '?force=true'
+        if (this.forceCheckout) url += '?force=true'
 
-        await this.api.post( url,
-          null,
-          ({ status, data, message }) => {
-            this.loading = false
-            if (status == 200) {
-              this.trigger('positive', message)
-              this.refreshData()
-            } else {
-              this.trigger('negative', message)
-            }
+        await this.api.post(url, null, ({ status, data, message }) => {
+          this.loading = false
+          if (status == 200) {
+            this.trigger('positive', message)
+            this.refreshData()
+          } else {
+            this.trigger('negative', message)
           }
-        )
+        })
       } catch (error) {
         console.error('error : ' + error)
       }
@@ -1334,23 +1372,23 @@ export default defineComponent({
     },
     async updateData() {
       try {
-      const { currentResvId, currentRoomResvId, waitingnote } = this.$ResvStore
-      this.resvNo = currentResvId
-      
-      const dataToUpdate = {
-        nameContact: this.guestName,
-        resourceName: this.resvRecource,
-        arrangmentCode: this.selected.id,
-        manyAdult: this.guests.adult,
-        manyChild: this.guests.child,
-        manyBaby: this.guests.baby,
-        // inHouseIndicator: true,
-        arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
-        departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
-        reservationRemarks: this.resvRemark,
-        voucher: this.voucherId || '',
-        resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id)
-      }
+        const { currentResvId, currentRoomResvId, waitingnote } = this.$ResvStore
+        this.resvNo = currentResvId
+
+        const dataToUpdate = {
+          nameContact: this.guestName,
+          resourceName: this.resvRecource,
+          arrangmentCode: this.selected.id,
+          manyAdult: this.guests.adult,
+          manyChild: this.guests.child,
+          manyBaby: this.guests.baby,
+          // inHouseIndicator: true,
+          arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
+          departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
+          reservationRemarks: this.resvRemark,
+          voucher: this.voucherId || '',
+          resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id)
+        }
 
         const datachangeroom = {
           roomId: this.roomNo.value,

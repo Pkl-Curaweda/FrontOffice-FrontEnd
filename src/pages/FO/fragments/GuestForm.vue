@@ -565,10 +565,8 @@
         class="q-ma-sm q-px-md q-py-xs"
         @click="updateData"
         v-if="
-          !this.$ResvStore.fix &&
-          this.$ResvStore.currentRoomResvId &&
-          !this.$ResvStore.addroom &&
-          !this.$ResvStore.logc
+          this.$ResvStore.detail ||
+          (this.$ResvStore.logc && !this.$ResvStore.fix && !this.$ResvStore.addroom)
         "
         size="sm"
         outline
@@ -677,7 +675,9 @@
           label="No Reservation"
           class="col-grow q-mt-sm"
         />
-        <div class="q-mt-md text-semibold">To confirm, type "{{ nameReservation }}" in the box below</div>
+        <div class="q-mt-md text-semibold">
+          To confirm, type "{{ nameReservation }}" in the box below
+        </div>
         <q-input dense outlined v-model="typeConfirm" class="col-grow q-mt-sm" />
       </q-card-section>
 
@@ -741,77 +741,77 @@ export default defineComponent({
     }
 
     return {
-      typeConfirm: ref(''),
-      noReservation: ref(),
-      nameReservation: ref(''),
-      remainingBalance: ref(''),
+      dialogMakeSureCheckout: ref(false),
+      showRateExpansion: ref(false),
+      dialogCheckout: ref(false),
+      forceCheckout: ref(false),
+      dialogpayment: ref(false),
       infoCheckout: ref(false),
-      guestForm: ref(true),
-      fix: false,
+      loading: ref(false),
+      showDropdown: false,
       includeTax: false,
-      roomImage: ref(''),
-      guestName: ref(''),
-      resvNo: ref(''),
+      fix: false,
+      guestForm: ref(true),
       arrivalDepart: ref({ from: null, to: null }),
       arrivalDepartLabel: ref('Arrival - Depature, 1 Nights'),
       guests: ref({ adult: 1, child: 0, baby: 0 }),
       guestsLabel: ref('1 Adult, 0 Child, 0 Baby'),
       resvStatusOpts: ref([['DLX', 'FML', 'STD']]),
-      indexReference: ref(),
-      balance: ref(0),
-      showRateExpansion: ref(false),
-      resvRemark: ref(''),
-      roomNo: ref(null),
+      resvRecource: ref(null),
+      selectedOption: null,
       roomType: ref(null),
-      detail: ref(),
       roomBed: ref(null),
-      roomNoOpts: ref([]),
-      shownRoomType: ref(),
-      roomTypeOpts: ref([]),
-      shownBedOpts: ref(),
-      roomBedOpts: ref([]),
+      roomNo: ref(null),
+      balance: ref(0),
       storeReservationData: ref(),
-      loading: ref(false),
+      remainingBalance: ref(''),
+      nameReservation: ref(''),
+      arrangmentCode: ref(''),
+      selectedstatus: ref(),
+      CardIdselect: ref(''),
+      indexReference: ref(),
+      resultStatus: ref(''),
+      idcardnumber: ref(''),
+      typeConfirm: ref(''),
+      noReservation: ref(),
+      shownRoomType: ref(),
+      optionValue: ref(''),
+      resvRemark: ref(''),
+      nameidcard: ref(''),
+      descSelect: ref(''),
+      shownBedOpts: ref(),
+      voucherId: ref(''),
+      roomImage: ref(''),
+      guestName: ref(''),
+      address: ref(''),
+      newSetRow: ref(),
+      resvNo: ref(''),
+      detail: ref(),
+      setRow: ref(),
+      arrangmentValue: ref([]),
+      roomTypeOpts: ref([]),
+      roomBedOpts: ref([]),
+      resvStatus: ref([]),
+      roomNoOpts: ref([]),
+      selected: ref([]),
       isRbSelected,
-      forceCheckout: ref(false),
       isRoSelected,
       toggleRbSelected,
       toggleRoSelected,
       isKtpSelected,
       isSimSelected,
-      CardIdselect: ref(''),
       toggleKtpSelected,
       toggleSimSelected,
-      dialogpayment: ref(false),
-      setRow: ref(),
+      resultRows,
       columns,
-      optionValue: ref(''),
       status,
       rows,
-      resultRows,
-      newSetRow: ref(),
-      nameidcard: ref(''),
-      idcardnumber: ref(''),
-      address: ref(''),
-      resultStatus: ref(''),
-      showDropdown: false,
       dropdownOptions: [
         { value: '1', description: 'Guaranted' },
         { value: '2', description: '6 PM' },
         { value: '3', description: 'Tentative' }
       ],
-      selectedOption: null,
-      resvRecource: ref(null),
-      resvRecourceOpts: ['Individual reservation', 'Walk In'],
-      arrangmentCode: ref(''),
-      selected: ref([]),
-      selectedstatus: ref(),
-      resvStatus: ref([]),
-      descSelect: ref(''),
-      arrangmentValue: ref([]),
-      voucherId: ref(''),
-      dialogCheckout: ref(false),
-      dialogMakeSureCheckout: ref(false)
+      resvRecourceOpts: ['Individual reservation', 'Walk In']
     }
   },
   data() {
@@ -848,7 +848,12 @@ export default defineComponent({
         this.toggleRoomRate('show')
         this.roomType = this.roomTypeOpts[newVal.index].value
         this.roomBed = this.roomBedOpts[newVal.index].label
-        if (this.arrivalDepart.from && this.arrivalDepart.to && newVal != oldVal && newVal.value != this.storeReservationData?.room.id)
+        if (
+          this.arrivalDepart.from &&
+          this.arrivalDepart.to &&
+          newVal != oldVal &&
+          newVal.value != this.storeReservationData?.room.id
+        )
           this.checkRoomAvailability()
       }
     },
@@ -857,7 +862,12 @@ export default defineComponent({
       handler(newVal, oldVal) {
         this.formatArrivalDepart()
         console.log(newVal, oldVal)
-        if (this.roomNo && this.arrivalDepart?.from && oldVal != newVal && newVal != this.storeReservationData?.reservation.arrivalDate)
+        if (
+          this.roomNo &&
+          this.arrivalDepart?.from &&
+          oldVal != newVal &&
+          newVal != this.storeReservationData?.reservation.arrivalDate
+        )
           this.checkRoomAvailability()
       }
     },
@@ -876,7 +886,8 @@ export default defineComponent({
   },
   methods: {
     confirmCheckout() {
-      if(this.typeConfirm != this.nameReservation) return this.trigger('negative', 'Please type it correctly')
+      if (this.typeConfirm != this.nameReservation)
+        return this.trigger('negative', 'Please type it correctly')
       this.postcheckout()
     },
     makeSureCheckout() {
@@ -884,8 +895,9 @@ export default defineComponent({
       this.forceCheckout = true
     },
     handleCheckout() {
-      if(!this.storeReservationData.reservation.checkInDate) return this.trigger('negative', "Reservation hasn't Check In yet")
-      if(this.remainingBalance != 0){
+      if (!this.storeReservationData.reservation.checkInDate)
+        return this.trigger('negative', "Reservation hasn't Check In yet")
+      if (this.remainingBalance != 0) {
         this.dialogCheckout = true
       } else this.dialogMakeSureCheckout = true
     },
@@ -924,15 +936,13 @@ export default defineComponent({
 
       let url = `detail/checker/room?roomId=${this.roomNo.value}&range=${arrivalDate}T${departureDate}`
       if (this.$ResvStore.currentRoomResvId) url += `&id=${this.$ResvStore.currentRoomResvId}`
-      this.api.get( url,
-        ({ status, message }) => {
-          if (status != 200) {
-            this.trigger('negative', message)
-          } else {
-            this.trigger('positive', message)
-          }
+      this.api.get(url, ({ status, message }) => {
+        if (status != 200) {
+          this.trigger('negative', message)
+        } else {
+          this.trigger('positive', message)
         }
-      )
+      })
     },
     roomBedMapper(bed) {
       let obj = {
@@ -992,7 +1002,7 @@ export default defineComponent({
         this.loading = false
         if (status === 200) {
           const { arrangmentCode, availableRooms } = data
-          if(data.reservation) checkoutDate= data.reservation.reservation.checkoutDate
+          if (data.reservation) checkoutDate = data.reservation.reservation.checkoutDate
           const formattedRoomRates = this.formatRoomrate(arrangmentCode) // Menggunakan nilai dari arrangment
           if (checkoutDate != null) {
             this.infoCheckout = true
@@ -1008,7 +1018,7 @@ export default defineComponent({
             roomNos = [],
             roomTypes = []
           let index = 0
-          
+
           for (let room of availableRooms) {
             roomNos.push({ index, label: room.id, value: room.id })
             this.roomTypeOpts.push({
@@ -1078,8 +1088,7 @@ export default defineComponent({
             if (status == 200) {
               this.loading = false
               this.trigger('positive', message)
-
-              this.refresh()
+              this.editroom()
             } else {
               this.trigger('negative', message)
               console.error('Gagal mengirim data')
@@ -1103,7 +1112,7 @@ export default defineComponent({
             this.loading = false
             if (status == 200) {
               this.trigger('positive', message)
-              this.refreshData()
+              this.editroom()
             } else {
               this.trigger('negative', message)
             }
@@ -1120,20 +1129,17 @@ export default defineComponent({
 
         this.loading = true
         let url = `detail/reservation/${currentResvId}/${currentRoomResvId}/change-progress/checkout`
-        if(this.forceCheckout) url += '?force=true'
+        if (this.forceCheckout) url += '?force=true'
 
-        await this.api.post( url,
-          null,
-          ({ status, data, message }) => {
-            this.loading = false
-            if (status == 200) {
-              this.trigger('positive', message)
-              this.refreshData()
-            } else {
-              this.trigger('negative', message)
-            }
+        await this.api.post(url, null, ({ status, data, message }) => {
+          this.loading = false
+          if (status == 200) {
+            this.trigger('positive', message)
+            this.editroom()
+          } else {
+            this.trigger('negative', message)
           }
-        )
+        })
       } catch (error) {
         console.error('error : ' + error)
       }
@@ -1306,7 +1312,8 @@ export default defineComponent({
             this.loading = false
             if (status === 200) {
               this.trigger('positive', message)
-              this.refreshData()
+              this.clearData()
+              this.$store.resvStore.clearData()
             } else {
               this.trigger('negative', message)
             }
@@ -1334,23 +1341,23 @@ export default defineComponent({
     },
     async updateData() {
       try {
-      const { currentResvId, currentRoomResvId, waitingnote } = this.$ResvStore
-      this.resvNo = currentResvId
-      
-      const dataToUpdate = {
-        nameContact: this.guestName,
-        resourceName: this.resvRecource,
-        arrangmentCode: this.selected.id,
-        manyAdult: this.guests.adult,
-        manyChild: this.guests.child,
-        manyBaby: this.guests.baby,
-        // inHouseIndicator: true,
-        arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
-        departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
-        reservationRemarks: this.resvRemark,
-        voucher: this.voucherId || '',
-        resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id)
-      }
+        const { currentResvId, currentRoomResvId, waitingnote } = this.$ResvStore
+        this.resvNo = currentResvId
+
+        const dataToUpdate = {
+          nameContact: this.guestName,
+          resourceName: this.resvRecource,
+          arrangmentCode: this.selected.id,
+          manyAdult: this.guests.adult,
+          manyChild: this.guests.child,
+          manyBaby: this.guests.baby,
+          // inHouseIndicator: true,
+          arrivalDate: this.formatDateWithoutTimezone(this.arrivalDepart.from),
+          departureDate: this.formatDateWithoutTimezone(this.arrivalDepart.to),
+          reservationRemarks: this.resvRemark,
+          voucher: this.voucherId || '',
+          resvStatusId: this.resvStatus.value ? this.resvStatus.value : parseInt(this.resvStatus.id)
+        }
 
         const datachangeroom = {
           roomId: this.roomNo.value,
@@ -1367,7 +1374,7 @@ export default defineComponent({
 
               if (status === 200) {
                 this.trigger('positive', message)
-                this.refreshData()
+                this.editroom()
               } else {
                 console.error('Gagal memperbarui data')
                 this.trigger('negative', message)
@@ -1400,7 +1407,10 @@ export default defineComponent({
               this.loading = false
               if (status === 200) {
                 this.trigger('positive', message)
-                this.refreshData()
+                // this.refreshData()
+                // this.$ResvStore.clearData()
+                console.log(1)
+                this.clearData()
               } else {
                 this.trigger('negative', message)
               }
@@ -1415,6 +1425,7 @@ export default defineComponent({
       return new Date(date)
     },
     formatDateWithoutTimezone(date) {
+      if (date.split('T')[1]) date = date.split('T')[0]
       return date.replace(/\//g, '-')
     },
     onItemClick(optionValue, desc) {
@@ -1501,14 +1512,36 @@ export default defineComponent({
     },
     clearData() {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
-      this.$store.resvStore.clearData()
+      // const resvId = this.datares['ResNo'].data
+      // const roomNo = this.datares['ResRoomNo'].data
       currentResvId = this.resvRecource = ''
+      this.guestName = ''
       this.selected = null
-      this.guests = { adult: 0, child: 0, baby: 0 }
-      this.arrivalDepart = { from: null, to: null }
       this.resvRemark = ''
       this.voucherId = ''
       this.resvStatus = { value: null, id: null }
+      this.resvRecource = ''
+      this.roomNo = '' // misalkan ini string kosong, pastikan sesuai dengan tipe datanya
+      this.guests = { adult: 0, child: 0, baby: 0 }
+      this.arrivalDepart = { from: null, to: null } // atau atur ke null jika ingin menghapus tanggal kedatangan dan keberangkatan
+      // this.$store.resvStore.clearData()
+      // this.$ResvStore.fix = false
+      // this.$ResvStore.ds = false
+      // this.$ResvStore.logc = false
+      // this.$ResvStore.detail = false
+      // this.$ResvStore.addroom = false
+    },
+    editroom() {
+      const { currentResvId, currentRoomResvId } = this.$ResvStore
+      this.$ResvStore.currentResvId = currentResvId
+      this.$ResvStore.currentRoomResvId = currentRoomResvId
+      this.$ResvStore.addroom = false
+      this.$ResvStore.logc = false
+      this.$ResvStore.fix = false
+      this.$ResvStore.ds = true
+      this.$ResvStore.detail = true
+
+      console.log(data['ResNo'].data)
     }
   }
 })

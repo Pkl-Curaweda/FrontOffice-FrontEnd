@@ -130,7 +130,7 @@
                     dense
                     v-model="rolePath"
                     :options="optionsPath"
-                    label="Gender"
+                    label="Path"
                     class="col-grow"
                   />
                   <!-- <q-input
@@ -310,6 +310,17 @@
                     fill="#269861"
                   />
                 </svg>
+              </q-btn>
+
+              <q-btn
+                flat
+                rounded
+                size="13px"
+                style="color: #008444"
+                @click="logoutAll(props.row, 'role')"
+                icon="o_logout"
+              >
+                <q-tooltip>Logout All</q-tooltip>
               </q-btn>
             </q-td>
           </q-tr>
@@ -811,6 +822,26 @@
                         />
                       </svg>
                     </q-btn>
+                    <q-btn
+                      flat
+                      rounded
+                      size="13px"
+                      style="color: #008444"
+                      @click="confPassword(props.row)"
+                      icon="key"
+                    >
+                      <q-tooltip>Change Password</q-tooltip>
+                    </q-btn>
+                    <q-btn
+                      flat
+                      rounded
+                      size="13px"
+                      style="color: #008444"
+                      @click="logoutAll(props.row, 'user')"
+                      icon="o_logout"
+                    >
+                      <q-tooltip>Logout</q-tooltip>
+                    </q-btn>
                   </q-td>
                 </q-tr>
               </template>
@@ -818,6 +849,74 @@
           </div>
         </q-card-section>
       </q-card>
+      <q-dialog v-model="dialogPassword" persistent>
+        <q-card style="width: 300px; justify-content: center">
+          <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
+            <!-- <div class="cursor-pointer non-selectable q-px-md">Add Request Task</div> -->
+            <q-space />
+            <q-btn
+              dense
+              flat
+              @click="closepassword"
+              color="grey"
+              size="sm"
+              outline
+              icon="close"
+              v-close-popup
+            />
+          </q-bar>
+          <div class="q-pa-md col" style="display: block; width: 100%; gap: 5px">
+            <div style="width: 100%; text-align: center" class="q-pt-sm">
+              Change Password from {{ cachedata.email }}
+            </div>
+            <q-input
+              outlined
+              dense
+              class="q-px-md q-pt-xl"
+              :type="showPwd ? 'text' : 'password'"
+              v-model="newpassword"
+              label="New Password"
+              lazy-rules
+            >
+              <template v-slot:append>
+                <q-icon
+                  :name="showPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="showPwd = !showPwd"
+                />
+              </template>
+            </q-input>
+            <q-input
+              outlined
+              dense
+              class="q-py-md q-px-md"
+              :type="showPwd2 ? 'text' : 'password'"
+              v-model="newpasswordconf"
+              label="Confirm Password"
+              lazy-rules
+            >
+              <template v-slot:append>
+                <q-icon
+                  :name="showPwd2 ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="showPwd2 = !showPwd2"
+                />
+              </template>
+            </q-input>
+            <div class="q-pa-sm col" style="display: flex; width: 100%; gap: 5px">
+              <q-btn
+                dense
+                noCaps
+                color="primary"
+                @click="changePassword(cachedata.id)"
+                label="Change"
+                class="q-px-md"
+                style="border-radius: 10px; width: 100%"
+              />
+            </div>
+          </div>
+        </q-card>
+      </q-dialog>
     </q-dialog>
     <q-dialog v-model="confirmDelete">
       <q-card style="width: 300px; justify-content: center">
@@ -855,6 +954,8 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
+import frontoffice_routes from 'src/router/frontoffice.router'
+import { housekeeping_routes, hkreports_routes } from 'src/router/housekeeping.router'
 
 export default defineComponent({
   name: 'SuperAdminAccess',
@@ -862,12 +963,20 @@ export default defineComponent({
 
   setup() {
     return {
+      showPwd: ref(false),
+      showPwd2: ref(false),
+      newpassword: ref(),
+      newpasswordconf: ref(),
+      frontoffice_routes,
+      housekeeping_routes,
+      hkreports_routes,
       rolePath: ref(),
-      optionsPath: [],
+      optionsPath: ref([]),
       user: ref(),
       optionUser: ref(),
       imgURL: ref(),
       img: ref(null),
+      dialogPassword: ref(false),
       stateEdit: ref(false),
       columnsListRole: [
         { name: 'Nama', label: 'Name', align: 'left', field: 'nama' },
@@ -917,6 +1026,7 @@ export default defineComponent({
       email: ref(),
       numberPhone: ref(),
       nik: ref(),
+      cachedata: ref(),
       gender: ref(),
       optionsGender: ['MALE', 'FEMALE'],
       username: ref(''),
@@ -962,6 +1072,7 @@ export default defineComponent({
   },
   mounted() {
     this.fetchData()
+    this.createPath()
   },
   watch: {
     user: {
@@ -1010,6 +1121,82 @@ export default defineComponent({
     }
   },
   methods: {
+    closepassword() {
+      this.dialogPassword = false
+      this.newpassword = ''
+      this.newpasswordconf = ''
+    },
+    confPassword(state) {
+      this.cachedata = state
+      this.dialogPassword = true
+    },
+    // logout all per roll dan logout per user
+    async logoutAll(data, state) {
+      this.loading = true
+
+      try {
+        const response = this.api.post(
+          `logout-all/${state}/${data.id}`,
+          null,
+          ({ status, message }) => {
+            if (status === 200) {
+              this.loading = false
+              this.trigger('positive', message)
+            }
+          }
+        )
+      } catch (err) {
+        console.error(err)
+      }
+    },
+    async changePassword() {
+      const id = this.cachedata.id
+      this.loading = true
+
+      if (this.newpasswordconf !== this.newpassword) {
+        return this.trigger('warning', 'Password didnt match')
+      }
+      try {
+        const response = this.api.post(
+          `access/change-password/${id}`,
+          {
+            email: this.cachedata.email,
+            password: this.newpassword
+          },
+          ({ status, message }) => {
+            if (status === 200) {
+              this.loading = false
+              this.trigger('positive', message)
+              this.dialogPassword = false
+            }
+          }
+        )
+      } catch (err) {
+        console.error(err)
+      }
+    },
+    createPath() {
+      let dataPath = []
+      for (let route of frontoffice_routes) {
+        dataPath.push({
+          label: `${route.meta.title} - ${route.path}`,
+          value: route.path
+        })
+      }
+      for (let route of housekeeping_routes) {
+        dataPath.push({
+          label: `${route.meta.title} - ${route.path}`,
+          value: route.path
+        })
+      }
+      for (let route of hkreports_routes) {
+        dataPath.push({
+          label: `${route.meta.title} - ${route.path}`,
+          value: route.path
+        })
+      }
+      this.optionsPath = dataPath
+    },
     // HELPER AND HANDDLER
     handleUpload() {
       if (this.img) {
@@ -1165,7 +1352,7 @@ export default defineComponent({
     postRole() {
       const data = {
         name: this.roleName,
-        path: this.path,
+        path: this.rolePath.value,
         access: {
           showSuperAdmin: this.checkboxReaderSuperAdmin,
           createSuperAdmin: this.chekckboxEditorSuperAdmin,
@@ -1195,7 +1382,7 @@ export default defineComponent({
     updateRole() {
       const data = {
         name: this.roleName,
-        path: this.path,
+        path: this.rolePath.value,
         access: {
           showSuperAdmin: this.checkboxReaderSuperAdmin,
           createSuperAdmin: this.chekckboxEditorSuperAdmin,
@@ -1229,7 +1416,7 @@ export default defineComponent({
       this.api.get(url, ({ status, data, message }) => {
         if (status == 200) {
           this.roleName = data.name
-          this.path = data.defaultPath
+          this.rolePath = data.defaultPath
           this.checkboxReaderSuperAdmin = data.access.showSuperAdmin
           this.checkboxEditorSuperAdmin = data.access.createSuperAdmin
           this.checkboxReaderAdmin = data.access.showAdmin

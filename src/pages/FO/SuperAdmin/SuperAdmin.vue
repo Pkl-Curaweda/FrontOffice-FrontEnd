@@ -1,9 +1,10 @@
 <template>
-    <div>
-    <li v-for="(user, key, i) in users" :key="i">
+  <div>
+    <!-- <li v-for="(user, key, i) in users" :key="i">
       {{ user }}
-    </li>
+    </li> -->
   </div>
+  <online></online>
   <q-page style="overflow-y: scroll; height: 100%">
     <div style="width: 100%; padding: 20px; justify-content: center">
       <q-card
@@ -72,9 +73,11 @@ import UserGreet from 'src/components/HK/IMPPS/General/UserGreet.vue'
 import { defineComponent, ref } from 'vue'
 import { useQuasar } from 'quasar'
 import socket from '../../../services/socket/socket'
+import online from 'src/components/online.vue'
 
 export default defineComponent({
   name: 'super-admin',
+  components: { online },
   setup() {
     return {}
   },
@@ -85,7 +88,7 @@ export default defineComponent({
       users: ref([])
     }
   },
-  mounted(){
+  mounted() {
     socket.connect()
     socket.on('online', (onlineUsers) => {
       console.log(onlineUsers)

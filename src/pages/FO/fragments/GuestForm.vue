@@ -637,7 +637,7 @@
   </div>
 
   <q-dialog v-model="dialogCheckout">
-    <q-card style="width: 300px">
+    <q-card style="width: 400px">
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6">Balance Still Left:</div>
         <q-space />
@@ -648,12 +648,19 @@
         <div class="text-h4">
           Rp. <span class="text-h4">{{ remainingBalance }}</span>
         </div>
-        <p class="q-mt-md text-center text-h6">Please select next action</p>
+        <p class="q-mt-md text-h6"><span style="color: red">*</span>Please Select Next Action:</p>
       </q-card-section>
 
-      <q-card-actions align="right">
-        <q-btn label="Pay with Bill" color="primary" v-close-popup @click="makeSureCheckout" />
-        <q-btn label="Cancel" color="primary" v-close-popup />
+      <q-card-actions>
+        <q-btn
+          no-caps
+          label="Pay with Bill"
+          color="primary"
+          v-close-popup
+          @click="makeSureCheckout"
+          class="col-grow"
+        />
+        <q-btn no-caps label="Cancel" color="primary" v-close-popup class="col-grow" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -1157,6 +1164,7 @@ export default defineComponent({
         await this.api.post(url, null, ({ status, data, message }) => {
           this.loading = false
           if (status == 200) {
+            this.dialogMakeSureCheckout = false
             this.trigger('positive', message)
             this.editroom()
           } else {
@@ -1406,7 +1414,12 @@ export default defineComponent({
           )
         } else {
           this.validateInput(
-            this.guestName, 'Please send Guest Name and Phone Number',true,'include','/','Please send a correct format [Guest Name]/[Phone Number]'
+            this.guestName,
+            'Please send Guest Name and Phone Number',
+            true,
+            'include',
+            '/',
+            'Please send a correct format [Guest Name]/[Phone Number]'
           )
           this.validateInput(this.resvRecource, 'Please specify Reservation Resource', true)
           this.validateInput(this.roomNo, 'Please Specify Room Number', true)

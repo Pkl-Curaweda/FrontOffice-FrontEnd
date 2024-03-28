@@ -1158,7 +1158,7 @@ export default defineComponent({
       }
       try {
         const response = this.api.post(
-          `access/change-password/${id}`,
+          `access/change-password`,
           {
             email: this.cachedata.email,
             password: this.newpassword
@@ -1168,6 +1168,8 @@ export default defineComponent({
               this.loading = false
               this.trigger('positive', message)
               this.dialogPassword = false
+            } else {
+              this.trigger('negative', message)
             }
           }
         )

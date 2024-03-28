@@ -54,9 +54,7 @@
           />
         </div>
       </q-card-section>
-      <q-card-section
-        :class="` ${$q.screen.lt.md ? 'column q-gutter-lg' : 'flex flex-center justify-between items-center'} `"
-      >
+      <q-card-section class="flex justify-center items-center full-width">
         <div style="height: 300px">
           <!-- bar chart -->
           <apexchart
@@ -68,7 +66,7 @@
             :series="seriesBar"
           />
         </div>
-        <div >
+        <div>
           <!-- pie chart -->
           <apexchart
             type="donut"
@@ -212,7 +210,7 @@ const tableCol = [
     sortable: true
   },
   { name: 'r_type', align: 'center', label: 'Room Type', field: 'r_type', sortable: true },
-  { name: 'status', label: 'Status', field: 'status', sortable: true, align: 'center', }
+  { name: 'status', label: 'Status', field: 'status', sortable: true, align: 'center' }
 ]
 
 const tableRow = ref([])
@@ -314,7 +312,7 @@ export default defineComponent({
             label: lot.label,
             value: lot.id
           }))
-          
+
           console.log(currData)
           this.roomData = [
             {

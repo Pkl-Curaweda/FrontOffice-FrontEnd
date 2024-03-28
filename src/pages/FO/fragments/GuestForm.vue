@@ -637,7 +637,7 @@
   </div>
 
   <q-dialog v-model="dialogCheckout">
-    <q-card style="width: 300px">
+    <q-card style="width: 400px">
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6">Balance Still Left:</div>
         <q-space />
@@ -648,12 +648,19 @@
         <div class="text-h4">
           Rp. <span class="text-h4">{{ remainingBalance }}</span>
         </div>
-        <p class="q-mt-md text-center text-h6">Please select next action</p>
+        <p class="q-mt-md text-h6"><span style="color: red">*</span>Please Select Next Action:</p>
       </q-card-section>
 
-      <q-card-actions align="right">
-        <q-btn label="Pay with Bill" color="primary" v-close-popup @click="makeSureCheckout" />
-        <q-btn label="Cancel" color="primary" v-close-popup />
+      <q-card-actions>
+        <q-btn
+          no-caps
+          label="Pay with Bill"
+          color="primary"
+          v-close-popup
+          @click="makeSureCheckout"
+          class="col-grow"
+        />
+        <q-btn no-caps label="Cancel" color="primary" v-close-popup class="col-grow" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -684,7 +691,7 @@
           class="col-grow q-mt-sm"
         />
         <div class="q-mt-md text-semibold">
-          To confirm, type "{{ nameReservation }}" in the box below
+          To confirm, type <span class="text-bold">"{{ nameReservation }}"</span> in the box below
         </div>
         <q-input dense outlined v-model="typeConfirm" class="col-grow q-mt-sm" />
       </q-card-section>
@@ -902,7 +909,8 @@ export default defineComponent({
       let url = `detail/reservation/${currentResvId}/${currentRoomResvId}/reset-checkin`
       this.api.get(url, ({ status, message }) => {
         if (status === 200) {
-          socket.emit('refreshTask', { message: 'Nigas' })
+          this.refreshGuestList()
+          socket.emit('refreshTask', { message: "Nigas" })
           this.trigger('positive', message)
           this.infoCheckout = !this.infoCheckout
           this.guestForm = !this.guestForm
@@ -910,8 +918,7 @@ export default defineComponent({
       })
     },
     confirmCheckout() {
-      if (this.typeConfirm != this.nameReservation)
-        return this.trigger('negative', 'Please type it correctly')
+      if (this.typeConfirm != this.nameReservation) return this.trigger('negative', 'Please type it correctly')
       this.postcheckout()
     },
     makeSureCheckout() {
@@ -929,6 +936,9 @@ export default defineComponent({
       act != 'show'
         ? this.$refs.showRateExpansionItem.hide()
         : this.$refs.showRateExpansionItem.show()
+    },
+    refreshGuestList(){
+      socket.emit('resv', {})
     },
     refreshData() {
       window.location.reload()
@@ -1113,6 +1123,7 @@ export default defineComponent({
               this.loading = false
               this.trigger('positive', message)
               this.editroom()
+              this.refreshGuestList()
             } else {
               this.trigger('negative', message)
               console.error('Gagal mengirim data')
@@ -1137,6 +1148,7 @@ export default defineComponent({
             if (status == 200) {
               this.trigger('positive', message)
               this.editroom()
+              this.refreshGuestList()
             } else {
               this.trigger('negative', message)
             }
@@ -1159,7 +1171,10 @@ export default defineComponent({
           this.loading = false
           if (status == 200) {
             this.trigger('positive', message)
-            this.editroom()
+            socket.emit('refreshTask', { message: "Nigas" })
+            this.refreshGuestList()
+            this.infoCheckout = !this.infoCheckout
+            this.guestForm = !this.guestForm
           } else {
             this.trigger('negative', message)
           }
@@ -1338,6 +1353,7 @@ export default defineComponent({
               this.trigger('positive', message)
               this.clearData()
               this.$store.resvStore.clearData()
+              this.refreshGuestList()
             } else {
               this.trigger('negative', message)
             }
@@ -1399,6 +1415,7 @@ export default defineComponent({
               if (status === 200) {
                 this.trigger('positive', message)
                 this.editroom()
+                this.refreshGuestList()
               } else {
                 console.error('Gagal memperbarui data')
                 this.trigger('negative', message)
@@ -1431,6 +1448,7 @@ export default defineComponent({
               this.loading = false
               if (status === 200) {
                 this.trigger('positive', message)
+                this.refreshGuestList()
                 // this.refreshData()
                 // this.$ResvStore.clearData()
                 // this.clearData()

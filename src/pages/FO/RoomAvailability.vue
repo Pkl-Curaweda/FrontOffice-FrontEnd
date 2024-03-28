@@ -135,6 +135,7 @@ import MultiPane from 'src/layouts/MultiPane.vue'
 import { useQuasar } from 'quasar'
 import GuestForm from './fragments/GuestForm.vue'
 import { allObjectsInArray } from 'src/utils/datatype'
+import socket from '../../services/socket/socket'
 import { storeRoomAvailabilityFromTo } from '../../stores/roomAvailStore'
 import { list } from 'postcss'
 
@@ -169,6 +170,11 @@ export default defineComponent({
   },
 
   mounted() {
+    socket.connect()
+        socket.on('resv', (data) => {
+          console.log('Ada disini')
+          this.fetchData()
+        })
     this.fetchData()
   },
   watch() {

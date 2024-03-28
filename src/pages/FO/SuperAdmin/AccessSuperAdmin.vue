@@ -954,7 +954,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
-import frontoffice_routes from 'src/router/frontoffice.router'
+import { frontoffice_routes, fosuperadmin_routes } from 'src/router/frontoffice.router'
 import { housekeeping_routes, hkreports_routes } from 'src/router/housekeeping.router'
 
 export default defineComponent({
@@ -1197,6 +1197,13 @@ export default defineComponent({
           value: route.path
         })
       }
+      for (let route of fosuperadmin_routes) {
+        dataPath.push({
+          label: `${route.meta.title} - ${route.path}`,
+          value: route.path
+        })
+      }
+
       this.optionsPath = dataPath
     },
     // HELPER AND HANDDLER

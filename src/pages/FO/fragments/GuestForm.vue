@@ -1319,7 +1319,7 @@ export default defineComponent({
           'include',
           '/',
           'Please send a correct format [Guest Name]/[Phone Number]'
-        )
+      )
         this.validateInput(this.resvRecource, 'Please specify Reservation Resource', true)
         this.validateInput(this.roomNo, 'Please Specify Room Number', true)
         this.validateInput(this.selected.id, 'Please specify the Arrangment Code', true)

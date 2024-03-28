@@ -1,4 +1,5 @@
 <template>
+  <online><online>
   <q-page
     style="
       overflow-y: hidden;
@@ -479,12 +480,13 @@ import MultiPane from 'src/layouts/MultiPane.vue'
 import GuestForm from 'src/pages/FO/fragments/GuestForm.vue'
 import { formatDate } from 'src/utils/time'
 import { defineComponent, ref } from 'vue'
+import online from 'src/components/online.vue'
 import { allObjectsInArray } from 'src/utils/datatype'
 import socket from '../../services/socket/socket'
 
 export default defineComponent({
   name: 'GuestList',
-  components: { FOMenubar, MultiPane, GuestForm },
+  components: { FOMenubar, MultiPane, GuestForm, online},
   setup() {
     return {
       dialogeditroom: ref(false),

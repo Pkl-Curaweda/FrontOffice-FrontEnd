@@ -198,9 +198,9 @@
             <q-td key="night" :props="props">
               {{ props.row.night }}
             </q-td>
-            <q-td key="room_boy" :props="props">
+            <!-- <q-td key="room_boy" :props="props">
               {{ props.row.room_boy }}
-            </q-td>
+            </q-td> -->
             <q-td key="room_stat" :props="props">
               {{ props.row.room_stat }}
             </q-td>
@@ -359,13 +359,13 @@ const tableColumns = [
     sortable: true,
     align: 'left'
   },
-  {
-    name: 'room_boy',
-    label: 'Room Boy',
-    field: 'room_boy',
-    sortable: true,
-    align: 'left'
-  },
+  // {
+  //   name: 'room_boy',
+  //   label: 'Room Boy',
+  //   field: 'room_boy',
+  //   sortable: true,
+  //   align: 'left'
+  // },
   {
     name: 'room_stat',
     label: 'Room Stat',
@@ -662,7 +662,7 @@ export default defineComponent({
             arrival: row.arrival,
             depart: row.departure,
             night: row.night,
-            room_boy: row.roomBoy.user.name,
+            // room_boy: row.roomBoy.user.name,
             room_stat: row.roomStatus.shortDescription,
             created_date: row.created
           }))

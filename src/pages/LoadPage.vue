@@ -57,7 +57,8 @@ export default defineComponent({
   methods: {
     checkToken(){
       try{
-        if(!this.token) return this.$router.replace('/auth/login')
+        console.log(this.token)
+        if(this.token === "") return this.$router.replace('/auth/login')
         this.api.get('/auth/check-token', ({ status }) => {
           if(status != 200) return this.$router.replace('/auth/login')
           return this.$router.replace(this.mainPath)

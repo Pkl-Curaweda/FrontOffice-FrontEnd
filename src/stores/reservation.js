@@ -59,23 +59,39 @@ export const resvStore = defineStore({
     setaddroom(value) {
       this.addroom = value
     },
+    // clearData() {
+    //   const data = {
+    //     currentResvId: 0,
+    //     currentRoomResvId: 0,
+    //     dateBill: '',
+    //     Artlb: '',
+    //     UniqueId: 0,
+    //     fix: false,
+    //     logc: false,
+    //     ds: false,
+    //     waitingnote: '',
+    //     selectedbank: '',
+    //     selectedmethod: '',
+    //     detail: false,
+    //     addroom: false
+    //   }
+    //   this.$state = data
+    // }
     clearData() {
-      const data = {
-        currentResvId: 0,
-        currentRoomResvId: 0,
-        dateBill: '',
-        Artlb: '',
-        UniqueId: 0,
-        fix: false,
-        logc: false,
-        ds: false,
-        waitingnote: '',
-        selectedbank: '',
-        selectedmethod: '',
-        detail: false,
-        addroom: false
-      }
-      this.$state = data
+      this.currentResvId = 0;
+      this.currentRoomResvId = 0;
+      this.dateBill = '0000-00-00';
+      this.Artlb = '';
+      this.UniqueId = 0;
+      this.fix = false;
+      this.logc = false;
+      this.ds = false;
+      this.waitingnote = '';
+      this.selectedbank = '';
+      this.selectedmethod = '';
+      this.detail = false;
+      this.addroom = false;
     }
+
   }
 })

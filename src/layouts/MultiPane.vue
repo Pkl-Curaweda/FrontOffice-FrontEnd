@@ -46,8 +46,9 @@ export default defineComponent({
   methods: {
     setLowerMinMax() {
       const wrapper = document.getElementsByClassName('multi-panel')[0]
+      console.log(wrapper)
 
-      this.lowerMinHeight = (67 * wrapper.offsetHeight) / 100
+      this.lowerMinHeight = (40 * wrapper.offsetHeight) / 100
       this.lowerMaxHeight = (80 * wrapper.offsetHeight) / 100
     },
     startResize(event) {
@@ -76,8 +77,8 @@ export default defineComponent({
 
       this.close = !this.close
       this.iconClose = this.close ? 'expand_less' : 'expand_more'
-      this.lowerHeight = this.close ? 20 : (67 * wrapper.offsetHeight) / 100
-      this.lowerMinHeight = this.close ? 20 : (67 * wrapper.offsetHeight) / 100
+      this.lowerHeight = this.close ? 20 : (40 * wrapper.offsetHeight) / 100
+      this.lowerMinHeight = this.close ? 20 : (40 * wrapper.offsetHeight) / 100
       this.lowerMaxHeight = this.close ? 20 : (80 * wrapper.offsetHeight) / 100
     }
   }

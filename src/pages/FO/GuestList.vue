@@ -753,7 +753,7 @@ export default defineComponent({
   methods: {
     socket() {
       socket.connect()
-      socket.on('refreshTask', (data) => {
+      socket.on('refreshReservation', (data) => {
         this.fetchData()
       })
     },
@@ -883,7 +883,7 @@ export default defineComponent({
       this.$ResvStore.ds = true
       this.$ResvStore.logc = false
       this.$ResvStore.borderColor = '#fe0001'
-      this.$ResvStore.detail = false
+      this.$ResvStore.detail = true
       this.$ResvStore.addroom = false
 
       console.log(data['ResNo'].data)

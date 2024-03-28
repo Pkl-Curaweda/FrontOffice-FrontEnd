@@ -3,21 +3,36 @@
     <div class="q-mt-lg q-px-xs">
       <div class="flex justify-between items-center q-pa-md q-mt-md">
         <UserGreet class="q-mt-md q-px-xs" :name="user.name" role="Supervisor" />
-        <div style="padding: 5px">
-          <q-btn
+        <div class="q-gutter-md flex items-center">
+          <label>Sort by Row Color:</label>
+          <input
+            type="checkbox"
             dense
-            color="primary"
-            outline
-            rounded
-            class="q-pr-sm"
-            @click="refreshData"
-            style="width: 100%; height: 100%"
-            no-caps
-            icon="refresh"
-            label="refresh"
-          >
-            <q-tooltip>Refresh</q-tooltip>
-          </q-btn>
+            v-model="sortRed"
+            color="red"
+            style="transform: scale(1.5); accent-color: #f28585; color: white"
+          />
+          <input
+            type="checkbox"
+            dense
+            v-model="sortWhite"
+            color="white"
+            style="transform: scale(1.5); accent-color: #ddd"
+          />
+          <input
+            type="checkbox"
+            dense
+            v-model="sortYellow"
+            color="yellow"
+            style="transform: scale(1.5); accent-color: #fffc9b"
+          />
+          <input
+            type="checkbox"
+            dense
+            v-model="sortGreen"
+            color="greem"
+            style="transform: scale(1.5); accent-color: #b7e5b4"
+          />
         </div>
       </div>
       <div class="q-mt-md q-px-xs">
@@ -564,6 +579,10 @@ export default defineComponent({
   },
   setup() {
     return {
+      sortRed: ref(true),
+      sortYellow: ref(true),
+      sortGreen: ref(true),
+      sortWhite: ref(true),
       data: ref([]),
       state: ref(false),
       roomNo: ref(''),
@@ -634,6 +653,26 @@ export default defineComponent({
     this.socket()
   },
   watch: {
+    sortRed: {
+      handler() {
+        this.fetchData()
+      }
+    },
+    sortWhite: {
+      handler() {
+        this.fetchData()
+      }
+    },
+    sortYellow: {
+      handler() {
+        this.fetchData()
+      }
+    },
+    sortGreen: {
+      handler() {
+        this.fetchData()
+      }
+    },
     roomboySelect() {
       if (this.roomboySelect) {
         this.getDataRoomboy(1)
@@ -827,7 +866,9 @@ export default defineComponent({
     fetchData() {
       this.loading = true
 
-      this.api.get(`spv?history=${this.state}`, ({ status, data, message }) => {
+      let url = `spv?history=${this.state}&urgent=${this.sortRed}&existed=${this.sortWhite}&current=${this.sortYellow}&check=${this.sortGreen}`
+
+      this.api.get(url, ({ status, data, message }) => {
         this.loading = false
 
         if (status == 200) {

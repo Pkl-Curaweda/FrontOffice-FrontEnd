@@ -176,8 +176,7 @@ export default defineComponent({
   },
   watch: {
     filterColumns: {
-      handler(filters) {
-      },
+      handler(filters) {},
       deep: true
     },
     filterDisplay: {
@@ -192,7 +191,7 @@ export default defineComponent({
       immediate: true
     },
     sortingDisplay: {
-      handler(val){
+      handler(val) {
         this.sortingLabel = val.label
       }
     },
@@ -200,15 +199,15 @@ export default defineComponent({
       deep: true,
       handler(newDateRange) {
         this.datePickerLabel = 'TDate - FDate'
-        if(newDateRange){
+        if (newDateRange) {
           this.storedRange = newDateRange
           function formatDateRange() {
-            const options = { day: 'numeric', month: 'long' };
-            const fromDate = new Date(newDateRange?.from);
-            const toDate = new Date(newDateRange?.to);
-            const formattedFromDate = fromDate.toLocaleDateString('en-US', options);
-            const formattedToDate = toDate.toLocaleDateString('en-US', options);
-            return `${formattedFromDate} - ${formattedToDate}`;
+            const options = { day: 'numeric', month: 'long' }
+            const fromDate = new Date(newDateRange?.from)
+            const toDate = new Date(newDateRange?.to)
+            const formattedFromDate = fromDate.toLocaleDateString('en-US', options)
+            const formattedToDate = toDate.toLocaleDateString('en-US', options)
+            return `${formattedFromDate} - ${formattedToDate}`
           }
           this.datePickerLabel = formatDateRange()
         }
@@ -224,6 +223,7 @@ export default defineComponent({
     getDetailform(resvId, resvRoomId) {
       this.$ResvStore.currentResvId = resvId
       this.$ResvStore.currentRoomResvId = resvRoomId
+      this.$ResvStore.detail = true
     },
     searchName(searchInput) {
       // Make an API call to search based on searchInput

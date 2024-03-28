@@ -4,7 +4,9 @@ import func from '../../stores/func'
 const socket = io(
     'http://localhost:3000', //Development
     {
-      token: localStorage.getItem('auth')['accessToken']
+      query: {
+        name: JSON.parse(localStorage.getItem('auth')).user.name
+      }
     } 
 );
 

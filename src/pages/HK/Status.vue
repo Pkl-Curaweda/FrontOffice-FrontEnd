@@ -317,6 +317,7 @@
 import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
 import html2pdf from 'html2pdf.js'
+import socket from '../../../../services/socket/socket'
 
 const dataColumns = [
   {
@@ -449,6 +450,7 @@ export default defineComponent({
   mounted() {
     this.fetchData()
     this.fetchRefresh()
+    this.socket()
   },
   watch: {
     filterDisplay(newOption) {
@@ -457,6 +459,12 @@ export default defineComponent({
     }
   },
   methods: {
+    socket() {
+      socket.connect()
+      socket.on('refreshTask', (data) => {
+        this.fetchData()
+      })
+    },
     printStatus() {
       const element = this.$refs.pdfContainer
 
@@ -533,7 +541,6 @@ export default defineComponent({
           this.statusRoom = latestChange.roomStatus.longDescription
           this.statusRoomNo = latestChange.id
 
-
           this.dataRows = roomStatus.map((rs) => ({
             roomno: rs.id,
             roomtype: rs.roomType.longDesc,
@@ -556,7 +563,6 @@ export default defineComponent({
             PIC: td.roomMaid.aliases,
             Status: td.mainStatus
           }))
-
         }
       })
     },

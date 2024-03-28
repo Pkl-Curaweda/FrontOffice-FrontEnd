@@ -1,7 +1,15 @@
 <template>
-  <div class="full-width full-height text-center text-h2" style="z-index: 200" v-if="infoCheckout">
-    This Reservation already checkout
+  <div v-if="infoCheckout">
+    <div class="full-width full-height text-center text-h2 q-mt-xl" style="z-index: 200">
+      This Reservation already checkout
+    </div>
+    <div class="flex justify-center items-center q-mt-md">
+      <q-btn outline color="primary" dense outlined no-caps @click="resetCheckIn"
+        >Reset Check-In</q-btn
+      >
+    </div>
   </div>
+
   <div class="q-my-lg row no-wrap q-gutter-md" v-if="guestForm">
     <div class="">
       <q-img
@@ -696,6 +704,7 @@
 <script>
 import { defineComponent, ref, watch, provide, inject } from 'vue'
 import { useQuasar } from 'quasar'
+import socket from '../../../services/socket/socket'
 
 export default defineComponent({
   name: 'GuestForm',
@@ -821,6 +830,7 @@ export default defineComponent({
     }
   },
   mounted() {
+    socket.connect()
     this.getResvProps()
 
     if (this.$ResvStore.currentRoomResvId) {
@@ -885,6 +895,19 @@ export default defineComponent({
     }
   },
   methods: {
+    resetCheckIn() {
+      const { currentResvId, currentRoomResvId } = this.$ResvStore
+      if (currentResvId == 0 || currentRoomResvId == 0) return
+
+      let url = `detail/reservation/${currentResvId}/${currentRoomResvId}/reset-checkin`
+      this.api.get(url, ({ status, message }) => {
+        if (status === 200) {
+          socket.emit('refreshTask', { message: 'Nigas' })
+          this.trigger('positive', message)
+          this.refreshData()
+        }
+      })
+    },
     confirmCheckout() {
       if (this.typeConfirm != this.nameReservation)
         return this.trigger('negative', 'Please type it correctly')
@@ -1383,12 +1406,7 @@ export default defineComponent({
           )
         } else {
           this.validateInput(
-            this.guestName,
-            'Please send Guest Name and Phone Number',
-            true,
-            'include',
-            '/',
-            'Please send a correct format [Guest Name]/[Phone Number]'
+            this.guestName, 'Please send Guest Name and Phone Number',true,'include','/','Please send a correct format [Guest Name]/[Phone Number]'
           )
           this.validateInput(this.resvRecource, 'Please specify Reservation Resource', true)
           this.validateInput(this.roomNo, 'Please Specify Room Number', true)
@@ -1409,8 +1427,7 @@ export default defineComponent({
                 this.trigger('positive', message)
                 // this.refreshData()
                 // this.$ResvStore.clearData()
-                console.log(1)
-                this.clearData()
+                // this.clearData()
               } else {
                 this.trigger('negative', message)
               }

@@ -46,12 +46,13 @@ export default defineComponent({
   mounted() {
     this.getValue()
     this.fetchData()
+    this.socket()
   },
-  beforeUnmount(){
+  beforeUnmount() {
     socket.disconnect()
   },
   methods: {
-    socket(){
+    socket() {
       socket.connect()
       socket.on('notif', () => {
         this.getValue()
@@ -75,13 +76,13 @@ export default defineComponent({
 
       this.api.get(url, ({ status, data }) => {
         if (status == 200) {
-          if(data.length < 1) { this.show = false
+          if (data.length < 1) {
+            this.show = false
           } else this.show = true
           this.notif = data.map((nf) => ({
             content: nf.content,
             time: nf.time
           }))
-
         }
       })
     }

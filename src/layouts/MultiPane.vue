@@ -4,9 +4,9 @@
       <slot name="upper"></slot>
     </div>
     <div class="resizable-bar">
-      <div class="bar" @mousedown="startResize">
-        <div></div>
-      </div>
+      <q-btn color="primary" round dense class="cursor-pointer" @click="closeForm">
+        <q-icon :name="iconClose" size="40px"></q-icon>
+      </q-btn>
     </div>
     <div
       class="lower-panel"
@@ -24,14 +24,16 @@
 </template>
 
 <script>
-import { defineComponent, onMounted } from 'vue'
+import { defineComponent, onMounted, ref } from 'vue'
 
 export default defineComponent({
   name: 'MultiPane',
 
   data() {
     return {
+      iconClose: ref('expand_more'),
       resizing: false,
+      close: ref(false),
       startOffset: 0,
       lowerHeight: 200,
       lowerMinHeight: 200,
@@ -44,6 +46,7 @@ export default defineComponent({
   methods: {
     setLowerMinMax() {
       const wrapper = document.getElementsByClassName('multi-panel')[0]
+      console.log(wrapper)
 
       this.lowerMinHeight = (40 * wrapper.offsetHeight) / 100
       this.lowerMaxHeight = (80 * wrapper.offsetHeight) / 100
@@ -68,6 +71,15 @@ export default defineComponent({
       this.resizing = false
       document.removeEventListener('mousemove', this.resize)
       document.removeEventListener('mouseup', this.stopResize)
+    },
+    closeForm() {
+      const wrapper = document.getElementsByClassName('multi-panel')[0]
+
+      this.close = !this.close
+      this.iconClose = this.close ? 'expand_less' : 'expand_more'
+      this.lowerHeight = this.close ? 20 : (40 * wrapper.offsetHeight) / 100
+      this.lowerMinHeight = this.close ? 20 : (40 * wrapper.offsetHeight) / 100
+      this.lowerMaxHeight = this.close ? 20 : (80 * wrapper.offsetHeight) / 100
     }
   }
 })

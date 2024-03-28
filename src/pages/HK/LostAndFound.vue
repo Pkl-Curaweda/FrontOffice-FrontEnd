@@ -121,12 +121,7 @@
               dropdown-icon="o_expand_more"
             >
               <div>
-                <q-date
-                  @click="date(this.datePickerArrival)"
-                  v-model="datePickerArrival"
-                  color="green"
-                  today-btn
-                />
+                <q-date v-model="datePickerArrival" color="green" today-btn />
               </div>
             </q-btn-dropdown>
           </div>
@@ -967,9 +962,15 @@ export default defineComponent({
       }&search=${this.searchData ? this.searchData : ''}`
       if (this.filterDisplay !== null) url += `&sortOrder=${this.filterDisplay}`
 
-      const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
-      if (DateArrival !== undefined && DateArrival !== '') {
-        url += `&searchDate=${DateArrival}`
+      // if (this.datePickerArrival !== undefined && this.datePickerArrival !== 'Date') {
+      //   const DateArrival = this.datePickerArrival?.replace(/\//g, '-')
+      //   url += `&searchDate=${DateArrival}`
+      // }
+      const Date = this.datePickerArrival?.replace(/\//g, '-')
+      if (Date !== undefined && Date !== 'Date') {
+        url += `&searchDate=${Date}`
+      } else {
+        this.datePickerArrival = 'Date'
       }
       if (this.filterDisplay == null) {
         url += `&sortOrder=${this.filterDisplay}`

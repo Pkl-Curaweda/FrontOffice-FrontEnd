@@ -781,6 +781,7 @@ export default defineComponent({
         }
         this.api.put(`spv/${this.roomId}`, comment, ({ status, message }) => {
           if (status == 200) {
+            socket.emit('notif', { message: 'Nigas' })
             socket.emit('refreshTask', { message: 'Nigas' })
             this.trigger('positive', message)
             this.fetchData()
@@ -801,6 +802,7 @@ export default defineComponent({
       }
       this.api.post(`spv/${this.roomId}/ok`, data, ({ status, message }) => {
         if (status == 200) {
+          socket.emit('notif', { message: 'Nigas' })
           socket.emit('refreshTask', { message: 'Nigas' })
           this.trigger('positive', message)
           this.fetchData()
@@ -813,6 +815,7 @@ export default defineComponent({
       this.validateInput(this.roomId, 'Please specify Room Number', true)
       this.api.post(`spv/${this.roomId}/re-clean`, null, ({ status, message }) => {
         if (status == 200) {
+          socket.emit('notif', { message: 'Nigas' })
           socket.emit('refreshTask', { message: 'Nigas' })
           this.trigger('positive', message)
           this.fetchData()

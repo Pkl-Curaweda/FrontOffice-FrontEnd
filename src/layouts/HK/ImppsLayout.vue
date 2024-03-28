@@ -63,6 +63,7 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
+import socket from '../../services/socket/socket'
 
 export default defineComponent({
   name: 'immpsLayout',
@@ -79,8 +80,19 @@ export default defineComponent({
   mounted() {
     this.getValue()
     this.fetchData()
+    this.socket()
+  },
+  beforeUnmount() {
+    socket.disconnect()
   },
   methods: {
+    socket() {
+      socket.connect()
+      socket.on('notif', () => {
+        this.getValue()
+        this.fetchData()
+      })
+    },
     goBack() {
       this.$router.go(-1)
     },
@@ -122,7 +134,6 @@ export default defineComponent({
             content: nf.content,
             time: nf.time
           }))
-
         }
       })
     }

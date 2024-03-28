@@ -706,7 +706,7 @@
 <script>
 import { defineComponent, ref, watch, provide, inject } from 'vue'
 import { useQuasar } from 'quasar'
-import socket from '../../service/socket/socket'
+import socket from '../../../services/socket/socket'
 
 export default defineComponent({
   name: 'GuestForm',
@@ -896,13 +896,14 @@ export default defineComponent({
       deep: true
     }
   },
-  socket() {
-    socket.connect()
-    socket.on('refreshTask', (data) => {
-      this.fetchData()
-    })
-  },
+
   methods: {
+    socket() {
+      socket.connect()
+      socket.on('refreshTask', (data) => {
+        this.fetchData()
+      })
+    },
     resetCheckIn() {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
       if (currentResvId == 0 || currentRoomResvId == 0) return

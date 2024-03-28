@@ -753,7 +753,7 @@ export default defineComponent({
   methods: {
     socket() {
       socket.connect()
-      socket.on('refreshTask', (data) => {
+      socket.on('refreshReservation', (data) => {
         this.fetchData()
       })
     },

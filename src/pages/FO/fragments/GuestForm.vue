@@ -704,7 +704,7 @@
 <script>
 import { defineComponent, ref, watch, provide, inject } from 'vue'
 import { useQuasar } from 'quasar'
-import socket from '../../service/socket/socket'
+import socket from '../../../services/socket/socket'
 
 export default defineComponent({
   name: 'GuestForm',
@@ -830,7 +830,7 @@ export default defineComponent({
     }
   },
   mounted() {
-    this.socket()
+    socket.connect()
     this.getResvProps()
 
     if (this.$ResvStore.currentRoomResvId) {
@@ -893,12 +893,6 @@ export default defineComponent({
       },
       deep: true
     }
-  },
-  socket() {
-    socket.connect()
-    socket.on('refreshTask', (data) => {
-      this.fetchData()
-    })
   },
   methods: {
     resetCheckIn() {
@@ -1412,12 +1406,7 @@ export default defineComponent({
           )
         } else {
           this.validateInput(
-            this.guestName,
-            'Please send Guest Name and Phone Number',
-            true,
-            'include',
-            '/',
-            'Please send a correct format [Guest Name]/[Phone Number]'
+            this.guestName, 'Please send Guest Name and Phone Number',true,'include','/','Please send a correct format [Guest Name]/[Phone Number]'
           )
           this.validateInput(this.resvRecource, 'Please specify Reservation Resource', true)
           this.validateInput(this.roomNo, 'Please Specify Room Number', true)
@@ -1438,8 +1427,7 @@ export default defineComponent({
                 this.trigger('positive', message)
                 // this.refreshData()
                 // this.$ResvStore.clearData()
-                console.log(1)
-                this.clearData()
+                // this.clearData()
               } else {
                 this.trigger('negative', message)
               }

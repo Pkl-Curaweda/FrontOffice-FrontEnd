@@ -307,14 +307,14 @@ export default defineComponent({
         { label: 'Description', value: 'description' }
       ],
       columns: [
-        { name: 'Art', label: 'Art', align: 'left', field: 'Art' },
+        { name: 'Art', label: 'Article', align: 'left', field: 'Art' },
         { name: 'Qty', label: 'Qty', align: 'left', field: 'Qty' },
         { name: 'Description', label: 'Description', align: 'left', field: 'Description' },
         { name: 'Rate', label: 'Rate', align: 'left', field: 'Rate' },
         { name: 'Amount', label: 'Amount', align: 'left', field: 'Amount' },
-        { name: 'RmNo', label: 'RmNo', align: 'left', field: 'RmNo' },
+        { name: 'RmNo', label: 'Room No', align: 'left', field: 'RmNo' },
         { name: 'VoucherNumber', label: 'Voucher Number', align: 'left', field: 'VoucherNumber' },
-        { name: 'BillDate', label: 'BillDate', align: 'left', field: 'BillDate' },
+        { name: 'BillDate', label: 'Bill Date', align: 'left', field: 'BillDate' },
         { name: '', label: 'Action', align: 'center', field: '' }
       ]
     }

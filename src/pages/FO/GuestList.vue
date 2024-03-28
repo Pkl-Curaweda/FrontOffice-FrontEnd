@@ -515,19 +515,19 @@ export default defineComponent({
         { label: 'Depart-Today', value: 'departure' }
       ],
       columns: [
-        { name: 'ResNo', label: 'ResNo', align: 'left', field: 'ResNo' },
-        { name: 'ResResource', label: 'ResResource', align: 'left', field: 'ResResource' },
-        { name: 'RmNo', label: 'RmNo', align: 'left', field: 'RmNo' },
-        { name: 'RType', label: 'RType', align: 'left', field: 'RType' },
-        { name: 'BType', label: 'BType', align: 'left', field: 'BType' },
-        { name: 'GuestName', label: 'GuestName', align: 'left', field: 'GuestName' },
-        { name: 'Arr', label: 'Arr', field: 'Arr', align: 'left' },
+        { name: 'ResNo', label: 'Res No', align: 'left', field: 'ResNo' },
+        { name: 'ResResource', label: 'Res Resource', align: 'left', field: 'ResResource' },
+        { name: 'RmNo', label: 'Room No', align: 'left', field: 'RmNo' },
+        { name: 'RType', label: 'Room Type', align: 'left', field: 'RType' },
+        { name: 'BType', label: 'Bed Type', align: 'left', field: 'BType' },
+        { name: 'GuestName', label: 'Guest Name', align: 'left', field: 'GuestName' },
+        { name: 'Arr', label: 'Arrangement', field: 'Arr', align: 'left' },
         { name: 'Arrival', label: 'Arrival', align: 'left', field: 'Arrival' },
         { name: 'Depart', label: 'Depart', align: 'left', field: 'Depart' },
         { name: 'Night', label: 'Night', align: 'left', field: 'Night' },
         // { name: 'RoomBoy', label: 'RoomBoy', align: 'left', field: 'RoomBoy' },
-        { name: 'RoomRate', label: 'RoomRate', align: 'left', field: 'RoomRate' },
-        { name: 'CreatedDate', label: 'CreatedDate', align: 'left', field: 'CreatedDate' },
+        { name: 'RoomRate', label: 'Room Rate', align: 'left', field: 'RoomRate' },
+        { name: 'CreatedDate', label: 'Created At', align: 'left', field: 'CreatedDate' },
         { name: '', label: 'Action', align: 'center', field: '' }
       ]
     }

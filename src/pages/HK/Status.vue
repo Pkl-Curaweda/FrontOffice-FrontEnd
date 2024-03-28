@@ -317,7 +317,7 @@
 import { defineComponent, ref } from 'vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
 import html2pdf from 'html2pdf.js'
-import socket from '../../../../services/socket/socket'
+import socket from '../../services/socket/socket'
 
 const dataColumns = [
   {

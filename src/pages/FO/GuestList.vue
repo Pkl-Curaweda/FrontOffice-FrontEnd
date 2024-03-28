@@ -1,5 +1,5 @@
 <template>
-  <online><online>
+  <online></online>
   <q-page
     style="
       overflow-y: hidden;

@@ -552,8 +552,18 @@
         <HKCard style="width: fit-content">
           <div class="flex q-gutter-md">
             <q-form>
-              <div style="width: fit-content; min-width: 100px">
-                <div class="row items-center q-gutter-sm">
+              <div class=" q-mx-auto" style="width: fit-content">
+                <div>
+                  <q-input
+                    filled
+                    dense
+                    placeholder="Comments"
+                    class="spv-input"
+                    type="textarea"
+                    v-model="comments"
+                  />
+                </div>
+                <div class="row items-center q-gutter-sm q-mt-xs">
                   <q-btn
                     dense
                     noCaps
@@ -577,20 +587,6 @@
                     style="border-radius: 10px"
                     ><q-tooltip v-if="!this.roomId">Select the task first</q-tooltip>
                   </q-btn>
-                </div>
-              </div>
-              <div class="q-mt-lg q-mx-auto" style="width: fit-content">
-                <div>
-                  <q-input
-                    filled
-                    dense
-                    placeholder="Comments"
-                    class="spv-input"
-                    type="textarea"
-                    v-model="comments"
-                  />
-                </div>
-                <div class="row items-center justify-end q-mt-sm">
                   <q-btn
                     dense
                     class="text-body1 q-px-md"
@@ -611,44 +607,50 @@
                 <q-input
                   dense
                   outlined
+                  disable
                   v-model="roomNo"
                   label="Room No"
                   style="width: 5vw"
                   class="col-grow text-bold"
-                />
-                <q-input
+                  />
+                  <q-input
                   dense
                   outlined
+                  disable
                   v-model="schedule"
                   label="Schedule"
                   class="col-grow text-bold"
-                />
-                <q-input
+                  />
+                  <q-input
                   dense
                   outlined
+                  disable
                   v-model="status"
                   label="Status"
                   class="col-grow text-bold"
-                />
-              </div>
-              <q-input
+                  />
+                </div>
+                <q-input
                 filled
                 dense
+                disable
                 placeholder="Remarks"
                 class="q-mt-md full-width remarks-input"
                 type="textarea"
                 v-model="remarks"
-              />
-              <div class="flex items-center q-gutter-md q-mt-xs">
-                <q-input
+                />
+                <div class="flex items-center q-gutter-md q-mt-xs">
+                  <q-input
                   dense
                   outlined
+                  disable
                   v-model="standardTime"
                   label="Standard"
                   class="col-grow text-bold"
-                />
-                <q-input
+                  />
+                  <q-input
                   dense
+                  disable
                   outlined
                   v-model="actualTime"
                   label="Actual"
@@ -923,7 +925,12 @@ export default defineComponent({
     dialogalert(roomNo) {
       this.roomNo = roomNo['roomNo'].data
       this.roomId = roomNo['taskId'].data
-      this.comments = roomNo['Comments'].data
+      this.comments = roomNo['Comments'].data,
+      this.schedule = roomNo['Schedule'].data,
+      this.status = roomNo['Status'].data,
+      this.remarks = roomNo['Remarks'].data,
+      this.standardTime = roomNo['Standard'].data,
+      this.actualTime = roomNo['Actual'].data
     },
     getTableData(data) {
       this.selected = data
@@ -1215,7 +1222,6 @@ export default defineComponent({
 .spv .spv-input.q-field--dense .q-field__control {
   width: 290px !important;
   min-width: 200px;
-  height: 80px !important;
   border-radius: 8px;
   background: white;
   box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.25);

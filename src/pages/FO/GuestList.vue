@@ -699,8 +699,12 @@ export default defineComponent({
     }
   },
   mounted() {
+    socket.connect()
+        socket.on('resv', (data) => {
+          console.log('Ada disini')
+          this.fetchData()
+        })
     this.fetchData()
-    this.socket()
   },
   watch() {
     searchName(this.searchInput)
@@ -740,6 +744,7 @@ export default defineComponent({
     },
     filterDisplay: {
       handler(option) {
+        
         if (option != null) {
           function formatDisplayOption() {
             return option.charAt(0).toUpperCase() + option.slice(1)
@@ -751,12 +756,6 @@ export default defineComponent({
     }
   },
   methods: {
-    socket() {
-      socket.connect()
-      socket.on('refreshReservation', (data) => {
-        this.fetchData()
-      })
-    },
     handleDelete(data) {
       this.cacheData = data
       this.confirmDelete = true

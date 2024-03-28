@@ -904,7 +904,8 @@ export default defineComponent({
         if (status === 200) {
           socket.emit('refreshTask', { message: 'Nigas' })
           this.trigger('positive', message)
-          this.refreshData()
+          this.infoCheckout = !this.infoCheckout
+          this.guestForm = !this.guestForm
         }
       })
     },
@@ -1406,7 +1407,12 @@ export default defineComponent({
           )
         } else {
           this.validateInput(
-            this.guestName, 'Please send Guest Name and Phone Number',true,'include','/','Please send a correct format [Guest Name]/[Phone Number]'
+            this.guestName,
+            'Please send Guest Name and Phone Number',
+            true,
+            'include',
+            '/',
+            'Please send a correct format [Guest Name]/[Phone Number]'
           )
           this.validateInput(this.resvRecource, 'Please specify Reservation Resource', true)
           this.validateInput(this.roomNo, 'Please Specify Room Number', true)

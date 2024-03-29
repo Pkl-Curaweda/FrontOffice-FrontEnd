@@ -1,11 +1,14 @@
 <template>
   <div :class="classname + 'row items-center q-gutter-md'">
     <img :src="user.picture" style="width: 80px; border-radius: 100%" />
-    <div style="white-space: nowrap;">
+    <div style="white-space: nowrap">
       <div>{{ time }}</div>
       <div>{{ date }}</div>
-      <div class="text-weight-bold text-h5">Hello, {{ user.name }}</div>
+      <div class="text-weight-bold text-h5">
+        Hello, {{ user.name }} {{ aliases ? ' ( ' + aliases + ' ) ' : '' }}
+      </div>
       <div class="text-weight-bold">{{ user.role.name }}</div>
+      <div class="text-weight-bold" v-if="workload">Work Load : {{ workload || 0 }}</div>
     </div>
   </div>
 </template>
@@ -29,6 +32,8 @@ export default {
     }
   },
   props: {
+    aliases: String,
+    workload: String,
     classname: {
       type: String,
       default: ''
@@ -36,6 +41,7 @@ export default {
   },
   created() {
     this.getTimeAndDate()
+    console.log(this.user)
   },
   methods: {
     getTimeAndDate() {

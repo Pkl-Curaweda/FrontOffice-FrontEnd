@@ -470,7 +470,7 @@
           </q-table>
         </div>
       </div>
-      <q-form class="q-mt-md">
+      <!-- <q-form class="q-mt-md">
         <div class="q-mx-auto q-mt-lg" style="width: fit-content; min-width: 100px">
           <div class="row items-center q-gutter-sm">
             <q-btn
@@ -523,29 +523,17 @@
               ><q-tooltip v-if="!this.roomId">Select the task first</q-tooltip>
             </q-btn>
           </div>
-        </div>
-        <div class="performance q-my-xl">
+        </div> -->
+      <!-- <div class="performance q-my-xl">
           <div class="row items-center justify-center">
             <div class="bg-black q-pa-sm" style="border-radius: 5px">
               <q-icon name="sym_o_earthquake" color="white" size="20px" />
             </div>
             <div class="text-black text-h6 text-weight-bold q-pl-sm">Performance</div>
-          </div>
+          </div> -->
 
-          <div style="display: flex" class="row items-center justify-center q-mt-xs q-gutter-md">
-            <template v-for="(data, i) in ratingcolor" :key="i">
-              <q-icon name="star" @click="ratingcheck(i + 1)" :color="data.color" size="30px" />
-            </template>
-            <!-- <q-rating
-              v-model="ratingModel"
-              style="width: 200px"
-              max="5"
-              color="yellow-7"
-              :size="'50px'"
-            /> -->
-          </div>
-        </div>
-        <!-- <div class="q-pa-md q-mx-auto" style="width: fit-content">
+      <!-- </div> -->
+      <!-- <div class="q-pa-md q-mx-auto" style="width: fit-content">
           <div class="rating q-mt-lg q-px-md">
             <div class="row items-center q-gutter-sm">
               <div class="text-body1 text-weight-bold">Give rating for room boy!</div>
@@ -559,13 +547,142 @@
             </div>
           </div>
         </div> -->
-      </q-form>
+      <!-- </q-form> -->
+      <div class="flex items-center justify-center q-my-md">
+        <HKCard style="width: fit-content">
+          <div class="flex q-gutter-md">
+            <q-form>
+              <div class=" q-mx-auto" style="width: fit-content">
+                <div>
+                  <q-input
+                    filled
+                    dense
+                    placeholder="Comments"
+                    class="spv-input"
+                    type="textarea"
+                    v-model="comments"
+                  />
+                </div>
+                <div class="row items-center q-gutter-sm q-mt-xs">
+                  <q-btn
+                    dense
+                    noCaps
+                    :disable="!roomId"
+                    color="primary"
+                    @click="postOk"
+                    label="OK"
+                    class="q-px-lg"
+                    style="border-radius: 10px"
+                  >
+                    <q-tooltip v-if="!this.roomId">Select the task first</q-tooltip>
+                  </q-btn>
+                  <q-btn
+                    dense
+                    noCaps
+                    :disable="!roomId"
+                    color="primary"
+                    @click="reclean"
+                    label="Re-Clean"
+                    class="q-px-lg"
+                    style="border-radius: 10px"
+                    ><q-tooltip v-if="!this.roomId">Select the task first</q-tooltip>
+                  </q-btn>
+                  <q-btn
+                    dense
+                    class="text-body1 q-px-md"
+                    label="Submit"
+                    color="primary"
+                    :disable="!roomId"
+                    @click="SubmitData"
+                    noCaps
+                    style="border-radius: 8px"
+                    ><q-tooltip v-if="!this.roomId">Select the task first</q-tooltip>
+                  </q-btn>
+                </div>
+              </div>
+            </q-form>
+
+            <div>
+              <div class="flex items-center q-gutter-md">
+                <q-input
+                  dense
+                  outlined
+                  disable
+                  v-model="roomNo"
+                  label="Room No"
+                  style="width: 5vw"
+                  class="col-grow text-bold"
+                  />
+                  <q-input
+                  dense
+                  outlined
+                  disable
+                  v-model="schedule"
+                  label="Schedule"
+                  class="col-grow text-bold"
+                  />
+                  <q-input
+                  dense
+                  outlined
+                  disable
+                  v-model="status"
+                  label="Status"
+                  class="col-grow text-bold"
+                  />
+                </div>
+                <q-input
+                filled
+                dense
+                disable
+                placeholder="Remarks"
+                class="q-mt-md full-width remarks-input"
+                type="textarea"
+                v-model="remarks"
+                />
+                <div class="flex items-center q-gutter-md q-mt-xs">
+                  <q-input
+                  dense
+                  outlined
+                  disable
+                  v-model="standardTime"
+                  label="Standard"
+                  class="col-grow text-bold"
+                  />
+                  <q-input
+                  dense
+                  disable
+                  outlined
+                  v-model="actualTime"
+                  label="Actual"
+                  class="col-grow text-bold"
+                />
+              </div>
+              <div
+                style="display: flex"
+                class="row items-center justify-center q-mt-xs q-gutter-md"
+              >
+                <template v-for="(data, i) in ratingcolor" :key="i">
+                  <q-icon name="star" @click="ratingcheck(i + 1)" :color="data.color" size="30px" />
+                </template>
+                <!-- <q-rating
+              v-model="ratingModel"
+              style="width: 200px"
+              max="5"
+              color="yellow-7"
+              :size="'50px'"
+            /> -->
+              </div>
+            </div>
+          </div>
+        </HKCard>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import UserGreet from 'src/components/HK/IMPPS/General/UserGreet.vue'
+import HKCard from 'src/components/HK/Card/HKCard.vue'
 import { defineComponent, ref, watch, provide, inject } from 'vue'
 import { useQuasar } from 'quasar'
 import socket from '../../../../services/socket/socket'
@@ -575,7 +692,8 @@ const rows = ref([])
 export default defineComponent({
   name: 'DashboardRBPage',
   components: {
-    UserGreet
+    UserGreet,
+    HKCard
   },
   setup() {
     return {
@@ -807,7 +925,12 @@ export default defineComponent({
     dialogalert(roomNo) {
       this.roomNo = roomNo['roomNo'].data
       this.roomId = roomNo['taskId'].data
-      this.comments = roomNo['Comments'].data
+      this.comments = roomNo['Comments'].data,
+      this.schedule = roomNo['Schedule'].data,
+      this.status = roomNo['Status'].data,
+      this.remarks = roomNo['Remarks'].data,
+      this.standardTime = roomNo['Standard'].data,
+      this.actualTime = roomNo['Actual'].data
     },
     getTableData(data) {
       this.selected = data
@@ -1098,6 +1221,16 @@ export default defineComponent({
 }
 .spv .spv-input.q-field--dense .q-field__control {
   width: 290px !important;
+  min-width: 200px;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.25);
+}
+
+.spv .remarks-input textarea {
+  resize: none;
+}
+.spv .remarks-input.q-field--dense .q-field__control {
   min-width: 200px;
   height: 80px !important;
   border-radius: 8px;

@@ -44,28 +44,30 @@
 <script>
 import { defineComponent, ref, watch } from 'vue'
 export default defineComponent({
-  data(){
-    return{
+  data() {
+    return {
       api: new this.$Api('root'),
       token: this.$AuthStore.getAccessToken(),
-      mainPath: this.$AuthStore.getMainPath()
     }
   },
-  mounted(){
+  mounted() {
     this.checkToken()
   },
   methods: {
-    checkToken(){
-      try{
+    checkToken() {
+      try {
         console.log(this.token)
         if(this.token === "") return this.$router.replace('/auth/login')
-        this.api.get('/auth/check-token', ({ status }) => {
-          if(status != 200) return this.$router.replace('/auth/login')
-          return this.$router.replace(this.mainPath)
+      this.api.get('/auth/check-token', ({ status, data }) => {
+        let pathToVist = '/auth/login'
+        if(status != 200){ this.$AuthStore.clearData()
+        }else{
+          this.$AuthStore.setUser(data)
+          pathToVist = data.role['defaultPath']
+        }
+        return this.$router.replace(pathToVist)
         })
-      }catch(err){
-        
-      }
+      }catch(err){ }
     }
   }
 })

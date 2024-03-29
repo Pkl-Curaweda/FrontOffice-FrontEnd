@@ -470,7 +470,6 @@ export default defineComponent({
   },
   methods: {
     socket() {
-      socket.connect()
       socket.on('refreshTask', (data) => {
         this.fetchData()
       })

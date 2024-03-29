@@ -87,7 +87,6 @@ export default defineComponent({
   },
   methods: {
     socket() {
-      socket.connect()
       socket.on('notif', () => {
         this.getValue()
         this.fetchData()

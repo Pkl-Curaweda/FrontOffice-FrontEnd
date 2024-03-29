@@ -170,12 +170,12 @@ export default defineComponent({
   },
 
   mounted() {
-    socket.connect()
-        socket.on('resv', (data) => {
-          console.log('Ada disini')
-          this.fetchData()
-        })
+    console.log('Room Availability')
     this.fetchData()
+    socket.on('resv', (data) => {
+      console.log('Ada disini')
+      this.fetchData()
+    })
   },
   watch() {
     searchName(this.searchInput)

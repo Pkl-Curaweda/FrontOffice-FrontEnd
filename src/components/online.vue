@@ -43,16 +43,6 @@ export default defineComponent({
       width: ref()
     }
   },
-  watch: {
-    count: {
-      handle(value){
-        if(value < 6){
-          this.$AuthStore.clearData()
-          this.count = 0
-        }
-      }
-    }
-  },
   mounted() {
     window.addEventListener('keydown', this.openDialog)
     socket.connect()
@@ -69,8 +59,6 @@ export default defineComponent({
       if(event.ctrlKey && event.key === 'k'){
         event.preventDefault();
         this.open = !this.open
-        count++
-        console.log('Test')
       }
     }
   }

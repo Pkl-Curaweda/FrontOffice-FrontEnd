@@ -1,5 +1,4 @@
 <template>
-  <online></online>
   <q-page
     style="
       overflow-y: hidden;
@@ -182,12 +181,12 @@
                         </q-item>
                         <q-item
                           clickable
-                          @click="dialog2 = true"
                           v-close-popup
+                          @click="handletoggle(props.row, false)"
                           style="display: flex"
                         >
                           <q-item-section>
-                            <q-item-label class="font-bold" @click="handletoggle(props.row, false)"
+                            <q-item-label class="font-bold"
                               >Waiting List</q-item-label
                             >
                           </q-item-section>
@@ -282,8 +281,8 @@
                             </q-item>
                             <q-item
                               clickable
-                              v-close-popup
                               @click="waitinglist(props.row, false, true)"
+                              v-close-popup
                               style="display: flex"
                             >
                               <q-btn
@@ -460,7 +459,7 @@
                 />
                 <div class="row items-center" style="width: 100%; justify-content: space-between">
                   <q-btn v-close-popup label="Cancel" outline color="primary" />
-                  <q-btn v-close-popup label="accept" @click="postwaiting()" color="primary" />
+                  <q-btn label="accept" @click="postwaiting()" color="primary" />
                 </div>
               </q-card-section>
             </q-card>
@@ -480,13 +479,13 @@ import MultiPane from 'src/layouts/MultiPane.vue'
 import GuestForm from 'src/pages/FO/fragments/GuestForm.vue'
 import { formatDate } from 'src/utils/time'
 import { defineComponent, ref } from 'vue'
-import online from 'src/components/online.vue'
+// import online from 'src/components/online.vue'
 import { allObjectsInArray } from 'src/utils/datatype'
 import socket from '../../services/socket/socket'
 
 export default defineComponent({
   name: 'GuestList',
-  components: { FOMenubar, MultiPane, GuestForm, online},
+  components: { FOMenubar, MultiPane, GuestForm},
   setup() {
     return {
       dialogeditroom: ref(false),
@@ -701,15 +700,16 @@ export default defineComponent({
     }
   },
   mounted() {
-    socket.connect()
-        socket.on('resv', (data) => {
-          console.log('Ada disini')
-          this.fetchData()
-        })
+    this.socket()
     this.fetchData()
   },
   watch() {
     searchName(this.searchInput)
+  },
+  beforeUnmount(){
+    console.log('Test me')
+    window.location.reload()
+    socket.disconnect()
   },
   watch: {
     filterSortOrder: {
@@ -720,6 +720,12 @@ export default defineComponent({
         this.fetchData()
       }
     },
+    dialog2: {
+      handle(value){
+        if(!value) this.waitingnote = null
+      }
+    },
+    
     searchInput: {
       handler(newSearchInput) {
         this.searchName(newSearchInput)
@@ -758,11 +764,18 @@ export default defineComponent({
     }
   },
   methods: {
+    socket(){
+    socket.on('resv', () => {
+      this.fetchData()
+    })
+    },
     handleDelete(data) {
       this.cacheData = data
       this.confirmDelete = true
     },
     handletoggle(data, state) {
+      console.log(data)
+      if(!data) return this.trigger('negative', 'No data to store, please close dialog and try again')
       const roomNo = data['RmNo'].data
       this.datares = data
       this.roomno = roomNo
@@ -797,27 +810,29 @@ export default defineComponent({
       })
     },
     postwaiting() {
+      try {
       const resvId = this.datares['ResNo'].data
       const roomNo = this.datares['ResRoomNo'].data
-      console.log(resvId, roomNo)
+      if(!this.waitingnote || this.waitingnote === '') return this.trigger('negative', "Please Explain the request")
       const note = {
         request: this.waitingnote
       }
-
-      try {
-        this.api.post(
-          `/detail/reservation/${resvId}/${roomNo}/waiting-list`,
-          note,
+      
+      this.api.post(
+        `/detail/reservation/${resvId}/${roomNo}/waiting-list`,
+        note,
           ({ data, status, message }) => {
-            if (status === 200) {
-              socket.emit('notif', { message: 'Nigas' })
-              this.trigger('positive', message)
-              this.fetchData()
-            }
+            if (status != 200) return this.trigger('negative', message)
+            socket.emit('notif', { })
+            this.dialog2 = false
+            this.trigger('positive', message)
+            this.fetchData()
           }
-        )
-      } catch (error) {
-        console.error(error)
+          )
+        } catch (error) {
+          console.log(error)
+        this.dialog2 = false
+        return this.trigger('negative', error.message)
       }
     },
     addnewextrabed(data) {
@@ -853,6 +868,7 @@ export default defineComponent({
       this.fetchData()
     },
     waitinglist(data, log, state) {
+      console.log(data)
       const roomNo = data['RmNo'].data
       this.roomno = roomNo
       this.$ResvStore.fix = false
@@ -1047,7 +1063,6 @@ export default defineComponent({
     },
     formatData(raw = []) {
       const list = []
-
       raw.forEach((rsrv) => {
         rsrv.reservation.forEach((rr) => {
           const [backgroundColor, color] = [

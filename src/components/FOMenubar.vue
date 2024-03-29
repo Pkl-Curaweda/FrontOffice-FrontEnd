@@ -28,6 +28,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import frontoffice_routes from 'src/router/frontoffice.router'
+// import online from 'src/components/online.vue'
 
 export default defineComponent({
   name: 'FOMenubar',

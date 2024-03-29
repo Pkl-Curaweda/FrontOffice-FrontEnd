@@ -1,4 +1,5 @@
 <template>
+      <online></online>
   <q-scroll-area class="fit q-px-sm comp-sidebar">
     <q-toolbar class="GPL__toolbar">
       <q-toolbar-title class="flex flex-center">
@@ -58,11 +59,13 @@
 
 <script>
 import { defineComponent } from 'vue'
+import online from 'src/components/online.vue'
 import frontoffice_routes from 'src/router/frontoffice.router'
 import { housekeeping_routes, hkreports_routes } from 'src/router/housekeeping.router'
 
 export default defineComponent({
   name: 'SideBar',
+  components: { online },
   setup() {
     return {
       frontoffice_routes,

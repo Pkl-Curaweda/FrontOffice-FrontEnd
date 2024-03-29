@@ -39,6 +39,7 @@ export default {
   },
   created() {
     this.getTimeAndDate()
+    console.log(this.user)
   },
   methods: {
     getTimeAndDate() {

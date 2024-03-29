@@ -145,29 +145,33 @@
                   dense
                 />
               </div>
-              <div style="display: flex; padding-top: 20px" v-if="this.choosenRoom">
-                <div>
-                  <img :src="this.choosenRoom.image" style="width: 100px; border-radius: 2px" />
-                </div>
-                <div style="padding: 10px; gap: 2px">
-                  <div>
-                    <div>Id : {{ this.choosenRoom.id }}</div>
-                    <div>Work Load : {{ this.choosenRoom.workload }}</div>
+              <div style="display: flex; padding-top: 20px; width: 100%" v-if="this.choosenRoom">
+                <div class="flex row" style="width: 50%">
+                  <div class="col">
+                    <img :src="this.choosenRoom.image" style="width: 100px; border-radius: 2px" />
+                  </div>
+                  <div style="padding: 4px; gap: 2px; width: 100%" class="col">
+                    <div>
+                      <div>Id : {{ this.choosenRoom.id }}</div>
+                      <div>Work Load : {{ this.choosenRoom.workload }}</div>
+                    </div>
                   </div>
                 </div>
-                <div v-if="this.maidSelect" style="padding: 8px">
-                  <img
-                    :src="this.choosenMaid.image"
-                    class="cropped-image"
-                    style="width: 100px; border-radius: 2px"
-                  />
-                </div>
-                <div style="padding: 8px; gap: 2px; width: 100%">
-                  <div>
-                    <div style="padding: 10px; gap: 2px" v-if="this.maidSelect">
-                      <div>Id : {{ this.choosenMaid.id }}</div>
-                      <div>Aliases : {{ this.choosenMaid.aliases }}</div>
-                      <div>Shift : {{ this.choosenMaid.shift }}</div>
+                <div class="flex row" style="width: 50%">
+                  <div v-if="this.maidSelect" style="padding: 8px" class="col">
+                    <img
+                      :src="this.choosenMaid.image"
+                      class="cropped-image"
+                      style="width: 100px; border-radius: 2px"
+                    />
+                  </div>
+                  <div style="padding: 4px; gap: 2px; width: 100%" class="col">
+                    <div>
+                      <div style="padding: 10px; gap: 2px" v-if="this.maidSelect">
+                        <div>Id : {{ this.choosenMaid.id }}</div>
+                        <div>Aliases : {{ this.choosenMaid.aliases }}</div>
+                        <div>Shift : {{ this.choosenMaid.shift }}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -552,7 +556,7 @@
         <HKCard style="width: fit-content">
           <div class="flex q-gutter-md">
             <q-form>
-              <div class=" q-mx-auto" style="width: fit-content">
+              <div class="q-mx-auto" style="width: fit-content">
                 <div>
                   <q-input
                     filled
@@ -612,25 +616,25 @@
                   label="Room No"
                   style="width: 5vw"
                   class="col-grow text-bold"
-                  />
-                  <q-input
+                />
+                <q-input
                   dense
                   outlined
                   disable
                   v-model="schedule"
                   label="Schedule"
                   class="col-grow text-bold"
-                  />
-                  <q-input
+                />
+                <q-input
                   dense
                   outlined
                   disable
                   v-model="status"
                   label="Status"
                   class="col-grow text-bold"
-                  />
-                </div>
-                <q-input
+                />
+              </div>
+              <q-input
                 filled
                 dense
                 disable
@@ -638,17 +642,17 @@
                 class="q-mt-md full-width remarks-input"
                 type="textarea"
                 v-model="remarks"
-                />
-                <div class="flex items-center q-gutter-md q-mt-xs">
-                  <q-input
+              />
+              <div class="flex items-center q-gutter-md q-mt-xs">
+                <q-input
                   dense
                   outlined
                   disable
                   v-model="standardTime"
                   label="Standard"
                   class="col-grow text-bold"
-                  />
-                  <q-input
+                />
+                <q-input
                   dense
                   disable
                   outlined
@@ -925,12 +929,12 @@ export default defineComponent({
     dialogalert(roomNo) {
       this.roomNo = roomNo['roomNo'].data
       this.roomId = roomNo['taskId'].data
-      this.comments = roomNo['Comments'].data,
-      this.schedule = roomNo['Schedule'].data,
-      this.status = roomNo['Status'].data,
-      this.remarks = roomNo['Remarks'].data,
-      this.standardTime = roomNo['Standard'].data,
-      this.actualTime = roomNo['Actual'].data
+      ;(this.comments = roomNo['Comments'].data),
+        (this.schedule = roomNo['Schedule'].data),
+        (this.status = roomNo['Status'].data),
+        (this.remarks = roomNo['Remarks'].data),
+        (this.standardTime = roomNo['Standard'].data),
+        (this.actualTime = roomNo['Actual'].data)
     },
     getTableData(data) {
       this.selected = data

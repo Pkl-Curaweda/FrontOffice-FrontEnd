@@ -1066,6 +1066,7 @@ export default defineComponent({
             indexOfReference[room.id] = index
             index++
           }
+          this.roomImage = availableRooms[0].roomImage
           this.roomNoOpts = roomNos
           this.indexReference = indexOfReference
         }

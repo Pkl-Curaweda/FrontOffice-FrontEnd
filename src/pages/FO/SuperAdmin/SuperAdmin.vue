@@ -94,6 +94,9 @@ export default defineComponent({
       this.users = onlineUsers
     })
   },
+  beforeUnmount(){
+    window.location.reload()
+  },
   watch: {},
   method: {
     changeroute(state) {

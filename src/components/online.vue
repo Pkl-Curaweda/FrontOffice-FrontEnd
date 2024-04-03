@@ -26,6 +26,7 @@
 
 import { defineComponent, ref } from 'vue'
 import socket from '../services/socket/socket'
+import { Api } from 'src/services/api'
 
 export default defineComponent({
   name: 'online',
@@ -37,7 +38,7 @@ export default defineComponent({
   },
   data() {
     return {
-      count: ref(0),
+       api: new this.$Api('root'),
       open: ref(false),
       upHere: false,
       width: ref()
@@ -49,6 +50,9 @@ export default defineComponent({
     socket.on('online', (onlineUsers) => {
       console.log(onlineUsers)
       this.users = onlineUsers
+    })
+    socket.on('diss', () => {
+        this.api.get('/auth/check-token', () => {})
     })
   },
   beforeUnmount() {

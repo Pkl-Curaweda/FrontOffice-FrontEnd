@@ -13,7 +13,7 @@
   <div class="q-my-lg row no-wrap q-gutter-md" v-if="guestForm">
     <div class="">
       <q-img
-        :src="roomImage||'../../../../src/assets/img/thumbnaul-form.png'"
+        :src="roomImage"
         class="width-image rounded-borders"
       />
     </div>
@@ -795,7 +795,7 @@ export default defineComponent({
       descSelect: ref(''),
       shownBedOpts: ref(),
       voucherId: ref(''),
-      roomImage: ref(''),
+      roomImage: ref('../../../../src/assets/img/thumbnaul-form.png'),
       guestName: ref(''),
       address: ref(''),
       newSetRow: ref(),

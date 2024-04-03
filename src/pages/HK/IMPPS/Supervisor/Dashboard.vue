@@ -767,6 +767,7 @@ export default defineComponent({
   data() {
     return {
       api: new this.$Api('impps'),
+      rootApi: new this.$Api('root'),
       user: this.$AuthStore.getUser()
     }
   },
@@ -847,6 +848,9 @@ export default defineComponent({
       socket.on('refreshTask', (data) => {
         this.fetchData()
       })
+      socket.on('diss', () => {
+        this.rootApi.get('/auth/check-token', () => {})
+    })
     },
     validateInput(modelValue, message, required = true) {
       if (required) if (!modelValue) throw Error(message)
@@ -873,6 +877,15 @@ export default defineComponent({
     },
     refreshData() {
       this.fetchData()
+    },
+    changeSchedule() {
+      this.api.post(`spv/change-schedule/${this.roomId}`, {
+        startTime: '16:00'
+      }, ({ message, status, data }) => {
+        if(status != 200) return this.trigger('negative', message)
+        this.refreshData()
+        this['modelNameForInput'] =  data.data.schedule
+      })
     },
     clearData() {
       this.comments = null

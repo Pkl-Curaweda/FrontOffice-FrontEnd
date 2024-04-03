@@ -290,7 +290,8 @@ export default defineComponent({
   },
   data() {
     return {
-      api: new this.$Api('impps')
+      api: new this.$Api('impps'),
+      rootApi: new this.$Api('root')
     }
   },
   mounted() {
@@ -312,6 +313,9 @@ export default defineComponent({
       socket.on('refreshTask', data => {
         this.fetchData()
       })
+       socket.on('diss', () => {
+        this.rootApi.get('/auth/check-token', () => {})
+    })
     },
     refreshData() {
       this.fetchData()

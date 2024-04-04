@@ -643,7 +643,7 @@
                             noCaps
                             v-close-popup="this.schedulefirst != this.schedule.split(' - ')[0]"
                             color="primary"
-                            @click="setSchedule()"
+                            @click="changeSchedule()"
                             label="Changes"
                             class="q-px-lg"
                             style="width: 100%; border-radius: 10px"
@@ -911,12 +911,13 @@ export default defineComponent({
       this.api.post(
         `spv/change-schedule/${this.roomId}`,
         {
-          startTime: '16:00'
+          startTime: this.schedulefirst
         },
         ({ message, status, data }) => {
-          if (status != 200) return this.trigger('negative', message)
+          if (status === 200) return this.trigger('positive', message)
           this.refreshData()
-          this['modelNameForInput'] = data.data.schedule
+          this.schedule = data.data.schedule
+          console.log(data.data.schedule)
         }
       )
     },

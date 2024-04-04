@@ -13,5 +13,14 @@
 // }
 
 import Vue from 'vue';
+import App from "src/App.vue";
+import router from 'src/router/routes'
 
-export const eventBus = new Vue();
+console.log(Vue)
+// export const EventBus = new Bus();
+
+// export const app = new Vue({
+//   router,
+//   render: h => h(App)
+// });
+

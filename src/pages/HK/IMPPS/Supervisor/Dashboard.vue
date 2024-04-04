@@ -624,7 +624,34 @@
                   v-model="schedule"
                   label="Schedule"
                   class="col-grow text-bold"
-                />
+                >
+                  <template v-slot:after>
+                    <!-- <q-btn round dense flat icon="edit" />  -->
+                    <q-btn-dropdown
+                      dense
+                      flat
+                      :disable="!roomId"
+                      style="color: rgb(155, 155, 155)"
+                      class="text-capitalize col-grow q-py-sm q-px-sm"
+                      dropdown-icon="edit"
+                      no-icon-animation
+                    >
+                      <div style="display: block">
+                        <q-time v-model="schedulefirst" format24h now-btn>
+                          <q-btn
+                            dense
+                            noCaps
+                            v-close-popup="this.schedulefirst != this.schedule.split(' - ')[0]"
+                            color="primary"
+                            @click="setSchedule()"
+                            label="Changes"
+                            class="q-px-lg"
+                            style="width: 100%; border-radius: 10px"
+                        /></q-time>
+                      </div>
+                    </q-btn-dropdown> </template
+                ></q-input>
+
                 <q-input
                   dense
                   outlined
@@ -701,6 +728,7 @@ export default defineComponent({
   },
   setup() {
     return {
+      schedulefirst: ref('00:00'),
       sortRed: ref(true),
       sortYellow: ref(true),
       sortGreen: ref(true),
@@ -833,6 +861,7 @@ export default defineComponent({
     }
   },
   methods: {
+    setSchedule() {},
     socket() {
       socket.connect()
       socket.on('refreshTask', (data) => {
@@ -929,12 +958,15 @@ export default defineComponent({
     dialogalert(roomNo) {
       this.roomNo = roomNo['roomNo'].data
       this.roomId = roomNo['taskId'].data
-      ;(this.comments = roomNo['Comments'].data),
-        (this.schedule = roomNo['Schedule'].data),
-        (this.status = roomNo['Status'].data),
-        (this.remarks = roomNo['Remarks'].data),
-        (this.standardTime = roomNo['Standard'].data),
-        (this.actualTime = roomNo['Actual'].data)
+      this.comments = roomNo['Comments'].data
+      this.schedule = roomNo['Schedule'].data
+      this.status = roomNo['Status'].data
+      this.remarks = roomNo['Remarks'].data
+      this.standardTime = roomNo['Standard'].data
+      this.actualTime = roomNo['Actual'].data
+
+      this.schedulefirst = this.schedule.split(' - ')[0]
+      console.log(this.schedulefirst)
     },
     getTableData(data) {
       this.selected = data

@@ -795,11 +795,13 @@ export default defineComponent({
   data() {
     return {
       api: new this.$Api('impps'),
+      rootApi: new this.$Api('root'),
       user: this.$AuthStore.getUser()
     }
   },
   mounted() {
     this.fetchData()
+    this.checkIMPPS()
     this.socket()
   },
   watch: {
@@ -860,12 +862,23 @@ export default defineComponent({
       this.maidSelect ? this.getDetailMaid() : ''
     }
   },
+  beforeUnmount() {
+    socket.disconnect()
+  },
   methods: {
     setSchedule() {},
+    checkIMPPS() {
+      this.api.get('check', ({ status }) => {
+        if (status != 200) return this.trigger('IMPPS didnt run properly, please tell admin')
+        socket.emit('refreshTask', {})
+      })
+    },
     socket() {
-      socket.connect()
       socket.on('refreshTask', (data) => {
         this.fetchData()
+      })
+      socket.on('diss', () => {
+        this.rootApi.get('/auth/check-token', () => {})
       })
     },
     validateInput(modelValue, message, required = true) {
@@ -893,6 +906,19 @@ export default defineComponent({
     },
     refreshData() {
       this.fetchData()
+    },
+    changeSchedule() {
+      this.api.post(
+        `spv/change-schedule/${this.roomId}`,
+        {
+          startTime: '16:00'
+        },
+        ({ message, status, data }) => {
+          if (status != 200) return this.trigger('negative', message)
+          this.refreshData()
+          this['modelNameForInput'] = data.data.schedule
+        }
+      )
     },
     clearData() {
       this.comments = null

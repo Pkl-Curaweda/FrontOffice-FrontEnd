@@ -1,7 +1,7 @@
 <template>
   <div class="rb full-width">
     <div class="flex justify-between items-center q-pa-md q-mt-md">
-      <UserGreet class="q-px-xs" />
+      <UserGreet class="q-px-xs" :workload="maidWorkload" :aliases="maidAlias"/>
       <!-- <div style="padding: 5px">
         <q-btn
           dense
@@ -258,6 +258,8 @@ export default defineComponent({
       standardTime: ref(''),
       actualTime: ref(''),
       roomId: ref(),
+      maidWorkload: ref('0'),
+      maidAlias: ref(''),
       comments: ref(''),
       state: ref(false),
       ratingcolor: ref([
@@ -288,22 +290,32 @@ export default defineComponent({
   },
   data() {
     return {
-      api: new this.$Api('impps')
+      api: new this.$Api('impps'),
+      rootApi: new this.$Api('root')
     }
   },
   mounted() {
     this.socket()
+    this.checkIMPPS()
     this.fetchData()
   },
   beforeUnmount() {
     socket.disconnect()
   },
   methods: {
-    socket() {
-      socket.connect()
-      socket.on('refreshTask', (data) => {
+    checkIMPPS(){
+      this.api.get('check', ({ status }) => {
+        if(status != 200) return this.trigger('IMPPS didnt run properly, please tell admin')
+        socket.emit('refreshTask', {})
+      })
+    },
+    socket(){
+      socket.on('refreshTask', data => {
         this.fetchData()
       })
+       socket.on('diss', () => {
+        this.rootApi.get('/auth/check-token', () => {})
+    })
     },
     refreshData() {
       this.fetchData()
@@ -331,8 +343,8 @@ export default defineComponent({
         comment: this.comments
       }
       this.api.put(`roomboy/${this.roomId}`, comment, ({ status, message }) => {
-        socket.emit('refreshTask', { message: 'Nigas' })
         if (status == 200) {
+          socket.emit('refreshTask', { message: 'Nigas' })
           this.trigger('positive', message)
           this.fetchData()
         } else {
@@ -342,8 +354,8 @@ export default defineComponent({
     },
     Start() {
       this.api.post(`roomboy/${this.roomId}/start-task`, null, ({ status, message }) => {
-        socket.emit('refreshTask', { message: 'Nigas' })
         if (status == 200) {
+          socket.emit('refreshTask', { message: 'Nigas' })
           this.trigger('positive', message)
           this.fetchData()
         } else {
@@ -353,8 +365,8 @@ export default defineComponent({
     },
     Stop() {
       this.api.post(`roomboy/${this.roomId}/end-task`, null, ({ status, message }) => {
-        socket.emit('refreshTask', { message: 'Nigas' })
         if (status == 200) {
+          socket.emit('refreshTask', { message: 'Nigas' })
           this.trigger('positive', 'Task finished')
           this.fetchData()
         } else {
@@ -368,6 +380,8 @@ export default defineComponent({
         this.loading = false
 
         if (status == 200) {
+          this.maidWorkload = data.workload
+          this.maidAlias = data.aliases
           const { listTask, performance } = data
           this.data = listTask.map((lt) => ({
             roomNo: { data: lt.roomNo, style: { backgroundColor: lt.rowColor } },

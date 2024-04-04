@@ -5,10 +5,10 @@
       <div>{{ time }}</div>
       <div>{{ date }}</div>
       <div class="text-weight-bold text-h5">
-        Hello, {{ user.name }} {{ user.aliases ? ' ( ' + user.aliases + ' ) ' : '' }}
+        Hello, {{ user.name }} {{ aliases ? ' ( ' + aliases + ' ) ' : '' }}
       </div>
       <div class="text-weight-bold">{{ user.role.name }}</div>
-      <div class="text-weight-bold">Work Load : {{ user.workload || 0 }}</div>
+      <div class="text-weight-bold" v-if="workload">Work Load : {{ workload || 0 }}</div>
     </div>
   </div>
 </template>
@@ -32,6 +32,8 @@ export default {
     }
   },
   props: {
+    aliases: String,
+    workload: String,
     classname: {
       type: String,
       default: ''

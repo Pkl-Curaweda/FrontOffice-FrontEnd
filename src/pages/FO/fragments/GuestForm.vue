@@ -13,7 +13,7 @@
   <div class="q-my-lg row no-wrap q-gutter-md" v-if="guestForm">
     <div class="">
       <q-img
-        :src="roomImage || '../../../../src/assets/img/thumbnaul-form.png'"
+        :src="roomImage"
         class="width-image rounded-borders"
       />
     </div>
@@ -80,9 +80,7 @@
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
           @click="newResvroom()"
-          v-if="
-            !this.$ResvStore.fix && this.$ResvStore.currentRoomResvId && this.$ResvStore.addroom
-          "
+          v-if="!this.$ResvStore.fix && this.$ResvStore.currentRoomResvId && this.$ResvStore.addroom"
         />
 
         <!-- show modal to create card's credential: KTP, SIM, address  -->
@@ -514,10 +512,9 @@
 
       <q-expansion-item
         ref="showRateExpansionItem"
-        :label="selected.id ? 'Room Rate: ' + selected.id : 'Room Rate: '"
+        :label="selected?.id ? 'Room Rate: ' + selected.id : 'Room Rate: '"
         class="padding-expansion q-pa-none"
         :hide-expand-icon="true"
-        :default-opened="showRateExpansion"
         dense
         style="font-weight: bold"
       >
@@ -791,13 +788,14 @@ export default defineComponent({
       typeConfirm: ref(''),
       noReservation: ref(),
       shownRoomType: ref(),
+      forceHideRoomRate: ref(),
       optionValue: ref(''),
       resvRemark: ref(''),
       nameidcard: ref(''),
       descSelect: ref(''),
       shownBedOpts: ref(),
       voucherId: ref(''),
-      roomImage: ref(''),
+      roomImage: ref('../../../../src/assets/img/thumbnaul-form.png'),
       guestName: ref(''),
       address: ref(''),
       newSetRow: ref(),
@@ -837,13 +835,10 @@ export default defineComponent({
     }
   },
   mounted() {
-    socket.connect()
     this.getResvProps()
-
     if (this.$ResvStore.currentRoomResvId) {
       this.getDetailResvRoom()
     }
-
     watch(
       () => this.$ResvStore.currentRoomResvId,
       () => {
@@ -862,7 +857,7 @@ export default defineComponent({
     },
     roomNo: {
       handler(newVal, oldVal) {
-        this.toggleRoomRate('show')
+        this.forceHideRoomRate ? !this.forceHideRoomRate : this.toggleRoomRate('show')
         this.roomType = this.roomTypeOpts[newVal.index].value
         this.roomBed = this.roomBedOpts[newVal.index].label
         if (
@@ -932,16 +927,17 @@ export default defineComponent({
         this.dialogCheckout = true
       } else this.dialogMakeSureCheckout = true
     },
-    toggleRoomRate(act = 'show') {
-      act != 'show'
-        ? this.$refs.showRateExpansionItem.hide()
-        : this.$refs.showRateExpansionItem.show()
+    toggleRoomRate(act) {
+      if(act != 'show'){
+        this.$refs.showRateExpansionItem.hide()
+      }else this.$refs.showRateExpansionItem.show()
     },
     refreshGuestList(){
+      console.log('emited')
       socket.emit('resv', {})
     },
     refreshData() {
-      window.location.reload()
+      this.clearData()
     },
     redirectToInvoice() {
       const { currentResvId, currentRoomResvId } = this.$ResvStore
@@ -1070,6 +1066,7 @@ export default defineComponent({
             indexOfReference[room.id] = index
             index++
           }
+          this.roomImage = availableRooms[0].roomImage
           this.roomNoOpts = roomNos
           this.indexReference = indexOfReference
         }
@@ -1122,8 +1119,8 @@ export default defineComponent({
             if (status == 200) {
               this.loading = false
               this.trigger('positive', message)
-              this.editroom()
               this.refreshGuestList()
+              this.editroom()
             } else {
               this.trigger('negative', message)
               console.error('Gagal mengirim data')
@@ -1147,8 +1144,8 @@ export default defineComponent({
             this.loading = false
             if (status == 200) {
               this.trigger('positive', message)
-              this.editroom()
               this.refreshGuestList()
+              this.editroom()
             } else {
               this.trigger('negative', message)
             }
@@ -1351,9 +1348,9 @@ export default defineComponent({
             this.loading = false
             if (status === 200) {
               this.trigger('positive', message)
+              this.refreshGuestList()
               this.clearData()
               this.$store.resvStore.clearData()
-              this.refreshGuestList()
             } else {
               this.trigger('negative', message)
             }
@@ -1414,8 +1411,8 @@ export default defineComponent({
 
               if (status === 200) {
                 this.trigger('positive', message)
-                this.editroom()
                 this.refreshGuestList()
+                this.editroom()
               } else {
                 console.error('Gagal memperbarui data')
                 this.trigger('negative', message)
@@ -1552,19 +1549,35 @@ export default defineComponent({
       }
     },
     clearData() {
-      const { currentResvId, currentRoomResvId } = this.$ResvStore
+      this.$ResvStore.clearData()
+      this.toggleRoomRate('hide')
+      let listOfModels = ['guestName', 'resvRemark', 'voucherId', 'resvRecource', 'resvNo', 'selected']
+      for(let model of listOfModels) { 
+        this[model] = ''
+      }
+      this.forceHideRoomRate = true
+      this.resvStatus = this.resvStatusOpts[0]
+      this.roomNo = this.roomNoOpts[0]
+      this.guests = { adult: 1, child: 0, baby: 0 }
+      this.arrivalDepart.from = null
+      this.arrivalDepart.to = null
+      this.isRbSelected = false
+      this.isRoSelected = false
+      this.arrivalDepartLabel = 'Arrival - Depature, 1 Nights'
+      this.guestsLabel = '1 Adult, 0 Child, 0 Baby'
+
+    
       // const resvId = this.datares['ResNo'].data
       // const roomNo = this.datares['ResRoomNo'].data
-      currentResvId = this.resvRecource = ''
-      this.guestName = ''
-      this.selected = null
-      this.resvRemark = ''
-      this.voucherId = ''
-      this.resvStatus = { value: null, id: null }
-      this.resvRecource = ''
-      this.roomNo = '' // misalkan ini string kosong, pastikan sesuai dengan tipe datanya
-      this.guests = { adult: 0, child: 0, baby: 0 }
-      this.arrivalDepart = { from: null, to: null } // atau atur ke null jika ingin menghapus tanggal kedatangan dan keberangkatan
+      // this.guestName = null
+      // this.selected = null
+      // this.resvRemark = null
+      // this.voucherId = null
+      // this.resvStatus = null
+      // this.resvRecource = null
+      // this.roomNo = '' // misalkan ini string kosong, pastikan sesuai dengan tipe datanya
+      // this.guests = { adult: 1, child: 0, baby: 0 }
+      // this.arrivalDepart = null // atau atur ke null jika ingin menghapus tanggal kedatangan dan keberangkatan
       // this.$store.resvStore.clearData()
       // this.$ResvStore.fix = false
       // this.$ResvStore.ds = false

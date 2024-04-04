@@ -46,7 +46,6 @@ export default defineComponent({
   methods: {
     setLowerMinMax() {
       const wrapper = document.getElementsByClassName('multi-panel')[0]
-      console.log(wrapper)
 
       this.lowerMinHeight = (40 * wrapper.offsetHeight) / 100
       this.lowerMaxHeight = (80 * wrapper.offsetHeight) / 100

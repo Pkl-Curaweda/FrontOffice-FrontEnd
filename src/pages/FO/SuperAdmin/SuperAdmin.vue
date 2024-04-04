@@ -89,11 +89,13 @@ export default defineComponent({
     }
   },
   mounted() {
-    socket.connect()
     socket.on('online', (onlineUsers) => {
       console.log(onlineUsers)
       this.users = onlineUsers
     })
+  },
+  beforeUnmount(){
+    window.location.reload()
   },
   watch: {},
   method: {

@@ -26,6 +26,7 @@
 
 import { defineComponent, ref } from 'vue'
 import socket from '../services/socket/socket'
+import { Api } from 'src/services/api'
 
 export default defineComponent({
   name: 'online',
@@ -37,20 +38,10 @@ export default defineComponent({
   },
   data() {
     return {
-      count: ref(0),
+       api: new this.$Api('root'),
       open: ref(false),
       upHere: false,
       width: ref()
-    }
-  },
-  watch: {
-    count: {
-      handle(value){
-        if(value < 6){
-          this.$AuthStore.clearData()
-          this.count = 0
-        }
-      }
     }
   },
   mounted() {
@@ -59,6 +50,9 @@ export default defineComponent({
     socket.on('online', (onlineUsers) => {
       console.log(onlineUsers)
       this.users = onlineUsers
+    })
+    socket.on('diss', () => {
+        this.api.get('/auth/check-token', () => {})
     })
   },
   beforeUnmount() {
@@ -69,8 +63,6 @@ export default defineComponent({
       if(event.ctrlKey && event.key === 'k'){
         event.preventDefault();
         this.open = !this.open
-        count++
-        console.log('Test')
       }
     }
   }

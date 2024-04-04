@@ -32,6 +32,7 @@
 
 <script>
 import { defineComponent } from 'vue'
+import socket from 'src/services/socket/socket'
 
 export default defineComponent({
   name: 'ProfileFloat',
@@ -42,6 +43,9 @@ export default defineComponent({
       user: this.$AuthStore.getUser(),
       logout_loading: false
     }
+  },
+  beforeUnmount(){
+    socket.disconnect()
   },
   methods: {
     logout() {

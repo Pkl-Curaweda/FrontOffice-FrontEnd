@@ -37,6 +37,30 @@ export const Config = {
   //   return url
   // },
 
+  // //DEVELOPMENT HTTPS
+  // apiUrl(module = '') {
+  //   let url = ''
+  //   const hostname = window.location.hostname
+  //   //DEPLOYMENT
+  //   if (module == 'inroomservice') {
+  //     url = 'https:/localhost:3030/irs/' // production
+  //   } else if (module == 'housekeeping') {
+  //     url = 'https:/localhost:3030/hk/' // production
+  //   } else if (module == 'root') {
+  //     url = 'https:/localhost:3030/'
+  //   } else if (module == 'superadmin') {
+  //     url = 'https:/localhost:3030/sa'
+  //   } else if (module == 'impps') {
+  //     url = 'https:/localhost:3030/impps/'
+  //   } else if (module == 'superadmin') {
+  //     url = 'https:/localhost:3030/sa/'
+  //   } else {
+  //     // default: frontoffice
+  //     url = 'https:/localhost:3030/fo/' // production
+  //   }
+  //   return url
+  // },
+
   apiUrl(module = '') {
     let url = ''
     const hostname = window.location.hostname

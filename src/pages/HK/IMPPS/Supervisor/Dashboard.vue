@@ -34,6 +34,7 @@
             style="transform: scale(1.5); accent-color: #b7e5b4"
           />
         </div>
+        <q-btn @click="triggerCtrlK"></q-btn>
       </div>
       <div class="q-mt-md q-px-xs">
         <!-- <IMPPSSelectedTable
@@ -730,6 +731,7 @@ export default defineComponent({
     return {
       schedulefirst: ref('00:00'),
       sortRed: ref(true),
+      schedule: ref(),
       sortYellow: ref(true),
       sortGreen: ref(true),
       sortWhite: ref(true),
@@ -914,10 +916,11 @@ export default defineComponent({
           startTime: this.schedulefirst
         },
         ({ message, status, data }) => {
-          if (status === 200) return this.trigger('positive', message)
-          this.refreshData()
-          this.schedule = data.data.schedule
-          console.log(data.data.schedule)
+          if (status != 200) return this.trigger('negative', message)
+          socket.emit('refreshTask', { message: 'Nigas' })
+        this.schedule = data.schedule
+        this.schedulefirst = this.schedule.split(' - ')[0]
+          return this.trigger('positive', message)
         }
       )
     },

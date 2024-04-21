@@ -212,12 +212,11 @@ export default defineComponent({
       if (DateArrival !== undefined && DateArrival !== '') {
         url += `&from=${DateArrival}`
       }
-
+      
       const DateDeparture = this.datePickerDeparture?.replace(/\//g, '-')
       if (DateDeparture !== undefined && DateDeparture !== '') {
         url += `&to=${DateDeparture}` // Ganti 'arrival' dengan 'departure'
       }
-
 
       this.api.get(url, ({ status, data }) => {
         this.loading = false

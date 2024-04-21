@@ -259,14 +259,54 @@ export default defineComponent({
       })
     },
     formatData(raw = []) {
-      const list = []
-      raw.forEach((fp) => {
-        list.push({
-          bg_color: fp.roomStatus.rowColor,
-          text_color: fp.roomStatus.textColor
-        })
+      const defaultList = {
+        101: {
+          bg_color: "#f7f7f7",
+          text_color: "#808080"
+        },
+        102: {
+          bg_color: "#f7f7f7",
+          text_color: "#808080"
+        },
+        103: {
+          bg_color: "#f7f7f7",
+          text_color: "#808080"
+        },
+        104: {
+          bg_color: "#f7f7f7",
+          text_color: "#808080"
+        },
+        105: {
+          bg_color: "#f7f7f7",
+          text_color: "#808080"
+        },
+        106: {
+          bg_color: "#f7f7f7",
+          text_color: "#808080"
+        },
+        107: {
+          bg_color: "#f7f7f7",
+          text_color: "#808080"
+        },
+        108: {
+          bg_color: "#f7f7f7",
+          text_color: "#808080"
+        },
+        109: {
+          bg_color: "#f7f7f7",
+          text_color: "#808080"
+        },
+        110: {
+          bg_color: "#f7f7f7",
+          text_color: "#808080"
+        },
+      }
+      raw.forEach(fp => {
+        defaultList[fp.id].bg_color = fp.roomStatus.rowColor,
+        defaultList[fp.id].text_color = fp.roomStatus.textColor
       })
-      this.roomData = list
+
+      this.roomData = Object.values(defaultList)
     }
   }
 })

@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import func from '../../stores/func'
 
-const socket = io('http://localhost:3000', //Production
+const socket = io('https://api-prmn.curaweda.com:3030/', //Production
     {
       query: {
         name: JSON.parse(localStorage.getItem('auth')).user.name

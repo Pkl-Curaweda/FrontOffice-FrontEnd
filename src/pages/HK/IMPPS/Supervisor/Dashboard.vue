@@ -4,7 +4,7 @@
       <div class="flex justify-between items-center q-pa-md q-mt-md">
         <UserGreet class="q-mt-md q-px-xs" :name="user.name" role="Supervisor" />
         <div class="q-gutter-md flex items-center">
-          <label>Sort by Row Color:</label>
+          <label>Shown Task Color:</label>
           <input
             type="checkbox"
             dense

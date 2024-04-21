@@ -1021,12 +1021,9 @@ export default defineComponent({
           ({ status, message }) => {
             if (status == 200) {
               this.trigger('positive', message)
-              this.typeRoomSelect = null
-              this.floorInput = null
-              this.roomNoInput = null
-              this.img = null
-              this.descriptionInput = null
-              window.location.reload()
+              this.clearData()
+              this.getDataRoom()
+              this.editroom = false
             } else {
               this.trigger('negative', message)
             }
@@ -1070,7 +1067,7 @@ export default defineComponent({
             type: this.typeRoomSelect.label,
             floor: this.floorInput,
             roomNo: this.roomNoInput,
-            image: this.img,
+            picture: this.img,
             description: this.descriptionInput
           },
           ({ status, message }) => {

@@ -668,13 +668,6 @@
                 <template v-for="(data, i) in ratingcolor" :key="i">
                   <q-icon name="star" @click="ratingcheck(i + 1)" :color="data.color" size="30px" />
                 </template>
-                <!-- <q-rating
-              v-model="ratingModel"
-              style="width: 200px"
-              max="5"
-              color="yellow-7"
-              :size="'50px'"
-            /> -->
               </div>
             </div>
           </div>
@@ -688,10 +681,7 @@
 import UserGreet from 'src/components/HK/IMPPS/General/UserGreet.vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
 import { defineComponent, ref, watch, provide, inject } from 'vue'
-import { useQuasar } from 'quasar'
 import socket from '../../../../services/socket/socket'
-
-const rows = ref([])
 
 export default defineComponent({
   name: 'DashboardRBPage',
@@ -838,9 +828,9 @@ export default defineComponent({
     socket.disconnect()
   },
   methods: {
-    checkIMPPS(){
+    checkIMPPS() {
       this.api.get('check', ({ status }) => {
-        if(status != 200) return this.trigger('IMPPS didnt run properly, please tell admin')
+        if (status != 200) return this.trigger('IMPPS didnt run properly, please tell admin')
         socket.emit('refreshTask', {})
       })
     },
@@ -850,7 +840,7 @@ export default defineComponent({
       })
       socket.on('diss', () => {
         this.rootApi.get('/auth/check-token', () => {})
-    })
+      })
     },
     validateInput(modelValue, message, required = true) {
       if (required) if (!modelValue) throw Error(message)
@@ -879,13 +869,17 @@ export default defineComponent({
       this.fetchData()
     },
     changeSchedule() {
-      this.api.post(`spv/change-schedule/${this.roomId}`, {
-        startTime: '16:00'
-      }, ({ message, status, data }) => {
-        if(status != 200) return this.trigger('negative', message)
-        this.refreshData()
-        this['modelNameForInput'] =  data.data.schedule
-      })
+      this.api.post(
+        `spv/change-schedule/${this.roomId}`,
+        {
+          startTime: '16:00'
+        },
+        ({ message, status, data }) => {
+          if (status != 200) return this.trigger('negative', message)
+          this.refreshData()
+          this['modelNameForInput'] = data.data.schedule
+        }
+      )
     },
     clearData() {
       this.comments = null

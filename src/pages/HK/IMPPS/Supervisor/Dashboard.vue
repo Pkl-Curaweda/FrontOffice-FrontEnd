@@ -908,8 +908,8 @@ export default defineComponent({
         ({ message, status, data }) => {
           if (status != 200) return this.trigger('negative', message)
           socket.emit('refreshTask', { message: 'Nigas' })
-        this.schedule = data.schedule
-        this.schedulefirst = this.schedule.split(' - ')[0]
+          this.schedule = data.schedule
+          this.schedulefirst = this.schedule.split(' - ')[0]
           return this.trigger('positive', message)
         }
       )
@@ -1159,6 +1159,7 @@ export default defineComponent({
           },
           ({ status, message }) => {
             if (status === 200) {
+              socket.emit('refreshTask', { message: 'Success' })
               this.trigger('positive', message)
               this.roomboySelect = null
               this.roomboySelectSend = null

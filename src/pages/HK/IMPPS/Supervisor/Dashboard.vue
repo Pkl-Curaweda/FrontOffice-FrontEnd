@@ -34,7 +34,6 @@
             style="transform: scale(1.5); accent-color: #b7e5b4"
           />
         </div>
-        <q-btn @click="triggerCtrlK"></q-btn>
       </div>
       <div class="q-mt-md q-px-xs">
         <!-- <IMPPSSelectedTable
@@ -416,7 +415,7 @@
                   <div style="display: block">
                     <div>: {{ this.roomBoy2?.aliases }}</div>
                     <div>: {{ this.roomBoy2?.shift }}</div>
-                    <div>: {{ this.roomBoy2?.workload }}</div>
+                    <div>: {{ this.roomBoy2?.workload }}  (Est. {{ this.estimatedWorkload }})</div>
                   </div>
                 </div>
               </div>
@@ -462,6 +461,7 @@
               <q-tr :props="props">
                 <template v-for="(cell, key, i) in props.row" :key="i">
                   <q-td
+                  class="cursor-pointer"
                     :style="'background-color: #' + cell.style.backgroundColor"
                     @click="
                       !cell.style.backgroundColor.includes('BBE2EC') ? dialogalert(props.row) : ''
@@ -759,6 +759,7 @@ export default defineComponent({
       choosenMaid: ref([]),
       roomboySelect: ref(''),
       roomSelect: ref(),
+      estimatedWorkload: ref(),
       workloadInput: ref(),
       maidSelect: ref(''),
       roomboySelectSend: ref(''),
@@ -829,6 +830,17 @@ export default defineComponent({
         this.getDataRoomboy(2)
       }
     },
+    roomBoy: {
+      handler(val){
+        console.log('BJKASDJKSDASD')
+        if(this.roomBoy2?.workload) this.estimatedWorkload = this.roomBoy2.workload + val.workload
+      }
+    },
+    roomBoy2: {
+      handler(val){
+        if(this.roomBoy?.workload) this.estimatedWorkload = this.roomBoy.workload + val.workload
+      }
+    },
     Request: {
       handler(value) {
         if (!value) this.cleanForm()
@@ -846,7 +858,12 @@ export default defineComponent({
     },
     dialog3: {
       handler(value) {
-        if (!value) this.cleanForm()
+        if (!value){
+          this.loadingRoomBoy = false
+          this.cleanForm()
+        } else {
+          this.loadingRoomBoy = false
+        }
       }
     },
     roomSelect() {
@@ -1081,9 +1098,11 @@ export default defineComponent({
       })
     },
     unAvailability() {
+      console.log(this.loadingRoomBoy)
       this.api.get(`spv/helper/unavail?unavail=0&assigne=0`, ({ status, data, message }) => {
         if (status === 200) {
           this.loadingRoomBoy = true
+          console.log(this.loadingRoomBoy)
           const { listRoomBoy } = data
           this.listRoomboy = listRoomBoy.map((item) => ({ label: item.name, value: item.id }))
         } else {
@@ -1169,6 +1188,8 @@ export default defineComponent({
               this.fetchData()
               this.clearData()
               this.dialog3 = false
+            }else{
+              this.trigger('negative', message)
             }
           }
         )

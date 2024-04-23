@@ -322,7 +322,7 @@
         </q-dialog>
         <q-dialog v-model="dialog3">
           <!-- Dialog for Unavailable Maid -->
-          <q-card style="width: 500px">
+          <q-card style="width: 500px" v-if="loadingRoomBoy">
             <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
               <div class="cursor-pointer non-selectable q-px-md">Unavailable Room Boy</div>
               <q-space />
@@ -427,6 +427,7 @@
             </q-card-actions>
             <!-- v-close-popup="this.roomNoSelect != null" -->
           </q-card>
+          <div v-else>..........</div>
         </q-dialog>
 
         <div class="my-table">
@@ -719,6 +720,7 @@ export default defineComponent({
   },
   setup() {
     return {
+      loadingRoomBoy: ref(false),
       schedulefirst: ref('00:00'),
       sortRed: ref(true),
       schedule: ref(),
@@ -1081,6 +1083,7 @@ export default defineComponent({
     unAvailability() {
       this.api.get(`spv/helper/unavail?unavail=0&assigne=0`, ({ status, data, message }) => {
         if (status === 200) {
+          this.loadingRoomBoy = true
           const { listRoomBoy } = data
           this.listRoomboy = listRoomBoy.map((item) => ({ label: item.name, value: item.id }))
         } else {

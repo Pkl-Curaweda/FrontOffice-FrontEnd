@@ -60,6 +60,7 @@ export default defineComponent({
   },
   methods: {
     openDialog(event){
+      console.log(event)
       if(event.ctrlKey && event.key === 'k'){
         event.preventDefault();
         this.open = !this.open

@@ -4,7 +4,7 @@
       <div class="flex justify-between items-center q-pa-md q-mt-md">
         <UserGreet class="q-mt-md q-px-xs" :name="user.name" role="Supervisor" />
         <div class="q-gutter-md flex items-center">
-          <label>Sort by Row Color:</label>
+          <label>Shown Task Color:</label>
           <input
             type="checkbox"
             dense
@@ -34,6 +34,7 @@
             style="transform: scale(1.5); accent-color: #b7e5b4"
           />
         </div>
+        <q-btn @click="triggerCtrlK"></q-btn>
       </div>
       <div class="q-mt-md q-px-xs">
         <!-- <IMPPSSelectedTable
@@ -624,7 +625,34 @@
                   v-model="schedule"
                   label="Schedule"
                   class="col-grow text-bold"
-                />
+                >
+                  <template v-slot:after>
+                    <!-- <q-btn round dense flat icon="edit" />  -->
+                    <q-btn-dropdown
+                      dense
+                      flat
+                      :disable="!roomId"
+                      style="color: rgb(155, 155, 155)"
+                      class="text-capitalize col-grow q-py-sm q-px-sm"
+                      dropdown-icon="edit"
+                      no-icon-animation
+                    >
+                      <div style="display: block">
+                        <q-time v-model="schedulefirst" format24h now-btn>
+                          <q-btn
+                            dense
+                            noCaps
+                            v-close-popup="this.schedulefirst != this.schedule.split(' - ')[0]"
+                            color="primary"
+                            @click="changeSchedule()"
+                            label="Changes"
+                            class="q-px-lg"
+                            style="width: 100%; border-radius: 10px"
+                        /></q-time>
+                      </div>
+                    </q-btn-dropdown> </template
+                ></q-input>
+
                 <q-input
                   dense
                   outlined
@@ -691,7 +719,9 @@ export default defineComponent({
   },
   setup() {
     return {
+      schedulefirst: ref('00:00'),
       sortRed: ref(true),
+      schedule: ref(),
       sortYellow: ref(true),
       sortGreen: ref(true),
       sortWhite: ref(true),
@@ -828,6 +858,7 @@ export default defineComponent({
     socket.disconnect()
   },
   methods: {
+    setSchedule() {},
     checkIMPPS() {
       this.api.get('check', ({ status }) => {
         if (status != 200) return this.trigger('IMPPS didnt run properly, please tell admin')
@@ -872,12 +903,14 @@ export default defineComponent({
       this.api.post(
         `spv/change-schedule/${this.roomId}`,
         {
-          startTime: '16:00'
+          startTime: this.schedulefirst
         },
         ({ message, status, data }) => {
           if (status != 200) return this.trigger('negative', message)
-          this.refreshData()
-          this['modelNameForInput'] = data.data.schedule
+          socket.emit('refreshTask', { message: 'Nigas' })
+        this.schedule = data.schedule
+        this.schedulefirst = this.schedule.split(' - ')[0]
+          return this.trigger('positive', message)
         }
       )
     },
@@ -945,12 +978,15 @@ export default defineComponent({
     dialogalert(roomNo) {
       this.roomNo = roomNo['roomNo'].data
       this.roomId = roomNo['taskId'].data
-      ;(this.comments = roomNo['Comments'].data),
-        (this.schedule = roomNo['Schedule'].data),
-        (this.status = roomNo['Status'].data),
-        (this.remarks = roomNo['Remarks'].data),
-        (this.standardTime = roomNo['Standard'].data),
-        (this.actualTime = roomNo['Actual'].data)
+      this.comments = roomNo['Comments'].data
+      this.schedule = roomNo['Schedule'].data
+      this.status = roomNo['Status'].data
+      this.remarks = roomNo['Remarks'].data
+      this.standardTime = roomNo['Standard'].data
+      this.actualTime = roomNo['Actual'].data
+
+      this.schedulefirst = this.schedule.split(' - ')[0]
+      console.log(this.schedulefirst)
     },
     getTableData(data) {
       this.selected = data

@@ -12,10 +12,7 @@
 
   <div class="q-my-lg row no-wrap q-gutter-md" v-if="guestForm">
     <div class="">
-      <q-img
-        :src="roomImage"
-        class="width-image rounded-borders"
-      />
+      <q-img :src="roomImage" class="width-image rounded-borders" />
     </div>
 
     <div class="col-grow">
@@ -80,7 +77,9 @@
           class="border-button rounded-borders"
           style="padding-top: 0; padding-bottom: 0"
           @click="newResvroom()"
-          v-if="!this.$ResvStore.fix && this.$ResvStore.currentRoomResvId && this.$ResvStore.addroom"
+          v-if="
+            !this.$ResvStore.fix && this.$ResvStore.currentRoomResvId && this.$ResvStore.addroom
+          "
         />
 
         <!-- show modal to create card's credential: KTP, SIM, address  -->
@@ -905,7 +904,7 @@ export default defineComponent({
       this.api.get(url, ({ status, message }) => {
         if (status === 200) {
           this.refreshGuestList()
-          socket.emit('refreshTask', { message: "Nigas" })
+          socket.emit('refreshTask', { message: 'Nigas' })
           this.trigger('positive', message)
           this.infoCheckout = !this.infoCheckout
           this.guestForm = !this.guestForm
@@ -913,7 +912,8 @@ export default defineComponent({
       })
     },
     confirmCheckout() {
-      if (this.typeConfirm != this.nameReservation) return this.trigger('negative', 'Please type it correctly')
+      if (this.typeConfirm != this.nameReservation)
+        return this.trigger('negative', 'Please type it correctly')
       this.postcheckout()
     },
     makeSureCheckout() {
@@ -928,11 +928,11 @@ export default defineComponent({
       } else this.dialogMakeSureCheckout = true
     },
     toggleRoomRate(act) {
-      if(act != 'show'){
+      if (act != 'show') {
         this.$refs.showRateExpansionItem.hide()
-      }else this.$refs.showRateExpansionItem.show()
+      } else this.$refs.showRateExpansionItem.show()
     },
-    refreshGuestList(){
+    refreshGuestList() {
       console.log('emited')
       socket.emit('resv', {})
     },
@@ -1168,7 +1168,7 @@ export default defineComponent({
           this.loading = false
           if (status == 200) {
             this.trigger('positive', message)
-            socket.emit('refreshTask', { message: "Nigas" })
+            socket.emit('refreshTask', { message: 'Nigas' })
             this.refreshGuestList()
             this.infoCheckout = !this.infoCheckout
             this.guestForm = !this.guestForm
@@ -1316,7 +1316,7 @@ export default defineComponent({
           'include',
           '/',
           'Please send a correct format [Guest Name]/[Phone Number]'
-      )
+        )
         this.validateInput(this.resvRecource, 'Please specify Reservation Resource', true)
         this.validateInput(this.roomNo, 'Please Specify Room Number', true)
         this.validateInput(this.selected.id, 'Please specify the Arrangment Code', true)
@@ -1551,8 +1551,15 @@ export default defineComponent({
     clearData() {
       this.$ResvStore.clearData()
       this.toggleRoomRate('hide')
-      let listOfModels = ['guestName', 'resvRemark', 'voucherId', 'resvRecource', 'resvNo', 'selected']
-      for(let model of listOfModels) { 
+      let listOfModels = [
+        'guestName',
+        'resvRemark',
+        'voucherId',
+        'resvRecource',
+        'resvNo',
+        'selected'
+      ]
+      for (let model of listOfModels) {
         this[model] = ''
       }
       this.forceHideRoomRate = true
@@ -1566,7 +1573,6 @@ export default defineComponent({
       this.arrivalDepartLabel = 'Arrival - Depature, 1 Nights'
       this.guestsLabel = '1 Adult, 0 Child, 0 Baby'
 
-    
       // const resvId = this.datares['ResNo'].data
       // const roomNo = this.datares['ResRoomNo'].data
       // this.guestName = null

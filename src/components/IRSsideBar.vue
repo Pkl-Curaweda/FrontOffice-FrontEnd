@@ -27,31 +27,6 @@
         </q-item-section>
       </q-item>
     </template>
-
-    <!-- <q-expansion-item class="rounded" label="" icon="o_contact_page">
-      <template v-for="(r, index) in irsmitra_routes" :key="index">
-        <q-item v-if="r.meta.main_route" class="q-mx-md" :to="r.path" clickable>
-          <q-item-section>
-            {{ r.meta.title }}
-          </q-item-section>
-        </q-item>
-      </template>
-    </q-expansion-item>
-
-    <q-expansion-item class="rounded" label="House Keeping" icon="o_cleaning_services">
-      <q-expansion-item class="rounded q-mx-md" label="Reports">
-        <template v-for="(r, index) in irsuser_routes" :key="index">
-          <q-item class="q-mx-md" :to="r.path" clickable>
-            <q-item-section>
-              {{ r.meta.title }}
-            </q-item-section>
-          </q-item>
-        </template>
-      </q-expansion-item>
-    </q-expansion-item> -->
-
-    <!-- <q-separator class="q-my-md" /> -->
-
     <q-item clickable class="text-negative" @click="logout()">
       <q-item-section avatar class="q-pa-none">
         <q-icon name="o_logout" />

@@ -414,7 +414,7 @@
                   </div>
                   <div style="display: block">
                     <div>: {{ this.roomBoy2?.aliases }}</div>
-                    <div>: {{ this.roomBoy2?.shift }}</div>
+                    <div>: {{ this.roomBoy2?.shift }}</div
                     <div>: {{ this.roomBoy2?.workload }}</div>
                   </div>
                 </div>

@@ -239,8 +239,6 @@ import { defineComponent, ref } from 'vue'
 import socket from '../../../../services/socket/socket'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
 
-const rows = ref([])
-
 export default defineComponent({
   name: 'DashboardRBPage',
   components: {

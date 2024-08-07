@@ -4,7 +4,7 @@
       <div class="flex justify-between items-center q-pa-md q-mt-md">
         <UserGreet class="q-mt-md q-px-xs" :name="user.name" role="Supervisor" />
         <div class="q-gutter-md flex items-center">
-          <label>Sort by Row Color:</label>
+          <label>Shown Task Color:</label>
           <input
             type="checkbox"
             dense
@@ -321,7 +321,7 @@
         </q-dialog>
         <q-dialog v-model="dialog3">
           <!-- Dialog for Unavailable Maid -->
-          <q-card style="width: 500px">
+          <q-card style="width: 500px" v-if="loadingRoomBoy">
             <q-bar style="min-width: 250px" class="bg-white text-grey rounded-borders q-pa-xs">
               <div class="cursor-pointer non-selectable q-px-md">Unavailable Room Boy</div>
               <q-space />
@@ -414,8 +414,8 @@
                   </div>
                   <div style="display: block">
                     <div>: {{ this.roomBoy2?.aliases }}</div>
-                    <div>: {{ this.roomBoy2?.shift }}</div
-                    <div>: {{ this.roomBoy2?.workload }}</div>
+                    <div>: {{ this.roomBoy2?.shift }}</div>
+                    <div>: {{ this.roomBoy2?.workload }} (Est. {{ this.estimatedWorkload }})</div>
                   </div>
                 </div>
               </div>
@@ -426,6 +426,7 @@
             </q-card-actions>
             <!-- v-close-popup="this.roomNoSelect != null" -->
           </q-card>
+          <div v-else>..........</div>
         </q-dialog>
 
         <div class="my-table">
@@ -460,6 +461,7 @@
               <q-tr :props="props">
                 <template v-for="(cell, key, i) in props.row" :key="i">
                   <q-td
+                    class="cursor-pointer"
                     :style="'background-color: #' + cell.style.backgroundColor"
                     @click="
                       !cell.style.backgroundColor.includes('BBE2EC') ? dialogalert(props.row) : ''
@@ -695,13 +697,6 @@
                 <template v-for="(data, i) in ratingcolor" :key="i">
                   <q-icon name="star" @click="ratingcheck(i + 1)" :color="data.color" size="30px" />
                 </template>
-                <!-- <q-rating
-              v-model="ratingModel"
-              style="width: 200px"
-              max="5"
-              color="yellow-7"
-              :size="'50px'"
-            /> -->
               </div>
             </div>
           </div>
@@ -715,10 +710,7 @@
 import UserGreet from 'src/components/HK/IMPPS/General/UserGreet.vue'
 import HKCard from 'src/components/HK/Card/HKCard.vue'
 import { defineComponent, ref, watch, provide, inject } from 'vue'
-import { useQuasar } from 'quasar'
 import socket from '../../../../services/socket/socket'
-
-const rows = ref([])
 
 export default defineComponent({
   name: 'DashboardRBPage',
@@ -728,8 +720,10 @@ export default defineComponent({
   },
   setup() {
     return {
+      loadingRoomBoy: ref(false),
       schedulefirst: ref('00:00'),
       sortRed: ref(true),
+      schedule: ref(),
       sortYellow: ref(true),
       sortGreen: ref(true),
       sortWhite: ref(true),
@@ -765,6 +759,7 @@ export default defineComponent({
       choosenMaid: ref([]),
       roomboySelect: ref(''),
       roomSelect: ref(),
+      estimatedWorkload: ref(),
       workloadInput: ref(),
       maidSelect: ref(''),
       roomboySelectSend: ref(''),
@@ -835,6 +830,17 @@ export default defineComponent({
         this.getDataRoomboy(2)
       }
     },
+    roomBoy: {
+      handler(val) {
+        console.log('BJKASDJKSDASD')
+        if (this.roomBoy2?.workload) this.estimatedWorkload = this.roomBoy2.workload + val.workload
+      }
+    },
+    roomBoy2: {
+      handler(val) {
+        if (this.roomBoy?.workload) this.estimatedWorkload = this.roomBoy.workload + val.workload
+      }
+    },
     Request: {
       handler(value) {
         if (!value) this.cleanForm()
@@ -852,7 +858,12 @@ export default defineComponent({
     },
     dialog3: {
       handler(value) {
-        if (!value) this.cleanForm()
+        if (!value) {
+          this.loadingRoomBoy = false
+          this.cleanForm()
+        } else {
+          this.loadingRoomBoy = false
+        }
       }
     },
     roomSelect() {
@@ -914,10 +925,11 @@ export default defineComponent({
           startTime: this.schedulefirst
         },
         ({ message, status, data }) => {
-          if (status === 200) return this.trigger('positive', message)
-          this.refreshData()
-          this.schedule = data.data.schedule
-          console.log(data.data.schedule)
+          if (status != 200) return this.trigger('negative', message)
+          socket.emit('refreshTask', { message: 'Nigas' })
+          this.schedule = data.schedule
+          this.schedulefirst = this.schedule.split(' - ')[0]
+          return this.trigger('positive', message)
         }
       )
     },
@@ -1086,8 +1098,11 @@ export default defineComponent({
       })
     },
     unAvailability() {
+      console.log(this.loadingRoomBoy)
       this.api.get(`spv/helper/unavail?unavail=0&assigne=0`, ({ status, data, message }) => {
         if (status === 200) {
+          this.loadingRoomBoy = true
+          console.log(this.loadingRoomBoy)
           const { listRoomBoy } = data
           this.listRoomboy = listRoomBoy.map((item) => ({ label: item.name, value: item.id }))
         } else {
@@ -1166,12 +1181,15 @@ export default defineComponent({
           },
           ({ status, message }) => {
             if (status === 200) {
+              socket.emit('refreshTask', { message: 'Success' })
               this.trigger('positive', message)
               this.roomboySelect = null
               this.roomboySelectSend = null
               this.fetchData()
               this.clearData()
               this.dialog3 = false
+            } else {
+              this.trigger('negative', message)
             }
           }
         )

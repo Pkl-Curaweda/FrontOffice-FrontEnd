@@ -859,6 +859,7 @@ export default defineComponent({
         this.forceHideRoomRate ? !this.forceHideRoomRate : this.toggleRoomRate('show')
         this.roomType = this.roomTypeOpts[newVal.index].value
         this.roomBed = this.roomBedOpts[newVal.index].label
+        this.roomImage = newVal.image
         if (
           this.arrivalDepart.from &&
           this.arrivalDepart.to &&
@@ -1050,7 +1051,7 @@ export default defineComponent({
           let index = 0
 
           for (let room of availableRooms) {
-            roomNos.push({ index, label: room.id, value: room.id })
+            roomNos.push({ index, label: room.id, value: room.id, image: room.roomImage })
             this.roomTypeOpts.push({
               index,
               label: room.roomType.longDesc,
